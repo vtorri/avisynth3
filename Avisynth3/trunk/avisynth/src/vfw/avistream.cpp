@@ -27,6 +27,7 @@
 #include "../core/clip.h"
 #include "../core/videoinfo.h"
 #include "../core/colorspace.h"
+#include "../core/exception/generic.h"
 
 //boost include
 #include <boost/format.hpp>
@@ -138,7 +139,7 @@ void AviStream::ReadWrapper(void* lpBuffer, int lStart, int lSamples)
 
 void AviStream::ThrowAccessViolation(EXCEPTION_POINTERS * ei)
 {
-  throw GenericException(str( 
+  throw exception::Generic(str( 
       boost::format("Avisynth: caught an access violation at 0x%08x,\nattempting to %s 0x%08x")
         % ei->ExceptionRecord->ExceptionAddress
         % ( ei->ExceptionRecord->ExceptionInformation[0] ? "write to" : "read from" )
@@ -148,22 +149,22 @@ void AviStream::ThrowAccessViolation(EXCEPTION_POINTERS * ei)
 
 void AviStream::ThrowIllegalInstruction(EXCEPTION_POINTERS * ei)
 {
-  throw GenericException(str( boost::format("Avisynth: illegal instruction at 0x%08x") % ei->ExceptionRecord->ExceptionAddress ));
+  throw exception::Generic(str( boost::format("Avisynth: illegal instruction at 0x%08x") % ei->ExceptionRecord->ExceptionAddress ));
 }
 
 void AviStream::ThrowIntDivideByZero(EXCEPTION_POINTERS * ei)
 {
-  throw GenericException(str( boost::format("Avisynth: division by zero at 0x%08x") % ei->ExceptionRecord->ExceptionAddress ));
+  throw exception::Generic(str( boost::format("Avisynth: division by zero at 0x%08x") % ei->ExceptionRecord->ExceptionAddress ));
 }
 
 void AviStream::ThrowStackOverFlow()
 {
-  throw GenericException("Avisynth: stack overflow");
+  throw exception::Generic("Avisynth: stack overflow");
 }
 
 void AviStream::ThrowUnknownException(EXCEPTION_POINTERS * ei, DWORD code)
 {
-  throw GenericException(str( 
+  throw exception::Generic(str( 
       boost::format("Avisynth: unknown exception 0x%08x at 0x%08x")
         % code 
         % ei->ExceptionRecord->ExceptionAddress

@@ -41,9 +41,9 @@ namespace avs {
 //
 //
 struct Vecteur
-     : boost::addable<Vecteur>,                    //defines Vecteur + Vecteur
-       boost::subtractable<Vecteur>,               //defines Vecteur - Vecteur
-       boost::right_shiftable<Vecteur, Dimension>  //defines Vecteur >> Dimension (inclusion)
+     : boost::addable<Vecteur>                     //defines Vecteur + Vecteur
+     , boost::subtractable<Vecteur>                //defines Vecteur - Vecteur
+     , boost::right_shiftable<Vecteur, Dimension>  //defines Vecteur >> Dimension (inclusion)
 {
 
   int x, y;   

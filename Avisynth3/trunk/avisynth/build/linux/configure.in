@@ -29,7 +29,7 @@ nasm_prog="nasm"
 
 dnl BOOST version requirement
 BOOST_VER_MAJOR="1"
-BOOST_VER_MINOR="31"
+BOOST_VER_MINOR="32"
 
 dnl Default CFLAGS -- Big impact on overall speed
 our_cxxflags_defaults="-O2 -Wall"
@@ -215,23 +215,23 @@ if test x"$assembly" = x"yes" ; then
    AC_MSG_CHECKING([for architecture type])
    case "$target_cpu" in
 	  i[[3456]]86)
-	  AC_MSG_RESULT(ia32)
-	  	ARCHITECTURE="IA32"
-		;;	
-		powerpc)
-		AC_MSG_RESULT(PowerPC)
-		dnl ATM the ppc port is out of date 
-		dnl ARCHITECTURE="PPC"
-		ARCHITECTURE="GENERIC"
-		;;
-		ia64)
-		AC_MSG_RESULT(ia64)
-		ARCHITECTURE="IA64"
-		;;
-		*)
-		AC_MSG_RESULT($target_cpu)
-		ARCHITECTURE="GENERIC"
-		;;
+	    AC_MSG_RESULT(ia32)
+	    ARCHITECTURE="IA32"
+	  ;;	
+	  powerpc)
+	    AC_MSG_RESULT(PowerPC)
+	    dnl ATM the ppc port is out of date 
+	    dnl ARCHITECTURE="PPC"
+	    ARCHITECTURE="GENERIC"
+	  ;;
+	  ia64)
+	    AC_MSG_RESULT(ia64)
+	    ARCHITECTURE="IA64"
+	  ;;
+	  *)
+	    AC_MSG_RESULT($target_cpu)
+	    ARCHITECTURE="GENERIC"
+	    ;;
    esac
 else
    AC_MSG_RESULT([no])
@@ -307,8 +307,7 @@ case "$target_os" in
 	AC_MSG_RESULT([ok])
 	STATIC_LIB="libavisynth.\$(STATIC_EXTENSION)"
 	SHARED_LIB="avisynth.\$(SHARED_EXTENSION)"
-dnl	SPECIFIC_LDFLAGS="-lwinmm -lavcodec -lavformat -lgdi32 -lvfw32 -luuid -lole32 -mno-cygwin -shared -Wl,--dll,--out-implib,\$@.a libavisynth.def"
-	SPECIFIC_LDFLAGS="-lwinmm -lgdi32 -lvfw32 -luuid -lole32 -mno-cygwin -shared --enable-stdcall-fixup -Wl,--out-implib,\$@.a libavisynth.def"
+	SPECIFIC_LDFLAGS="-lwinmm -lgdi32 -lvfw32 -luuid -lole32 -lmsacm32 -mno-cygwin -shared --enable-stdcall-fixup -Wl,--out-implib,\$@.a libavisynth.def"
 	SPECIFIC_CFLAGS="-Os -mno-cygwin"
 	;;
      darwin*|raphsody*)
@@ -383,7 +382,7 @@ if test "$ARCHITECTURE" = "IA32" ; then
 
 
       if test "$nasm_patch" -lt "$minimum_nasm_patch_version" ; then
-        AC_MSG_WARN([nasm patch version too old - Compiling generic sources only])
+        AC_MSG_ERROR([nasm patch version too old - Update nasm])
 	ARCHITECTURE="GENERIC"
       else
 
@@ -404,13 +403,13 @@ if test "$ARCHITECTURE" = "IA32" ; then
                   ;;
           esac
           AS=nasm
-          AFLAGS="-I\$(<D)/ -f $NASM_FORMAT $PREFIX"
+          AFLAGS="-I\$(<D)/ -f $NASM_FORMAT $PREFIX -D_FORCE_NASM"
           ASSEMBLY_EXTENSION="asm"
           ASSEMBLY_SOURCES="SRC_IA32"
        fi
 
    else
-	AC_MSG_WARN([nasm not found - Compiling generic sources only])
+	AC_MSG_ERROR([nasm not found - nasm is needed for Avisynth 3.0])
 	ARCHITECTURE="GENERIC"
    fi
 
@@ -641,20 +640,21 @@ dnl ==========================================================================
 
 if test "x$with_ffmpeg_arg" = "xno" && test "x$ffmpeg_enable" = "xyes" ; then
   AC_CHECK_HEADERS(
-	[ffmpeg/avcodec.h ffmpeg/avformat.h],
-	[AC_DEFINE([HAVE_FFMPEG])]
-	[FFMPEG_CFLAGS="-DAVS_HAS_FFMPEGSOURCE"],
-	[AC_MSG_ERROR([FFMPEG Headers missing. Run configure --help])])
-  AC_CHECK_LIB(
+    [ffmpeg/avcodec.h ffmpeg/avformat.h],
+    AC_CHECK_LIB(
       [avformat],
       [main],
       [AC_CHECK_LIB(
-      		[avcodec],
-      		[main],
-      		[FFMPEG_LIBS="-lavformat -lavcodec"],
-      		[AC_MSG_ERROR([FFMPEG library missing. Run configure --help])])
-      ],
-      [AC_MSG_ERROR([FFMPEG library missing. Run configure --help])])
+        [avcodec],
+        [main],
+        [FFMPEG_LIBS="-lavformat -lavcodec"],
+        [AC_MSG_WARN([FFMPEG library missing. Run configure --help])
+         ffmpeg_enable="no"])],
+      [AC_MSG_WARN([FFMPEG library missing. Run configure --help])
+       ffmpeg_enable="no"])
+    [FFMPEG_CFLAGS="-DAVS_HAS_FFMPEGSOURCE"],
+    [AC_MSG_WARN([FFMPEG library missing. Run configure --help])
+     ffmpeg_enable="no"])
 fi
 
 dnl ==========================================================================
@@ -742,6 +742,7 @@ dnl Substitions
 dnl
 dnl ==========================================================================
 
+
 AC_SUBST(FEATURES)
 AC_SUBST(ARCHITECTURE)
 AC_SUBST(SHARED_EXTENSION)
@@ -804,7 +805,7 @@ echo " OS..................: $target_os"
 echo
 echo " Core debug mode.....: $core_debug_mode"
 echo " FFMPEG debug mode...: $ffmpeg_debug_mode"
-echo " ASM support.........: $assembly"
+echo " ASM support.........: $use_asm"
 echo " FFMPEG support......: $ffmpeg_enable"
 echo
 echo " Install path........: $prefix"

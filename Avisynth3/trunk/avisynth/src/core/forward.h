@@ -26,21 +26,33 @@
 
 //avisynth includes
 #include "block/align.h"           //for block::Align
-#include "cow_shared_ptr.h"        //includes <boost/shared_ptr.hpp>
+//#include "cow_shared_ptr.h"        //includes <boost/shared_ptr.hpp>
 
 //boost include
 #include <boost/rational.hpp>      //for rational
 
 
-namespace avs {
 
+namespace boost {
+
+
+template <typename T> class weak_ptr;
+template <typename T> class shared_ptr;
+
+
+}
+
+
+namespace avs {
 
 
 //declarations
 class Key;
 class Clip;
+enum Plane;
 class Blitter;
 class Property;
+enum FrameType;
 class VideoInfo;
 class ColorSpace;
 class VideoFrame;
@@ -48,8 +60,10 @@ class RuntimeEnvironment;
 template <int align> class block_;
 template <int align> class owned_block;
 template <typename T> class box;
-template <typename T> struct vecteur;
+template <typename T> class vecteur;
 template <typename T> class dimension;
+template <class Data> struct window_ptr;
+template <typename T> class cow_shared_ptr;
 template <int align, int guard = block::Align, class Buffer = owned_block<1> > class buffer_window;
 
 //typedefs
@@ -57,6 +71,8 @@ typedef unsigned char BYTE;
 typedef box<long> Box;
 typedef vecteur<long> Vecteur;
 typedef dimension<long> Dimension;
+typedef window_ptr<BYTE> WindowPtr;
+typedef window_ptr<BYTE const> CWindowPtr;
 typedef block_<block::Align> Block;
 typedef owned_block<block::Align> OwnedBlock;
 typedef buffer_window<block::Align> BufferWindow;
@@ -78,7 +94,6 @@ typedef cow_shared_ptr<VideoFrame> PVideoFrame;
 
 //weak_ptr typedefs
 typedef boost::weak_ptr<Clip const> WeakPClip;
-typedef boost::weak_ptr<ColorSpace const> WeakPColorSpace;
 typedef boost::weak_ptr<RuntimeEnvironment> WeakPEnvironment;
 
 

@@ -31,10 +31,12 @@
 namespace avs { namespace vfw {
 
 
-//declaration
+//declarations
+class WaveFormatEx;
 class BitmapInfoHeader;
 
-//typedef
+//typedefs
+typedef boost::shared_ptr<WaveFormatEx> PWaveFormatEx;
 typedef boost::shared_ptr<BitmapInfoHeader> PBitmapInfoHeader;
 
 

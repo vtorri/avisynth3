@@ -24,6 +24,9 @@
 #ifndef __AVS_FIXEDPOINT_H__
 #define __AVS_FIXEDPOINT_H__
 
+//boost include
+#include <boost/operators.hpp>
+
 
 namespace avs {
 
@@ -35,7 +38,12 @@ namespace avs {
 //  for fixed point arithmetic
 //
 template <int fractionPart> 
-class fixed_point
+class fixed_point 
+    : boost::addable<fixed_point<fractionPart>                 //defines +
+    , boost::subtractable<fixed_point<fractionPart>            //defines -
+    , boost::right_shiftable<fixed_point<fractionPart>, int    //defines >>
+    , boost::left_shiftable<fixed_point<fractionPart>, int     //defines <<
+      > > > >
 {
 
   typedef long BaseType;

@@ -48,7 +48,7 @@ class VideoFrame;
 class RuntimeEnvironment;
 template <int align> class block_;
 template <int align> class owned_block;
-template <int align, int guard = block::Align> class buffer_window;
+template <int align, int guard = block::Align, class Buffer = owned_block<1> > class buffer_window;
 
 //typedefs
 typedef unsigned char BYTE;

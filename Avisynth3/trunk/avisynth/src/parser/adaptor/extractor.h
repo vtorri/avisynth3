@@ -105,7 +105,7 @@ struct extractor<PEnvironment const&>
 
   enum { consume = 0 };
 
-  PEnvironment const& operator()(VMState& state, int pos) const
+  PEnvironment const& operator()(VMState& state, int /*pos*/) const
   {
     return state.GetEnvironment();
   }

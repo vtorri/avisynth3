@@ -28,23 +28,14 @@
 #include "name.h"
 #include "action.h"
 #include "expression.h"
-#include "../optype.h"
 #include "../lazy/get.h"
 #include "../codecouple.h"
 #include "../functor/if.h"
-#include "../functor/popper.h"
-#include "../functor/swapper.h"
 
 
 namespace avs { namespace parser { namespace grammar {
 
 
-
-namespace value { 
-  
-typedef boost::tuples::tuple<std::string const&, bool&> TRecurseInfo;
-
-}
 
 namespace closure {
 
@@ -152,7 +143,7 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
       createVar
           =   (   spirit::str_p("global")
                   [
-                    createVar.table = ref(first(self.globalCtxt))    //and set global VarTable as the table to use
+                    createVar.table = ref(first(self.globalCtxt))    //set global VarTable as the table to use
                   ]
               |   !   spirit::str_p("local")     //optional local keyword
               )

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -38,13 +38,17 @@ class Symetry;
 
 
 
-
-class Flip : public clip::onechild::CachingPipeline
-           , public clip::onechild::Simplifiable<Flip>
-           , public clip::Refactorable<Flip>
-           , public clip::Refactorable<Symetry>
-           , public clip::onechild::Concrete
-           , public clip::caching::Concrete
+///////////////////////////////////////////////////////////////////////////////////////
+//  Flip
+//
+//  factorisation superclass for Flip::Vertical and Flip::Horizontal
+//
+class NOVTABLE Flip : public clip::onechild::CachingPipeline
+                    , public clip::onechild::Simplifiable<Flip>
+                    , public clip::Refactorable<Flip>
+                    , public clip::Refactorable<Symetry>
+                    , public clip::onechild::Concrete
+                    , public clip::caching::Concrete
 {
 
 public:  //constructor

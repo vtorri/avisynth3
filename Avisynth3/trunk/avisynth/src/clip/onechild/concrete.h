@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -66,7 +66,7 @@ protected:  //helper for FinalSimplify
   virtual void FinalSimplifyChild() const { child_ = child_->FinalSimplify(); }
 
 
-protected:  //implementations helpers
+public:  //implementations helpers
 
   PEnvironment const& GetChildEnvironment() const { return child_->GetEnvironment(); }
   CPVideoInfo GetChildVideoInfo() const { return child_->GetVideoInfo(); }

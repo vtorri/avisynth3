@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -21,57 +21,50 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_CLIP_CACHING_H__
-#define __AVS_CLIP_CACHING_H__
+#ifndef __AVS_FILTERS_COLORYUV_AUTO_H__
+#define __AVS_FILTERS_COLORYUV_AUTO_H__
 
 //avisynth includes
-#include "../core/clip.h"
-#include "../core/cache.h"
+#include "levels.h"
+#include "../coloryuv.h"
 
 
-namespace avs { 
-  
-//declaration
-namespace cache { class Base; }
-  
-
-namespace clip {
+namespace avs { namespace filters { namespace coloryuv {
 
 
 
-//////////////////////////////////////////////////////////////////////////////////
-//  Caching
-//
-//  interface for clips who cache (frames)
-//
-class Caching : public virtual Clip
+class Auto : public ColorYUV
 {
 
-public:  //clip general interface
+  mutable Levels Y_, U_, V_;
+  float gamma_;
 
-  virtual PEnvironment const& GetEnvironment() const { return GetCache().GetEnvironment(); }
+  Mode mode_;
+  bool coring_;
 
-  virtual CPVideoFrame GetFrame(long n) const { return GetCache().GetFrame(n); }
-
-
-private:  //CachingClip requirement: have a cache
-
-  virtual Cache& GetCache() const = 0;
+  bool autoWhite_;
+  bool autoGain_;
 
 
-private:  //MakeFrame method
-  
-  //method who creates the requested frame
-  //called by the cache, when not cached
-  virtual CPVideoFrame MakeFrame(long n) const = 0;
+public:  //structors
 
-  friend class cache::Base;  //so can call MakeFrame
+  Auto(PClip const& child, Levels const& Y, Levels const& U, Levels const& V, float gamma, Mode mode, bool coring, bool autoWhite, bool autoGain);
+
+  //generated destructor is fine
+
+
+public:  //child changing clone
+
+  virtual PClip clone(PClip const& child) const;
+
+
+public:  //Pipeline interface
+
+  virtual CPVideoFrame MakeFrame(PVideoFrame const& source) const;
 
 };
 
 
+} } } //namespace avs::filters::coloryuv
 
-} } //namespace avs::clip
-
-#endif  //__AVS_CLIP_CACHING_H__
-
+#endif //__AVS_FILTERS_COLORYUV_AUTO_H__

@@ -21,40 +21,57 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_CACHINGCLIP_ONECHILD_H__
-#define __AVS_CACHINGCLIP_ONECHILD_H__
+#ifndef __AVS_FILTERS_COLORYUV_CHROMAMAP_H__
+#define __AVS_FILTERS_COLORYUV_CHROMAMAP_H__
 
 //avisynth includes
-#include "pipeline.h"
-#include "../caching.h"
+#include "levels.h"
+#include "../../../utility/bytemap.h"
 
 
-namespace avs { namespace clip { namespace onechild {
+namespace avs { namespace filters { namespace coloryuv {
 
 
 
-//////////////////////////////////////////////////////////////////////////////////
-//  CachingPipeline
-//
-//  subinterface of Caching and Pipeline, providing the proper MakeFrame call
-//
-class AVS_NOVTABLE CachingPipeline : public virtual Caching
-                                   , public virtual Pipeline
+class ChromaMap : public ByteMap
 {
 
-  using Pipeline::MakeFrame;
+public:  //structors
 
-private:  //Caching requirement
+  ChromaMap(Levels const& levels, int (* adjust)(int), bool coring);
 
-  virtual CPVideoFrame MakeFrame(long n) const
+  ChromaMap(ChromaMap const& other)
+    : ByteMap( other ) { }
+
+
+public:  //assignement
+
+  ChromaMap& operator=(ChromaMap const& other) { return static_cast<ChromaMap&>( ByteMap::operator=(other) ); }
+
+  void swap(ChromaMap& other) { ByteMap::swap(other); }
+
+
+public:  //methods usable as parameter in the constructor
+
+  enum { shift = 1 << 10 };
+
+  template <int pcFactor, int tvFactor>
+  static int PCtoTVAdjust(int value)
   {
-    return MakeFrame(GetChild()->GetFrame(n));
+    return ( (value - 128) * shift * tvFactor / pcFactor + 128 * shift + shift / 2 ) / shift;
+  }
+
+  template <int pcFactor, int tvFactor>
+  static int TVtoPCAdjust(int value)
+  {
+    ( value * shift * pcFactor / tvFactor + 16 * shift + shift / 2 ) / shift;
   }
 
 };
 
 
 
-} } } //namespace avs::clip::onechild
 
-#endif //__AVS_CACHINGCLIP_ONECHILD_H__
+} } } //namespace avs::filters::coloryuv
+
+#endif //__AVS_FILTERS_COLORYUV_CHROMAMAP_H__

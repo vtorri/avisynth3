@@ -46,12 +46,12 @@
 				DebugInformationFormat="4"
 				CallingConvention="2"
 				CompileAs="2"
-				DisableSpecificWarnings="4511; 4512; 4709"/>
+				DisableSpecificWarnings="4511; 4512; 4709; 4250"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="msacm32.lib quartz.lib ddraw.lib amstrmid.lib vfw32.lib version.lib winmm.lib freetype219.lib"
+				AdditionalDependencies="msacm32.lib quartz.lib ddraw.lib amstrmid.lib vfw32.lib version.lib winmm.lib freetype219_D.lib"
 				OutputFile=".\Debug/avisynth.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -278,7 +278,7 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="2"
 				CallingConvention="2"
-				DisableSpecificWarnings="4275"/>
+				DisableSpecificWarnings="4275; 4250"/>
 			<Tool
 				Name="VCCustomBuildTool"
 				CommandLine="release\upx -9 release\avisynth.dll
@@ -383,10 +383,10 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath="..\..\..\src\clip\onechild\audioprocess.h">
 				</File>
 				<File
-					RelativePath="..\..\..\src\clip\onechild\cachingpipeline.h">
+					RelativePath="..\..\..\src\clip\onechild\concrete.h">
 				</File>
 				<File
-					RelativePath="..\..\..\src\clip\onechild\concrete.h">
+					RelativePath="..\..\..\src\clip\onechild\framemakerpipeline.h">
 				</File>
 				<File
 					RelativePath="..\..\..\src\clip\onechild\pipeline.h">
@@ -410,6 +410,13 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				Filter="">
 				<File
 					RelativePath="..\..\..\src\clip\manychilds\concrete.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="FrameMaker"
+				Filter="">
+				<File
+					RelativePath="..\..\..\src\clip\framemaker\concrete.h">
 				</File>
 			</Filter>
 		</Filter>
@@ -481,6 +488,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				RelativePath="..\..\..\src\core\forward.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\core\framemaker.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\core\frametype.h">
 			</File>
 			<File
@@ -499,16 +509,10 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				RelativePath="..\..\..\src\core\property.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\core\roundup.h">
-			</File>
-			<File
 				RelativePath="..\..\..\src\core\runtime_environment.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\sampletype.h">
-			</File>
-			<File
-				RelativePath="..\..\..\src\core\saturate.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\videoframe.h">
@@ -654,37 +658,113 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath="..\..\..\src\core\colorspace\planar.h">
 				</File>
 				<Filter
-					Name="Implementation"
+					Name="YUV"
 					Filter="">
 					<File
-						RelativePath="..\..\..\src\core\colorspace\impl\colorspace.cpp">
+						RelativePath="..\..\..\src\core\colorspace\yuv\depth8.h">
 					</File>
 					<File
-						RelativePath="..\..\..\src\core\colorspace\impl\creator.h">
+						RelativePath="..\..\..\src\core\colorspace\yuv\planar.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="Concrete"
+					Filter="">
+					<File
+						RelativePath="..\..\..\src\core\colorspace\concrete\colorspace.cpp">
 					</File>
 					<File
-						RelativePath="..\..\..\src\core\colorspace\impl\externalcreator.h">
+						RelativePath="..\..\..\src\core\colorspace\concrete\interleaved.h">
 					</File>
 					<File
-						RelativePath="..\..\..\src\core\colorspace\impl\interleaved.h">
+						RelativePath="..\..\..\src\core\colorspace\concrete\internalcreator.h">
 					</File>
 					<File
-						RelativePath="..\..\..\src\core\colorspace\impl\internalcreator.h">
+						RelativePath="..\..\..\src\core\colorspace\concrete\map.cpp">
 					</File>
 					<File
-						RelativePath="..\..\..\src\core\colorspace\impl\map.cpp">
+						RelativePath="..\..\..\src\core\colorspace\concrete\map.h">
 					</File>
 					<File
-						RelativePath="..\..\..\src\core\colorspace\impl\map.h">
+						RelativePath="..\..\..\src\core\colorspace\concrete\rgb.h">
 					</File>
 					<File
-						RelativePath="..\..\..\src\core\colorspace\impl\planar_yuv.h">
+						RelativePath="..\..\..\src\core\colorspace\concrete\yuvplanar8.cpp">
 					</File>
 					<File
-						RelativePath="..\..\..\src\core\colorspace\impl\rgb.h">
+						RelativePath="..\..\..\src\core\colorspace\concrete\yuvplanar8.h">
 					</File>
 					<File
-						RelativePath="..\..\..\src\core\colorspace\impl\yuy2.h">
+						RelativePath="..\..\..\src\core\colorspace\concrete\yuy2.cpp">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release static|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\src\core\colorspace\concrete\yuy2.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\core\colorspace\concrete\yv12.cpp">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)3.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)3.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)3.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release static|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)3.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\src\core\colorspace\concrete\yv12.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\core\colorspace\concrete\yv24.cpp">
+					</File>
+					<File
+						RelativePath="..\..\..\src\core\colorspace\concrete\yv24.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\core\colorspace\concrete\yv45.cpp">
+					</File>
+					<File
+						RelativePath="..\..\..\src\core\colorspace\concrete\yv45.h">
 					</File>
 				</Filter>
 			</Filter>
@@ -849,9 +929,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath="..\..\..\src\core\videoframe\flowpropertyhandler.h">
 				</File>
 				<File
-					RelativePath="..\..\..\src\core\videoframe\forward.h">
-				</File>
-				<File
 					RelativePath="..\..\..\src\core\videoframe\interleaved.h">
 				</File>
 				<File
@@ -865,6 +942,23 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 				<File
 					RelativePath="..\..\..\src\core\videoframe\yuy2.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="FrameMaker"
+				Filter="">
+				<File
+					RelativePath="..\..\..\src\core\framemaker\pipeline.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Utility"
+				Filter="">
+				<File
+					RelativePath="..\..\..\src\core\utility\round.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\core\utility\saturate.h">
 				</File>
 			</Filter>
 		</Filter>
@@ -1022,18 +1116,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				Filter="">
 				<File
 					RelativePath="..\..\..\src\filters\levels\coloryuv.cpp">
-					<FileConfiguration
-						Name="Debug|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release static|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\src\filters\levels\coloryuv.h">
@@ -1086,7 +1168,16 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					Name="ColorYUV"
 					Filter="">
 					<File
+						RelativePath="..\..\..\src\filters\levels\coloryuv\analyze.cpp">
+					</File>
+					<File
 						RelativePath="..\..\..\src\filters\levels\coloryuv\analyze.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\levels\coloryuv\auto.cpp">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\levels\coloryuv\auto.h">
 					</File>
 					<File
 						RelativePath="..\..\..\src\filters\levels\coloryuv\chromamap.cpp">
@@ -1099,6 +1190,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					</File>
 					<File
 						RelativePath="..\..\..\src\filters\levels\coloryuv\chromamap.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\levels\coloryuv\forward.h">
 					</File>
 					<File
 						RelativePath="..\..\..\src\filters\levels\coloryuv\levels.h">
@@ -1119,10 +1213,39 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 						RelativePath="..\..\..\src\filters\levels\coloryuv\mode.h">
 					</File>
 					<File
+						RelativePath="..\..\..\src\filters\levels\coloryuv\standard.cpp">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release static|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\levels\coloryuv\standard.h">
+					</File>
+					<File
 						RelativePath="..\..\..\src\filters\levels\coloryuv\yuy2.cpp">
 						<FileConfiguration
-							Name="Debug|Win32"
-							ExcludedFromBuild="TRUE">
+							Name="Debug|Win32">
 							<Tool
 								Name="VCCLCompilerTool"
 								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
@@ -1153,8 +1276,7 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					<File
 						RelativePath="..\..\..\src\filters\levels\coloryuv\yv12.cpp">
 						<FileConfiguration
-							Name="Debug|Win32"
-							ExcludedFromBuild="TRUE">
+							Name="Debug|Win32">
 							<Tool
 								Name="VCCLCompilerTool"
 								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
@@ -1570,6 +1692,23 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					</File>
 					<File
 						RelativePath="..\..\..\src\filters\source\video\trivialframedecompressor.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="StaticImage"
+					Filter="">
+					<File
+						RelativePath="..\..\..\src\filters\source\staticimage\framecreator.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="ColorBars"
+					Filter="">
+					<File
+						RelativePath="..\..\..\src\filters\source\colorbars\rgb32framecreator.cpp">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\source\colorbars\rgb32framecreator.h">
 					</File>
 				</Filter>
 			</Filter>
@@ -2052,49 +2191,215 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				<File
 					RelativePath="..\..\..\src\text\antialiaser\bitrenderer.h">
 				</File>
-				<File
-					RelativePath="..\..\..\src\text\antialiaser\gdirenderer.h">
-				</File>
 			</Filter>
 			<Filter
 				Name="GDI"
 				Filter="">
 				<File
-					RelativePath="..\..\..\src\text\gdi\renderer.h">
+					RelativePath="..\..\..\src\text\gdi\bitrenderer.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release static|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\gdi\bitrenderer.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\gdi\font.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release static|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\gdi\font.h">
 				</File>
 			</Filter>
 			<Filter
 				Name="Freetype"
 				Filter="">
 				<File
+					RelativePath="..\..\..\src\text\freetype\bitrenderer.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release static|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\freetype\bitrenderer.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\freetype\face.cpp">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\freetype\face.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\freetype\font.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release static|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\freetype\font.h">
+				</File>
+				<File
 					RelativePath="..\..\..\src\text\freetype\forward.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\freetype\glyphslot.cpp">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\freetype\glyphslot.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\freetype\library.cpp">
 				</File>
 				<File
 					RelativePath="..\..\..\src\text\freetype\library.h">
 				</File>
 				<File
+					RelativePath="..\..\..\src\text\freetype\monobitmap.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\freetype\outline.cpp">
+				</File>
+				<File
 					RelativePath="..\..\..\src\text\freetype\outline.h">
 				</File>
+				<File
+					RelativePath="..\..\..\src\text\freetype\renderer.cpp">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\freetype\renderer.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\freetype\textwalker.cpp">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\freetype\textwalker.h">
+				</File>
 			</Filter>
-		</Filter>
-		<Filter
-			Name="Utility"
-			Filter="">
-			<File
-				RelativePath="..\..\..\src\utility\bytemap.h">
-			</File>
-			<File
-				RelativePath="..\..\..\src\utility\folder.h">
-			</File>
-			<File
-				RelativePath="..\..\..\src\utility\instancecounted.h">
-			</File>
-			<File
-				RelativePath="..\..\..\src\utility\threshold.h">
-			</File>
-			<File
-				RelativePath="..\..\..\src\utility\weakexpired.h">
-			</File>
+			<Filter
+				Name="Rasterizer"
+				Filter="">
+				<File
+					RelativePath="..\..\..\src\text\rasterizer\forward.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\rasterizer\linespan.cpp">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\rasterizer\linespan.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\rasterizer\linespanvector.cpp">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\rasterizer\linespanvector.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\rasterizer\outlinesplitter.cpp">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\rasterizer\outlinesplitter.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\rasterizer\spanmaker.cpp">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\rasterizer\spanmaker.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\rasterizer\spanmap.cpp">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\rasterizer\spanmap.h">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="VFW"
@@ -2225,9 +2530,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			Name="FreeType"
 			Filter="">
 			<File
-				RelativePath="..\..\..\src\freetype\bitmapglyph.h">
-			</File>
-			<File
 				RelativePath="..\..\..\src\freetype\face.h">
 			</File>
 			<File
@@ -2240,6 +2542,31 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 		<Filter
 			Name="DirectStream"
 			Filter="">
+		</Filter>
+		<Filter
+			Name="Utility"
+			Filter="">
+			<File
+				RelativePath="..\..\..\src\utility\bytecounter.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\utility\bytecounter.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\utility\bytemap.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\utility\folder.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\utility\instancecounted.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\utility\threshold.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\utility\weakexpired.h">
+			</File>
 		</Filter>
 		<File
 			RelativePath="..\..\..\distrib\Avisynth.ico">

@@ -30,7 +30,7 @@
 #include "../../core/videoinfo.h"
 
 #ifndef AVISTREAMREAD_CONVENIENT
-#define AVISTREAMREAD_CONVENIENT -1
+#define AVISTREAMREAD_CONVENIENT -1L
 #endif
 
 

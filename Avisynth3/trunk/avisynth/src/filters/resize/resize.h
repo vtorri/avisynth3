@@ -26,6 +26,7 @@
 
 //avisynth includes
 #include "forward.h"
+#include "subrange.h"
 #include "../../clip/caching/concrete.h"
 #include "../../clip/onechild/concrete.h"
 #include "../../clip/onechild/cachingpipeline.h"
@@ -46,12 +47,13 @@ class Resize : public clip::onechild::CachingPipeline
 {
 
   CPVideoInfo vi_;
-  resize::PFilter filter_;
+  resize::PFilter filter_;      //filter used
+  resize::SubRange subrange_;   //range of the source used
 
 
 public:  //structors
 
-  Resize(PClip const& child, Dimension const& dim, resize::PFilter const& filter);
+  Resize(PClip const& child, resize::PFilter const& filter, Dimension const& dim, resize::SubRange const& subrange);
 
   //generated destructor is fine
 
@@ -71,9 +73,10 @@ private:  //Resize method
   virtual void ResizeFrame(VideoFrame const& source, VideoFrame& target) const = 0;
 
 
-public:
+public:  //read access
 
   resize::PFilter const& GetFilter() const { return filter_; }
+  resize::SubRange const& GetSubRange() const { return subrange_; }
 
 };//Resize
 

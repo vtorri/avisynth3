@@ -21,45 +21,40 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_FILTERS_RESIZE_HORIZONTAL_H__
-#define __AVS_FILTERS_RESIZE_HORIZONTAL_H__
-
-//avisynth include
+//avisynth includes
 #include "resize.h"
+#include "../../core/videoinfo.h"
+#include "../../core/videoframe.h"
 
 
-namespace avs { namespace filters { namespace resize {
+namespace avs { namespace filters {
 
 
 
-////////////////////////////////////////////////////////////////////////////////////
-//  resize::Horizontal
-//
-//  filter to horizontally resize a Clip
-//
-class Horizontal : public Resize
+Resize::Resize(PClip const& child, resize::PFilter const& filter, Dimension const& dim, resize::SubRange const& subrange)
+  : clip::onechild::Concrete( child )
+  , clip::caching::Concrete( child->GetEnvironment() )
+  , filter_( filter )
+  , subrange_( subrange )
 {
+  PVideoInfo vi = child->GetVideoInfo();  //start from child VideoInfo
+  
+  vi->SetDimension(dim);                  //update Dimension
 
-public:  //structors
-
-  Horizontal(PClip const& child, PFilter const& filter, int width, SubRange const& subrange);
-
-  //generated destructor is fine
-
-
-public:  //child changing clone
-
-  virtual PClip clone(PClip const& child) const;
+  vi_ = vi;                               //save it
+}
 
 
-public:  //factory method
+CPVideoFrame Resize::MakeFrame(CPVideoFrame const& source) const
+{
+  PVideoFrame target = GetEnvironment()->CreateFrame(*GetVideoInfo());
 
-  static PClip Create(PClip const& child, PFilter const& filter, int width, SubRange const& subrange);
+  if ( source->GetType() == FIELD_BOTTOM )  //if src is bottom field 
+    target->SetType( FIELD_BOTTOM );        //make it so too  (only case needing correction, CreateFrame marks 'frames' PROGRESSIVE already)
 
-};
+  ResizeFrame(*source, *target);
 
+  return target;
+}
 
-
-} } } //namespace avs::filters::resize
-
-#endif //__AVS_FILTERS_RESIZE_HORIZONTAL_H__
+} } //namespace avs::filters

@@ -139,7 +139,7 @@ $(STATIC_LIB): $(BUILD_DIR) $(OBJECTS)
 $(SHARED_LIB): $(BUILD_DIR) $(OBJECTS)
 	@echo "  L: $(@F)"
 	@$(INSTALL) -m 644 libavisynth.def $(BUILD_DIR)/libavisynth.def
-	@cd $(BUILD_DIR) && $(CXX) $(LDFLAGS) $(OBJECTS) -o $(PRE_SHARED_LIB) $(STLPORT_LIBS) $(BOOST_LIBS) $(FREETYPE_LIBS) $(FFMPEG_LIBS) $(SPECIFIC_LDFLAGS)
+	@cd $(BUILD_DIR) && $(CXX) $(LDFLAGS) $(OBJECTS) -o $(PRE_SHARED_LIB) $(SPECIFIC_LDFLAGS) $(STLPORT_LIBS) $(BOOST_LIBS) $(FFMPEG_LIBS) $(FREETYPE_LIBS)
 
 #-----------------------------------------------------------------------------
 # Installation

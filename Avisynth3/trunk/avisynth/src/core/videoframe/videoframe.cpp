@@ -22,6 +22,7 @@
 
 
 //avisynth includes
+#include "../colorspace.h"
 #include "../videoframe.h"
 #include "../bufferwindow.h"
 
@@ -30,8 +31,18 @@ namespace avs {
 
 
 
-WindowPtr VideoFrame::WriteTo(Plane plane) { return operator[](plane).Write(); }
-CWindowPtr VideoFrame::ReadFrom(Plane plane) const { return operator[](plane).Read(); }
+WindowPtr VideoFrame::WriteTo(Plane plane)
+{ 
+  BufferWindow& bw = operator[](plane);
+  return GetColorSpace().IsRGB() ? bw.WriteFromBottom() : bw.Write(); 
+}
+
+CWindowPtr VideoFrame::ReadFrom(Plane plane) const
+{
+  BufferWindow const& bw = operator[](plane);
+  return GetColorSpace().IsRGB() ? bw.ReadFromBottom() : bw.Read(); 
+}
+
 
 
 } //namespace avs

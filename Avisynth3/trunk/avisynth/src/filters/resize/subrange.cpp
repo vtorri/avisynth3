@@ -21,54 +21,29 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_FILTERS_RESIZE_SUBRANGE_H__
-#define __AVS_FILTERS_RESIZE_SUBRANGE_H__
+//avisynth includes
+#include "badrange.h"
+#include "subrange.h"
 
 
 namespace avs { namespace filters { namespace resize {
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//  SubRange
-//
-//  helper class for Resize
-//   
-//  The SubRange class carries info about the range of the source which should be resized
-//
-class SubRange
+SubRange::SubRange(double lower, double upper, int whole)
+  : lower_( lower )
+  , upper_( upper )
+  , whole_( whole )
 {
-
-  double lower_, upper_;
-  int whole_;
-
-
-public:  //structors
-
-  explicit SubRange(int whole)
-    : lower_( 0.0 )
-    , upper_( whole )
-    , whole_( whole ) { }
-
-  SubRange(double lower, double upper, int whole);
-
-  //rescaling constructor
-  SubRange(SubRange const& other, int whole);
- 
-  //generated copy constructor and destructor are fine
+  if ( lower < 0 || upper <= lower || whole < upper )
+    throw exception::resize::BadRange(lower, upper, whole);
+}
 
 
-public:  //access
-
-  double lower() const { return lower_; }
-  double upper() const { return upper_; }
-  double length() const { return upper_ - lower_; }
-  int whole() const { return whole_; }
-
-};
-
+SubRange::SubRange(SubRange const& other, int whole)
+  : lower_( other.lower_ / other.whole_ * whole )
+  , upper_( other.upper_ / other.whole_ * whole )
+  , whole_( whole ) { }
 
 
 } } } //namespace avs::filters::resize
-
-#endif //__AVS_FILTERS_RESIZE_SUBRANGE_H__

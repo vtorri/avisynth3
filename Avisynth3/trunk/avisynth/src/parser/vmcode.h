@@ -25,7 +25,7 @@
 #define __AVS_PARSER_VMCODE_H__
 
 //avisynth includes
-#include "optype.h"
+#include "forward.h"
 #include "vmoperation.h"
 
 //stl include
@@ -38,7 +38,7 @@ namespace avs { namespace parser {
 
 
 /////////////////////////////////////////////////////////////////////////////
-//  VMCode
+//  VMCode<Result>
 //
 //  code for the virtual machine
 //
@@ -86,7 +86,9 @@ public:  //stack functor method
 
 public:  //misc
 
-  int size() const { return code_.size(); }
+  bool empty() const { return code_.empty(); }
+
+  void clear() { code_.clear(); }
 
 };
 

@@ -24,6 +24,9 @@
 #ifndef __AVS_TIMING_THREADCLOCK_H__
 #define __AVS_TIMING_THREADCLOCK_H__
 
+//avisynth include
+#include "../forward.h"    //for the int64 typedef
+
 
 namespace avs { namespace timing {
 

@@ -39,7 +39,7 @@
 #include <windows.h>
 #include <vfw.h>
 #ifndef AVISTREAMREAD_CONVENIENT        
-#define AVISTREAMREAD_CONVENIENT -1
+#define AVISTREAMREAD_CONVENIENT -1L
 #endif //AVISTREAMREAD_CONVENIENT
 
 //assert include

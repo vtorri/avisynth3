@@ -223,7 +223,7 @@ void YUY2::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
   __asm { emms }
 
 #else
-  #ifdef _ATT_ASM
+  #ifdef AVS_HAS_ATT_INLINE_ASM
 
   __asm __volatile ("emms;":::"memory");
 
@@ -231,7 +231,7 @@ void YUY2::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
 
   emms_();
 
-  #endif //_ATT_ASM
+  #endif //AVS_HAS_ATT_INLINE_ASM
 #endif
 
 }

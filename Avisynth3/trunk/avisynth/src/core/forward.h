@@ -47,6 +47,7 @@ class RuntimeEnvironment;
 template <class T> class cow_shared_ptr;
 
 //typedefs
+typedef long long int64;
 typedef boost::rational<int> Fraction;
 typedef boost::shared_ptr<Clip const> PClip;
 typedef boost::shared_ptr<Property const> CPProperty;

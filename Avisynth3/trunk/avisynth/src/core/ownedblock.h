@@ -21,20 +21,12 @@
 #define __AVS_OWNEDBLOCK_H__
 
 
-//avisynth include
+//avisynth includes
 #include "block.h"
-
+#include "runtime_environment.h"
 
 
 namespace avs {
-
-
-//class declaration
-class RuntimeEnvironment;
-
-//typedef
-typedef boost::shared_ptr<RuntimeEnvironment> PEnvironment;
-
 
 
 
@@ -43,53 +35,62 @@ typedef boost::shared_ptr<RuntimeEnvironment> PEnvironment;
 //
 //
 //
-class OwnedBlock : private Block
+class OwnedBlock
 {
 
-  PEnvironment env_;
+  Block block_;             //underlying owned block
+  PEnvironment env_;        //owning environment
+
+  using Block::recycle;
 
 
 public:  //structors
 
-  OwnedBlock(PEnvironment env, int size);            //basic constructor
+  //normal constructor
+  OwnedBlock(PEnvironment env, int size)
+    : block_( env->NewBlock(size) )
+    , env_( env ) { }
 
-  OwnedBlock(PEnvironment env, int size, recycle);   //recycling constructor
+  //recycling constructor
+  OwnedBlock(PEnvironment env, int size, recycle r)   
+    : block_( env->NewBlock(size, r) )
+    , env_( env ) { }
 
-  OwnedBlock(OwnedBlock const& other)                //copy constructor
-    : Block( other )
-    , env_( other.env_ ) { }
+  //default copy constructor is fine
 
-  ~OwnedBlock();
+  //destructor
+  ~OwnedBlock()
+  {
+    if ( unique() )
+      env->MemoryFreed( size() );
+  }
 
 
 public:  //assignment
 
-  OwnedBlock& operator=(OwnedBlock const& other)
-  {
-    OwnedBlock(other).swap(*this);
-    return *this;
-  }
+  //default operator= is fine
 
   void swap(OwnedBlock& other)
   { 
-    Block::swap(other); 
+    block_.swap(other.block_); 
     env_.swap(other.env_);
   }
 
 
 public:  //reset methods
 
-  void reset(int size) { OwnedBlock( GetEnvironment(), size ).swap(*this); }
-  void reset(int size, recycle r) { OwnedBlock( GetEnvironment(), size, r ).swap(*this); }
+  void reset(int size) { OwnedBlock( env_, size ).swap(*this); }
+  void reset(int size, recycle r) { OwnedBlock( env_, size, r ).swap(*this); }
+
 
 public:  //read access
 
   PEnvironment GetEnvironment() const { return env_; }
 
-  BYTE * get() const { return Block::get(); }
-  int size() const { return Block::size(); }
+  BYTE * get() const { return block_.get(); }
+  int size() const { return env_->SizeOf(block_); }
 
-  bool unique() const { return Block::unique(); }
+  bool unique() const { return block_.unique(); }
 
 };//OwnedBlock
 

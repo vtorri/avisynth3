@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -39,6 +39,12 @@ namespace avs {
 //
 class Exception : public std::exception
 {
+
+public:  //structors
+
+  Exception() throw() { }
+  virtual ~Exception() throw() { }
+
 
 public:  //string diagnotic message (no need to be pre built)
 

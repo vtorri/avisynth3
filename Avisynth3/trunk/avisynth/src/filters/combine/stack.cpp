@@ -25,32 +25,64 @@
 #include "stack.h"
 #include "../../core/blitter.h"
 #include "../../core/videoinfo.h"
+#include "../../core/colorspace.h"
+#include "../../core/videoframe.h"
+#include "../../core/exception/noaudio.h"
 
 
 namespace avs { namespace filters { 
 
 
 
-Stack::Stack(PClip const& first, PClip const& second)
+Stack::Stack(PClip const& first, PClip const& second, Dimension const& expand)
   : clip::twochilds::Concrete( first, second )
   , clip::caching::Concrete( first->GetEnvironment() )
 {
-  CPVideoInfo firstVi = first->GetVideoInfo();
+  PVideoInfo vi = first->GetVideoInfo();
   CPVideoInfo secondVi = second->GetVideoInfo();
 
-  firstVi->CheckColorSpaceMatch(*secondVi);
-  firstVi->CheckFPSMatch(*secondVi);
-  firstVi->CheckFrameFlagMatch(*secondVi);
+  vi->CheckColorSpaceMatch(*secondVi);
+  vi->CheckFPSMatch(*secondVi);
+  vi->CheckFrameFlagMatch(*secondVi);
+  vi->CheckFrameCountMatch(*secondVi);
+
+  vi->KillAudio();
+  vi->SetDimension(vi->GetDimension() + expand);
+
+  vi_ = vi;
 }
 
-  
-void Stack::BlitPlane(WindowPtr const& dst, CWindowPtr const& firstSrc, CWindowPtr const& secondSrc, int offset) const
+
+void Stack::GetAudio(void * buffer, long long start, int count) const
 {
-  Blitter const& blit = GetEnvironment()->GetBlitter();
-
-  blit(firstSrc, dst.ptr, dst.pitch);
-  blit(secondSrc, dst.ptr + offset, dst.pitch);
+  throw exception::NoAudio();
 }
+ 
+
+CPVideoFrame Stack::MakeFrame(int n) const
+{
+  CPVideoFrame left = GetLeftFrame(n);
+  CPVideoFrame right = GetRightFrame(n);
+
+  PEnvironment const& env = GetEnvironment();
+  Blitter const& blit = env->GetBlitter();
+  ColorSpace& space = left->GetColorSpace();
+
+  PVideoFrame result = env->CreateFrame(*vi_, left->GetType());
+  Vecteur shift = GetShiftVecteur();
+
+  for ( Plane p = Plane(0); p < PlaneCount; p = Plane(p + 1) )
+    if ( space.HasPlane(p) )
+    {
+      WindowPtr dst = result->WriteTo(p);
+
+      blit( left->ReadFrom(p), dst.ptr, dst.pitch );
+      blit( right->ReadFrom(p), dst.at(space.ToPlaneVect(shift, p)), dst.pitch );
+    }
+
+  return result;
+}
+
 
 
 } } //namespace avs::filters

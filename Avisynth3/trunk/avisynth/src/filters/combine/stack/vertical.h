@@ -20,58 +20,53 @@
 // combined work based on Avisynth.  Thus, the terms and conditions of the GNU
 // General Public License cover the whole combination.
 
-#ifndef __AVS_FILTERS_STACK_H__
-#define __AVS_FILTERS_STACK_H__
 
-//avisynth includes
-#include "../../core/vecteur.h"
-#include "../../clip/caching/concrete.h"
-#include "../../clip/twochilds/concrete.h"
+#ifndef __AVS_FILTERS_STACK_VERTICAL_H__
+#define __AVS_FILTERS_STACK_VERTICAL_H__
 
-
-namespace avs { namespace filters { 
+//avisynth include
+#include "../stack.h"
 
 
+namespace avs { namespace filters { namespace stack {
 
-/////////////////////////////////////////////////////////////////////////////////////////
-//  Stack
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+//  stack::Vertical
 //
-//  factorisation superclass for Stack::Horizontal and Stack::Vertical
-//  
-class Stack : public clip::twochilds::Concrete
-            , public clip::caching::Concrete
+//  filter to stack vertically two videos
+//
+class Vertical : public Stack
 {
-    
-  CPVideoInfo vi_;
 
-  
 public:  //structors
 
-  Stack(PClip const& first, PClip const& second, Dimension const& expand);
+  Vertical(PClip const& upper, PClip const& lower);
 
   //generated destructor is fine
 
 
-public:  //clip general interface
-    
-  virtual CPVideoInfo GetVideoInfo() const { return vi_; }
-    
-  virtual void GetAudio(void * buffer, long long start, int count) const;
+public:  //childs changing clone
 
-
-private:  //MakeFrame method
-
-  virtual CPVideoFrame MakeFrame(int n) const;
+  virtual PClip clone(PClip const& upper, PClip const& lower) const { return Create(upper, lower); }
 
 
 private:  //Stack interface
 
-  virtual Vecteur GetShiftVecteur() const = 0;
-    
+  virtual Vecteur GetShiftVecteur() const;
+
+
+public:  //factory method 
+
+  static PClip Create(PClip const& upper, PClip const& lower)
+  {
+    return PClip( static_cast<Clip *>(new Vertical(upper, lower)) ); 
+  }
+
 };
 
 
+} } } //namespace avs::filters::stack
 
-} } //namespace avs::filters
-
-#endif //__AVS_FILTERS_STACK_H__
+#endif //__AVS_FILTERS_STACK_VERTICAL_H__

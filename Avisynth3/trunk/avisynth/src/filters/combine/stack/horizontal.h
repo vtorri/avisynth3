@@ -20,58 +20,52 @@
 // combined work based on Avisynth.  Thus, the terms and conditions of the GNU
 // General Public License cover the whole combination.
 
-#ifndef __AVS_FILTERS_STACK_H__
-#define __AVS_FILTERS_STACK_H__
+#ifndef __AVS_FILTERS_STACK_HORIZONTAL_H__
+#define __AVS_FILTERS_STACK_HORIZONTAL_H__
 
-//avisynth includes
-#include "../../core/vecteur.h"
-#include "../../clip/caching/concrete.h"
-#include "../../clip/twochilds/concrete.h"
+//avisynth include
+#include "../stack.h"
 
 
-namespace avs { namespace filters { 
+namespace avs { namespace filters { namespace stack {
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////
-//  Stack
+////////////////////////////////////////////////////////////////////////////////////////
+//  stack::Horizontal
 //
-//  factorisation superclass for Stack::Horizontal and Stack::Vertical
-//  
-class Stack : public clip::twochilds::Concrete
-            , public clip::caching::Concrete
+//  filter to stack horizontal two videos (ie put side by side)
+//
+class Horizontal : public Stack
 {
-    
-  CPVideoInfo vi_;
-
-  
+ 
 public:  //structors
 
-  Stack(PClip const& first, PClip const& second, Dimension const& expand);
+  Horizontal(PClip const& left, PClip const& right);
 
   //generated destructor is fine
 
+ 
+public:  //childs changing clone
 
-public:  //clip general interface
-    
-  virtual CPVideoInfo GetVideoInfo() const { return vi_; }
-    
-  virtual void GetAudio(void * buffer, long long start, int count) const;
-
-
-private:  //MakeFrame method
-
-  virtual CPVideoFrame MakeFrame(int n) const;
+  virtual PClip clone(PClip const& left, PClip const& right) const { return Create(left, right); }
 
 
 private:  //Stack interface
 
-  virtual Vecteur GetShiftVecteur() const = 0;
-    
+  virtual Vecteur GetShiftVecteur() const;
+
+
+public:  //factory method 
+
+  static PClip Create(PClip const& left, PClip const& right) 
+  { 
+    return PClip( static_cast<Clip *>(new Horizontal(left, right)) ); 
+  }
+
 };
 
 
+} } } //namespace avs::filters::stack
 
-} } //namespace avs::filters
-
-#endif //__AVS_FILTERS_STACK_H__
+#endif //__AVS_FILTERS_STACK_HORIZONTAL_H__

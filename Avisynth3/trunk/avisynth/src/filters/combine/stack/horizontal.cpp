@@ -20,58 +20,30 @@
 // combined work based on Avisynth.  Thus, the terms and conditions of the GNU
 // General Public License cover the whole combination.
 
-#ifndef __AVS_FILTERS_STACK_H__
-#define __AVS_FILTERS_STACK_H__
 
 //avisynth includes
-#include "../../core/vecteur.h"
-#include "../../clip/caching/concrete.h"
-#include "../../clip/twochilds/concrete.h"
+#include "horizontal.h"
+#include "../../../core/videoinfo.h"
+#include "../../../core/dimension.h"
 
 
-namespace avs { namespace filters { 
+namespace avs { namespace filters { namespace stack {
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////
-//  Stack
-//
-//  factorisation superclass for Stack::Horizontal and Stack::Vertical
-//  
-class Stack : public clip::twochilds::Concrete
-            , public clip::caching::Concrete
+Horizontal::Horizontal(PClip const& left, PClip const& right)
+  : Stack( left, right, Dimension(right->GetVideoInfo()->GetWidth(), 0) )
 {
-    
-  CPVideoInfo vi_;
-
-  
-public:  //structors
-
-  Stack(PClip const& first, PClip const& second, Dimension const& expand);
-
-  //generated destructor is fine
+  left->GetVideoInfo()->CheckHeightMatch(*right->GetVideoInfo());
+}
 
 
-public:  //clip general interface
-    
-  virtual CPVideoInfo GetVideoInfo() const { return vi_; }
-    
-  virtual void GetAudio(void * buffer, long long start, int count) const;
-
-
-private:  //MakeFrame method
-
-  virtual CPVideoFrame MakeFrame(int n) const;
-
-
-private:  //Stack interface
-
-  virtual Vecteur GetShiftVecteur() const = 0;
-    
-};
+Vecteur Horizontal::GetShiftVecteur() const
+{
+  return Vecteur( GetRightVideoInfo()->GetWidth(), 0 );
+}
 
 
 
-} } //namespace avs::filters
+} } } //namespace avs::filters::stack
 
-#endif //__AVS_FILTERS_STACK_H__

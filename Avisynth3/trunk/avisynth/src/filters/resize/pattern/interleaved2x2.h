@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@ namespace avs { namespace filters { namespace resize { namespace pattern {
 
 
 //template declaration so I can make the specialisation below
-  template <int pixelCount, int coeffCount> class interleaved : public Base { };
+template <int pixelCount, int coeffCount> class interleaved;
 
 
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -125,21 +125,21 @@ public:  //audio methods
 
   virtual SampleType GetSampleType() const = 0;
   virtual int GetSampleRate() const = 0;
-  virtual int64 GetSampleCount() const = 0;
+  virtual long long GetSampleCount() const = 0;
   virtual int GetChannelCount() const = 0;
 
   //write access
 
   virtual void SetSampleType(SampleType sampleType) = 0;
   virtual void SampleRate(int sampleRate) = 0;
-  virtual void SetSampleCount(int64 sampleCount) = 0;
+  virtual void SetSampleCount(long long sampleCount) = 0;
   virtual void SetChannelCount(int channelCount) = 0;
 
-  void AddToSampleCount(int64 shift) { SetSampleCount(GetSampleCount() + shift); }
+  void AddToSampleCount(long long shift) { SetSampleCount(GetSampleCount() + shift); }
 
 
   //virtual void AddAudio();
-  virtual void AddAudio(SampleType sampleType, int sampleRate, int64 sampleCount, int channelCount) = 0;
+  virtual void AddAudio(SampleType sampleType, int sampleRate, long long sampleCount, int channelCount) = 0;
 
   virtual void KillAudio() = 0;
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -67,10 +67,10 @@ private:  //
 
     SampleType sampleType_;
     int sampleRate_;
-    int64 sampleCount_;
+    long long sampleCount_;
     int channelCount_;
 
-    AudioProperties(SampleType sampleType, int sampleRate, int64 sampleCount, int channelCount)
+    AudioProperties(SampleType sampleType, int sampleRate, long long sampleCount, int channelCount)
       : sampleType_( sampleType )
       , sampleRate_( sampleRate )
       , sampleCount_( sampleCount )
@@ -130,18 +130,18 @@ public:  //audio methods
 
   virtual SampleType GetSampleType() const { CheckHasAudio(); return audio_->sampleType_; }
   virtual int GetSampleRate() const { CheckHasAudio(); return audio_->sampleRate_; }
-  virtual int64 GetSampleCount() const { CheckHasAudio(); return audio_->sampleCount_; }
+  virtual long long GetSampleCount() const { CheckHasAudio(); return audio_->sampleCount_; }
   virtual int GetChannelCount() const { CheckHasAudio(); return audio_->channelCount_; }
 
   //write access
 
   virtual void SetSampleType(SampleType sampleType) { CheckHasAudio(); audio_->sampleType_ = CheckSampleType(sampleType); }
   virtual void SampleRate(int sampleRate) { CheckHasAudio(); audio_->sampleRate_ = CheckSampleRate(sampleRate); }
-  virtual void SetSampleCount(int64 sampleCount) { CheckHasAudio(); audio_->sampleCount_ = CheckSampleCount(sampleCount); }
+  virtual void SetSampleCount(long long sampleCount) { CheckHasAudio(); audio_->sampleCount_ = CheckSampleCount(sampleCount); }
   virtual void SetChannelCount(int channelCount) { CheckHasAudio(); audio_->channelCount_ = CheckChannelCount(channelCount); }
 
 
-  virtual void AddAudio(SampleType sampleType, int sampleRate, int64 sampleCount, int channelCount)
+  virtual void AddAudio(SampleType sampleType, int sampleRate, long long sampleCount, int channelCount)
   {
     audio_ = AudioProperties(CheckSampleType(sampleType), CheckSampleRate(sampleRate), CheckSampleCount(sampleCount), CheckChannelCount(channelCount));
   }
@@ -156,7 +156,7 @@ private:
   static int CheckFrameCount(int frameCount) { return frameCount; }
   static SampleType CheckSampleType(SampleType sampleType) { return sampleType; }
   static int CheckSampleRate(int sampleRate) { return sampleRate; }
-  static int64 CheckSampleCount(int64 sampleCount) { return sampleCount; }
+  static long long CheckSampleCount(long long sampleCount) { return sampleCount; }
   static int CheckChannelCount(int channelCount) { return channelCount; }
 
 };

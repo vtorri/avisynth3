@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -48,8 +48,8 @@ template <class Clock> class timer : boost::noncopyable
 {
 
   int count_;                  //number of times it has run
-  int64 start_;                //time of last start
-  int64 elapsed_;              //elapsed time
+  long long start_;            //time of last start
+  long long elapsed_;          //elapsed time
 
   static Clock const clock_;   //Clock instance
 
@@ -65,7 +65,7 @@ public:  //structors
 
 public:  //timer interface
 
-  int64 elapsed() const { return elapsed_; }
+  long long elapsed() const { return elapsed_; }
   int count() const { return count_; }
   double average() const { return double(elapsed_) / count_; }
 

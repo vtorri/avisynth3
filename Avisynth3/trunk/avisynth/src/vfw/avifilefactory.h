@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,11 @@ namespace avs { namespace vfw {
 
 
 
+//////////////////////////////////////////////////////////////////////////////////
+//  AviFileFactory
+//
+//  factory object to create Avisynth implementations of vfw IAVIFile interface
+//
 class AviFileFactory : public IClassFactory
                      , public com::Base
 {
@@ -52,7 +57,7 @@ public:  //IUnknown
 public:  //IClassFactory
 
   STDMETHODIMP CreateInstance (LPUNKNOWN pUnkOuter, REFIID riid,  void ** ppvObj);
-  STDMETHODIMP LockServer (BOOL fLock) { return S_OK; }
+  STDMETHODIMP LockServer (BOOL /*fLock*/) { return S_OK; }
 
 
 public:  //factory method

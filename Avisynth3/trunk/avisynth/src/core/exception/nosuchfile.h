@@ -51,7 +51,7 @@ public:  //structors
   NoSuchFile(std::string const& fileName)
     : fileName_( fileName ) { }
 
-  //generated copy constructor and destructor are fine
+    virtual ~NoSuchFile() throw() { }
 
 
 public:  //diagnostic message

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -51,7 +51,7 @@ public:  //structors
   NoSuchFrame(int frame)
     : frame_( frame ) { }
 
-  //generated copy constructor and destructor are fine
+  virtual ~NoSuchFrame() throw() { }
 
 
 public:  //diagnostic message

@@ -56,7 +56,7 @@ public:  //structors
     , height_( height )
     , interlaced_( interlaced ) { }
 
-  //generated copy constructor and destructor are fine
+  virtual ~InvalidHeight() throw() { }
 
 
 public:  //diagnotic message

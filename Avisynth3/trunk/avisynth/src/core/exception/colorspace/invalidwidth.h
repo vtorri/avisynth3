@@ -54,7 +54,7 @@ public:  //structors
     : space_( space ) 
     , width_( width ) { }
 
-  //generated copy constructor and destructor are fine
+  virtual ~InvalidWidth() throw() { }
 
 
 public:  //diagnotic message

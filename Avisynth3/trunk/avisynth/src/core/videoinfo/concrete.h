@@ -26,10 +26,10 @@
 
 
 //avisynth includes
-#include "../dimension.h"
 #include "../videoinfo.h"
 #include "../colorspace.h"
 #include "../exception/generic.h"
+#include "../geometry/dimension.h"
 
 //boost include
 #include <boost/optional.hpp>

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -39,7 +39,8 @@ namespace avs { namespace clip { namespace onechild {
 //  provides a Simplify implementation for OneChild subclasses
 //  when the child has the Refactorable<SubClip> signature
 //
-template <class SubClip> class Simplifiable : public virtual OneChild
+template <class SubClip> 
+class NOVTABLE Simplifiable : public virtual OneChild
 {
 
 public:  //typedef
@@ -55,7 +56,37 @@ public:  //Simplify method
       = boost::dynamic_pointer_cast<Refactorable<SubClip> const>( GetChild() );
 
     return (! isRef ) ? shared_from_this()
-                      : isRef->Refactor( dynamic_cast<SubClip const&>(*this) )->Simplify();
+                      : isRef->Refactor( dynamic_cast<SubClip const&>(*this) );
+  }
+
+};
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//  FinalSimplifiable<SubClip>
+//
+//  provides both Simplify and FinalSimplify implementation for OneChild subclasses
+//
+template <class SubClip>
+class NOVTABLE FinalSimplifiable : public Simplifiable<SubClip>
+{
+
+public:  //typedef
+
+  typedef FinalSimplifiable<SubClip> FinalSimplifiableType;
+
+
+public:  //FinalSimplify method
+
+  virtual PClip FinalSimplify() const
+  {
+    FinalSimplifyChild();
+
+    boost::shared_ptr<FinalRefactorable<SubClip> const> isRef
+      = boost::dynamic_pointer_cast<FinalRefactorable<SubClip> const>( GetChild() );
+
+    return (! isRef ) ? shared_from_this()
+                      : isRef->FinalRefactor( dynamic_cast<SubClip const&>(*this) );
   }
 
 };

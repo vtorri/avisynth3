@@ -66,12 +66,30 @@ public:  //Key inner class
   //
   //  class used as a name/type for properties
   //
-  class Key { };
+  class Key
+  { 
+  
+  public:  //structors
 
+    Key() { }
+    virtual ~Key() { }
+
+  public:  //Key interface
+
+    //NB: == and hash must be consistent together (the defaults are)
+    //ie  A == B  =>  A.hash() == B.hash()
+    virtual bool operator==(Key const& other) const { return &other == this; }    
+    virtual unsigned hash() const { return unsigned(this); }
+
+    virtual bool IsStatic() const = 0;
+
+  };//Property::Key
+
+  typedef boost::shared_ptr<Key const> PKey;
 
 public:  //GetKey method
 
-  virtual Key & GetKey() const  = 0;
+  virtual PKey GetKey() const  = 0;
 
 
 };//Property

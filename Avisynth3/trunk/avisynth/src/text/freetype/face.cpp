@@ -21,8 +21,8 @@
 // General Public License cover the whole combination.
 
 //avisynth includes
-#include "library.h"
 #include "face.h"
+#include "library.h"
 #include "../../core/exception/generic.h"
 
 // freetype includes
@@ -67,7 +67,7 @@ VecteurFP6 Face::GetKerning(unsigned leftGlyph, unsigned rightGlyph) const
   if ( error != 0 )
     throw avs::exception::Generic ("Error while retrieving the kerning.");
   
-  return VecteurFP6( FP6:Wrap(result.x), FP6:Wrap(result.y) );
+  return VecteurFP6( FP6::Wrap(result.x), FP6::Wrap(result.y) );
 }
 
 

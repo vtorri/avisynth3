@@ -40,7 +40,14 @@ namespace avs { namespace bw {
 template <int bpp> struct HorizontalFlipper
 {
 
-  BufferWindow operator()(BufferWindow const& buffer) const;
+  BufferWindow operator()(BufferWindow const& source) const
+  {
+    BufferWindow result( source.GetDimension(), source.GetEnvironment() );
+
+    //...
+
+    return result;
+  }
 
 };
 

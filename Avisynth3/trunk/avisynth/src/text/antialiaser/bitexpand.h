@@ -25,12 +25,18 @@
 #define __AVS_TEXT_ALIASER_BITEXPAND_H__
 
 //avisynth include
-#include "../../bytemap.h"
+#include "../../utility/bytemap.h"
 
 
 namespace avs { namespace text { namespace aliaser {
 
 
+
+//////////////////////////////////////////////////////////////////////////////
+//  BitExpandLeft
+//
+//  sets bit at 1 on the left of already set bits
+//
 class BitExpandLeft : public ByteMap
 {
 
@@ -48,7 +54,11 @@ public:  //sole instance
 };
 
 
-
+//////////////////////////////////////////////////////////////////////////////
+//  BitExpandRight
+//
+//  sets bit at 1 on the right of already set bits
+//
 class BitExpandRight : public ByteMap
 {
 

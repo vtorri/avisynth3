@@ -25,21 +25,29 @@
 #define __AVS_PARSER_GRAMMAR_VARTABLE_H__
 
 //boost include
-#include <boost/spirit/symbols.hpp>
+#include <boost/tuple/tuple.hpp>     //for tuple
+#include <boost/spirit/symbols.hpp>  //for symbols
+
+namespace spirit = boost::spirit;
+
 
 namespace avs { namespace parser { namespace grammar {
+
+
+//typedef
+typedef boost::tuples::tuple<int, char> TypedIndex;   //associate an index to a type 
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
 //  VarTable
 //
-//  symbols mapping var names to their type and position in the stack
+//  symbols table mapping var names to their type and position in the stack
 //
 class VarTable : public spirit::symbols<TypedIndex>
 {
 
-  int size_;       //NB: not the number of symbols defined
+  int size_;       //NB: not equivalent to the number of symbols defined
 
 
 public:  //structors
@@ -56,15 +64,15 @@ public:  //structors
 
 public:  //VarTable interface
 
-  void DefineVar(std::string const& name, char type)
+  int DefineVar(std::string const& name, char type)
   {
     TypedIndex value(size_, type);
 
-    if ( TypedIndex * index = find(*this, name.c_str()) )   //if already defined
-      *index = value;                                       //we override value
-    else add(name.c_str(), value);                          //else we add it
+    if ( TypedIndex * index = spirit::find(*this, name.c_str()) )   //if already defined
+      *index = value;                                               //we override value
+    else add(name.c_str(), value);                                  //else we add it
 
-    ++size_;
+    return size_++;
   }
 
   int size() const { return size_; }

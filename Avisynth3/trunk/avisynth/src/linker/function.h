@@ -65,8 +65,8 @@ public:  //Function interface
   //fetch plugin from which the function belongs
   virtual PPlugin GetMotherPlugin() const = 0;
 
-  //fetch operation
-  virtual parser::ElementalOperation const& GetOperation() const = 0;
+  //append operation
+  virtual void AppendOperation(parser::ElementalCode& appendTo) const = 0;
 
 };
 

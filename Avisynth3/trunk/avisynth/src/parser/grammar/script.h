@@ -24,8 +24,7 @@
 #ifndef __AVS_PARSER_GRAMMAR_SCRIPT_H__
 #define __AVS_PARSER_GRAMMAR_SCRIPT_H__
 
-//avisynth includes
-#include "types.h"
+//avisynth include
 #include "statement.h"
 
 
@@ -69,6 +68,7 @@ struct Function : spirit::closure
 } //namespace closure
 
 
+
 struct Script : public spirit::grammar<Script, closure::Script::context_t>
 {
 
@@ -76,83 +76,10 @@ struct Script : public spirit::grammar<Script, closure::Script::context_t>
   struct definition
   {
 
-    definition(Script const& self)
-    {
-
-      using namespace lazy;
-      using namespace phoenix;
-
-      top
-          =  *(   statement( CodeCouple(), self.localCtxt, self.globalCtxt, 'c' )
-                  [
-                    self.value += arg1       //accumulate code
-                  ]
-              |   spirit::str_p("function")
-              >>  function
-              |   spirit::eol_p
-              )
-          ;
-
-      function
-          =   Types::instance
-              [
-                first(function.ident) = arg1,
-                second(function.localCtxt) = val(0)
-              ]
-          >>  name
-              [
-                second(function.ident) = construct_<std::string>(arg1, arg2)
-              ]
-          >>  '('
-          >>  !(  arg   %   ','   )
-          >>  spirit::ch_p(')')
-              [
-                bind(&function::Table::DeclareScriptFunction)( second(self.globalCtxt), function.ident ),
-                function.termRecursive = val(false)       //init recursive flag
-              ]
-          >>  functionBody
-          >>  spirit::eol_p
-              [
-                bind(&function::Table::DefineScriptFunction)
-                    ( second(self.globalCtxt), function.ident, function.code, function.termRecursive )                    
-              ]
-          ;
-
-      arg
-        =   Types::instance
-              [
-                arg.value = arg1
-              ]
-          >>  (   name - spirit::lazy_p( first(function.localCtxt) )  )
-              [
-                bind(&VarTable::DefineVar)(first(function.localCtxt), construct_<std::string>(arg1, arg2), arg.value),
-                third(function.ident) += arg.value,
-                ++second(function.localCtxt)
-              ]
-          ;
-
-      functionBody
-          =   *   spirit::eol_p
-          >>  '{'
-          >> *(   statement
-                      ( CodeCouple()
-                      , ref(function.localCtxt)
-                      , self.globalCtxt
-                      , first(function.ident)
-                      , construct_<value::TRecurseInfo>( ref(third(function.ident)), ref(function.termRecursive) ) 
-                      ) 
-                  [
-                    function.code += arg1
-                  ]
-              |   spirit::eol_p
-              )
-          >>  '}'
-          ;
-
-    }
-
+    definition(Script const& self);
 
     spirit::rule<ScannerT> const & start() const { return top; }
+
 
   private:
 
@@ -167,6 +94,10 @@ struct Script : public spirit::grammar<Script, closure::Script::context_t>
   };
 
 };
+
+
+template <>
+Script::definition<Scanner>::definition(Script const & self);
 
 
 

@@ -23,6 +23,7 @@
 
 //avisynth include
 #include "parser.h"
+#include "vmstate.h"
 #include "grammar/script.h"
 #include "../linker/core/plugin.h"
 #include "../filters/source/messageclip.h"
@@ -42,7 +43,7 @@ namespace avs { namespace parser {
 StatementCode Parser::operator()(std::string const& src)
 {
 
-  using namespace lazy;
+  //using namespace lazy;
   using namespace phoenix;
   using namespace avs::parser::grammar;
 

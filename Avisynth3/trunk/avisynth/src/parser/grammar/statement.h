@@ -27,10 +27,8 @@
 //avisynth includes
 #include "name.h"
 #include "expression.h"
-#include "../lazy/get.h"
 #include "../codecouple.h"
-#include "../functor/if.h"
-#include "../action/action.h"
+
 
 
 namespace avs { namespace parser { namespace grammar {
@@ -112,143 +110,8 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
   struct definition
   {
 
-    definition(Statement const& self)
-    {
+    definition(Statement const& self);
 
-      using namespace lazy;
-      using namespace functor;
-      using namespace phoenix;
-
-      top
-          =   statement( CodeCouple(), self.localCtxt )
-              [ 
-                self.value = arg1 
-              ]
-          ;
-
-      statement
-          =   (   expression( value::Expression(), statement.localCtxt, self.globalCtxt )
-                  [
-                    bind(&action::Action::ExprStatement)(statement.value, statement.localCtxt, arg1)                        
-                  ]
-              |   createVar( ref(first(statement.localCtxt)) )  //pass local VarTable
-              |   ifStatement
-              |   returnStatement
-              )
-          >>  (   spirit::eol_p           //statement are normally ended by a newline
-              |   spirit::eps_p( '}' )    //but an end of block would do too
-              )
-          ;
-
-      createVar
-          =   (   spirit::str_p("global")
-                  [
-                    createVar.table = ref(first(self.globalCtxt))    //set global VarTable as the table to use
-                  ]
-              |   !   spirit::str_p("local")     //optional local keyword
-              )
-          >>  name
-              [
-                createVar.name = construct_<std::string>(arg1, arg2)
-              ]
-          >>  '='
-          >>  expression( value::Expression(), statement.localCtxt, self.globalCtxt )
-              [
-                bind(&action::Action::CreateVarStatement)
-                    (statement.value, statement.localCtxt, arg1, createVar.table, createVar.name)
-              ]
-          ;
-
-      ifStatement
-          =   spirit::str_p("if")
-          >>  '('
-          >>  expression( value::Expression(), statement.localCtxt, self.globalCtxt )
-              [
-                bind(&action::Check::TypeIsExpected)(second(arg1), val('b')),
-                statement.value += first(arg1),
-                --second(statement.localCtxt)                          //report that the if consumes the bool value
-              ]
-          >>  ')'
-          >>  subContextBlock( CodeCouple(), get(statement.localCtxt) )
-              [
-                ifStatement.value = arg1
-              ]          
-          >>  (   *   spirit::eol_p
-              >>  spirit::str_p("else")
-              >>  subContextBlock( CodeCouple(), get(statement.localCtxt) )
-                  [
-                    statement.value -= construct_<functor::IfThenElse>(ifStatement.value, arg1)
-                  ]
-              |   spirit::eps_p
-                  [
-                    statement.value -= construct_<functor::IfThen>(ifStatement.value)
-                  ]
-              )
-          ;
-
-      subContextBlock
-          =   spirit::eps_p
-              [    //get rid of last inherited from upper context
-                third(subContextBlock.localCtxt) = val( boost::detail::none_t() )
-              ]
-          >>  *   spirit::eol_p   //skip newlines
-          >>  (   '{'     
-              >> *(   statement( CodeCouple(), ref(subContextBlock.localCtxt) )   //a block of statement delimited by { }
-                      [
-                        subContextBlock.value += arg1
-                      ]
-                  |   spirit::eol_p
-                  )
-              >>  '}'
-              |   statement( CodeCouple(), ref(subContextBlock.localCtxt) )       //or a single one
-                  [
-                    subContextBlock.value += arg1
-                  ]
-              )
-          ;
-
-/*      whileStatement
-          =   spirit::str_p("while")
-          >>  '('
-          >>  expression( value::Expression(), statement.localCtxt, self.globalCtxt )
-          >>  ')'
-          >>  subContextBlock
-          ;*/
-
-      returnStatement
-          =   spirit::str_p("return")
-          >>  (   spirit::str_p("self")
-                  [
-                    bind(&action::Check::TRecurseAllowed)(! self.termRecInfo)
-                  ]
-              >>  argList( 0 )
-                  [
-                    second(get(self.termRecInfo)) = val(true),                //report that terminal recursivity is used
-                    statement.value -= construct_<literal<OpType> >(RECURSE)
-                  ]
-              |   expression( value::Expression(), statement.localCtxt, self.globalCtxt )
-                  [
-                    bind(&action::Check::ReturnTypeIsExpected)(second(arg1), self.returnTypeExpected),
-                    statement.value += first(arg1),
-                    statement.value -= construct_<literal<OpType> >(RETURN)
-                  ]
-              )
-          ;
-
-      argList
-          =   '('
-          >> !(   expression( value::Expression(), statement.localCtxt, self.globalCtxt )
-                  [
-                    //check the type is the one expected by prototype of outer function
-                    bind(&action::Check::TypeIsExpected)(second(arg1), first(get(self.termRecInfo))[argList.value]),
-                    statement.value += first(arg1),
-                    ++argList.value
-                  ]
-              %   ','
-              )
-          >>  ')'
-          ;
-    }
 
     spirit::rule<ScannerT> const & start() const { return top; }
 
@@ -259,6 +122,8 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
     spirit::rule<ScannerT, closure::InnerStatement::context_t> statement;
     spirit::rule<ScannerT, closure::CreateVar::context_t> createVar;
     spirit::rule<ScannerT, closure::Value<StatementCode>::context_t> ifStatement;
+    spirit::rule<ScannerT, closure::Value<ElementalCode>::context_t> whileStatement;
+    spirit::rule<ScannerT, closure::Value<ElementalCode>::context_t> conditionBlock;
     spirit::rule<ScannerT, closure::StatementBlock::context_t> subContextBlock;
     spirit::rule<ScannerT> returnStatement;
     spirit::rule<ScannerT, closure::Value<int>::context_t> argList;
@@ -270,6 +135,9 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
 
 };
 
+
+template <>
+Statement::definition<Scanner>::definition(Statement const & self);
 
 
 } } } //namespace avs::parser::grammar

@@ -25,19 +25,16 @@
 #define __AVS_PARSER_GRAMMAR_LITERAL_H__
 
 //avisynth includes
-#include "forward.h"
-#include "../forward.h"
-#include "../lazy/tuple.h"
+#include "forward.h"                  //for value::Literal
+//#include "../forward.h"
 #include "../vmoperation.h"
-#include "../functor/pusher.h"
-#include "../functor/literal.h"
 
 //spirit includes
-#include <boost/spirit/core.hpp>
-#include <boost/spirit/symbols.hpp>
-#include <boost/spirit/attribute/closure.hpp>
-#include <boost/spirit/phoenix/statements.hpp>      //for operator,
-//#include <boost/spirit/utility/escape_char.hpp>   //for c_escape_ch_p, the day it starts converting
+#define PHOENIX_LIMIT 6
+#include <boost/spirit/core/non_terminal/rule.hpp>
+#include <boost/spirit/core/non_terminal/grammar.hpp>
+#include <boost/spirit/attribute/closure.hpp>          //grammar.hpp before that one
+
 
 namespace spirit = boost::spirit;
 
@@ -71,58 +68,7 @@ struct Literal : public spirit::grammar<Literal, closure::Value<value::Literal>:
   struct definition 
   {
         
-    definition(Literal const& self)
-    {
-
-      using namespace lazy;
-      using namespace phoenix;
-      using namespace functor;
-
-      top
-          =   spirit::strict_real_p
-              [
-                first(self.value) = construct_<pusher<literal<double> > >(arg1),
-                second(self.value) = val('d')
-              ]
-          |   spirit::int_p
-              [
-                first(self.value) = construct_<pusher<literal<int> > >(arg1),
-                second(self.value) = val('i')
-              ]
-          |   stringLiteral
-              [
-                first(self.value) = construct_<pusher<literal<std::string> > >(arg1),
-                second(self.value) = val('s')
-              ]
-          |   boolLiteral
-              [
-                first(self.value) = construct_<pusher<literal<bool> > >(arg1),
-                second(self.value) = val('b')
-              ]
-          ;
-
-      stringLiteral
-          =   spirit::lexeme_d
-              [
-                  '"'
-              >> *(   spirit::str_p("\\n")
-                      [
-                        stringLiteral.value += val('\n')
-                      ]
-                  |   ( spirit::anychar_p - '"' )
-                      [
-                        stringLiteral.value += *arg1
-                      ]
-                  )
-              >>  '"'
-              ]
-          ;
-
-      boolLiteral.add
-          ( "true", true )
-          ( "false", false );
-
-    }
+    definition(Literal const& self);
 
     spirit::rule<ScannerT> const & start() const { return top; }
 
@@ -132,11 +78,26 @@ struct Literal : public spirit::grammar<Literal, closure::Value<value::Literal>:
     spirit::rule<ScannerT> top;
     spirit::rule<ScannerT, closure::Value<std::string>::context_t> stringLiteral;
 
-    spirit::symbols<bool> boolLiteral;
-
   };
 
 };
+
+typedef spirit::scanner< char const *
+                       , spirit::scanner_policies
+                           < spirit::skip_parser_iteration_policy
+                               < spirit::blank_parser
+                               , spirit::iteration_policy
+                               >
+                           , spirit::match_policy
+                           , spirit::action_policy
+                           > 
+                       > 
+        Scanner;
+
+
+template <>
+Literal::definition<Scanner>::definition(Literal const & self);
+
 
 
 } } } //namespace avs::parser::grammar

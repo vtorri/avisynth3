@@ -39,7 +39,8 @@ namespace avs { namespace parser { namespace function {
 
 void Table::AddPlugin(linker::PPlugin const& plugin)
 {
-  linker::FunctionList list = plugin->GetFunctionList();
+  linker::FunctionList list;
+  plugin->FillFunctionList(list);
 
   for( linker::FunctionList::iterator it = list.begin(); it != list.end(); ++it )
     AddFunction( *it );

@@ -67,6 +67,10 @@ struct Vecteur
   Vecteur& operator*=(int scalar) { x *= scalar; y *= scalar; return *this; }
   Vecteur& operator/=(int scalar) { x /= scalar; y /= scalar; return *this; }
 
+  //comparison operators
+  bool operator==(Vecteur const& other) const { return x == other.x && y == other.y; }
+  bool operator!=(Vecteur const& other) const { return x != other.x || y != other.y; }
+
 
   //operators with special effect
   //'inclusion' operator : change self so it is included into the box defined by dim

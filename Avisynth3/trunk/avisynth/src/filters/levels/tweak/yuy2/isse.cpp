@@ -41,9 +41,18 @@ CPVideoFrame ISSE::MakeFrame(CPVideoFrame const& source) const
   PVideoFrame frame = source;
   WindowPtr wp = frame->WriteTo(NOT_PLANAR);
   
-  long long hue64 = (long long(Cos) << 48) + (long long(-Sin) << 32) + (long long(Sin) << 16) + long long(Cos);
-  long long satcont64 = (long long(Sat) << 48) + (long long(Cont) << 32) + (long long(Sat) << 16) + long long(Cont);
-  long long bright64 = (long long(Bright_p16) << 32) + long long(Bright_p16);
+  long long hue64 = static_cast<long long>(Cos) << 48) 
+                  | static_cast<long long>(-Sin) << 32
+                  | static_cast<long long>(Sin) << 16
+                  | static_cast<long long>(Cos);
+
+  long long satcont64 = static_cast<long long>(Sat) << 48
+                      | static_cast<long long>(Cont) << 32
+                      | static_cast<long long>(Sat) << 16
+                      | static_cast<long long>(Cont);
+
+  long long bright64 = static_cast<long long>(Bright_p16) << 32
+                     | static_cast<long long>(Bright_p16);
 
 
 #if defined(_INTEL_ASM) && ! defined(_FORCE_NASM)

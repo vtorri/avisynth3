@@ -56,6 +56,30 @@ struct extractor
 };
 
 
+////////////////////////////////////////////////////////////////////////////////
+//  extractor<Value const&>
+//
+//  specialisation for extracting by ref to const
+//
+template <typename Value>
+struct extractor<Value const&>
+{
+
+  enum { consume = 1 };
+
+  Value const& operator()(VMState& state, int position) const
+  {
+    return boost::get<Value>( state.peek(position) );
+  }
+
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  extractor<Dimension const&>
+//
+//  Dimension extractor
+//
 template <>
 struct extractor<Dimension const&>
 {
@@ -70,6 +94,11 @@ struct extractor<Dimension const&>
 };
 
 
+////////////////////////////////////////////////////////////////////////////////
+//  extractor<PEnvironment const&>
+//
+//  PEnvironment extractor
+//
 template <>
 struct extractor<PEnvironment const&>
 {
@@ -84,6 +113,11 @@ struct extractor<PEnvironment const&>
 };
 
 
+////////////////////////////////////////////////////////////////////////////////
+//  extractor<ColorSpace const&>
+//
+//  ColorSpace extractor, takes a string and converts it into a ColorSpace
+//
 template <>
 struct extractor<ColorSpace&>
 {

@@ -24,9 +24,8 @@
 #ifndef __AVS_FILTERS_RESIZE_HORIZONTAL_RGB24_H__
 #define __AVS_FILTERS_RESIZE_HORIZONTAL_RGB24_H__
 
-//avisynth includes
-#include "../horizontal.h"
-#include "../pattern/simple.h"
+//avisynth include
+#include "rgb.h"
 
 
 #pragma warning ( push )           //push warning state
@@ -37,17 +36,13 @@ namespace avs { namespace filters { namespace resize { namespace horizontal {
 
 
 
-class RGB24 : public Horizontal
+class RGB24 : public RGB
 {
-
-  pattern::Simple pattern_;
-
 
 public:  //structors
 
   RGB24(PClip const& child, PFilter const& filter, int width, SubRange const& subrange)
-    : Horizontal( child, filter, width, subrange )
-    , pattern_( *filter, subrange, width ) { }
+    : RGB( child, filter, width, subrange ) { }
 
   //generated destructor is fine
 

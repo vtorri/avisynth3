@@ -37,8 +37,8 @@ void RGB24::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
   WindowPtr dst = target.WriteTo(NOT_PLANAR);
   
  
-  int count = pattern_.count();           //coeff count
-  int const * pptr = pattern_.get();      //pattern ptr
+  int count = GetPattern().count();       //coeff count
+  int const * pptr = GetPattern().get();  //pattern ptr
     
   int y = dst.height;                     //y loop counter
   int pad = dst.padValue();               //padding from end of dst row to start of next one

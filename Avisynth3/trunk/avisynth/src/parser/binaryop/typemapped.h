@@ -23,7 +23,8 @@
 #ifndef __AVS_PARSER_BINARYOP_TYPEMAPPED_H__
 #define __AVS_PARSER_BINARYOP_TYPEMAPPED_H__
 
-//avisynth include
+//avisynth includes
+#include "../forward.h"
 #include "../vmoperation.h"
 
 //stl include
@@ -60,10 +61,8 @@ public:  //structors
 
 public:  //interface
 
-  //get return type given types of left and right args
-  char get(char left, char right) const;
-
-  VMOperation<void> const& op() const { return op_; }
+  //returns operation and return type given types of left and right args
+  TypedOp Get(char left, char right) const;
 
 };
 

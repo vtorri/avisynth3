@@ -146,7 +146,6 @@ public:  //factory methods
 public:  //exception helper methods
 
   __declspec(noreturn) void ThrowUnsupportedColorSpaceException() const;
-  __declspec(noreturn) void ThrowNoSuchPlaneException(Plane plane) const;
 
   __declspec(noreturn) void ThrowInvalidInterlacedHeightException(int modulo, int height) const;
   __declspec(noreturn) void ThrowInvalidHeightException(int modulo, int height) const;

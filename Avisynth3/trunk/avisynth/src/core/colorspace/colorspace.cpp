@@ -76,10 +76,6 @@ void ColorSpace::ThrowUnsupportedColorSpaceException() const
   throw exception::UnsupportedColorSpace(*this);
 }
 
-void ColorSpace::ThrowNoSuchPlaneException(Plane plane) const
-{
-  throw exception::Generic(str( boost::format("%s doesn't have plane %s") % GetName() % NameOf(plane) ));
-}
 
 
 void ColorSpace::ThrowInvalidInterlacedHeightException(int modulo, int height) const

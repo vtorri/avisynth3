@@ -26,11 +26,9 @@
 #include "../../core/videoinfo.h"
 #include "../../core/colorspace.h"
 #include "../../core/videoframe.h"
-#include "../../text/antialiaser.h"
-#include "../../core/bufferwindow.h"
-#include "../../core/cow_shared_ptr.h"
-#include "../../core/exception/noaudio.h"
-#include "../../core/runtime_environment.h"
+
+//assert include
+#include <assert.h>
 
 
 namespace avs { namespace filters {
@@ -48,33 +46,27 @@ StaticImage::StaticImage(CPVideoFrame const& frame)
 }
 
 
+StaticImage::StaticImage(CPVideoFrame const& frame, CPVideoInfo const& vi)
+  : frame_( frame )
+  , vi_( vi )
+{
+  //anti shoot in your own foot
+  assert( vi->GetColorSpace() == frame->GetColorSpace() && vi->GetDimension() == frame->GetDimension() );
+}
+
+
 PEnvironment const& StaticImage::GetEnvironment() const { return frame_->GetEnvironment(); }
 
 
-BYTE * StaticImage::GetAudio(BYTE * /*buffer*/, long long /*start*/, int /*count*/) const
+BYTE * StaticImage::GetAudio(BYTE * buffer, long long /*start*/, int count) const
 {
-  throw exception::NoAudio();
+  return vi_->GetBlankNoise(buffer, count);
 }
 
 
 PClip StaticImage::CreateBlankClip(ColorSpace& space, Dimension const& dim, PEnvironment const& env)
 {
-  return Create( env->CreateFrame(space, dim, PROGRESSIVE) );
-}
-
-
-PClip StaticImage::CreateMessageClip(std::string const& msg, PEnvironment const& env)
-{
-  text::Font font("Arial", 28, false, false);
-  Dimension dim = font.GetTextBoundingBox(msg).Shift<4, 4>();
-
-  PVideoFrame frame = env->CreateFrame(ColorSpace::rgb32(), dim, PROGRESSIVE);
-
-  text::Antialiaser aliaser(dim, env, font);
-  aliaser.SetText(msg, Vecteur(dim.GetWidth() >> 1, 0), text::TOP_CENTER);
-  aliaser.Apply(*frame, 0xF0F0F0, 0);
-
-  return Create(frame); 
+  return Create( space.CreateFrame(env, dim, PROGRESSIVE) );
 }
 
 

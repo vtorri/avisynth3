@@ -55,9 +55,11 @@ class StaticImage : public clip::NoChild
   CPVideoFrame frame_;
 
 
-public:  //constructor
+protected:  //structors
 
   StaticImage(CPVideoFrame const& frame);
+
+  StaticImage(CPVideoFrame const& frame, CPVideoInfo const& vi);
 
   //generated destructor is fine
 
@@ -76,10 +78,6 @@ public:  //factory methods
   static PClip Create(CPVideoFrame const& frame) { return PClip( static_cast<Clip *>(new StaticImage(frame)) ); }
 
   static PClip CreateBlankClip(ColorSpace& space, Dimension const& dim, PEnvironment const& env);
-
-  static PClip CreateMessageClip(std::string const& msg, PEnvironment const& env);
-
-  static PClip CreateVersionClip(PEnvironment const& env) { return CreateMessageClip("Avisynth 3.0 alpha", env); }
 
 };
 

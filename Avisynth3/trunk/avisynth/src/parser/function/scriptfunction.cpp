@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 //avisynth includes
 #include "call.h"
 #include "forwardcall.h"
+#include "recursivecall.h"
 #include "scriptfunction.h"
 
 
@@ -44,14 +45,21 @@ void ScriptFunction::AppendOperation(ElementalCode& appendTo) const
 }
 
 
-void ScriptFunction::Define(StatementCode const& code)
+void ScriptFunction::Define(StatementCode const& code, bool recursive)
 {
   int arity = id_.get<2>().size();
 
-/*  if ( GetReturnType() == 'v' )
-    op_ = functor::function::Call<true>(arity, code);
-  else */
-    op_ = functor::function::Call<>(arity, code);
+  if ( recursive )
+    if ( GetReturnType() == 'v' )
+      op_ = functor::function::RecursiveCall<true>(arity, code);
+    else
+      op_ = functor::function::RecursiveCall<false>(arity, code);
+
+  else 
+    if ( GetReturnType() == 'v' )
+      op_ = functor::function::Call<true>(arity, code);
+    else 
+      op_ = functor::function::Call<false>(arity, code);
 
 }
 

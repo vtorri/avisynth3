@@ -42,6 +42,11 @@ namespace avs { namespace clip { namespace onechild {
 template <class SubClip> class Simplifiable : public virtual OneChild
 {
 
+public:  //typedef
+
+  typedef Simplifiable<SubClip> SimplifiableType;
+
+
 public:  //Simplify method
 
   virtual PClip Simplify() const

@@ -32,14 +32,14 @@ namespace avs { namespace parser { namespace function {
 
 
 
-void Pool::Resolve(std::string const& prototype, TypedCode& target) const
+char Pool::Resolve(std::string const& prototype, ElementalCode& target) const
 {
   
   for(FunctionVector::const_iterator it = functionList_.begin(); it != functionList_.end(); ++it)
     if ( prototype == (*it)->GetPrototype() )
     {
       (*it)->AppendOperation(target);
-      return;
+      return (*it)->GetReturnType();
     }
 
   throw exception::Generic("Unable to resolve function");

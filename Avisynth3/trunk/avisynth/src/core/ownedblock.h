@@ -95,7 +95,7 @@ public:  //misc
 
 public:  //Creator typedef (helper for the buffer_window template)
 
-  typedef typename boost::enable_if<compatible<block::Align>, block::OwnedCreator>::type Creator;
+  typedef typename boost::enable_if<block::align_compatible<block::Align, Align>, block::OwnedCreator>::type Creator;
 
 };
 

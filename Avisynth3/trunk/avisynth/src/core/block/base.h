@@ -36,7 +36,20 @@ namespace avs { namespace block {
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+//  block::align_compatible<source, destination>
+//
+//  helper for block::base
+//  used to determine when passing from an align guarantee to another is possible
+//
+template <int source, int destination> struct align_compatible
+{
+  static bool const value = source % destination == 0;
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 //  block::base<BaseHolder, int align>
 //
 //
@@ -48,12 +61,6 @@ public:  //typedefs
 
   enum { Align = align };
   typedef base<BaseHolder, align> BaseBlockType;
-
-  //helper struct for the below enable_ifs
-  template <int alignOther> struct compatible
-  {
-    static bool const value = alignOther % Align == 0;
-  };
 
 
 private:  //member
@@ -70,7 +77,7 @@ public:  //structors
   //defined only if the Holder satisifies our alignment requirement
   template <class Holder>
   explicit base( Holder * holder
-               , typename boost::enable_if< compatible<Holder::Align>, void>::type * dummy = NULL
+               , typename boost::enable_if<align_compatible<Align, Holder::Align>, void>::type * dummy = NULL
                )
     : block_( holder ) { }
 
@@ -78,7 +85,7 @@ public:  //structors
   //as above, only possible if it satisfies our alignment guarantee
   template <int alignOther>
   explicit base( base<BaseHolder, alignOther> const& other
-               , typename boost::enable_if<compatible<alignOther>, void>::type * dummy = NULL
+               , typename boost::enable_if<align_compatible<Align, alignOther>, void>::type * dummy = NULL
                )
     : block_( other.block_ ) { }
 
@@ -93,7 +100,7 @@ public:  //structors
 public:  //assignment
 
   template <int alignOther>
-  typename boost::enable_if<compatible<alignOther>, BaseBlockType>::type& 
+  typename boost::enable_if<align_compatible<Align, alignOther>, BaseBlockType>::type& 
   operator=(base<BaseHolder, alignOther> const& other)
   {
     block_ = other.block_;

@@ -45,13 +45,15 @@ struct adaptor_impl
 
   caller<Function> caller;
 
+  enum { consume = caller<Function>::consume };
+
   adaptor_impl(Function * function)
     : caller( function ) { }
 
   void operator()(VMState& state) const
   {
     pusher<literal<Result> > push( caller(state) );
-    popper<boost::function_traits<Function>::arity>()(state);
+    popper<consume>()(state);
     push(state);
   }
 
@@ -64,13 +66,15 @@ struct adaptor_impl<Function, void>
 
   caller<Function> caller;
 
+  enum { consume = caller<Function>::consume };
+
   adaptor_impl(Function * function)
     : caller( function ) { }
 
   void operator()(VMState& stack) const
   {
     caller<Function>::operator()(state);
-    popper<boost::function_traits<Function>::arity>()(state);
+    popper<consume>()(state);
   }
 
 };

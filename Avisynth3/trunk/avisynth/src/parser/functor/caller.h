@@ -25,6 +25,7 @@
 #define __AVS_PARSER_FUNCTOR_CALLER_H__
 
 //avisynth include
+#include "extractor.h"
 #include "../vmstate.h"
 
 //boost includes
@@ -39,12 +40,34 @@ namespace avs { namespace parser { namespace functor {
 namespace detail {
 
 
-//shorter proxy pour remove_reference
-template <typename T>
-struct rem_ref
+template <typename Function, int n>
+struct arg { };
+
+template <typename Function>
+struct arg<Function, 1>
 {
-  typedef typename boost::remove_reference<T>::type type;
+  typedef typename boost::function_traits<Function>::arg1_type type;
 };
+
+template <typename Function>
+struct arg<Function, 2>
+{
+  typedef typename boost::function_traits<Function>::arg2_type type;
+};
+
+template <typename Function>
+struct arg<Function, 3>
+{
+  typedef typename boost::function_traits<Function>::arg3_type type;
+};
+
+
+
+template <typename Function, int n>
+struct extract : public extractor<typename arg<Function, n>::type> { };
+
+
+
 
 
 template <typename Function, int arity = boost::function_traits<Function>::arity>
@@ -54,6 +77,8 @@ struct caller_impl { };
 template <typename Function>
 struct caller_impl<Function, 0>
 {
+
+  enum { consume = 0 };
 
   typename boost::function_traits<Function>::result_type
   operator()(VMState& state, Function * function)
@@ -65,29 +90,30 @@ struct caller_impl<Function, 0>
 
 
 template <typename Function>
-struct caller_impl<Function, 1> : public boost::function_traits<Function>
+struct caller_impl<Function, 1>
 {
+
+  enum { consume = extract<Function, 1>::consume };
 
   typename boost::function_traits<Function>::result_type
   operator()(VMState& state, Function * function)
   {
-    return function( boost::get<rem_ref<arg1_type>::type>(state.top()) );
+    return function( extract<Function, 1>()(state, 0) );
   }
 
 };
 
 
 template <typename Function>
-struct caller_impl<Function, 2> : public boost::function_traits<Function>
+struct caller_impl<Function, 2>
 {
+
+  enum { pos2 = 0, pos1 = extract<Function, 2>::consume, consume = pos1 + extract<Function, 1>::consume };
 
   typename boost::function_traits<Function>::result_type
   operator()(VMState& state, Function * function)
   {
-    return function
-      ( boost::get<rem_ref<arg1_type>::type>(state.peek(1))
-      , boost::get<rem_ref<arg2_type>::type>(state.top())
-      );
+    return function( extract<Function, 1>()(state, pos1), extract<Function, 2>()(state, pos2) );
   }
 
 };
@@ -104,6 +130,8 @@ struct caller
   
   caller(Function * function)
     : function_( function ) { }
+
+  enum { consume = detail::caller_impl<Function>::consume };
 
   typename boost::function_traits<Function>::result_type
   operator()(VMState& state) const

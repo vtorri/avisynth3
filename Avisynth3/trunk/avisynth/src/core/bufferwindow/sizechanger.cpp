@@ -23,8 +23,8 @@
 
 //avisynth include
 #include "copier.h"
-#include "../vecteur.h"
 #include "sizechanger.h"
+#include "../geometry/vecteur.h"
 
 
 namespace avs { namespace bw {
@@ -57,7 +57,6 @@ void SizeChanger::operator ()(BufferWindow& window, Vecteur const& topLeft, Vect
     window.dim_ = dim;                    //else commit updated parameters
     window.offset_ = offset;
   }
-
 
 }
 

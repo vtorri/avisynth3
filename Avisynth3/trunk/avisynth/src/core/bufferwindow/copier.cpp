@@ -23,7 +23,7 @@
 
 //avisynth include
 #include "copier.h"
-#include "../vecteur.h"
+#include "../geometry/vecteur.h"
 
 
 namespace avs { namespace bw {

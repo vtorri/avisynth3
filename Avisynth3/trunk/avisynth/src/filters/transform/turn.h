@@ -44,13 +44,13 @@ class Symetry;
 //
 //  factorisation superclass for Turn::Left and Turn::Right
 //
-class Turn : public clip::onechild::CachingPipeline
-           , public clip::onechild::Simplifiable<Turn>
-           , public clip::Refactorable<Turn>
-           , public clip::Refactorable<Flip>
-           , public clip::Refactorable<Symetry>
-           , public clip::onechild::Concrete
-           , public clip::caching::Concrete
+class NOVTABLE Turn : public clip::onechild::CachingPipeline
+                    , public clip::onechild::Simplifiable<Turn>
+                    , public clip::Refactorable<Turn>
+                    , public clip::Refactorable<Flip>
+                    , public clip::Refactorable<Symetry>
+                    , public clip::onechild::Concrete
+                    , public clip::caching::Concrete
 {
 
 public:  //constructor

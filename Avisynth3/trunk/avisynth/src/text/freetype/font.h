@@ -25,7 +25,7 @@
 #define __AVS_TEXT_FREETYPE_FONT_H__
 
 //avisynth includes
-#include "forward.h"
+#include "forward.h"                            //for TextWalker, PFace
 #include "../../core/geometry/box.h"
 #include "../../core/geometry/fixed_point.h"
 
@@ -44,8 +44,11 @@ class Font
 
   PFace face_;
 
+
 public:
 
+  Font(PFace const& face)
+    : face_ ( face ) { }
   Font(std::string const& name, int size);
 
   //generated copy constructor and destructor are fine
@@ -54,6 +57,7 @@ public:
 public:  //Font interface
   
   BoxFP6 GetTextBoundingBox(std::string const& text) const;
+  BoxFP6 GetTextLineBoundingBox(std::string::const_iterator begin, std::string::const_iterator end, TextWalker& walker) const;
 
 
 public:  //access

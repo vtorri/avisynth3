@@ -25,7 +25,7 @@
 #include "face.h"
 #include "font.h"
 #include "outline.h"
-#include "glyphslot.h"
+#include "textwalker.h"
 
 
 namespace avs { namespace text { namespace freetype {
@@ -33,45 +33,42 @@ namespace avs { namespace text { namespace freetype {
 
 
 Font::Font(std::string const& name, int size)
+  : face_( Face::Create(name) )
 {
-  face_ = Face::Create(name);
   face_->SetCharSize( VecteurFP6(0, size << 6), DimensionFP6(300, 300) );
 }
 
 
 
-BoxFP6 Font::GetTextBoundingBox(std::string const& text)
+BoxFP6 Font::GetTextBoundingBox(std::string const& text) const
 {
-  int glyphCount = text.length();
+  BoxFP6 result;              //init empty box
 
-  if ( glyphCount == 0 )   //if no text
-    return BoxFP6();       //empty box
+  if ( text.length() != 0 )   //only work if some text, else empty box
+    result = GetTextLineBoundingBox( text.begin(), text.end(), TextWalker(face_, VecteurFP6()) );
 
-  GlyphSlot slot(face_);
-  bool useKerning = face_->HasKerning();
-
-  unsigned prevIndex = face_->GetCharIndex(text[0]);
-  slot.LoadGlyph(prevIndex);
-
-  VecteurFP6 pen = slot.GetAdvance();
-  BoxFP6 box = slot.GetOutline()->GetControlBox();
-
-  for ( int n = 1; n < glyphCount; ++n, prevIndex = glyphIndex )
-  {
-    unsigned glyphIndex = face_->GetCharIndex(text[n]);
-
-    slot.LoadGlyph(glyphIndex);
-
-    if ( useKerning )
-      pen += face_->GetKerning(prevIndex, glyphIndex);
-
-    box |= slot.GetOutline()->GetControlBox() + pen;
-    pen += slot.GetAdvance();
-  }
-
-  return box;
+  return result;
 }
 
+
+
+BoxFP6 Font::GetTextLineBoundingBox(std::string::const_iterator begin, std::string::const_iterator end, TextWalker& walker) const
+{
+  BoxFP6 result;
+
+  if ( begin != end )
+  {
+    result = walker.Reset(*begin++)->GetControlBox();
+
+    while ( begin != end )
+    {
+      POutline outline = walker.LoadChar(*begin++);
+      result |= outline->GetControlBox() + walker.pen;
+    }
+  }
+
+  return result;
+}
 
 
 } } } //namespace avs::text::freetype

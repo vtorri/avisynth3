@@ -26,7 +26,7 @@
 
 //avisynth includes
 #include "../core/forward.h"
-#include "../core/dimension.h"
+#include "../core/geometry/dimension.h"
 
 //windows includes
 #include <windows.h>

@@ -25,7 +25,7 @@
 #define __AVS_TEXT_FONT_H__
 
 //avisynth include
-#include "../core/dimension.h"
+#include "../core/geometry/dimension.h"
 
 //boost include
 #include <boost/shared_ptr.hpp>

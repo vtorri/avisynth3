@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -28,16 +28,28 @@
 #include <boost/shared_ptr.hpp>
 
 
-namespace avs { namespace text { namespace freetype {
+namespace avs { 
 
 
 //declarations
+template <typename T> class box;
+template <typename T> class vecteur;
+template <int fractionPart> class fixed_point;  
+
+  
+namespace text { namespace freetype {
+
+
+//more declarations
 class Face;
 class Outline;
 class MonoBitmap;
 
 
 //typedefs
+typedef fixed_point<6> FP6;
+typedef box<FP6> BoxFP6;
+typedef vecteur<FP6> VecteurFP6;
 typedef boost::shared_ptr<Face> PFace;
 typedef boost::shared_ptr<Outline> POutline;
 

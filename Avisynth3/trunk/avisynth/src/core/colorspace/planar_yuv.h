@@ -79,7 +79,7 @@ public:  //ColorSpace interface
 
   virtual ID id() const { return I_YV12; }
   virtual char const * GetName() const { return "YV12"; }
-  virtual unsigned long GetFourCC() const { return '21VY'; }
+  virtual unsigned long GetFourCC() const { return MakeFourCC('Y', 'V', '1', '2'); }
   virtual int GetBitsPerPixel() const { return 12; }
 
   virtual int GetBitmapSize(Dimension const& dim) const

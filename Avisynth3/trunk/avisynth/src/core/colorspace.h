@@ -149,9 +149,17 @@ public:  //factory methods
 
 public:  //exception helper methods
 
-  __declspec(noreturn) void ThrowInvalidInterlacedHeightException(int modulo, int height) const;
-  __declspec(noreturn) void ThrowInvalidHeightException(int modulo, int height) const;
-  __declspec(noreturn) void ThrowInvalidWidthException(int modulo, int width) const;
+  void ThrowInvalidInterlacedHeightException(int modulo, int height) const;
+  void ThrowInvalidHeightException(int modulo, int height) const;
+  void ThrowInvalidWidthException(int modulo, int width) const;
+
+
+public:  //small helper for 4cc
+
+  static unsigned long MakeFourCC(unsigned long c0, unsigned long c1, unsigned long c2, unsigned long c3) 
+  { 
+    return c0 <<24 | c1 << 16 | c2 << 8 | c3; 
+  }
 
 };//ColorSpace
 

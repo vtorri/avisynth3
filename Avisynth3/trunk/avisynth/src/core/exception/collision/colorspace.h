@@ -37,7 +37,7 @@ namespace avs { namespace exception { namespace collision {
 //
 //  signals the failure of an operation expecting identical ColorSpaces
 //
-class ColorSpace : public : Exception
+class ColorSpace : public Exception
 {
 
 public:  //structors

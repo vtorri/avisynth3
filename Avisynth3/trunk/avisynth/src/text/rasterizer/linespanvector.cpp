@@ -97,7 +97,7 @@ void LineSpanVector::MergeThickened(LineSpanVector const& other, long radius)
     LineSpan span;                                  //future packed span
 
     if ( itThis->begin < itOther->begin - radius )  //this' span starts before
-      span = *itThis++;                               //we take it
+      span = *itThis++;                             //we take it
     else
     {
       span = itOther->Thicken(radius);              //we take a thickened span from other
@@ -134,37 +134,74 @@ void LineSpanVector::Remove(LineSpanVector const& other)
 {
   SpanVector result;
 
-  iterator self = begin();
-  iterator toThicken = other.begin();
-   
-  while ( self != end() && toThicken != other.end() ) 
+  iterator itThis  = begin();
+  iterator itOther = other.begin();
+
+  while ( itThis != end() ) 
   {
-    //besides while condition, we know that neither this nor other overlaps the last span (if there is any)
+    //while other has spans which are before span
+    while ( itOther != other.end() && *itOther < *itThis )
+      ++itOther;                                    //we skip them
 
-    LineSpan span;                                  //future packed span
+    if ( itOther == other.end() )
+      break;
 
-    if ( self->begin < toThicken->begin )           //this' span starts before
-      span = *self++;                               //we take it
-    else
-    {
-      //we take a thickened span from other
-      span = LineSpan(toThicken->begin - radius, toThicken->end + radius);
-      ++toThicken;
+    LineSpan span = *itThis++;                      //take span from this
 
-      span.RightMerge(self, end());                 //merge with spans from this      
-      //even if it merged nothing, we still go in the merge loop after
-      //since other's thickened spans can overlap with themselves
+    if ( span < *itOther )                          //if span from other is after span
+      result.push_back(span);                       //we just use it
+    else                                            //it's neither before, nor after: it overlaps
+    { 
+      if ( itOther->begin <= span.begin )           //if other's span starts before span
+        span.begin = itOther->end;                  //remove it from span (which may become illegally empty)
+
+      while ( itOther->end < span.end )             //while other's span ends before span (implies span is not illegal)
+      {
+        result.push_back( LineSpan(span.begin, itOther->begin) );    //there is part to push    
+        span.begin = itOther->end;                  //update span
+      
+        if ( ++itOther == other.end() )
+          break;
+      }
+      if ( itOther == other.end() )
+        break;
     }
-    
-    //merge as much overlapping spans that possible, alternating from other and this
-    while ( span.RightMergeThickened(toThicken, other.end(), radius) && span.RightMerge(self, end()) ) { }
- 
-    result.push_back(span);                         //flush our merged span            
   }
+
+  result.insert(result.end(), itThis, end());
 
   swap(result, spanVector_);                        //commit result to self
 }
 
+
+
+void LineSpanVector::Realize(BYTE * ptr, LineSpan const& span, int step) const
+{
+  iterator it = begin();
+
+  while ( it != end() && *it < span )         //while packed span are before
+    ++it;                                     //we skip them
+
+  if ( it == end() )                          //if no more
+    return;                                   //done
+
+  if ( *it <= span.begin )                    //if *it starts before span.begin, it overlaps (since we know it's not before)
+  {
+    LineSpan truncated(span.begin, it->end);  //truncated part
+    truncated.Realize(ptr, step);             //realize it
+    ++it;                                     //move to next
+  }
+
+  while ( it != end() && *it < span.end )     //while there more which are inside span
+    it->Realize(ptr, step);                   //we realize them
+
+  if ( it != end() && *it <= span.end )       //there is an extra span, which starts inside span: then overlap
+  {
+    LineSpan truncated(it->begin, span.end);  //get truncated part
+    truncated.Realize(ptr, step);             //and realize it
+  }
+
+}
 
 
 

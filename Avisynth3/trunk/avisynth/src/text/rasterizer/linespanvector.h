@@ -65,12 +65,13 @@ public:  //read access
   iterator begin() const { return spanVector_.begin(); }
   iterator end() const { return spanVector_.end(); }
 
-  bool empty() const { return spanVector_.empty(); }
-
 
 public:  
 
+  void Remove(LineSpanVector const& other);
   void MergeThickened(LineSpanVector const& other, long radius);
+
+  void Realize(BYTE * ptr, LineSpan const& span, int step) const;
 
 };
 

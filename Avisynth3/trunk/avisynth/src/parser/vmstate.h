@@ -21,11 +21,12 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_PARSER_STACK_H__
-#define __AVS_PARSER_STACK_H__
+#ifndef __AVS_PARSER_VMSTATE_H__
+#define __AVS_PARSER_VMSTATE_H__
 
-//avisynth include
+//avisynth includes
 #include "avsvalue.h"
+#include "../core/forward.h"  //for PEnvironment
 
 //stl include
 #include <vector>
@@ -34,37 +35,45 @@
 namespace avs { namespace parser {
 
 
-class Stack
+/////////////////////////////////////////////////////////////////////////////////////
+//  VMState
+//
+//  virtual machine state
+//
+class VMState
 {
 
-public:
+  PEnvironment env_;
   std::vector<AVSValue> stack_;
 
 
 public:  //structors
 
-  Stack() { }
+  VMState(PEnvironment const& env)
+    : env_( env ) { }
 
-  //generated copy constructor and destructor are fine
+  //generated destructor is fine
+
+
+public:  //stack behavior
+
+  void push(AVSValue const& value) { stack_.puh_back(value); }
+  void pop() { stack_.pop_back(); }
+
+  AVSValue& top() { return stack_.back(); }
+  AVSValue& peek(int index) { return stack_[stack_.size() - 1 - index]; }
+
+  AVSValue& operator[int index] { return stack_[index]; }
 
 
 public:
 
-  int size() const { return stack_.size(); }
-
-  AVSValue& operator[](int pos) { return stack_[pos]; }
-
-
-  void push(AVSValue const& val) { stack_.push_back(val); }
-  void pop() { stack_.pop_back(); }
-  AVSValue& top() { return stack_.back(); }
-
-  AVSValue& peek(int pos) { return stack_[size() - 1 - pos]; }
+  PEnvironment const& GetEnvironment() const { return env_; }
 
 };
 
 
 
-} } //namespace avs::stack
+} } //namespace avs::parser
 
-#endif //__AVS_PARSER_STACK_H__
+#endif //__AVS_PARSER_VMSTATE_H__

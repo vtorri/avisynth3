@@ -89,7 +89,7 @@ void RawAudio::InitAudio(PAVIStream const& audio, VideoInfo& vi)
     //get wav format header from stream
     vfw::PWaveFormatEx wfe = boost::static_pointer_cast<vfw::WaveFormatEx>(AviFileSource::ReadFormat(audio));
     
-    if ( ! wfe->IsVBR() )        //checks it's CBR  (vfw IAVIStream seems unable to output vfr data)
+    if ( ! wfe->IsVBR() )        //checks it's CBR  (vfw IAVIStream seems unable to output vbr data)
     {
       audio_ = audio;
 

@@ -52,6 +52,25 @@ struct assigner
 
 
 
+////////////////////////////////////////////////////////////////////////////////
+//  popassigner<Holder>
+//
+//  assign stack top to the holder value, and pops stack top
+//
+template <typename Holder>
+struct popassigner
+{
+
+  Holder const holder_;
+
+  popassigner(Holder const& holder)
+    : holder_( holder ) { }
+
+  void operator()(VMState& state) const { holder_(state) = state.top(); state.pop(); }
+
+};
+
+
 } } } //namespace avs::parser::functor
 
 #endif //__AVS_PARSER_FUNCTOR_ASSIGNER_H__

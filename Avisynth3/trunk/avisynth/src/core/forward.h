@@ -21,9 +21,8 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_SMARTPTR_FORWARD_H__
-#define __AVS_SMARTPTR_FORWARD_H__
-
+#ifndef __AVS_FORWARD_H__
+#define __AVS_FORWARD_H__
 
 //boost include
 #include <boost/shared_ptr.hpp>    //for shared_ptr
@@ -59,4 +58,4 @@ typedef boost::weak_ptr<RuntimeEnvironment> WeakPEnvironment;
 
 } //namespace avs
 
-#endif //__AVS_SMARTPTR_FORWARD_H__
+#endif //__AVS_FORWARD_H__

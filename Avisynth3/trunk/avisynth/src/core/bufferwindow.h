@@ -30,7 +30,7 @@
 #include "geometry/dimension.h"
 
 //assert include
-#include "assert.h"
+#include <assert.h>
 
 
 namespace avs { namespace bw { 

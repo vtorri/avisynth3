@@ -72,13 +72,13 @@ template <int n> struct Attribute
   template <typename T>
   typename result<T>::type operator()(T& val) const
   { 
-    return val.get<n>();
+    return val.template get<n>();
   }
 
   template <typename T>
   typename result<T>::type operator()(boost::reference_wrapper<T> val) const
   {
-    return val.get().get<n>();
+    return val.get().template get<n>();
   }
 
 };

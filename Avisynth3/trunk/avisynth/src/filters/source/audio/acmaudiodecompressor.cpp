@@ -33,6 +33,9 @@
 //boost include
 #include <boost/bind.hpp>
 
+//stl include
+#include <algorithm>     //for std::min
+
 
 namespace avs { namespace filters { namespace source {
 
@@ -213,14 +216,14 @@ void ACMAudioDecompressor::Skip(long size) const
 
 long ACMAudioDecompressor::SkipFromBuffer(long size) const
 {
-  long skip = std::min(size, ash_.cbDstLengthUsed);     //available to skip
+  long skip = std::min(size, long(ash_.cbDstLengthUsed)); //available to skip
 
-  current_ += skip;                                     //update position
+  current_ += skip;                                       //update position
 
-  ash_.pbDst += skip;                                   //update output buffer ptr
-  ash_.cbDstLengthUsed -= skip;                         //and output buffer size
+  ash_.pbDst += skip;                                     //update output buffer ptr
+  ash_.cbDstLengthUsed -= skip;                           //and output buffer size
 
-  return skip;                                          //report data skipped
+  return skip;                                            //report data skipped
 }
 
 

@@ -35,7 +35,7 @@
 
 #include "cache.h"
 #include "pclip.h"
-
+#include <algorithm>
 
 
 CPVideoFrame fetch(int n) { return CPVideoFrame(); }
@@ -148,44 +148,44 @@ CPVideoFrame Cache::GetCachedFrame(int n, Clip& client, Clip& source)
 void Cache::DropOldest()
 {
   if ( frameAges.empty() )           //if empty
-    return;                          //nothing to do
+    return;                          //nothing to drop
 
   int n = frameAges.front();         //get the number of the frame to drop
   frameAges.pop_front();             //remove it from frameAges
   
-  if ( sharedCache.drop(n) )         //if succeed to remove in sharedCache
+  if ( sharedCache->drop(n) )         //if succeed to remove in sharedCache
     return;                          //end
   //now search in clientMap
   for(ClipToCacheMap::iterator it = clientMap.begin(); it != clientMap.end(); ++it )  
     if ( it->second->drop(n) )       //as soon as dropped
       return;                        //end
-}
 
+  //if we get there : bug  (exception, assert ?)
+}
 
 
 FrameCache * Cache::RegisterClient(Clip& client, Clip& source)
 {
-  Clip::CachePolicy policy = client.GetWantedCachePolicy(source);      //request client caching policy
+  Clip::CachePolicy policy = client.GetWantedCachePolicy(source); //request client caching policy
   switch(policy.first)
   {
     case Clip::CACHE_ALL:
     case Clip::CACHE_NOTHING:
-      //if not in shared cache all mode and it is requested or 2nd client wanting CACHE_NONE
+      //if not in shared cache all mode and it is requested or 2nd client wanting CACHE_NOTHING
       if ( ! sharedCacheAll && (policy.first == Clip::CACHE_ALL || ! sharingClients.empty()) ) 
       {
-        sharedCacheAll = true;                                   //we switch to cache all mode
+        sharedCacheAll = true;                                    //we switch to cache all mode
         sharedCache = new CacheEverything();       
       }
-      sharingClients.push_back(&client);                         //add client to sharingClients
-      return sharedCache;                                        //return sharedCache
+      sharingClients.push_back(&client);                          //add client to sharingClients
+      return sharedCache;                                         //return sharedCache
 
     case Clip::CACHE_RANGE:
-      return clientMap[&client] = new RangeCache(policy.second); //store and return new range cache      
+      return clientMap[&client] = new RangeCache(policy.second);  //store and return new range cache      
 
     case Clip::CACHE_LAST:
-      return clientMap[&client] = new QueueCache(policy.second); //store and return new queue cache   
+      return clientMap[&client] = new QueueCache(policy.second);  //store and return new queue cache   
   }
+  throw std::logic_error("Illegal Cache Policy");                 //just to avoid the warning
 }
-
-
 

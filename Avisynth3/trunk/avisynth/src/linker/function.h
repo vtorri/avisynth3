@@ -32,13 +32,18 @@
 
 
 //declaration
-namespace avs { namespace parser { class VMCode; } }
+namespace avs { namespace parser { template <typename Result> class VMCode; } }
 
 
 namespace avs { namespace linker {
 
 
 
+//////////////////////////////////////////////////////////////////////////////////
+//  Function
+//
+//  interface for avisynth functions
+//
 class Function
 {
 
@@ -60,11 +65,11 @@ public:  //Function interface
   //format to be specified later
   virtual char const * GetPrototype() const = 0;
 
-
+  //fetch plugin from which the function belongs
   virtual PPlugin GetMotherPlugin() const = 0;
 
   //append corresponding code
-  virtual void AppendOperation(parser::VMCode& code) const = 0;
+  virtual void AppendOperation(parser::VMCode<void>& code) const = 0;
 
 };
 

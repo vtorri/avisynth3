@@ -30,38 +30,6 @@ namespace avs {
 
 
 
-VideoFrame::Base::Base(ColorSpace& space, Dimension const& dim, Type type)
-  : dim_( dim )
-  , type_( type )
-{
-  space.CheckCoordinates( dim.GetWidth(), dim.GetHeight(), MaybeInterlaced() );
-}
-
-
-VideoFrame::Base::Base(ColorSpace& space, Base const& other)
-  : dim_( other.dim_ )
-  , type_( other.type_ )
-  , propVector( other.propVector )
-{
-  space.CheckCoordinates( dim_.GetWidth(), dim_.GetHeight(), MaybeInterlaced() );
-}
-
-
-VideoFrame::Base::Base(Base const& other)
-  : dim_( other.dim_ )
-  , type_( other.type_ )
-  , propVector( other.propVector ) { }
-
-
-
-void VideoFrame::Base::SetType(Type type)
-{
-  GetColorSpace().CheckCoordinates( dim_.GetWidth(), dim_.GetHeight(), MaybeInterlaced(type) );
-
-  type_ = type;
-}
-
-
 
 void VideoFrame::Base::SetProperty(CPProperty prop)
 {
@@ -111,6 +79,11 @@ Dimension VideoFrame::Base::ToPlaneDimension(ColorSpace& space, Dimension const&
   return Dimension(x, y);
 }
 
+
+void VideoFrame::Base::CheckCompatible(ColorSpace& space, Dimension const& dim, Type type)
+{
+  space.CheckCoordinates( dim.GetWidth(), dim.GetHeight(), MaybeInterlaced(type) );
+}
 
 
 } //namespace avs

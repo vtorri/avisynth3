@@ -60,13 +60,27 @@ private:  //members
 public: //constructors
 
   //normal constructor
-  Base(ColorSpace& space, Dimension const& dim, Type type);
+  Base(ColorSpace& space, Dimension const& dim, Type type)
+    : dim_( dim )
+    , type_( type )
+  {
+    CheckCompatible( space, dim, type );
+  }
 
   //colorspace conversion constructor
-  Base(ColorSpace& space, Base const& other);
+  Base(ColorSpace& space, Base const& other)
+    : dim_( other.dim_ )
+    , type_( other.type_ )
+    , propVector( other.propVector )
+  {
+    CheckCompatible( space, dim_, type_ );
+  }
 
   //copy constructor
-  Base(Base const& other);
+  Base(Base const& other)
+    : dim_( other.dim_ )
+    , type_( other.type_ )
+    , propVector( other.propVector ) { }
 
 
 public:  //general frame info
@@ -75,7 +89,20 @@ public:  //general frame info
 
   virtual Type GetType() const { return type_; }
 
-  virtual void SetType(Type type);
+  virtual void SetType(Type type)
+  {
+    CheckCompatible( GetColorSpace(), dim_, type );
+    type_ = type;
+  }
+
+
+protected:  //write access
+
+  void SetDimension(Dimension const& dim)
+  {
+    CheckCompatible( GetColorSpace(), dim, type_ );
+    dim_ = dim; 
+  }
 
 
 public:  //properties methods
@@ -90,7 +117,9 @@ protected:  //helper methods
 
   static Dimension ToPlaneDimension(ColorSpace& space, Dimension const& dim, Plane plane);
 
-};
+  void CheckCompatible(ColorSpace& space, Dimension const& dim, Type type);
+
+};//VideoFrame::Base
 
 
 

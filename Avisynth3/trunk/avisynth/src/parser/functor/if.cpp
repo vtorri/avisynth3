@@ -23,6 +23,7 @@
 
 //avisynth includes
 #include "if.h"
+#include "../optype.h"
 #include "../scopeenforcer.h"
 
 //boost include

@@ -24,8 +24,7 @@
 #ifndef __AVS_PARSER_FUNCTOR_IF_H__
 #define __AVS_PARSER_FUNCTOR_IF_H__
 
-//avisynth includes
-#include "../optype.h"
+//avisynth include
 #include "../vmcode.h"
 
 

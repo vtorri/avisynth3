@@ -64,13 +64,13 @@ public:  //structors
 
 public:  //Basic API
 
-/*  void SetCharSize(Dimension const& size, Dimension const& resolution);
-    
-  void SetPixelSize(Dimension const& dim);  */
-  
-  unsigned GetCharIndex(unsigned charCode);
+  void SetCharSize(Dimension const& size, Dimension const& resolution);
 
   Glyph GetGlyph(unsigned glyphIndex);
+    
+  /*  void SetPixelSize(Dimension const& dim);  */
+  
+  unsigned GetCharIndex(unsigned charCode);
 
 //  BitmapGlyp GetBitmapGlyp(unsigned glyphIndex);
     

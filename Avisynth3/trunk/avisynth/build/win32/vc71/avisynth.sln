@@ -10,8 +10,8 @@ Global
 		Release = Release
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
-		{D0D433D1-C090-4B88-9C5B-AEEB4DE6AF2D}.Debug.ActiveCfg = Release|Win32
-		{D0D433D1-C090-4B88-9C5B-AEEB4DE6AF2D}.Debug.Build.0 = Release|Win32
+		{D0D433D1-C090-4B88-9C5B-AEEB4DE6AF2D}.Debug.ActiveCfg = Debug|Win32
+		{D0D433D1-C090-4B88-9C5B-AEEB4DE6AF2D}.Debug.Build.0 = Debug|Win32
 		{D0D433D1-C090-4B88-9C5B-AEEB4DE6AF2D}.Profile.ActiveCfg = Profile|Win32
 		{D0D433D1-C090-4B88-9C5B-AEEB4DE6AF2D}.Profile.Build.0 = Profile|Win32
 		{D0D433D1-C090-4B88-9C5B-AEEB4DE6AF2D}.Release.ActiveCfg = Release|Win32

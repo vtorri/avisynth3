@@ -1108,12 +1108,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath="..\..\..\src\filters\source\avifilesource.h">
 				</File>
 				<File
-					RelativePath="..\..\..\src\filters\source\avisource.cpp">
-				</File>
-				<File
-					RelativePath="..\..\..\src\filters\source\avisource.h">
-				</File>
-				<File
 					RelativePath="..\..\..\src\filters\source\colorbars.cpp">
 				</File>
 				<File
@@ -1138,22 +1132,201 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath="..\..\..\src\filters\source\voidclip.h">
 				</File>
 				<Filter
-					Name="Avi"
+					Name="AviFile"
 					Filter="">
 					<File
-						RelativePath="..\..\..\src\filters\source\avi\audiodecompressor.h">
+						RelativePath="..\..\..\src\filters\source\avifile\base.cpp">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)3.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)3.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)3.obj"/>
+						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\src\filters\source\avi\framedecompressor.cpp">
+						RelativePath="..\..\..\src\filters\source\avifile\base.h">
 					</File>
 					<File
-						RelativePath="..\..\..\src\filters\source\avi\framedecompressor.h">
+						RelativePath="..\..\..\src\filters\source\avifile\rawaudio.cpp">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\..\src\filters\source\avi\vfwframedecompressor.cpp">
+						RelativePath="..\..\..\src\filters\source\avifile\rawaudio.h">
 					</File>
 					<File
-						RelativePath="..\..\..\src\filters\source\avi\vfwframedecompressor.h">
+						RelativePath="..\..\..\src\filters\source\avifile\rawvideo.cpp">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\source\avifile\rawvideo.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="Audio"
+					Filter="">
+					<File
+						RelativePath="..\..\..\src\filters\source\audio\acmaudiodecompressor.cpp">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\source\audio\acmaudiodecompressor.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\source\audio\audiodecompressor.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\source\audio\rawaudio.cpp">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\source\audio\rawaudio.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\source\audio\trivialaudiodecompressor.cpp">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\source\audio\trivialaudiodecompressor.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="Video"
+					Filter="">
+					<File
+						RelativePath="..\..\..\src\filters\source\video\framedecompressor.cpp">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\source\video\framedecompressor.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\source\video\rawvideo.cpp">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\source\video\rawvideo.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\source\video\trivialframedecompressor.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\source\video\vfwframedecompressor.cpp">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\source\video\vfwframedecompressor.h">
 					</File>
 				</Filter>
 			</Filter>
@@ -1330,6 +1503,11 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			</File>
 			<File
 				RelativePath="..\..\..\src\parser\parser.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\src\parser\parser.h">
@@ -1639,6 +1817,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			<File
 				RelativePath="..\..\..\src\vfw\hic.h">
 			</File>
+			<File
+				RelativePath="..\..\..\src\vfw\waveformatex.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\vfw\waveformatex.h">
+			</File>
 			<Filter
 				Name="Avistream"
 				Filter="">
@@ -1741,6 +1925,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 		</File>
 		<File
 			RelativePath=".\avisynth.rc">
+		</File>
+		<File
+			RelativePath="..\..\..\src\config.h">
 		</File>
 		<File
 			RelativePath="..\..\..\src\core.h">

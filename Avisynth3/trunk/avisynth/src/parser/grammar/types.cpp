@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -32,14 +32,29 @@ namespace avs { namespace parser { namespace grammar {
 Types::Types()
 {
 
-  add
-    ("bool", 'b')
-    ("clip", 'c')
-    ("float", 'd')
-    ("int", 'i')
-    ("string", 's')
-    ("void", 'v');
+  AddType('b', "bool");
+  AddType('c', "clip");
+  AddType('d', "float");
+  AddType('i', "int");
+  AddType('s', "string");
+  AddType('v', "void");
 
+}
+
+
+char const * Types::GetString(char type) const
+{
+  std::map<char, char const *>::const_iterator it = map_.find(type);
+  
+  return it != map_.end() ? it->second
+                          : NULL;
+}
+
+
+void Types::AddType(char type, char const * string)
+{
+  add(string, type);
+  map_[type] = string;
 }
 
 

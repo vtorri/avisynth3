@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,9 @@
 //spirit include
 #include <boost/spirit/symbols.hpp>
 
+//STL include
+#include <map>
+
 
 namespace avs { namespace parser { namespace grammar {
 
@@ -40,11 +43,24 @@ namespace avs { namespace parser { namespace grammar {
 class Types : public boost::spirit::symbols<char>
 {
 
+  std::map<char, char const *> map_;
+
+
 private:  //structors
 
   Types();
 
   //generated destructor is fine
+
+
+public:
+
+  char const * GetString(char type) const;
+
+
+private:  //implementation
+
+  void AddType(char type, char const * string);
 
 
 public:  //sole instance

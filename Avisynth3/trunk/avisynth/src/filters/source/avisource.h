@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -27,17 +27,28 @@
 //avisynth includes
 #include "../../clip/nochild.h"
 #include "../../clip/caching/concrete.h"
+#include "avi/framedecompressor.h"
 
 //boost include
-#include <boost/scoped_ptr.hpp>
+#include <boost/optional.hpp>
+
+//stl include
+#include <utility>                      //for pair
 
 
 namespace avs { namespace filters {
 
 
+//declaration
 namespace avisource { class FrameDecompressor; }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////
+//  AviSource
+//
+//  base class for AviFileSource and OpenDmlSource (unimplemented yet)
+//
 class AviSource : public clip::NoChild
                 , public clip::caching::Concrete
 {
@@ -49,7 +60,9 @@ class AviSource : public clip::NoChild
 
 public:  //structors
 
-  AviSource();
+  AviSource(PEnvironment const& env);
+
+  virtual ~AviSource();
 
 
 private:  //MakeFrame method
@@ -61,9 +74,16 @@ private:  //AviSource interface
 
   virtual int NearestKeyFrame(int n) const = 0;
 
-  virtual int ReadVideo(int n, BYTE * buffer, int bufferSize) const = 0;
+  //returns a block containing read data, beginning at get() + BufferWindow::Guard
+  //and the size of the data, in a pair
+  virtual std::pair<OwnedBlock, long> ReadVideo(int n) const = 0;
 
   friend class avisource::FrameDecompressor;  //so it can call ReadVideo
+
+
+protected:  //protected interface
+
+  void SetFrameDecompressor(avisource::FrameDecompressor * frameDecompressor) { frameDecompressor_.reset( frameDecompressor ); }
 
 };
 

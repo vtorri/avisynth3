@@ -30,6 +30,13 @@
 namespace avs { namespace filters {
 
 
+AviSource::AviSource(PEnvironment const& env)
+  : clip::caching::Concrete( env )
+  , lastIndex_( -1 ) { }
+
+
+AviSource::~AviSource() { }
+
 
 CPVideoFrame AviSource::MakeFrame(int n) const
 {

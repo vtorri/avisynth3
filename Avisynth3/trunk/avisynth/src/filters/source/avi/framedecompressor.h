@@ -24,12 +24,19 @@
 #ifndef __AVS_FILTERS_AVISOURCE_FRAMEDECOMPRESSOR_H__
 #define __AVS_FILTERS_AVISOURCE_FRAMEDECOMPRESSOR_H__
 
-//avisynth includes
-#include "../avisource.h"
+//avisynth include
+#include "../../../core/ownedblock.h"
 #include "../../../core/bufferwindow.h"
 
 
-namespace avs { namespace filters { namespace avisource {
+namespace avs { namespace filters { 
+
+
+//forward declaration
+class AviSource;
+  
+  
+namespace avisource {
 
 
 

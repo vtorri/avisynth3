@@ -49,18 +49,47 @@ class AviFileSource : public AviSource
   };
 
 
+  Initializer initializer_;           //must be 1st, so destroyed after avifile and avistreams
+
   PAVIFile aviFile_;
   PAVIStream video_;
-  Initializer initializer_;
+  CPVideoInfo vi_;
 
 
 public:  //structors
 
-  AviFileSource(std::string const& fileName, ColorSpace& space, PEnvironment const& env);
+  AviFileSource(std::string const& fileName, PEnvironment const& env);
 
   //generated destructor is fine
 
 
+public:  //clip general interface
+
+  virtual CPVideoInfo GetVideoInfo() const { return vi_; }
+
+  virtual BYTE * GetAudio(BYTE * buffer, __int64 start, int count) const;
+
+
+private:  //AviSource interface
+
+  virtual int NearestKeyFrame(int n) const;
+
+  virtual std::pair<OwnedBlock, long> ReadVideo(int n) const;
+
+
+private:  //implementation helper
+
+  static IAVIStream * GetStream(PAVIFile const& aviFile, unsigned long fccType);
+
+
+public:  //factory method and functor
+
+  static PClip Create(std::string const& fileName, PEnvironment const& env);
+
+  struct Creator
+  {
+    PClip operator()(std::string const& fileName, PEnvironment const& env) const { return Create(fileName, env); }
+  };
 
 };
 

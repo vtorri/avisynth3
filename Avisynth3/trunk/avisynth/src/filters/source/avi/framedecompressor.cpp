@@ -22,6 +22,7 @@
 
 
 //avisynth includes
+#include "../avisource.h"
 #include "framedecompressor.h"
 #include "../../../core/videoinfo.h"
 #include "../../../core/colorspace.h"
@@ -34,15 +35,12 @@ namespace avs { namespace filters { namespace avisource {
 
 CPVideoFrame FrameDecompressor::operator()(int n, bool preroll)
 {
-  int bytesRead = src_.ReadVideo(n, NULL, 0);
+  std::pair<OwnedBlock, long> read = src_.ReadVideo(n);
 
-  if ( bytesRead == 0 )          //no bytes read mean dropped frame
+  if ( read.second == 0 )                 //size 0 means dropped frame
     return CPVideoFrame();
 
-  OwnedBlock block(src_.GetEnvironment(), bytesRead + Guard * 2, true);
-  src_.ReadVideo(n, block.get() + BufferWindow::Guard, bytesRead);
-
-  block = operator()(src_.NearestKeyFrame(n) == n, preroll, block, bytesRead);
+  OwnedBlock block = operator()(src_.NearestKeyFrame(n) == n, preroll, read.first, read.second);
 
   CPVideoInfo vi = src_.GetVideoInfo();
   ColorSpace& space = vi->GetColorSpace();

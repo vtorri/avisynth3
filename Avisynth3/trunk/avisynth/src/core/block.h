@@ -32,6 +32,10 @@
 namespace avs {
 
 
+//forward declaration
+namespace block { class Creator; }
+
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //  block_<align>
@@ -56,6 +60,76 @@ template <int align>
 class block_ : public block::base<block::Holder, align>
 {
 
+public:  //typedef
+
+  typedef block_<align> BlockType;
+
+
+public:  //structors
+  
+  template <class Holder>
+  explicit block_(Holder * holder)
+    :  BaseBlockType( holder ) { }
+
+  template <int alignOther>
+  explicit block_(block_<alignOther> const& other)
+    : BaseBlockType( other ) { }
+
+  //spawning constructor
+  block_(BlockType const& other, int size)
+    : BaseBlockType( other, size ) { }
+
+  //generated copy constructor and destructor are fine
+
+
+public:  //assignemnt
+
+  template <int alignOther>
+  BlockType& operator=(block_<alignOther> const& other)
+  {
+    return static_cast<BlockType>( BaseBlockType::operator=(other) );
+  }
+
+  //generated operator= is fine
+  //swap inherited from superclass
+
+
+public:  //misc
+
+  void reset(int size)
+  {
+    spawn(size).swap(*this);
+  }
+
+  BlockType spawn(int size) const
+  {
+    return BlockType(*this, size);
+  }
+
+
+
+public:  //Creator typedef (helper for the buffer_window template)
+
+  typedef typename boost::enable_if<block::align_compatible<block::Align, Align>, block::Creator>::type Creator;
+
+};
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//  block_<block::Align>
+//
+//  specialisation for the avs nominal align, adds a constructor using avs memory pool
+//
+template <> 
+class block_<block::Align> : public block::base<block::Holder, block::Align>
+{
+
+public:  //typedef
+
+  typedef block_<block::Align> BlockType;
+
+
 public:  //structors
   
   explicit block_(int size, bool recycle = false);
@@ -68,33 +142,71 @@ public:  //structors
   explicit block_(block_<alignOther> const& other)
     : BaseBlockType( other ) { }
 
+  //spawning constructor
+  block_(BlockType const& other, int size)
+    : BaseBlockType( other, size ) { }
+
   //generated copy constructor and destructor are fine
 
 
 public:  //assignemnt
 
   template <int alignOther>
-  block_<align>& operator=(block_<alignOther> const& other)
+  BlockType& operator=(block_<alignOther> const& other)
   {
-    return static_cast<block_<align>&>( BaseBlockType::operator=(other) );
+    return static_cast<BlockType>( BaseBlockType::operator=(other) );
   }
 
   //generated operator= is fine
   //swap inherited from superclass
 
 
-public:  //reset method
+public:  //misc
 
-  void reset(int size, bool recycle = false) { block_(size, recycle).swap(*this); }
+  void reset(int size)
+  { 
+    spawn(size).swap(*this); 
+  }
+  
+  BlockType spawn(int size) const 
+  { 
+    return BlockType(*this, size); 
+  }
+
+
+public:  //Creator typedef (helper for the buffer_window template)
+
+  typedef block::Creator Creator;
 
 };
 
 
-//this constructor is only defined for avs nominal align
-template <> block_<block::Align>::block_(int size, bool recycle);
+
+namespace block {
 
 
 
-} //namespace avs
+//////////////////////////////////////////////////////////////////////////////////////////
+//  block::Creator
+//
+//  This functor is used by the buffer_window template to flatten its interface.
+//
+//  Its introduction has been necessary when Buffer became a template parameter.
+//
+class Creator
+{
+
+public:
+
+  block_<block::Align> operator()(int size, bool recycle) const
+  {
+    return block_<block::Align>(size, recycle);
+  }
+
+};
+
+
+
+} } //namespace avs::block
 
 #endif //__AVS_BLOCK_H__

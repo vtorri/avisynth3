@@ -24,7 +24,7 @@
 #ifndef __AVS_PARSER_GRAMMAR_KEYWORDS_H__
 #define __AVS_PARSER_GRAMMAR_KEYWORDS_H__
 
-//boost include
+//spirit include
 #include <boost/spirit/symbols.hpp>
 
 

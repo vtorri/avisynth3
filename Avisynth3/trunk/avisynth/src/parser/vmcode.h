@@ -52,15 +52,7 @@ template <typename Result> class VMCode
 
 public:  //structors
 
-  VMCode() { }
-
-  VMCode(VMOperation<Result> const& op) 
-  {
-    assert( ! op.empty() );
-    code_.push_back(op);
-  }
-
-  //generated copy constructor and destructor are fine
+  //generated are fine
 
 
 public:  //code accumulation methods

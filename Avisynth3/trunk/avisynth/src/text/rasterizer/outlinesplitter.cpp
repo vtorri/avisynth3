@@ -40,9 +40,23 @@ void OutlineSplitter::BezierCurveTo(VecteurFP3 const& pt3, VecteurFP3 const& pt2
   VecteurFP3 A = pt3 - 3 * pt2 + 3 * pt1 -     pt0;
   VecteurFP3 B =       3 * pt2 - 6 * pt1 + 3 * pt0;
   VecteurFP3 C =                 3 * pt1 - 3 * pt0;
-  VecteurFP3 D =                               pt0;
+  VecteurFP3 D =                               pt0;   //a copy must be made, the last pt change during interpolation
 
   InterpolatePolynom(VecteurDb(A), VecteurDb(B), VecteurDb(C), D);
+
+  LineTo(pt3);
+}
+
+
+void OutlineSplitter::BezierCurveTo(VecteurFP3 const& pt2, VecteurFP3 const& pt1)
+{
+  VecteurFP3 const& pt0 = spanMaker_.GetLastPt();
+
+  VecteurFP3 B = pt2 - 2 * pt1 +     pt0;
+  VecteurFP3 C =       2 * pt1 - 2 * pt0;
+  VecteurFP3 D =                     pt0;
+
+  InterpolatePolynom(VecteurDb(), VecteurDb(B), VecteurDb(C), D);
 
   LineTo(pt3);
 }

@@ -27,9 +27,6 @@
 //avisynth includes
 #include "../vmcode.h"
 
-//boost include
-#include <boost/variant/get.hpp>
-
 
 namespace avs { namespace parser { namespace functor {
 

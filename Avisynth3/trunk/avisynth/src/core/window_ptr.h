@@ -24,6 +24,9 @@
 #ifndef __AVS_WINDOW_PTR_H__
 #define __AVS_WINDOW_PTR_H__
 
+//stl include
+#include <assert.h>
+
 
 namespace avs {
 
@@ -65,6 +68,19 @@ struct window_ptr
     , height( _height ) { }
 
   //compiler generated copy constructor and operator= are fine
+
+  //conversion constructor
+  template <typename T>
+  window_ptr(window_ptr<T> const& other)
+    : ptr( (Data *)other.ptr )
+    , pitch( other.pitch * sizeof(T) / sizeof(Data) )
+    , width( other.width * sizeof(T) / sizeof(Data) )
+    , height( other.height ) 
+  { 
+    assert( pitch * sizeof(Data) == other.pitch * sizeof(T) );
+    assert( width * sizeof(Data) == other.width * sizeof(T) );
+  }  
+
 
   //data manip methods
   Data * at(int x, int y) const { return ptr + x + y * pitch; }

@@ -85,6 +85,7 @@ public:  //plane access
     case PLANAR_U: return GetU();
     case PLANAR_V: return GetV();
     
+    default: throw exception::NoSuchPlane(GetColorSpace(), plane);
     }   
   }
 

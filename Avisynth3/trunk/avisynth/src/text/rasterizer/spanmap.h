@@ -36,6 +36,11 @@ namespace avs { namespace text { namespace rasterizer {
 
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  SpanMap
+//
+//
+//
 class SpanMap
 {
 
@@ -46,7 +51,7 @@ class SpanMap
 
 public:  //structors
 
-  SpanMap() { }                    //default constructor
+  SpanMap() { }                          //default constructor
   SpanMap(SpanMaker const& maker);       //construction from a SpanMaker
 
   //generated copy constructor and destructor are fine
@@ -55,6 +60,8 @@ public:  //structors
 public:
 
   SpanMap Thicken(float radius) const;
+
+  void Realize(WindowPtr const& wp, int step) const;
 
 };
 

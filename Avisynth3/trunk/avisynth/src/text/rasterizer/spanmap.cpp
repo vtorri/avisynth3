@@ -24,9 +24,10 @@
 //avisynth includes
 #include "spanmap.h"
 #include "spanmaker.h"
+#include "../../core/window_ptr.h"  //so WindowPtr is defined
 
 //stl include
-#include <cmath>
+#include <cmath>                    //for std::sqrt, std::floor
 
 //assert include
 #include "assert.h"
@@ -53,7 +54,7 @@ SpanMap SpanMap::Thicken(float radius) const
 
   for ( long dy = -r; dy <= r; ++dy )
   {
-    long dx = static_cast<long>( std::sqrt( radius * radius - dy*dy ) );
+    long dx = static_cast<long>( std::floor(std::sqrt( radius * radius - dy*dy )) );
 
     for ( Map::const_iterator it = map_.begin(); it != map_.end(); ++it )
       result.map_[ it->first + dy ].MergeThickened( it->second, dx );
@@ -61,6 +62,20 @@ SpanMap SpanMap::Thicken(float radius) const
 
   return result;
 }
+
+
+
+void SpanMap::Realize(WindowPtr const& wp, int step) const
+{
+  Map::const_iterator it = map_.lower_bound(0);
+  Map::const_iterator end = map_.upper_bound(wp.height - 1);
+
+  LineSpan span(0, wp.width);
+
+  for ( ; it != end; ++it )
+    it->second.Realize(wp.at(0, it->first), span, step);
+}
+
 
 
 } } } //namespace avs::text::rasterizer

@@ -24,11 +24,12 @@
 #ifndef __AVS_TEXT_RASTERIZER_LINESPAN_H__
 #define __AVS_TEXT_RASTERIZER_LINESPAN_H__
 
-//avisynth include
-#include "forward.h"      //for LineSpanVector
+//avisynth includes
+#include "forward.h"             //for LineSpanVector
+#include "../../core/forward.h"  //for BYTE
 
 //stl include
-#include <vector>         //for vector::const_iterator
+#include <vector>                //for vector::const_iterator
 
 
 namespace avs { namespace text { namespace rasterizer {
@@ -60,7 +61,7 @@ public:  //structors
 public:
 
   //returns a thickened span (NB: not the concern of this to check radius >=0)
-  LineSpan Thicken(long radius) { return LineSpan(begin - radius, end + radius); }
+  LineSpan Thicken(long radius) const { return LineSpan(begin - radius, end + radius); }
 
   void Realize(BYTE * ptr, int step) const;
 
@@ -75,6 +76,20 @@ private:  //helpers for LineSpanVector
   friend class LineSpanVector;    //so can call the above
 
 };
+
+
+//WEAK ordering on span, means left is strictly before right (no overlap)
+inline bool operator<(LineSpan const& left, LineSpan const& right)
+{
+  return left.end <= right.begin;
+}
+
+
+inline bool operator<(long begin, LineSpan const& span) { return begin <= span.begin; }
+inline bool operator<(LineSpan const& span, long end) { return span.end <= end; }
+
+inline bool operator<=(LineSpan const& span, long end) { return span.begin < end; }
+inline bool operator<=(long begin, LineSpan const& span) { return begin < span.end; }
 
 
 

@@ -57,7 +57,7 @@ template <int pixelCount, int coeffCount> class interleaved;
 //  The pattern is quaranteed 8 bytes aligned, making each offset int aligned
 //  and each coeff block 8 bytes aligned
 //
-template <> class interleaved<2, 2>
+template <> class interleaved<2, 2> : public Base
 {
 
 public:  //structors

@@ -21,12 +21,73 @@
 // General Public License cover the whole combination.
 
 
-//avisynth include
+//avisynth includes
+#include "maker.h"
+#include "packer.h"
 #include "interleaved2x2.h"
+#include "../../../core/roundup.h"
 
 
 namespace avs { namespace filters { namespace resize { namespace pattern {
 
+
+
+interleaved<2, 2>::interleaved<2, 2>(PEnvironment const& env, Filter const& filter, SubRange const& subrange, int size)
+  : Base( env )
+{
+  Maker make(filter, subrange, size);
+
+  size = RoundUp<2>(size);                //rounds up size to a multiple of 2           
+  
+  int realCount = make.count();           //true number of coeffs
+  int count = RoundUp<2>(realCount + 1);  //must be even with at least one zero for compensation (so we can ensure even offset)
+                              
+  init( count, size * (1 + count / 2) );
+
+  packer<1, 2> zero( 0, get() );          //packer for even pixels
+  packer<1, 2> one( 1, get() + 1 );       //packer for odd pixels
+  
+
+  for ( int i = 0; i < size; ++i )
+  {
+    packer<1, 2>& pack = (i & 1) ? one : zero;  //select the appropriate packer
+
+    int pads = realCount - count;     //number of zeros of padding (which have to be made)
+
+    int offset = make.offset();       //fetch offset for this pixel
+
+    switch( offset & 3 )
+    {
+
+    case 2:                           //offset is even, but...
+      if ( pads == 2 )                //if pads is 2
+      {
+        pack.offset( offset - 2 );    //we can make it 0 mod 4 (better alignment opportunities)
+        pack.coeff( 0 );              //make necessary padding
+        pack.coeff( 0 );
+        pads = 0;                     //update pads
+        break;                        //break the switch
+      }
+
+    case 0:                           //offset is even (we may fall through from case 2)
+      pack.offset( offset );          //we pack it
+      break;                          //and done
+
+    default:  //ie case 1 and 3
+      pack.offset( offset - 1 );      //we remove 1 to make it even
+      pack.coeff( 0 );                //necessary padding
+      --pads;                         //update pads
+
+    }
+
+    for( int k = count; k-- > 0; )    //pack all true coeffs
+      pack.coeff( make.coeff() );
+
+    for( ; pads-- > 0; )              //final pads with zeros
+      pack.coeff( 0 );
+  }
+
+}
 
 
 

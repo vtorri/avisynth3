@@ -24,6 +24,7 @@
 #include "killvideo.h"
 #include "../source/voidclip.h"
 #include "../../core/videoinfo.h"
+#include "../../clip/folded/make.h"
 #include "../../core/cow_shared_ptr.h"
 
 
@@ -48,15 +49,20 @@ CPVideoFrame KillVideo::GetFrame(int n) const
 
 PClip KillVideo::Simplify() const
 {
-  CPVideoInfo child_vi = GetChild()->GetVideoInfo();
+  CPVideoInfo child_vi = GetChildVideoInfo();
   if ( ! child_vi->HasAudio() )                             //if child has no audio
     return VoidClip::Create(GetEnvironment())->Simplify();  //this has nothing
   if ( ! child_vi->HasVideo() )                             //if child has no video
     return GetChild();                                      //child is equivalent
 
-  return FoldedSimplifiableType::Simplify();
+  return SimplifiableType::Simplify();
 }
 
+
+PClip KillVideo::Create(PClip const& child)
+{ 
+  return PClip( (Clip *)new clip::folded::Make<KillVideo, WeakPClip>(child) ); 
+}
 
 
 } } //namespace avs::filters

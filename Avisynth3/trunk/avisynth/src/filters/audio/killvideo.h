@@ -26,7 +26,7 @@
 
 //avisynth includes
 #include "../../clip/onechild/concrete.h"
-#include "../../clip/onechild/foldedsimplifiable.h"
+#include "../../clip/onechild/simplifiable.h"
 
 
 #pragma warning ( push )           //push warning state
@@ -42,14 +42,14 @@ namespace avs { namespace filters {
 //
 //  Removes the video from its child
 //
-class KillVideo : public clip::onechild::FoldedSimplifiable<KillVideo, WeakPClip>
+class KillVideo : public clip::onechild::Simplifiable<KillVideo>
                 , public clip::onechild::Concrete
 {
 
 public:  //constructor
 
   KillVideo(PClip const& child)
-    : Concrete( child->Simplify() ) { }
+    : Concrete( child ) { }
 
 
 public:  //clip general interface
@@ -61,7 +61,7 @@ public:  //clip general interface
   virtual void GetAudio(void * buffer, __int64 start, int count) const { GetChildAudio(buffer, start, count); }
 
 
-protected:  //Simplify method
+public:  //Simplify method
 
   virtual PClip Simplify() const;
 
@@ -71,14 +71,14 @@ public:  //child changing clone
   virtual PClip clone(PClip const& child) const { return Create(child); }
 
 
-private:  //GetKey method
+protected:  //GetKey method
 
-  virtual KeyType GetKey() const { return GetChild(); }
+  WeakPClip GetKey() const { return GetChild(); }
 
 
 public:  //factory method
 
-  static PClip Create(PClip const& child) { return PClip((Clip *)new KillVideo(child)); }
+  static PClip Create(PClip const& child); // { return PClip((Clip *)new KillVideo(child)); }
 
 };
 

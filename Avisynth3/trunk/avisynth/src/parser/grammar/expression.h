@@ -109,6 +109,7 @@ struct FunctionCall : spirit::closure<FunctionCall, std::string, function::Pool 
 class Expression : public spirit::grammar<Expression, closure::Expression::context_t>
 {
 
+  spirit::symbols<bool> equality_op;                     //maps "==" to true and "!=" to false
   spirit::symbols<binaryop::TypeMapped const> add_op, mult_op;
 
 
@@ -150,9 +151,8 @@ public:  //definition nested class
               [ 
                 third(self.value) = val(true)      //report the expression parsed is an affectation
               ]
-          |   binary_op_p(mult_expr, self.add_op) 
+          |   equality_expr
               [ 
-                expression.value = arg1,
                 third(self.value) = val(false)     //report it is not
               ]
           ;
@@ -183,6 +183,23 @@ public:  //definition nested class
                 first(expression.value) += construct_<GlobalVarAssigner>( first(global_assign_expr.value) )
               ]
           ;
+
+      equality_expr
+          =   binary_op_p(mult_expr, self.add_op)
+              [
+                expression.value = arg1
+              ]
+          >> !(   self.equality_op
+                  [
+                    equality_expr.value = arg1
+                  ]
+              >>  binary_op_p(mult_expr, self.add_op)
+                  [
+                    bind(&Action::AppendEqualityOperation)(expression.value, arg1, equality_expr.value)
+                  ]
+              )
+          ;
+                  
 
       mult_expr
           =   binary_op_p(atom_expr, self.mult_op) [ mult_expr.value = arg1 ];
@@ -298,6 +315,7 @@ public:  //definition nested class
     spirit::rule<ScannerT, closure::InnerExpression::context_t> expression;
     spirit::rule<ScannerT, closure::Value<TypedIndex>::context_t> local_assign_expr;
     spirit::rule<ScannerT, closure::Value<TypedIndex>::context_t> global_assign_expr;
+    spirit::rule<ScannerT, closure::Value<bool>::context_t> equality_expr;
     spirit::rule<ScannerT, closure::Value<TypedCode>::context_t> mult_expr;
     spirit::rule<ScannerT, closure::Value<TypedCode>::context_t> atom_expr;
     spirit::rule<ScannerT> nested_expr, var_expr, last_expr;

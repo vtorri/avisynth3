@@ -38,6 +38,10 @@ Expression::Expression()
   using namespace visitor;
   using namespace binaryop;
 
+  equality_op.add
+    ( "==", true )
+    ( "!=", false );
+
   add_op.add
     ( "+", TypeMapped( "+", make<Plus>(Plus()), Plus::types() ) )
     ( "-", TypeMapped( "-", make<Minus>(Minus()), Minus::types() ) );
@@ -45,7 +49,7 @@ Expression::Expression()
   mult_op.add
     ( "*", TypeMapped( "*", make<Square>(Square()), Square::types() ) )
     ( "/", TypeMapped( "/", make<Divide>(Divide()), Divide::types() ) );
-  
+ 
 }
 
 

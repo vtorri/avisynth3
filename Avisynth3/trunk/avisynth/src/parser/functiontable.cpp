@@ -22,66 +22,31 @@
 
 
 //avisynth include
-#include "parser.h"
-#include "vmcode.h"
-#include "grammar/statement.h"
-#include "../core/runtime_environment.h"
-#include "../filters/source/staticimage.h"
-#include "../linker/core/plugin.h"
-
-//stl include
-#include <sstream>
-
+#include "functiontable.h"
+#include "../linker/plugin.h"
+#include "../linker/function.h"
 
 
 namespace avs { namespace parser {
 
 
 
-PClip Parser::operator ()(std::string const& src)
+void FunctionTable::AddPlugin(linker::PPlugin const& plugin)
 {
-  
-  using namespace phoenix;
-  using namespace avs::parser::grammar;
+  linker::FunctionList list = plugin->GetFunctionList();
 
-  //Expression expression;
-  PEnvironment env = RuntimeEnvironment::Create(10000000);
-
-  int stackSize = 0;
-  VMState state(env);  
-  VarTable varTable;
-  FunctionTable functionTable;
-
-  functionTable.AddPlugin(linker::core::Plugin::Get());
-
-  Statement statement(stackSize, varTable, functionTable);
-  //Variable variable(varTable);
-
-  VMCode code;
-  //std::string types;
-
-  parse(src.c_str(), 
-   *( statement
-      [
-        var(code) += arg1//,
-    //    var(types) += bind(&TypedCode::type)(arg1)
-      ]
-      >> spirit::eol_p
-    ), spirit::blank_p);
+  for( linker::FunctionList::iterator it = list.begin(); it != list.end(); ++it )
+    AddFunction( *it );
+};
 
 
-  code(state);
+void FunctionTable::AddFunction(linker::PFunction const& function)
+{
+  FunctionPool * pool = spirit::find(*this, function->GetName());
+  if ( pool == NULL )
+    pool = spirit::add(*this, function->GetName());
 
-
-
-  std::stringstream stream;
-
-  stream << "parsed:";
-
-  for(int i = 0; i < state.size(); ++i)
-    stream << ' ' /*<< types[i] << ":"*/ << state[i];
-
-  return filters::StaticImage::CreateMessageClip(stream.str(), env );
+  pool->Add(function);
 }
 
 

@@ -21,68 +21,36 @@
 // General Public License cover the whole combination.
 
 
+#ifndef __AVS_PARSER_FUNCTIONTABLE_H__
+#define __AVS_PARSER_FUNCTIONTABLE_H__
+
 //avisynth include
-#include "parser.h"
-#include "vmcode.h"
-#include "grammar/statement.h"
-#include "../core/runtime_environment.h"
-#include "../filters/source/staticimage.h"
-#include "../linker/core/plugin.h"
+#include "functionpool.h"
 
-//stl include
-#include <sstream>
+//boost include
+#include <boost/spirit/symbols.hpp>
 
+
+namespace spirit = boost::spirit;
 
 
 namespace avs { namespace parser {
 
 
 
-PClip Parser::operator ()(std::string const& src)
+class FunctionTable : public spirit::symbols<FunctionPool>
 {
-  
-  using namespace phoenix;
-  using namespace avs::parser::grammar;
 
-  //Expression expression;
-  PEnvironment env = RuntimeEnvironment::Create(10000000);
+public:
 
-  int stackSize = 0;
-  VMState state(env);  
-  VarTable varTable;
-  FunctionTable functionTable;
+  void AddPlugin(linker::PPlugin const& plugin);
 
-  functionTable.AddPlugin(linker::core::Plugin::Get());
+  void AddFunction(linker::PFunction const& function);
 
-  Statement statement(stackSize, varTable, functionTable);
-  //Variable variable(varTable);
+};
 
-  VMCode code;
-  //std::string types;
-
-  parse(src.c_str(), 
-   *( statement
-      [
-        var(code) += arg1//,
-    //    var(types) += bind(&TypedCode::type)(arg1)
-      ]
-      >> spirit::eol_p
-    ), spirit::blank_p);
-
-
-  code(state);
-
-
-
-  std::stringstream stream;
-
-  stream << "parsed:";
-
-  for(int i = 0; i < state.size(); ++i)
-    stream << ' ' /*<< types[i] << ":"*/ << state[i];
-
-  return filters::StaticImage::CreateMessageClip(stream.str(), env );
-}
 
 
 } } //namespace avs::parser
+
+#endif //__AVS_PARSER_FUNCTIONTABLE_H__

@@ -51,7 +51,7 @@ namespace closure {
 
 template <class Type> struct Value : spirit::closure<Value<Type>, Type>
 {
-  member1 value;
+  typename spirit::closure<Value<Type>, Type>::member1 value;
 };
 
 

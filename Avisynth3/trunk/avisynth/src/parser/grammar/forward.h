@@ -35,7 +35,6 @@ namespace avs { namespace parser { namespace grammar {
 
 
 //typedefs
-typedef boost::tuples::tuple<ElementalOperation, char> TypedOp;
 typedef boost::tuples::tuple<VarTable, function::Table> GlobalContext;
 typedef boost::tuples::tuple<VarTable, int, boost::optional<int> > LocalContext;
 
@@ -72,7 +71,7 @@ typedef boost::tuples::tuple<ElementalCode, char, bool> Expression;
 //  1st arg : operation to generate the literal
 //  2nd arg : type of the literal
 //
-typedef TypedOp Literal;
+typedef boost::tuples::tuple<ElementalOperation, char> Literal;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -45,10 +45,10 @@ namespace avs {
 //
 template <typename T>
 struct vecteur
-     : boost::addable<vecteur<T>                          //defines vecteur + vecteur
-     , boost::subtractable<vecteur<T>                     //defines vecteur - vecteur
-     , boost::right_shiftable<vecteur<T>, dimension<T> >  //defines vecteur >> dimension (inclusion)
-       > >
+    : boost::addable<vecteur<T>                          //defines vecteur + vecteur
+    , boost::subtractable<vecteur<T>                     //defines vecteur - vecteur
+    , boost::right_shiftable<vecteur<T>, dimension<T> >  //defines vecteur >> dimension (inclusion)
+      > >
 {
 
   T x, y;   
@@ -81,8 +81,9 @@ struct vecteur
   vecteur operator-() const { return vecteur<T>(-x, -y); }
   vecteur& operator+=(vecteur<T> const& other) { x += other.x; y += other.y; return *this; }
   vecteur& operator-=(vecteur<T> const& other) { x -= other.x; y -= other.y; return *this; }
-  vecteur& operator*=(T scalar) { x *= scalar; y *= scalar; return *this; }
-  vecteur& operator/=(T scalar) { x /= scalar; y /= scalar; return *this; }
+  
+  template <typename U> vecteur& operator*=(U scalar) { x *= scalar; y *= scalar; return *this; }
+  template <typename U> vecteur& operator/=(U scalar) { x /= scalar; y /= scalar; return *this; }
 
   //comparison operators
   bool operator==(vecteur<T> const& other) const { return x == other.x && y == other.y; }
@@ -104,6 +105,33 @@ struct vecteur
 };
 
 
+//templated operator*
+template <typename T, typename U>
+vecteur<T> operator*(U scalar, vecteur<T> const& vect)
+{
+  vecteur<T> result(vect);
+  result *= scalar;
+  return result;
+}
+
+template <typename T, typename U>
+vecteur<T> operator*(vecteur<T> const& vect, U scalar)
+{
+  vecteur<T> result(vect);
+  result *= scalar;
+  return result;
+}
+
+//templated operator/
+template <typename T, typename U>
+vecteur<T> operator/(vecteur<T> const& vect, U scalar)
+{
+  vecteur<T> result(vect);
+  result /= scalar;
+  return result;
+}
+
+
 //global scope swap
 template <typename T>
 inline void swap(vecteur<T>& left, vecteur<T>& right) 
@@ -118,6 +146,8 @@ template <typename T>
 inline vecteur<T> pmax(vecteur<T> const& left, vecteur<T> const& right) { return vecteur<T>( std::max(left.x, right.x), std::max(left.y, right.y) ); }
 
 
+
+//dimension methods needing vecteur to be defined first
 template <typename T>
 inline dimension<T>::dimension(vecteur<T> const& vect) : x_( CheckSign(vect.x) ), y_( CheckSign(vect.y) ) { }
 

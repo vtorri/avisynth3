@@ -41,8 +41,8 @@ ICMFrameDecompressor::ICMFrameDecompressor(RawVideo const& src, vfw::PBitmapInfo
   : FrameDecompressor( src )
   , hic_( bih->biCompression )
   , input_( bih )
+  , output_( bih->GetDimension() )
 {
-  output_.SetDimension(bih->GetDimension());   //init output bih dimension
 
   int i = 0;
   do { output_.SetColorSpace( ColorSpace::FromString(preferredColorSpace_[i++]) ); }   //test an output colorspace

@@ -24,8 +24,8 @@
 #ifndef __AVS_LINKER_PLUGIN_H__
 #define __AVS_LINKER_PLUGIN_H__
 
-//boost include
-#include <boost/shared_ptr.hpp>
+//avisynth include
+#include "forward.h"
 
 //stl include
 #include <string>
@@ -35,12 +35,8 @@
 namespace avs { namespace linker {
 
 
-//declaration and typedefs
-class Function;
-
-typedef boost::shared_ptr<Function const> PFunction;
+//typedef
 typedef std::vector<PFunction> FunctionList;
-
 
 
 

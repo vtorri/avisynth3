@@ -37,8 +37,8 @@ void FunctionPool::Resolve(std::string const& prototype, TypedCode& target) cons
   for(FunctionVector::const_iterator it = functionList_.begin(); it != functionList_.end(); ++it)
     if ( prototype == (*it)->GetPrototype() )
     {
-      (*it)->AppendOperation(target.first);
-      target.second = (*it)->GetReturnType();
+      (*it)->AppendOperation(target.get<0>());
+      target.get<1>() = (*it)->GetReturnType();
       return;
     }
 

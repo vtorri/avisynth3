@@ -26,9 +26,11 @@
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="2"
-				PreprocessorDefinitions="_DEBUG;DEBUG;_STLP_DEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_DLL;_USRDLL;AVISYNTH_EXPORTS"
+				PreprocessorDefinitions="_DEBUG;DEBUG;_STLP_DEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_DLL;_USRDLL;AVISYNTH_EXPORTS;_INTEL_ASM"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
+				DisableLanguageExtensions="FALSE"
+				ForceConformanceInForLoopScope="TRUE"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Debug/avisynth.pch"
@@ -38,9 +40,11 @@
 				BrowseInformation="1"
 				BrowseInformationFile=".\Debug/"
 				WarningLevel="3"
+				WarnAsError="TRUE"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"
-				CallingConvention="2"/>
+				CallingConvention="2"
+				DisableSpecificWarnings="4511; 4512; 4709"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -989,6 +993,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			Name="Parser"
 			Filter="">
 			<File
+				RelativePath=".\src\parser\adapt.h">
+			</File>
+			<File
 				RelativePath=".\src\parser\avsvalue.h">
 			</File>
 			<File
@@ -1028,22 +1035,16 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				Name="Grammar"
 				Filter="">
 				<File
-					RelativePath=".\src\parser\grammar\action.cpp">
-				</File>
-				<File
-					RelativePath=".\src\parser\grammar\action.h">
-				</File>
-				<File
-					RelativePath=".\src\parser\grammar\check.cpp">
-				</File>
-				<File
-					RelativePath=".\src\parser\grammar\check.h">
+					RelativePath=".\src\parser\grammar\binaryopparser.h">
 				</File>
 				<File
 					RelativePath=".\src\parser\grammar\expression.cpp">
 				</File>
 				<File
 					RelativePath=".\src\parser\grammar\expression.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\grammar\forward.h">
 				</File>
 				<File
 					RelativePath=".\src\parser\grammar\keywords.cpp">
@@ -1077,34 +1078,14 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 			</Filter>
 			<Filter
-				Name="Visitor"
-				Filter="">
-				<File
-					RelativePath=".\src\parser\visitor\add.h">
-				</File>
-				<File
-					RelativePath=".\src\parser\visitor\mult.h">
-				</File>
-			</Filter>
-			<Filter
-				Name="BinaryOp"
-				Filter="">
-				<File
-					RelativePath=".\src\parser\binaryop\make.h">
-				</File>
-				<File
-					RelativePath=".\src\parser\binaryop\parser.h">
-				</File>
-				<File
-					RelativePath=".\src\parser\binaryop\typemapped.cpp">
-				</File>
-				<File
-					RelativePath=".\src\parser\binaryop\typemapped.h">
-				</File>
-			</Filter>
-			<Filter
 				Name="Lazy"
 				Filter="">
+				<File
+					RelativePath=".\src\parser\lazy\get.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\lazy\ref.h">
+				</File>
 				<File
 					RelativePath=".\src\parser\lazy\tuple.h">
 				</File>
@@ -1138,6 +1119,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 				<File
 					RelativePath=".\src\parser\functor\literal.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\functor\popassigner.h">
 				</File>
 				<File
 					RelativePath=".\src\parser\functor\popper.h">
@@ -1184,6 +1168,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath=".\src\parser\function\pool.h">
 				</File>
 				<File
+					RelativePath=".\src\parser\function\recursivecall.h">
+				</File>
+				<File
 					RelativePath=".\src\parser\function\scriptfunction.cpp">
 				</File>
 				<File
@@ -1194,6 +1181,104 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 				<File
 					RelativePath=".\src\parser\function\table.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Adaptor"
+				Filter="">
+				<File
+					RelativePath=".\src\parser\adaptor\adaptor.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\adaptor\caller.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\adaptor\decayer.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\adaptor\extractor.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Action"
+				Filter="">
+				<File
+					RelativePath=".\src\parser\action\action.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\src\parser\action\action.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\action\binaryopmapper.cpp">
+				</File>
+				<File
+					RelativePath=".\src\parser\action\binaryopmapper.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\action\check.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\src\parser\action\check.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\action\get.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\src\parser\action\get.h">
 				</File>
 			</Filter>
 		</Filter>
@@ -1252,6 +1337,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			</File>
 			<File
 				RelativePath=".\src\utility\threshold.h">
+			</File>
+			<File
+				RelativePath=".\src\utility\weakexpired.h">
 			</File>
 		</Filter>
 		<Filter

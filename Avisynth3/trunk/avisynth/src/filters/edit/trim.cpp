@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,7 @@ Trim::Trim(PClip const& child, int begin, int end)
 {
   PVideoInfo vi = GetChildVideoInfo();
 
-  if ( begin != end && begin >= 0)    //begin == end is a special case
+  if ( begin != end || begin < 0)     //begin == end is a special case which only fails if negative
   {
     vi->CheckHasFrame(begin);         //check validity of begin
     vi->CheckHasFrame(end - 1);       //check validity of end
@@ -48,10 +48,10 @@ Trim::Trim(PClip const& child, int begin, int end)
   {
     audio_begin_ = vi->AudioSamplesFromFrames(begin);
 
-    long long samplecount = vi->GetSampleCount() - audio_begin_;   //samples are removed from start
-    long long maxcount = vi->AudioSamplesFromFrames(end - begin);  //samples count is limited by length
+    long long sampleCount = vi->GetSampleCount() - audio_begin_;   //samples are removed from start
+    long long maxCount = vi->AudioSamplesFromFrames(end - begin);  //samples count is limited by length
     
-    vi->SetSampleCount( std::max(0LL, std::min(samplecount, maxcount)) );  //samplecount updated
+    vi->SetSampleCount( std::max(0LL, std::min(sampleCount, maxCount)) );  //samplecount updated
   }
 
   vi_ = vi;                           //save vi to self
@@ -79,4 +79,4 @@ PClip Trim::Refactor(KillAudio const& parent) const
 }
 
 
-}; };  //namespace avs::filters
+} }  //namespace avs::filters

@@ -8,12 +8,13 @@ These routines are used for ...
 /**
 
 @mainpage AviSynth v3 Build Documentation
-@version 0.2.1
+@version 0.2.2
 @author Wilbert Dijkhof <wilbertdijkhof at yahoo.com>
+@author Vincent Torri <torri at math dot iecn dot u-nancy dot fr>
 @date 2004
 
 
-The windows version of AviSynth v3 can be built using MinGW (g++) or VC++ .NET 2003 (VC 7.1). The linux version requires MinGW (g++). Section \ref AVS-Win-MinGW describes how to compile it using MinGW, section \ref AVS-Win-net how to compile it using VC++ .NET 2003. Section \ref AVS-Linux-MinGW describes how to built the linux version of AviSynth v3.
+The windows version of AviSynth v3 can be built using MinGW (g++) or VC++ .NET 2003 (VC 7.1). The linux version requires MinGW (g++). Section \ref AVS-Win-MinGW describes how to compile it using MinGW, section \ref AVS-Win-net how to compile it using VC++ .NET 2003. Section \ref AVS-Linux describes how to built the linux version of AviSynth v3.
 
 
 @section AVS-Win-MinGW 1. Building AviSynth v3 for Windows using MinGW (g++)
@@ -97,11 +98,10 @@ Get the sources from their <a href=http://sourceforge.net/projects/avisynth2/>we
 Open a MINGW32 terminal (CVS is already included in MinGW) and use the following command
 
 @code
-$ cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/avisynth2 co avisynth_3_0 avisynth
+$ cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/avisynth2 co -r avisynth_3_0 avisynth
 @endcode
 
 This will get you the AviSynth v3 branch in a folder called "avisynth" (note "co" means "check out", and "-r" will get you the branch).
-
 
 @subsection stlport 1.4 Installing STLport
 
@@ -182,12 +182,6 @@ Nasm or 'the Netwide ASseMbler' is used for optimization of some of the AviSynth
 
 Get <a href="http://sourceforge.net/project/showfiles.php?group_id=6208">nasm-0.98.36-win32.zip</a> and unzip it somewhere. Put nasmw.exe in C:/Msys/1.0/mingw/bin, and rename it to nasm.exe (see also <a href="http://nasm.sourceforge.net/doc/html/nasmdoc1.html">here</a>).
 
-
-@subsection platf 1.9 Editing platform.inc
-
-Edit platform.inc (in ../avisynth/build/linux) and remove in line 39 the following: -lboost_thread-mgw-mt-1_31
-
-
 @subsection build 1.10 Building AviSynth v3
 
 Open a MINGW32 terminal and go to
@@ -203,7 +197,7 @@ $ ./bootstrap.sh
 The configure file is created, and finally AviSynth can be build:
 
 @code
-$ ./configure --with-stl-path=/usr/mingw/include/stlport --with-boost-path=/usr/mingw/include/boost-1_31
+$ ./configure --with-stl-path=/usr/mingw/ --with-boost-path=/usr/mingw
 $ make
 $ make install
 @endcode
@@ -454,26 +448,26 @@ $ ./configure --with-stl-path=/usr/mingw/include/stlport --with-boost-path=/usr/
 
 Edit platform.inc (in ../avisynth/build/linux) and go down to Compiler part. Change the lines
 
-<i>
+@verbatim
 CXX=g++\n
 SPECIFIC_CFLAGS=-Os -mno-cygwin\n
 FREETYPE_CFLAGS=-I/usr/mingw/include/freetype2 -I/usr/mingw/include\n
 CXXFLAGS=-Wall -fstrength-reduce -finline-functions -freduce-all-givs -ffast-math -ansi  -I/usr/mingw/include/stlport  -I/usr/mingw/include/boost-1_31
-</i>
+@endverbatim
 
 into
 
-<i>
+@verbatim
 CXX=g++\n
 SPECIFIC_CFLAGS=-Os -mno-cygwin\n
 FREETYPE_CFLAGS=-I/usr/mingw/include/freetype2 -I/usr/mingw/include\n
 CXXFLAGS=-Wall -fstrength-reduce -finline-functions -freduce-all-givs -ffast-math  -I/usr/mingw/include/stlport  -I/usr/mingw/include/boost-1_31  -I/usr/mingw/include/ffmpeg
-</i>
+@endverbatim
 
 (you are basically removing -ansi option)
 Edit sources.inc (in ../avisynth/build/linux), and add the following line
 
-<i>filters/source/ffmpegsource.cpp \</i>
+<i>filters/source/ffmpegsource.cpp </i>
 
 to the list from SRC_GENERIC.
 
@@ -487,10 +481,252 @@ $ make install
 @endcode
 
 
-@section AVS-Linux-MinGW 4. Building AviSynth v3 for GNU/Linux x86 (using g++)
+@section AVS-Linux 4. Building AviSynth v3 for GNU/Linux x86 (using g++)
+To install Avisynth 3.0, we will need the following libraries:
+@li STLPort
+@li Boost
+@li Freetype
+@li FFMpeg or Gstreamer
 
-blabla
+This section explains how to install these libraries, taking into
+account the system. We will download all the libraries in the same
+directory, say \em avs_main_dir, in the home directory. In a terminal, type
+@code
+cd
+mkdir avs_main_dir
+@endcode
 
+\note
+Shell commands are given throughout this section. Commands in each
+subsection are independant and can (have to ?) be used as is to
+install the libraries.
+
+@subsection linux-stlport 4.1 Installing STLPort
+
+The current stable version of STLPort is 4.6.2. This version can not
+be built on systems using glibc 2.3 or above. To know which version of
+glibc installed on the computer, just type in a terminal
+@code
+ls /lib/libc-*
+@endcode
+One can see the number of the version of your glibc. If the version
+is 2.3 or above, one must install the CVS version of STLPort,
+otherwise, it is sufficient to install the 4.6.2 version of STLPort.
+
+@subsubsection linux-stlport-stable 4.1.1 Installing STLPort 4.6.2
+
+First, download <a
+href=http://www.stlport.org/archive/STLport-4.6.2.tar.gz>STLPort
+4.6.2</a> in the \em avs_main_dir directory. Go into this directory,
+uncompress the file and go to the src directory of STLPort:
+@code
+cd avs_main_dir
+tar zxvf STLport-4.6.2.tar.gz
+cd STLport-4.6.2/src
+@endcode
+By default, STLPort will be installed in \em /usr/local. If one wants to
+change that, edit the \em common_macros.mak file and change the \em INSTALLDIR
+variable as desired. Then to compile and install STLPort 4.6.2,
+just type the following commands:
+@code
+make -f gcc.mak prepare
+make -f gcc.mak install
+@endcode
+
+@subsubsection linux-stlport-cvs 4.1.2 Installing STLPort 5.0 CVS
+
+Because of some evil includes, if glibc 2.3 or above is installed, one
+has to install the cvs version of STLPort (which will be the future
+5.0 version). The installation is not as simple as in the stable
+version. First we have to download the cvs code of STLPort:
+@code
+cd
+cd avs_main_dir
+cvs -d :pserver:cvs@cvs.stlport.com:/stlport login
+@endcode
+A password will be required. Just strike the \em Enter key. Then,
+download the code with that command:
+@code
+cvs -d :pserver:cvs@cvs.stlport.com:/stlport co -rSTLPORT_5_0 STLport
+@endcode
+Then, go to the directory where \em gcc.mak is located. When this
+document has been written, it was in the \em src/explore directory:
+@code
+cd STLport/src/explore
+@endcode
+To compile the code, execute the following commands:
+@code
+make -f gcc.mak depend
+make -f gcc.mak install
+@endcode
+The libraries are located in \em STLport/lib and the headers in \em
+STLport/stlport.\n
+\li If one wants to install STLPort in \em /usr, go the the \em STLport
+directory and copy the files manually (while being root, of course):
+@code
+cd ../..
+su <type the root password>
+cp lib/libstlport* /usr/lib/
+cp -R stlport /usr/include/
+<Ctrl-d>
+@endcode
+\li If one wants to install it locally, say for example \em
+\$HOME/local, just do that:
+@code
+cd ../..
+cp lib/libstlport* $HOME/local/lib/
+cp -R stlport $HOME/local/include/
+@endcode
+
+@subsection linux-boost 4.2 Installing Boost 1.32
+
+First, download <a
+href=http://prdownloads.sourceforge.net/boost/boost_1_32_0.tar.gz?download>Boost
+1.32</a> from SourceForge, put it in \em avs_main_dir and untar it:
+@code
+cd
+cd avs_main_dir
+tar zxvf boost_1_32_0.tar.gz
+@endcode
+Boost does not use the GNU make utility to compile. Instead it uses
+Boost.Jam (an extension or Perforce Jam. Download the <a href=http://prdownloads.sourceforge.net/boost/boost-jam-3.1.10-1-linuxx86.tgz?download>prebuilt
+executable here</a>. Download it in \em avs_main_dir and untar it:
+@code
+tar zxvf boost-jam-3.1.10-1-linuxx86.tgz
+@endcode
+Now, go to the Boost 1.32 diretory and compile it with the following
+commands:
+@code
+cd boost_1_32_0
+../boost-jam-3.1.10-1-linuxx86/bjam "-sTOOLS=gcc" --prefix=/usr/ install
+@endcode
+In this example, the installation directory of Boost will be \em
+/usr/. So you  need to be root to install it. If one wants to install
+it locally (like in \ref linux-stlport), just replace \em
+--prefix=/usr/ by \em --prefix=\$HOME/local/.
+
+\note
+For more informations about installing Boost, go to the <a href=http://www.boost.org/more/getting_started.html>Installation</a>
+section of Boost.
+
+@subsection linux-freetype 4.3 Installing Freetype 2.1.9
+
+Avisynth 3.0 displays text with a very efficient font engine, named
+Freetype.
+\note
+The current version stable 2.1.9 has a small problem in the
+vertical alignment of the characters. It has been solved in the CVS
+version. But for the sake of simplicity (and as it is difficult
+to see this problem), we will install only the stable version of
+Freetype. For those who want to install the CVS version, go to <a
+href=http://www.freetype.org/developer.html#anoncvs>CVS Freetype</a>
+section.
+
+First download <a
+href=http://prdownloads.sourceforge.net/freetype/freetype-2.1.9.tar.gz?download>Freetype
+2.1.9</a> in the \em avs_main_dir directory, untar it and compile it:
+@code
+cd
+cd avs_main_dir
+tar zxvf freetype-2.1.9.tar.gz
+cd freetype-2.1.9
+./configure --prefix/usr/
+make
+make install
+@endcode
+This installs Freetype in \em /usr/, so you have to be root before
+doing \em make \em install. If one wants to install it
+elsewhere, change the value given to the \em --prefix parameter.
+
+@subsection linux-ffmpeg 4.4 Installing FFMPEG
+
+FFMPEG is a set of library the allows to record, convert and stream
+audio and video. For now, only version 0.4.9-pre1 is working with
+Avisynth 3.0. Dowload it at <a
+href=http://prdownloads.sourceforge.net/ffmpeg/ffmpeg-0.4.9-pre1.tar.gz?download>SourceForge</a>
+in \em avs_main_dir. Untar it, go into its directory, configure it and
+install it:
+@code
+cd
+cd avs_main_dir/
+tar zxvf ffmpeg-0.4.9-pre1.tar.gz
+cd ffmpeg-0.4.9-pre1
+./configure --prefix=/usr/
+make
+make install
+make installlib
+@endcode
+This installs FFMPEG in \em /usr/, so you have to be root before
+doing \em make \em installlib. If you want to install it
+elsewhere, change the value given to the \em --prefix parameter.
+
+@subsection linux-asm 4.5 Assembly support with NASM
+
+If you want to compile Avisynth 3.0 with assembly support, you have to
+install at least Nasm 0.98.36. This installation is not described yet.
+
+
+@subsection linux-avs 4.6 Building Avisynth 3.0
+
+Now, we may build Avisynth 3.0 ! Just after having installed 3 more
+libraries.
+
+Ok, ok, I'm kidding...
+
+First we have to download the source code which is in cvs:
+@code
+cd
+cd avs_main_dir
+cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/avisynth2 login
+cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/avisynth2 co -r avisynth_3_0 avisynth
+@endcode
+
+Avisynth 3.0 needs an extension to boost, not yet included in the
+current version of boost. This extension is provided in the \em build
+directory of avisynth. It suffices to unzip it and copy the files to
+the boost include directory:
+@code
+cd avisynth/build
+unzip circular_buffer_v3.6.zip
+cd circular_buffer
+@endcode
+\li If Boost is installed in \em /usr, you have to be root:
+@code
+su <enter the root password>
+cp -R boost /usr/include/boost-1_32/
+<Ctrl-d>
+@endcode
+\li If Boost is installed in, say \em \$HOME/local:
+@code
+cp -R boost $HOME/local/include/boost-1_32/
+@endcode
+
+And now, we can configure Avixynth 3.0.
+@code
+cd ../linux
+./booststrap.sh
+./configure
+@endcode
+If configure is not able to find automatically one or more library,
+we have to specify its path. Assuming that you have
+installed everything in \em /usr/:
+@code
+./configure --with-stl-path=/usr --with-boost-path=/usr --with-ffmpeg-path=/usr --with-freetype-config=/usr/bin/freetype-config
+@endcode
+If you have installed some of the above libraries elsewhere, just
+replace \em /usr by the correct path. The configure script should be
+able to find automatically FFMPEG and Freetype.
+
+\note
+If you want to make a debug build of Avisynth 3.0, just pass to the
+\em configure script the options \em ----enable-core-debug (for
+Avisynth itself) and \em --enable-ffmpeg-debug (for FFMPEG).
+
+To build Avisynth, we use the usual commands:
+@code
+make
+make install
+@endcode
 
 @section errors 5. Errors when using AviSynth
 
@@ -500,8 +736,9 @@ AVI Import filter error: (unknown) (80040154)
 </i>
 in a messagebox. This error is due to missing dlls, usually ffmpeg's ones (avcodec.dll and avformat.dll). So, copy them to your windows system folder.
 
-
-
-$Date$
+@todo
+\li Installation of FFMPEG on mingw
+\li Talk about ACM with mingw.
+\li Installation of nasm on linux.
 
 */

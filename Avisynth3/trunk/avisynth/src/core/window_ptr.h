@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -72,7 +72,7 @@ struct window_ptr
 
   void to(int x, int y) { ptr += x + y * pitch; }
   void pad() { ptr += padValue(); }
-  void negpad() { ptr += negPadValue(); }
+  void negPad() { ptr += negPadValue(); }
 
   int padValue() const { return pitch - width; }
   int negPadValue() const { return -pitch -width; }

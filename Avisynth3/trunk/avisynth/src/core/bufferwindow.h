@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -58,6 +58,8 @@ class buffer_window
   OwnedBlock buffer_;
 
   friend struct bw::SizeChanger;   //need internal knowledge to work
+  //needed for the converting constructor to access other's members
+  template <int otherAlign, int otherGuard> friend class buffer_window;
 
 
 public:  //declarations and typedef
@@ -70,14 +72,14 @@ public:  //declarations and typedef
 public:  //structors
 
   //normal constructor
-  BufferWindowType(Dimension const& dim, PEnvironment const& env)
+  buffer_window(Dimension const& dim, PEnvironment const& env)
     : dim_( dim )
     , pitch_( RoundUp<Align>(width()) )
     , offset_( Guard )
     , buffer_( env->NewOwnedBlock(pitch() * height() + Guard * 2, true) ) { }
  
   //constructor using a given block as buffer
-  BufferWindowType(Dimension const& dim, OwnedBlock const& buffer, int offset)
+  buffer_window(Dimension const& dim, OwnedBlock const& buffer, int offset)
     : dim_( dim )
     , pitch_( RoundUp<Align>(width()) )
     , offset_( offset )
@@ -89,6 +91,17 @@ public:  //structors
       ReAlign();              //realign (blit to correct)
   }
 
+  //conversion from anothe buffer_window type
+  template<int otherAlign, int otherGuard>
+  buffer_window(buffer_window<otherAlign, otherGuard> const& other)
+    : dim_( other.dim_ )
+    , pitch_( other.pitch_ )
+    , offset_( other.offset_ )
+    , buffer_( other.buffer_ )
+  {
+    if ( MisAligned() && pitch_ % Align != 0 )    //if do not respect guard abd align contracts
+      ReAlign();                                  //blit to correct
+  }
 
   //generated copy constructor and destructor are fine
   
@@ -122,6 +135,7 @@ public:  //access
   int pitch() const { return pitch_; }
   int width() const { return dim_.GetWidth(); }
   int height() const { return dim_.GetHeight(); }
+  int size() const { return pitch() * height(); }
 
   //window_ptr methods
   CWindowPtr Read() const { return CWindowPtr( read(), pitch(), width(), height() ); }

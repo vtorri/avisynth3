@@ -32,17 +32,17 @@ namespace avs { namespace text { namespace rasterizer {
 
 void LineSpan::Realize(BYTE * ptr, int step) const
 {
-  ptr += step * (begin >> 3);            //move ptr to where the span starts
+  ptr += step * (begin >> 3);              //move ptr to where the span starts
   long round = RoundUp<8>(begin);
 
-  if ( begin != round )                  //ie if begin is not a multiple of 8
+  if ( begin != round )                    //ie if begin is not a multiple of 8
   {
-    if ( end <= round )                  //if the span does not even cross over the 8 pixel block boundary
+    if ( end <= round )                    //if the span does not even cross over the 8 pixel block boundary
     {
-      *ptr += end - begin;               //count what we have 
-      return;                            //and done
+      *ptr += static_cast<BYTE>(end - begin);               //count what we have 
+      return;                              //and done
     }
-    *ptr += round - begin;
+    *ptr += static_cast<BYTE>(round - begin);
     ptr += step;
   }
 
@@ -50,9 +50,9 @@ void LineSpan::Realize(BYTE * ptr, int step) const
   for ( int i = (end - round) >> 3; i-- > 0; ptr += step )
     *ptr += 8;
 
-  long rest = end & 7;                   //rest after all the 8-pixels blocks
-  if ( rest != 0 )                       //if there is one
-    *ptr += rest;                        //take care of it
+  BYTE rest = static_cast<BYTE>(end & 7);  //rest after all the 8-pixels blocks
+  if ( rest != 0 )                         //if there is one
+    *ptr += rest;                          //take care of it
 }
 
 

@@ -43,8 +43,8 @@ namespace avs { namespace parser { namespace functor { namespace function {
 template <bool returnVoid> struct RecursiveCall
 {
 
-  int const arity_;
-  StatementCode const body_;
+  int arity_;
+  StatementCode body_;
 
   RecursiveCall(int arity, StatementCode const& body)
     : arity_( arity )

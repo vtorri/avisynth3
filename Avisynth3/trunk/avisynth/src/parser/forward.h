@@ -24,11 +24,14 @@
 #ifndef __AVS_PARSER_FORWARD_H__
 #define __AVS_PARSER_FORWARD_H__
 
+//avisynth include
+#include "optype.h"
+
 
 namespace avs { namespace parser {
 
 
-enum OpType;
+//declarations
 template <typename Result> class VMCode;
 template <typename Result> class VMOperation;
 

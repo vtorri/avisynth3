@@ -92,6 +92,46 @@ public:
   they copy the pointed object if its shared with others, otherwise steal it
 */
 
+
+
+
+
+
+template <class T> class smart_ref {
+
+  T * ptr;
+
+  void Set(T * _ptr)
+  {
+    ptr->Release();
+    ptr = _ptr;
+  }
+
+public:
+  //constructor from a reference (ie normal constructor)
+  smart_ref(T & ref) : ptr(&ref) { }
+  //constructor from a pointer
+  smart_ref(T * _ptr) : ptr(_ptr) { if ( ptr == 0 ) throw std::logic_error("internal error : null pointer"); }
+  //copy constructor
+  smart_ref(const smart_ref<T>& other) : ptr(other.ptr) { ptr.AddRef(); }
+
+  //destructor
+  ~smart_ref() { ptr->AddRef(); }
+
+  const smart_ptr<T>& operator= (const smart_ptr<T>& other) { other.ptr->AddRef(); Set(other.ptr); return *this; }
+  const smart_ptr<T>& operator= (T & ref) { Set(&ref); return *this; }
+
+  T * operator->() const { return T; }
+  T & operator*() const { return *T; }
+
+  void UnShare() { if ( ptr->IsShared() ) Set(ptr->clone()); }
+
+  void swap(smart_ref<T>& other) { std::swap(ptr, other.ptr); }
+};
+
+
+
+
 //base class for the smart pointers classes
 template <class T> class smart_ptr_base {
 
@@ -193,6 +233,18 @@ template <class T> smart_ptr_to_cst<T>::smart_ptr_to_cst(const smart_ptr<T>& oth
 
 template <class T> const smart_ptr_to_cst<T>& smart_ptr_to_cst<T>::operator= (smart_ptr<T>& other) { Set(StealOrClone(other)); return *this; }
 template <class T> const smart_ptr_to_cst<T>& smart_ptr_to_cst<T>::operator= (const smart_ptr<T>& other) { Set(Clone(other)); return *this; }
+
+
+
+namespace std {
+
+  template <> void swap(smart_ref<T>& a, smart_ref<T>& b) { a.swap(b); }
+  template <> void swap(smart_ptr<T>& a, smart_ptr<T>& b) { a.swap(b); }
+  template <> void swap(smart_ptr_to_cst<T>& a, smart_ptr_to_cst<T>& b) { a.swap(b); }
+
+};
+
+
 
 
 #endif //define __REFCOUNTED_H__

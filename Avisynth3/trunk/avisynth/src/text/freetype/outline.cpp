@@ -33,7 +33,55 @@ namespace avs { namespace text { namespace freetype {
 
 
 
+namespace {
 
+
+//custom shared_ptr deleter for Outline
+struct OutlineDeleter
+{
+  void operator()(Outline * outline) const
+  {
+    FT_Error error = FT_Outline_Done (Library::instance, outline );
+    
+    assert( error == 0 );
+  }
+};
+
+
+} //namespace anonymous
+
+
+POutline Outline::clone() const
+{
+  FT_Outline * result = NULL;
+
+  FT_Outline_New(Library::instance, n_points, n_contours, result);
+  if ( result == NULL )
+    throw std::bad_alloc();
+
+  FT_Error error = FT_Outline_Copy(const_cast<Outline *>(this), result);
+  assert( error == 0 );
+
+  return POutline( result, OutlineDeleter() );
+}
+
+
+void Outline::Translate(long x, long y)
+{
+  FT_Outline_Translate(const_cast<Outline *>(this), x << 6, y << 6);
+}
+
+
+Box Outline::GetControlBox() const
+{
+  FT_BBox box;
+
+  FT_Error error = FT_Outline_Get_BBox (const_cast<Outline *>(this), &box);
+  assert( error == 0 );
+
+  return Box(Vecteur(box.xMin >> 6, box.yMin >> 6),
+	     Vecteur(box.xMax >> 6, box.yMax >> 6));
+}
 
 void Outline::Draw(MonoBitmap const& bitmap) const
 {

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,11 @@
 #ifndef __AVS_TEXT_FREETYPE_OUTLINE_H__
 #define __AVS_TEXT_FREETYPE_OUTLINE_H__
 
-// freetype includes
+//avisynth include
+#include "forward.h"
+#include "../../core/geometry/box.h"
+
+//freetype includes
 #include <ft2build.h>
 #include FT_OUTLINE_H
 
@@ -33,7 +37,11 @@ namespace avs { namespace text { namespace freetype {
 
 
 
-
+////////////////////////////////////////////////////////////////////////////////////////
+//  Outline
+//
+//  wrapper class around the native freetype FT_Outline
+//
 class Outline : public FT_Outline
 {
 
@@ -46,9 +54,16 @@ private:  //declared but not implemented
   Outline& operator=(Outline const& other);
 
 
-public:
+public:  //clone method
+
+  POutline clone() const;
+
+
+public:  //Outline interface
 
   void Translate(long x, long y);
+
+  Box GetControlBox() const;
 
   void Draw(MonoBitmap const& bitmap) const;
 

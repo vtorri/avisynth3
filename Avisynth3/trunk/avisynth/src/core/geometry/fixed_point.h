@@ -117,6 +117,10 @@ public:  //access
 
   BaseType get() const { return value_; }
 
+  BaseType GetRoundedUp() const { return RoundingUpShift<fractionPart>(value_); }
+  BaseType GetRounded() const { return RoundingShift<fractionPart>(value_); }
+  BaseType GetRoundedDown() const { return RoundingDown<fractionPart>(value_); }
+
 };
 
 

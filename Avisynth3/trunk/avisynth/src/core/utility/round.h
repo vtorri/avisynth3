@@ -73,6 +73,20 @@ RoundDown(T value)
 }
 
 
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//  RoundingUpShift<int Shift, T>
+//
+//  
+//
+template <int Shift, typename T>
+inline T
+RoundingUpShift(T value)
+{
+  return ( value + (1 << Shift) - 1 ) >> Shift;
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 //  RoundingShift<int Shift, T>
 //
@@ -85,6 +99,18 @@ RoundingShift(T value)
   return ( value + (1 << (Shift - 1)) ) >> Shift;
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//  RoundingDownShift<int Shift, T>
+//
+//  
+//
+template <int Shift, typename T>
+inline T
+RoundingDownShift(T value)
+{
+  return value >> Shift;
+}
 
 
 } //namespace avs

@@ -103,7 +103,6 @@ public:  //helper queries
   bool IsRGB24() const { return id() == I_RGB24; }
   bool IsRGB32() const { return id() == I_RGB32; }
   bool IsRGB45() const { return id() == I_RGB45; }
-  bool IsRGB60() const { return id() == I_RGB60; }
 
   bool IsYUY2() const { return id() == I_YUY2; }
   bool IsYV12() const { return id() == I_YV12; }

@@ -20,13 +20,16 @@
 #ifndef __VIDEOFRAME_H__
 #define __VIDEOFRAME_H__
 
-#include "internal.h" //I have strange errors when directly including avisynth.h ...
-/*#include <utility>    //for pair
+#include "videoinfo.h"
+#include "avisynth.h" 
+
+#include <utility>    //for pair
 //include <memory>      //for auto_ptr
 #include <vector>
 #include <string> 
 using namespace std;
-*/
+
+
 
 //simpler replacement for auto_ptr (saves a bool)
 //and with a operator=(T*)  (replacement for reset(T*) missing in VC6 STL)
@@ -118,7 +121,7 @@ class BufferWindow {
   }
 
 public:
-  BufferWindow(dimension _row_size, dimension _height, Align align)
+  BufferWindow(dimension _row_size, dimension _height, Align align = FRAME_ALIGN)
     : row_size(RowSizeCheck(_row_size)), height(HeightCheck(_height)), vfb(new VideoFrameBuffer(row_size, height, align)), offset(vfb->FirstOffset()) { }
   //copy constructor
   BufferWindow(const BufferWindow& other) : row_size(other.row_size), height(other.height), vfb(other.vfb), offset(other.offset) { }
@@ -192,7 +195,7 @@ protected:
   VideoFrameAncestor(bool fieldBased) : propList(fieldBased? fieldBasedList : emptyList) { }
   VideoFrameAncestor(const VideoFrameAncestor& other) : propList(other.propList) { }
 
-  virtual void clean() { propList = PPropertyList(propList)->RemoveVolatileProperties(); }
+  virtual void CleanProperties() { propList = PPropertyList(propList)->RemoveVolatileProperties(); }
   //clone if shared and perform clean on the property list
 
   
@@ -213,10 +216,9 @@ protected:
 
 
 
-//by opposition to PlanarVideoFrame...
-class NormalVideoFrame : public VideoFrameAncestor {
+class InterleavedVideoFrame : public VideoFrameAncestor {
 
-  typedef smart_ptr_to_cst<NormalVideoFrame> CPNormalVideoFrame;
+  typedef smart_ptr_to_cst<InterleavedVideoFrame> CPInterleavedVideoFrame;
 
   inline void CheckPlane(Plane plane) const { if (plane != NOT_PLANAR) throw NoSuchPlane(); }
 
@@ -224,8 +226,8 @@ protected:
   
   BufferWindow main;
 
-  NormalVideoFrame(const NormalVideoFrame& other) : VideoFrameAncestor(other), main(other.main) { }
-  NormalVideoFrame(dimension width, dimension height, Align align, bool fieldBased)
+  InterleavedVideoFrame(const InterleavedVideoFrame& other) : VideoFrameAncestor(other), main(other.main) { }
+  InterleavedVideoFrame(bool fieldBased, dimension width, dimension height, Align align)
     : VideoFrameAncestor(fieldBased), main(WidthToRowSize(width), HeightCheck(height), align) { }
 
   
@@ -239,6 +241,9 @@ public:
   virtual const BYTE * GetReadPtr(Plane plane) const throw(NoSuchPlane) { CheckPlane(plane); return main.GetReadPtr(); }
   virtual BYTE * GetWritePtr(Plane plane) throw(NoSuchPlane) { CheckPlane(plane); return main.GetWritePtr(); }
 
+  virtual dimension GetVideoHeight() const { return main.GetHeight(); }
+
+  virtual dimension HeightCheck(dimension height) const { return VideoInfo::HeightParityCheck(height, IsFieldBased()); }
 
   //here we are still in pixels
   virtual void SizeChange(dimension left, dimension right, dimension top, dimension bottom)
@@ -255,13 +260,20 @@ public:
 };
 
 
-class RGBVideoFrame : public NormalVideoFrame {
+class RGBVideoFrame : public InterleavedVideoFrame {
+
+protected:
+  dimension BytesPerPixel() const { return GetColorSpace() == VideoInfo::CS_BGR24 ? 3 : 4; } 
 
 public:
-  RGBVideoFrame(const RGBVideoFrame& other) : NormalVideoFrame(other) { }
-  RGBVideoFrame(dimension width, dimension height, Align align, bool fieldBased)
-    : NormalVideoFrame(width, height, align, fieldBased) { }
+  RGBVideoFrame(const RGBVideoFrame& other) : InterleavedVideoFrame(other) { }
+  RGBVideoFrame(bool fieldBased, dimension width, dimension height, Align align)
+    : InterleavedVideoFrame(fieldBased, width, height, align) { }
 
+
+  virtual dimension GetVideoWidth() const { return main.GetRowSize()/BytesPerPixel(); }
+
+  virtual dimension WidthToRowSize(dimension width) const { return width*BytesPerPixel(); }
 
   virtual void FlipHorizontal();
 
@@ -269,6 +281,11 @@ public:
   virtual void TurnRight();
 
 };
+
+
+class RGB32VideoFrame;
+class YUY2VideoFrame;
+class PlanarVideoFrame;
 
 class RGB24VideoFrame : public RGBVideoFrame {
 
@@ -280,14 +297,12 @@ public:
   RGB24VideoFrame(const YUY2VideoFrame& other);
   RGB24VideoFrame(const PlanarVideoFrame& other);
   RGB24VideoFrame(const RGB24VideoFrame& other) : RGBVideoFrame(other) { } 
-  RGB24VideoFrame(dimension width, dimension height, Align align, bool fieldBased)
-    : RGBVideoFrame(width, height, align, fieldBased) { }
+  RGB24VideoFrame(bool fieldBased, dimension width, dimension height, Align align)
+    : RGBVideoFrame(fieldBased, width, height, align) { }
 
   virtual const ColorSpace& GetColorSpace() const { return VideoInfo::CS_BGR24; }
 
-  virtual dimension WidthToRowSize(dimension width) const { return 3 * width; }
-
-  virtual CPVideoFrame ConvertTo(ColorSpace space) const;
+  virtual CPVideoFrame ConvertTo(const ColorSpace& space) const;
 
 };
 
@@ -301,22 +316,18 @@ public:
   RGB32VideoFrame(const YUY2VideoFrame& other);
   RGB32VideoFrame(const PlanarVideoFrame& other);
   RGB32VideoFrame(const RGB32VideoFrame& other) : RGBVideoFrame(other) { } 
-  RGB32VideoFrame(dimension width, dimension height, Align align, bool fieldBased)
-    : RGBVideoFrame(width, height, align, fieldBased) { }
+  RGB32VideoFrame(bool fieldBased, dimension width, dimension height, Align align)
+    : RGBVideoFrame(fieldBased, width, height, align) { }
 
   virtual const ColorSpace& GetColorSpace() const { return VideoInfo::CS_BGR32; }
 
-  virtual dimension WidthToRowSize(dimension width) const { return 4 * width; }
-
-  virtual CPVideoFrame ConvertTo(ColorSpace space) const;
+  virtual CPVideoFrame ConvertTo(const ColorSpace& space) const;
 
 };
 
 
-class YUY2VideoFrame : public NormalVideoFrame {
-
-  static const string ODD_WIDTH;   //error msg when odd width in YUY2                 
-
+class YUY2VideoFrame : public InterleavedVideoFrame {
+         
 protected:
   virtual RefCounted * clone() const { return new YUY2VideoFrame(*this); }
 
@@ -325,13 +336,17 @@ public:
   YUY2VideoFrame(const RGB32VideoFrame& other);  //converting constructors
   YUY2VideoFrame(const RGB24VideoFrame& other);
   YUY2VideoFrame(const PlanarVideoFrame& other);
-  YUY2VideoFrame(const YUY2VideoFrame& other) : NormalVideoFrame(other) { } //spec of the above
-  YUY2VideoFrame(dimension width, dimension height, Align align, bool fieldBased)
-    : NormalVideoFrame(width, height, align, fieldBased)  { }    
+  YUY2VideoFrame(const YUY2VideoFrame& other) : InterleavedVideoFrame(other) { } //spec of the above
+  YUY2VideoFrame(bool fieldBased, dimension width, dimension height, Align align)
+    : InterleavedVideoFrame(fieldBased, width, height, align)  { }    
 
   virtual const ColorSpace& GetColorSpace() const { return VideoInfo::CS_YUY2; }
 
-  virtual CPVideoFrame ConvertTo(ColorSpace space) const;
+  virtual dimension GetVideoWidth() const { return main.GetRowSize()>>1; }
+
+  virtual dimension WidthToRowSize(dimension width) const { return VideoInfo::WidthParityCheckYUY2(width)<<1; }
+
+  virtual CPVideoFrame ConvertTo(const ColorSpace& space) const;
 
   virtual void FlipHorizontal();
 
@@ -377,7 +392,7 @@ public:
   PlanarVideoFrame(const RGB24VideoFrame& other);
   PlanarVideoFrame(const YUY2VideoFrame& other);
   PlanarVideoFrame(const PlanarVideoFrame& other) : VideoFrameAncestor(other), y(other.y), u(other.u), v(other.v) { }
-  PlanarVideoFrame(dimension width, dimension height, Align align, bool fieldBased) 
+  PlanarVideoFrame(bool fieldBased, dimension width, dimension height, Align align) 
     : VideoFrameAncestor(fieldBased), y(WidthToRowSize(width), HeightCheck(height), align),
        u(width>>1, height>>1, align), v(width>>1, height>>1, align) { }
   
@@ -392,10 +407,12 @@ public:
   virtual const ColorSpace& GetColorSpace() const { return VideoInfo::CS_YV12; }
   
   virtual dimension GetVideoHeight() const { return y.GetHeight(); }  
-  virtual dimension GetVideoWidth() const { return y.GetWidth(); }
+  virtual dimension GetVideoWidth() const { return y.GetRowSize(); }
 
+  virtual dimension WidthToRowSize(dimension width) const { return VideoInfo::WidthParityCheckYV12(width); }
+  virtual dimension HeightCheck(dimension height) const { return VideoInfo::HeightParityCheckYV12(height, IsFieldBased()); }
 
-  virtual CPVideoFrame ConvertTo(ColorSpace space) const;
+  virtual CPVideoFrame ConvertTo(const ColorSpace& space) const;
 
   virtual void SizeChange(dimension left, dimension right, dimension top, dimension bottom);
   virtual void Copy(CPVideoFrame other, dimension left, dimension top);

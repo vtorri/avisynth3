@@ -41,10 +41,8 @@
 enum { AVISYNTH_INTERFACE_VERSION = 3 };
 
 
-/* Define all types necessary for interfacing with avisynth.dll
-   Moved from internal.h */
-
 // Win32 API macros, notably the types BYTE, DWORD, ULONG, etc. 
+#include "windows.h"
 #include <windef.h>  
 
 // COM interface macros
@@ -61,6 +59,7 @@ typedef	long			PixOffset;
 
 //STL relatives include
 #include <string>
+#include <vector>
 using namespace std;
 
 /* Compiler-specific crap */
@@ -86,52 +85,20 @@ using namespace std;
 #endif
 
 
-
-// I had problems with Premiere wanting 1-byte alignment for its structures,
-// so I now set the Avisynth struct alignment explicitly here.
-#pragma pack(push,8)
+#include "videoinfo.h"
+#include "refcounted.h"
 
 #define FRAME_ALIGN 16 
 // Default frame alignment is 16 bytes, to help P4, when using SSE2
 
 
 
-#include "videoinfo.h"
-#include "refcounted.h"
-
-
-
-
-enum {
-  FILTER_TYPE=1,
-  FILTER_INPUT_COLORSPACE=2,
-  FILTER_OUTPUT_TYPE=9,
-  FILTER_NAME=4,
-  FILTER_AUTHOR=5,
-  FILTER_VERSION=6,
-  FILTER_ARGS=7,
-  FILTER_ARGS_INFO=8,
-  FILTER_ARGS_DESCRIPTION=10,
-  FILTER_DESCRIPTION=11,
-};
-enum {  //SUBTYPES
-  FILTER_TYPE_AUDIO=1,
-  FILTER_TYPE_VIDEO=2,
-  FILTER_OUTPUT_TYPE_SAME=3,
-  FILTER_OUTPUT_TYPE_DIFFERENT=4,
-};
-
-
-
-
-
 /********************************************************************************************
  * Polymorphic VideoFrame class                                                             *
  ********************************************************************************************
-  VideoFrameBuffer no longer defined in avisynth.h (videoframe.h)
+  VideoFrameBuffer no longer defined there (in videoframe.h)
   VideoFrame still use them, but they are hidden by the VideoFrame API
-  due to architecture changes (3 buffers when planar), you must no longer assume pitchU = pitchV
-  it won't happen often but it can
+
   MakeWritable is no longer required : CPVideoFrame are never Writable, nor mutable in any sort
   PVideoframe are always writable/mutable, and will copy buffers before returning Write Ptr if they are shared
 */
@@ -185,7 +152,6 @@ public:
   //methods to get some other general infos
   virtual const ColorSpace& GetColorSpace() const = 0;
   bool IsPlanar() const { return GetColorSpace().HasFlag(ColorSpace::PLANAR); }  
-  virtual Align GetAlign() const = 0;
 
   //frames now know about their fieldbased state
   bool IsFieldBased() const;
@@ -213,7 +179,7 @@ public:
    ************************************************************************************/
 
   //ColorSpace conversion method
-  virtual CPVideoFrame ConvertTo(ColorSpace space) const = 0;
+  virtual CPVideoFrame ConvertTo(const ColorSpace& space) const = 0;
 
   //Please Note that those dimensions are in PIXELS, and can be negative
   //positive values crop, negatives increase size, buffers won't be reallocated if possible
@@ -299,9 +265,15 @@ template <> const smart_ptr<VideoFrame>& smart_ptr<VideoFrame>::operator =(smart
 template <> const smart_ptr<VideoFrame>& smart_ptr<VideoFrame>::operator =(const smart_ptr_to_cst<VideoFrame>& other) { Clone(other);  if (ptr) ((VideoFrame*)ptr)->CleanProperties(); return *this; }
 
 
-class IScriptEnvironment;
 
-// Base class for all filters.
+
+
+/********************************************************************************************
+ * IClip and PClip                                                                          *
+ ********************************************************************************************
+  Base class for all filters.
+*/
+
 class IClip : public RefCounted {
 
 public:
@@ -312,7 +284,7 @@ public:
     CACHE_LAST
   };
 
-  IClip() {}
+  IClip() { }
 
   virtual int __stdcall GetVersion() { return AVISYNTH_INTERFACE_VERSION; }
   
@@ -325,6 +297,19 @@ public:
 };
 
 typedef smart_ptr<IClip> PClip;  // smart pointer to IClip
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -616,6 +601,6 @@ public:
 IScriptEnvironment* __stdcall CreateScriptEnvironment(int version = AVISYNTH_INTERFACE_VERSION);
 
 
-#pragma pack(pop)
+
 
 #endif //__AVISYNTH_H__

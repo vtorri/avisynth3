@@ -33,7 +33,7 @@
 
 
 
-const string VideoFrame::UNMATCHING_CLR_SPACE("ColorSpace don't match");
+const string UNMATCHING_CLR_SPACE("ColorSpace don't match");
 
 const string FB_DONT_MATCH = "Cannot stack an field based frame with a plain one";
 
@@ -212,17 +212,17 @@ PropertyList * PropertyList::RemoveVolatileProperties()
 
 
 /**********************************************************************************************/
-/************************************ NormalVideoFrame ****************************************/
+/********************************** InterleavedVideoFrame *************************************/
 /**********************************************************************************************/
 
 
-void NormalVideoFrame::Copy(CPVideoFrame other, dimension left, dimension top)
+void InterleavedVideoFrame::Copy(CPVideoFrame other, dimension left, dimension top)
 {
   if (GetColorSpace() != other->GetColorSpace())
     throw AvisynthError("Copy Error: " + UNMATCHING_CLR_SPACE);
   left = WidthToRowSize(left);
   top = HeightCheck(top);          
-  main.Copy( ((CPNormalVideoFrame)other)->main, left, top);
+  main.Copy( ((CPInterleavedVideoFrame)other)->main, left, top);
 }
 
 /**********************************************************************************************/
@@ -260,14 +260,14 @@ void RGBVideoFrame::FlipHorizontal()
 /************************************ RGB32VideoFrame *****************************************/
 /**********************************************************************************************/
 
-CPVideoFrame RGB32VideoFrame::ConvertTo(ColorSpace space) const
+CPVideoFrame RGB32VideoFrame::ConvertTo(const ColorSpace& space) const
 {
-  switch(space)
+  switch(space.id)
   {
-    case VideoInfo::CS_BGR32: return this;
-    case VideoInfo::CS_BGR24: return new RGB24VideoFrame(*this);
-    case VideoInfo::CS_YUY2:  return new YUY2VideoFrame(*this);
-    case VideoInfo::CS_YV12:  return new PlanarVideoFrame(*this);
+    case I_BGR32: return this;
+    case I_BGR24: return new RGB24VideoFrame(*this);
+    case I_YUY2:  return new YUY2VideoFrame(*this);
+    case I_YV12:  return new PlanarVideoFrame(*this);
   }
   throw AvisynthError(CONVERTTO_ERR);
 }
@@ -278,14 +278,14 @@ CPVideoFrame RGB32VideoFrame::ConvertTo(ColorSpace space) const
 /************************************ RGB24VideoFrame *****************************************/
 /**********************************************************************************************/
 
-CPVideoFrame RGB24VideoFrame::ConvertTo(ColorSpace space) const
+CPVideoFrame RGB24VideoFrame::ConvertTo(const ColorSpace& space) const
 {
-  switch(space)
+  switch(space.id)
   {
-    case VideoInfo::CS_BGR32: return new RGB32VideoFrame(*this);
-    case VideoInfo::CS_BGR24: return this;
-    case VideoInfo::CS_YUY2:  return new YUY2VideoFrame(*this);
-    case VideoInfo::CS_YV12:  return new PlanarVideoFrame(*this);
+    case I_BGR32: return new RGB32VideoFrame(*this);
+    case I_BGR24: return this;
+    case I_YUY2:  return new YUY2VideoFrame(*this);
+    case I_YV12:  return new PlanarVideoFrame(*this);
   }
   throw AvisynthError(CONVERTTO_ERR);
 }
@@ -295,19 +295,18 @@ CPVideoFrame RGB24VideoFrame::ConvertTo(ColorSpace space) const
 /************************************* YUY2VideoFrame *****************************************/
 /**********************************************************************************************/
 
-YUY2VideoFrame::YUY2VideoFrame(const RGB24VideoFrame& other)
- : 
 
 
 
-CPVideoFrame YUY2VideoFrame::ConvertTo(ColorSpace space) const
+
+CPVideoFrame YUY2VideoFrame::ConvertTo(const ColorSpace& space) const
 {
-  switch(space)
+  switch(space.id)
   {
-    case VideoInfo::CS_BGR32: return new RGB32VideoFrame(*this);
-    case VideoInfo::CS_BGR24: return new RGB24VideoFrame(*this);
-    case VideoInfo::CS_YUY2:  return this;
-    case VideoInfo::CS_YV12:  return new PlanarVideoFrame(*this);
+    case I_BGR32: return new RGB32VideoFrame(*this);
+    case I_BGR24: return new RGB24VideoFrame(*this);
+    case I_YUY2:  return this;
+    case I_YV12:  return new PlanarVideoFrame(*this);
   }
   throw AvisynthError(CONVERTTO_ERR);
 }
@@ -344,35 +343,35 @@ void YUY2VideoFrame::FlipHorizontal()
 
 
 PlanarVideoFrame::PlanarVideoFrame(const RGB24VideoFrame& other)
-: VideoFrameAncestor(other.IsFieldBased()), y(WidthToRowSize(other.GetVideoWidth()), HeightCheck(otherGetVideoHeight()), other.GetAlign()),
-  u(other.GetVideoWidth()>>1, other.GetVideoHeight()>>1, other.GetAlign()), v(other.GetVideoWidth()>>1, other.GetVideoHeight()>>1, other.GetAlign())
+: VideoFrameAncestor(other.IsFieldBased()), y(WidthToRowSize(other.GetVideoWidth()), HeightCheck(other.GetVideoHeight())),
+  u(other.GetVideoWidth()>>1, other.GetVideoHeight()>>1), v(other.GetVideoWidth()>>1, other.GetVideoHeight()>>1)
 {
   //TODO: Code ME !!
 }
  
 PlanarVideoFrame::PlanarVideoFrame(const RGB32VideoFrame& other)
-: VideoFrameAncestor(other.IsFieldBased()), y(WidthToRowSize(other.GetVideoWidth()), HeightCheck(otherGetVideoHeight()), other.GetAlign()),
-  u(other.GetVideoWidth()>>1, other.GetVideoHeight()>>1, other.GetAlign()), v(other.GetVideoWidth()>>1, other.GetVideoHeight()>>1, other.GetAlign())
+: VideoFrameAncestor(other.IsFieldBased()), y(WidthToRowSize(other.GetVideoWidth()), HeightCheck(other.GetVideoHeight())),
+  u(other.GetVideoWidth()>>1, other.GetVideoHeight()>>1), v(other.GetVideoWidth()>>1, other.GetVideoHeight()>>1)
 {
   //TODO: Code ME !!  
 }
  
 PlanarVideoFrame::PlanarVideoFrame(const YUY2VideoFrame& other)
-: VideoFrameAncestor(other.IsFieldBased()), y(WidthToRowSize(other.GetVideoWidth()), HeightCheck(otherGetVideoHeight()), other.GetAlign()),
-  u(other.GetVideoWidth()>>1, other.GetVideoHeight()>>1, other.GetAlign()), v(other.GetVideoWidth()>>1, other.GetVideoHeight()>>1, other.GetAlign())
+: VideoFrameAncestor(other.IsFieldBased()), y(WidthToRowSize(other.GetVideoWidth()), HeightCheck(other.GetVideoHeight())),
+  u(other.GetVideoWidth()>>1, other.GetVideoHeight()>>1), v(other.GetVideoWidth()>>1, other.GetVideoHeight()>>1)
 {
   //TODO: Code ME !!  
 }
 
 
-CPVideoFrame PlanarVideoFrame::ConvertTo(ColorSpace space) const
+CPVideoFrame PlanarVideoFrame::ConvertTo(const ColorSpace& space) const
 {
-  switch(space)
+  switch(space.id)
   {
-    case VideoInfo::CS_BGR32: return new RGB32VideoFrame(*this);
-    case VideoInfo::CS_BGR24: return new RGB24VideoFrame(*this);
-    case VideoInfo::CS_YUY2:  return new YUY2VideoFrame(*this);
-    case VideoInfo::CS_YV12:  return this;
+    case I_BGR32: return new RGB32VideoFrame(*this);
+    case I_BGR24: return new RGB24VideoFrame(*this);
+    case I_YUY2:  return new YUY2VideoFrame(*this);
+    case I_YV12:  return this;
   }
   throw AvisynthError(CONVERTTO_ERR);
 }

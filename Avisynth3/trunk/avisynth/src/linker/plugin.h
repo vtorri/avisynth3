@@ -28,7 +28,6 @@
 #include "forward.h"
 
 //stl include
-#include <string>
 #include <vector>
 
 
@@ -52,7 +51,7 @@ public:  //structors
 
 public:  //Plugin interface
 
-  virtual std::string GetName() const = 0;
+  virtual char const * GetName() const = 0;
 
   virtual FunctionList GetFunctionList() const = 0;
 

@@ -55,9 +55,23 @@ class fixed_point
 public:  //structors
 
   fixed_point(BaseType value)
-    : value_( value ) { }
+    : value_( value << fractionPart ) { }
+
+  template <typename T>
+  explicit fixed_point(T value)
+  : value_( static_cast<BaseType>(value * (1 << fractionPart)) ) { }
 
   //generated copy constructor and destructor are fine
+
+
+public:  //wrapping (non-shifting) constructor and helper method
+
+  struct wrap { };
+
+  fixed_point(BaseType value, wrap dummy)
+    : value_( value ) { }
+
+  static FixedPointType Wrap(BaseType value) { return FixedPointType(value, wrap()); }
 
 
 public:  //assignment
@@ -91,6 +105,12 @@ public:  //operators
 
   FixedPointType& operator<<=(int shift) { value_ <<= shift; return *this; }
   FixedPointType& operator>>=(int shift) { value_ >>= shift; return *this; }
+
+
+public:  //conversion operators
+
+  operator float() const { return static_cast<float>(value_) / (1 << fractionPart); }
+  operator double() const { return static_cast<double>(value_) / (1 << fractionPart); }
 
 
 public:  //access

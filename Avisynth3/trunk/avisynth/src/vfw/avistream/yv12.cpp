@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@ namespace avs { namespace vfw { namespace avistream {
 
 int YV12::GetBMPSize(Dimension const& dim)
 {
-  return 3 * dim.GetHeight() * ( (dim.GetWidth() + 3) & -4 ) / 2;
+  return 3 * dim.GetHeight() * RoundUp<4>(dim.GetWidth()) / 2;
 }
 
 
@@ -43,13 +43,13 @@ void YV12::ReadFrame(VideoFrame const& frame, BYTE * ptr)
   CWindowPtr U = frame.ReadFrom(PLANAR_U);  
   CWindowPtr V = frame.ReadFrom(PLANAR_V);  
 
-  int pitch = (Y.width + 3) & -4;
+  int pitch = RoundUp<4>(Y.width);
 
-  Blitter& blitter = Blitter::Get();
+  Blitter const& blit = Blitter::Get();
 
-  blitter(Y, ptr, pitch);  //blits Y
-  blitter(U, ptr + pitch * Y.height, pitch / 2);  //blits U
-  blitter(V, ptr + pitch * Y.height + pitch / 2 * U.height, pitch / 2);  //blits V
+  blit(Y, ptr, pitch);                                                //blits Y
+  blit(U, ptr + pitch * Y.height, pitch / 2);                         //blits U
+  blit(V, ptr + pitch * Y.height + pitch / 2 * U.height, pitch / 2);  //blits V
 }
 
 

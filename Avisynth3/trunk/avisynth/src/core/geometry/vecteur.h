@@ -30,54 +30,71 @@
 //boost include
 #include <boost/operators.hpp>
 
+//stl include
+#include <algorithm>           //for std::min and std::max
+
 
 namespace avs {
 
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-//  Vecteur
+//  vecteur<T>
 //
 //
 //
-struct Vecteur
-     : boost::addable<Vecteur                      //defines Vecteur + Vecteur
-     , boost::subtractable<Vecteur                 //defines Vecteur - Vecteur
-     , boost::right_shiftable<Vecteur, Dimension>  //defines Vecteur >> Dimension (inclusion)
+template <typename T>
+struct vecteur
+     : boost::addable<vecteur<T>                          //defines vecteur + vecteur
+     , boost::subtractable<vecteur<T>                     //defines vecteur - vecteur
+     , boost::right_shiftable<vecteur<T>, dimension<T> >  //defines vecteur >> dimension (inclusion)
        > >
 {
 
-  int x, y;   
+  T x, y;   
 
   //constructors
-  Vecteur() : x( 0 ), y( 0 ) { }
-  Vecteur(int _x, int _y) : x( _x ), y( _y ) { }
-  Vecteur(Vecteur const& other) : x( other.x ), y( other.y ) { }
+  vecteur() : x( 0 ), y( 0 ) { }
+  vecteur(T _x, T _y) : x( _x ), y( _y ) { }
+  vecteur(vecteur<T> const& other) : x( other.x ), y( other.y ) { }
   
-  Vecteur(Dimension const& dim)  : x( dim.GetWidth() ), y( dim.GetHeight() ) { }
+  vecteur(dimension<T> const& dim)  : x( dim.GetWidth() ), y( dim.GetHeight() ) { }
 
+  
   //assignment
-  Vecteur& operator=(Vecteur const& other) { x = other.x; y = other.y; return *this; }
-  void swap(Vecteur& other) { std::swap(x, other.x); std::swap(y, other.y); }
+  vecteur& operator=(vecteur<T> const& other)
+  { 
+    x = other.x; 
+    y = other.y; 
+    return *this; 
+  }
+  
+  void swap(vecteur<T>& other) 
+  { 
+    using std::swap;
+    swap(x, other.x); 
+    swap(y, other.y); 
+  }
 
+  
   //classic vector operators
-  Vecteur operator-() const { return Vecteur(-x, -y); }
-  Vecteur& operator+=(Vecteur const& other) { x += other.x; y += other.y; return *this; }
-  Vecteur& operator-=(Vecteur const& other) { x -= other.x; y -= other.y; return *this; }
-  Vecteur& operator*=(int scalar) { x *= scalar; y *= scalar; return *this; }
-  Vecteur& operator/=(int scalar) { x /= scalar; y /= scalar; return *this; }
+  vecteur operator-() const { return vecteur<T>(-x, -y); }
+  vecteur& operator+=(vecteur<T> const& other) { x += other.x; y += other.y; return *this; }
+  vecteur& operator-=(vecteur<T> const& other) { x -= other.x; y -= other.y; return *this; }
+  vecteur& operator*=(T scalar) { x *= scalar; y *= scalar; return *this; }
+  vecteur& operator/=(T scalar) { x /= scalar; y /= scalar; return *this; }
 
   //comparison operators
-  bool operator==(Vecteur const& other) const { return x == other.x && y == other.y; }
-  bool operator!=(Vecteur const& other) const { return x != other.x || y != other.y; }
+  bool operator==(vecteur<T> const& other) const { return x == other.x && y == other.y; }
+  bool operator!=(vecteur<T> const& other) const { return x != other.x || y != other.y; }
 
 
   //operators with special effect
   //'inclusion' operator : change self so it is included into the box defined by dim
-  Vecteur& operator >>=(Dimension const& dim)
+  vecteur& operator >>=(dimension<T> const& dim)
   {
-    x = std::max(0, std::min( x, dim.GetWidth() ));
-    y = std::max(0, std::min( y, dim.GetHeight() ));
+    x = std::max( T(0), std::min( x, dim.GetWidth() ) );
+    y = std::max( T(0), std::min( y, dim.GetHeight() ) );
     return *this;
   }
 
@@ -88,20 +105,28 @@ struct Vecteur
 
 
 //global scope swap
-inline void swap(Vecteur& left, Vecteur& right) { left.swap(right); }
+template <typename T>
+inline void swap(vecteur<T>& left, vecteur<T>& right) 
+{ 
+  left.swap(right); 
+}
 
 //parallel min and max
-inline Vecteur min(Vecteur const& left, Vecteur const& right) { return Vecteur( std::min(left.x, right.x), std::min(left.y, right.y) ); }
-inline Vecteur max(Vecteur const& left, Vecteur const& right) { return Vecteur( std::max(left.x, right.x), std::max(left.y, right.y) ); }
+template <typename T>
+inline vecteur<T> min(vecteur<T> const& left, vecteur<T> const& right) { return vecteur<T>( std::min(left.x, right.x), std::min(left.y, right.y) ); }
+template <typename T>
+inline vecteur<T> max(vecteur<T> const& left, vecteur<T> const& right) { return vecteur<T>( std::max(left.x, right.x), std::max(left.y, right.y) ); }
 
 
-inline Dimension::Dimension(Vecteur const& vect) : x_( CheckSign(vect.x) ), y_( CheckSign(vect.y) ) { }
+template <typename T>
+inline dimension<T>::dimension<T>(vecteur<T> const& vect) : x_( CheckSign(vect.x) ), y_( CheckSign(vect.y) ) { }
 
-inline Dimension& Dimension::operator+=(Vecteur const& vect)
+template <typename T>
+inline dimension<T>& dimension<T>::operator+=(vecteur<T> const& vect)
 {
-  CheckSign(x_ + vect.x);
+  T x = CheckSign(x_ + vect.x);
   y_ = CheckSign(y_ + vect.y);
-  x_ += vect.x;
+  x_ += x;
   return *this;
 }
 

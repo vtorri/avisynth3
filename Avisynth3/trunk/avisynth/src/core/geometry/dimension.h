@@ -36,21 +36,21 @@ namespace avs {
 
 
 //class declaration
-struct Vecteur;
+template <typename T> struct vecteur;
 
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
-//  Dimension
+//  dimension<T>
 //
-//  helper class to represent dimensions
+//  helper template class to represent dimensions
 //
-class Dimension
+template <typename T> class dimension
 {
 
-  int x_, y_;
+  T x_, y_;
 
-  static int CheckSign(int val)
+  static T CheckSign(T val)
   {
     if ( val < 0 )
       throw exception::BadDimension();
@@ -60,46 +60,58 @@ class Dimension
 
 public:  //constructors
 
-  Dimension() : x_( 0 ), y_( 0 ){ }
-  Dimension(int x, int y) : x_( CheckSign(x) ), y_( CheckSign(y) ) { }
-  Dimension(Dimension const& other) : x_( other.x_ ), y_( other.y_ ) { }
+  dimension() : x_( 0 ), y_( 0 ) { }
+  dimension(T x, T y) : x_( CheckSign(x) ), y_( CheckSign(y) ) { }
+  dimension(dimension<T> const& other) : x_( other.x_ ), y_( other.y_ ) { }
   
-  explicit Dimension(Vecteur const& vect);
+  explicit dimension(vecteur<T> const& vect);
 
 
 public:  //assignment
 
-  Dimension& operator=(Dimension const& other) { x_ = other.x_; y_ = other.y_; return *this; }
+  dimension<T>& operator=(dimension<T> const& other) 
+  { 
+    x_ = other.x_; 
+    y_ = other.y_; 
+    return *this; 
+  }
 
-  void swap(Dimension& other) { std::swap(x_, other.x_); std::swap(y_, other.y_); }
+  void swap(dimension<T>& other) 
+  {
+    using std::swap;       //allows to find swap through arg dependent lookup
+
+    swap(x_, other.x_);    //ie it may not be std::swap that will be used
+    swap(y_, other.y_); 
+  }
 
 
 public:  //access
 
-  int GetWidth() const { return x_; }
-  int GetHeight() const { return y_; }
+  T GetWidth() const { return x_; }
+  T GetHeight() const { return y_; }
 
-  void SetWidth(int width) { x_ = CheckSign(width); }
-  void SetHeight(int height) { y_ = CheckSign(height); }
+  void SetWidth(T width) { x_ = CheckSign(width); }
+  void SetHeight(T height) { y_ = CheckSign(height); }
 
 
 public:  //operators
 
-  Dimension& operator+=(Dimension const& other)
+  dimension<T>& operator+=(dimension<T> const& other)
   {
     x_ += other.x_;
     y_ += other.y_;
     return *this;
   }
 
-  Dimension& operator+=(Vecteur const& vect);
+  dimension<T>& operator+=(vecteur<T> const& vect);
 
 
-  bool operator==(Dimension const& other) const { return x_ == other.x_ && y_ == other.y_; }
-  bool operator!=(Dimension const& other) const { return x_ != other.x_ || y_ != other.y_; }
-  
+  bool operator==(dimension<T> const& other) const { return x_ == other.x_ && y_ == other.y_; }
+  bool operator!=(dimension<T> const& other) const { return x_ != other.x_ || y_ != other.y_; }
+
+
   //special effect operator: inclusion
-  Dimension& operator >>=(Dimension const& other)
+  dimension<T>& operator >>=(dimension<T> const& other)
   {
     if ( x_ > other.x_ )
       x_ = other.x_;
@@ -113,25 +125,31 @@ public:  //others
 
   bool empty() const { return x_ == 0 || y_ == 0; }
 
-  template <int bps> Dimension Turn() const { assert(x_ % bps == 0); return Dimension(y_ * bps, x_ / bps); }
+  template <long bps> dimension<T> Turn() const 
+  { 
+    assert(x_ % bps == 0); 
+    return dimension<T>(y_ * bps, x_ / bps); 
+  }
 
-  template <int xFactor, int yFactor> Dimension Multiply() const { return Dimension(x_ * xFactor, y_ * yFactor); }
-  template <int xFactor, int yFactor> Dimension Divide() const { return Dimension(x_ / xFactor, y_ / yFactor); }
+  template <long xFactor, long yFactor> dimension<T> Multiply() const { return dimension<T>(x_ * xFactor, y_ * yFactor); }
+  template <long xFactor, long yFactor> dimension<T> Divide() const { return dimension<T>(x_ / xFactor, y_ / yFactor); }
 
-  template <int xShift, int yShift> Dimension Shift() const { return Dimension(x_ + xShift, y_ + yShift); }
+  template <long xShift, long yShift> dimension<T> Shift() const { return dimension<T>(x_ + xShift, y_ + yShift); }
 
-  template <int xRound, int yRound> Dimension Round() const { return Dimension( RoundUp<xRound>(x_), RoundUp<yRound>(y_) ); }
+  template <long xRound, long yRound> dimension<T> Round() const { return dimension<T>( RoundUp<xRound>(x_), RoundUp<yRound>(y_) ); }
 
 };
 
 
 //global scope swap
-inline void swap(Dimension& left, Dimension& right) { left.swap(right); }
+template <typename T>
+inline void swap(dimension<T>& left, dimension<T>& right) { left.swap(right); }
 
 //global scope operator+
-inline Dimension operator+(Dimension const& left, Dimension const& right)
+template <typename T>
+inline dimension<T> operator+(dimension<T> const& left, dimension<T> const& right)
 {
-  Dimension result(left);
+  dimension<T> result(left);
   result += right;
   return result;
 }

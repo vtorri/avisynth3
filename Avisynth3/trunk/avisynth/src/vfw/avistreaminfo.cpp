@@ -34,6 +34,13 @@ namespace avs { namespace vfw {
 
 
 
+AviStreamInfo::AviStreamInfo(IAVIStream& stream)
+{
+  HRESULT hResult = stream.Info(this, sizeof(AVISTREAMINFOW));
+  assert( hResult == S_OK );
+}
+
+
 AviStreamInfo::AviStreamInfo(VideoInfo const& vi, bool video)
 {
   memset( static_cast<AVISTREAMINFOW *>(this), 0, sizeof(AVISTREAMINFOW) );

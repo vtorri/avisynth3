@@ -36,13 +36,17 @@ namespace avs { namespace vfw {
 
 
 
+/////////////////////////////////////////////////////////////////////////////////////
+//  AviStreamInfo
+//
+//
+//
 class AviStreamInfo : public AVISTREAMINFOW
 {
 
 public:  //structors
 
-  AviStreamInfo() { }
-
+  AviStreamInfo(IAVIStream& stream);
   AviStreamInfo(VideoInfo const& vi, bool video);
 
   //generated copy constructor and destructor are fine

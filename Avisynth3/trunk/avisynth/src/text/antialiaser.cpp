@@ -44,6 +44,8 @@ Antialiaser::Antialiaser(Dimension const& dim, PEnvironment const& env, Font con
 
 void Antialiaser::Apply(VideoFrame& frame, int textColor, int haloColor) 
 {
+  assert( (frame.GetDimension() == alphaBuffer_.GetDimension().Divide<2, 1>()) );
+
   if ( dirty_ )
     UpdateAlpha();
 
@@ -70,7 +72,7 @@ void Antialiaser::ApplyRGB24(VideoFrame& frame, int textColor, int haloColor)
   CWindowPtr alpha = alphaBuffer_.Read();
 
   for ( int y = alpha.height; y-- > 0; dst.pad(), alpha.pad() ) 
-    for ( int x = alpha.width >> 1; x-- > 0; dst.to(3, 0), alpha.to(0, 2) ) 
+    for ( int x = alpha.width >> 1; x-- > 0; dst.to(3, 0), alpha.to(2, 0) ) 
       if ( *(short *)alpha.ptr )  //ie textAlpha or haloAlpha is not 0
       {
         int textAlpha = alpha[0];
@@ -93,8 +95,10 @@ void Antialiaser::ApplyRGB32(VideoFrame& frame, int textColor, int haloColor)
   WindowPtr dst = frame.WriteTo(NOT_PLANAR);
   CWindowPtr alpha = alphaBuffer_.Read();
 
+  assert( (dst.height == alpha.height && dst.width == alpha.width * 2) );
+
   for ( int y = alpha.height; y-- > 0; dst.pad(), alpha.pad() ) 
-    for ( int x = alpha.width >> 1; x-- > 0; dst.to(4, 0), alpha.to(0, 2) ) 
+    for ( int x = alpha.width >> 1; x-- > 0; dst.to(4, 0), alpha.to(2, 0) ) 
       if ( *(short *)alpha.ptr )  //ie textAlpha or haloAlpha is not 0
       {
         int textAlpha = alpha[0];
@@ -182,10 +186,12 @@ void Antialiaser::UpdateAlpha()
   antialias.to(2, 16);    //skip edges guards
 
 
-  for ( int y = alpha.height; y-- > 0; antialias.to(0, 8), alpha.to(0, 1) ) 
+  for ( int y = alpha.height; y-- > 0; antialias.to(- alpha.width >> 1, 8), alpha.pad() ) 
     for( int x = alpha.width >> 1; x-- > 0; antialias.to(1, 0), alpha.to(2, 0) )
     {
 
+      int text = 0, halo = 0;    
+      
       int tmp = 0;            
       BYTE const * ptr = antialias.at(-1, - 8); 
       
@@ -193,15 +199,13 @@ void Antialiaser::UpdateAlpha()
       for ( int i = 24; i-- > 0; ptr += antialias.pitch ) 
         tmp |= *(int const *)ptr;
 
-      int text = 0, halo = 0;
-
       if ( (tmp & 0x00FFFFFF) != 0 )    // quick exit if all black
       {
         for ( int i = 0; i < 8; ++i )
           text += bitcnt[ antialias(0, i) ];
 
         if ( text != 0 )
-          halo = 64;
+          halo = 64 - text;
         else
         {
           BYTE centerMask = 0; 

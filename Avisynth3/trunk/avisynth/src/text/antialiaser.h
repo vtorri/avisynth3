@@ -58,6 +58,8 @@ public:  //structors
 
 public:
 
+  Dimension GetDimension() const { return alphaBuffer_.GetDimension().Divide<2, 1>(); }
+
   void SetText(std::string const& text, Vecteur const& coords, Align align)
   { 
     dirty_ = true; 

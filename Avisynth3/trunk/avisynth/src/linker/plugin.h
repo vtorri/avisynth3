@@ -43,20 +43,16 @@ typedef std::vector<PFunction> FunctionList;
 class Plugin
 {
 
-  std::string const name_;
-
-
 public:  //structors
 
-  Plugin(std::string const& name)
-    : name_( name ) { }
+  Plugin() { }
 
   virtual ~Plugin() { }
 
 
 public:  //Plugin interface
 
-  std::string const& GetName() const { return name_; }
+  virtual std::string GetName() const = 0;
 
   virtual FunctionList GetFunctionList() const = 0;
 

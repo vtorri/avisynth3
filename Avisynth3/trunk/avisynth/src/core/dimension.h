@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -122,6 +122,19 @@ public:  //others
   template <int xRound, int yRound> Dimension Round() const { return Dimension( RoundUp<xRound>(x_), RoundUp<yRound>(y_) ); }
 
 };
+
+
+//global scope swap
+inline void swap(Dimension& left, Dimension& right) { left.swap(right); }
+
+//global scope operator+
+inline Dimension operator+(Dimension const& left, Dimension const& right)
+{
+  Dimension result(left);
+  result += right;
+  return result;
+}
+
 
 
 } //namespace avs

@@ -18,33 +18,60 @@
 
 
 #include "avsfunction.h"
+#include "plugin.h"
 
 
 
+PPlugin PluginFunction::GetMotherPlugin() const { mother.AddRef(); return &mother; }
+
+CoreFunction::CoreFunction(const string& name) : AVSFunction(name) { CorePlugin::core.RegisterFunction(*this); }
 
 
-CorePlugin * CorePlugin::GetCore()
+
+AVSValue LinkedFunction::Call(const ArgVector& args) throw(std::invalid_argument)
 {
-  static CorePlugin * core = new CorePlugin();
-  //we don't have to worry about deleting it here, the env will do it.
-  return core;
+  const DescriptionPrototype& prototype = GetPrototype();
+
+  if ( args.size() > prototype.size() )
+    throw std::invalid_argument("too much arguments");
+
+  ArgVector::const_iterator a_it = args.begin();
+  DescriptionPrototype::const_iterator p_it = prototype.begin();
+  while ( a_it != args.end() )   //while there are args
+  {
+    if ( a_it++->type() != p_it++->Type() )           //if type mismatch
+      throw std::invalid_argument("type mismatch");   //exception
+  }      
+  
+  if ( p_it != prototype.end() && ! p_it->IsOptional() )
+    throw std::invalid_argument("not enough arguments");
+
+  ArgVector filledArgs = args;
+  while( p_it != prototype.end() )
+  {
+    filledArgs.push_back( p_it->GetDefault() );    //complete with default values
+  }
+
+  return operator()(filledArgs, GetEnvironment());
+
 }
 
 
-const string& CorePlugin::GetName() const
-{
-  static const string name = "Avisynth Core";
-  return name;
-}
 
-const string& CorePlugin::GetAuthor() const
-{
-  static const string author = "Ben Rubiak Gould et al.";
-  return author;
-}
 
-const string& CorePlugin::GetDescription() const
+
+AVSValue ReorderingCallBackFunction::operator()(const ArgVector& args, PEnvironment env) const
 {
-  static const string description = "Set of all avisynth internals";
-  return description;
+  const DescriptionPrototype& callBackPrototype = CallBackFunction::GetPrototype();
+ 
+  ArgVector reorderedArgs(callBackPrototype.begin(), callBackPrototype.end());
+
+  //we are protected by Call and the factory method that pattern and args
+  //are compatible
+  for(int i = args.size(); i-- > 0; )
+  {
+    reorderedArgs[pattern[i].GetPosition()] = pattern[i](args[i]);  //put arg at its place and type cast    
+  }
+  //directly call the operator () from the parent (avoid a redundant Call)
+  return CallBackFunction::operator()(reorderedArgs, env);
 }

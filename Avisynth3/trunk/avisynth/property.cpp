@@ -22,39 +22,23 @@
 
 
 #include "property.h"
-#include "algorithm"
 
-typedef smart_ptr<PropertySet> PPropertySet;
 
-void PropertySet::Set(CPProperty prop) 
+
+
+PropertySet::iterator PropertySet::find(PPropertyKey key)
 {
-  PropertyVector::iterator it = find(propVector.begin(), propVector.end(), prop->key);
-  if (it != propVector.end())
-    it->value = prop;
-  else
-    propVector.push_back(prop);
-}
-
-void PropertySet::Remove(PPropertyKey key) 
-{
-  PropertyVector::iterator it = find(propVector.begin(), propVector.end(), key);
-  if (it != propVector.end())
-    propVector.erase(it);
+  for( iterator it = begin(); it != end(); ++it )
+    if ( (*it)->GetKey() == key )
+      break;    //stop loop when found
+  return it;    //return good value (when break above) and end() when not found
 }
 
 
 CPProperty PropertySet::Get(PPropertyKey key) const
 {
-  PropertyVector::const_iterator it = find(propVector.begin(), propVector.end(), key);
-  return it == propVector.end() ? CPProperty() : it->value;
-}
-
-void PropertySet::IntegrityCheck() const 
-{
-  PropertyVector::const_iterator it = propVector.begin();
-  while( it != propVector.end() )
-  {
-    it->value->IntegrityCheck(*this);
-    ++it;
-  }
+  for( const_iterator it = begin(); it != end(); ++it )
+    if ( (*it)->GetKey() == key)
+      return *it;
+  return CPProperty();   //if we are here, ie not found above
 }

@@ -48,8 +48,6 @@ protected:
   //their existence allow to define many things at this level
   virtual const BufferWindow& GetPlane(Plane plane) const throw(NoSuchPlaneException) = 0;
   virtual BufferWindow& GetPlane(Plane pane) throw(NoSuchPlaneException) = 0;
-
-  void InitPlanes(int align);
   
 public:
   //copy constructor
@@ -79,7 +77,6 @@ public:
   //they test if plane exist and if yes process it.
   virtual void SizeChange(int left, int right, int top, int bottom);
   virtual void Copy(CPVideoFrame other, int left, int top);
-  virtual void FlipVertical();
   virtual void Blend(CPVideoFrame other, float factor);
 
   virtual CPProperty GetProperty(PPropertyKey key) const;
@@ -113,27 +110,30 @@ protected:
     return main;
   }
 
-  virtual void PlaneInit(int align)
-  {
-    const ColorSpace& space = GetColorSpace();
-    GetPlane(NOT_PLANAR) = BufferWindow(space.WidthToRowSize(GetVideoWidth(), NOT_PLANAR), space.HeightToPlaneHeight(GetVideoHeight(), NOT_PLANAR), align);
-  }
 
 public:
+  //copy constructor
   InterleavedVideoFrame(const InterleavedVideoFrame& other) : TaggedVideoFrame(other), main(other.main) { }
-  InterleavedVideoFrame(const ColorSpace& space, int width, int height, bool IsField, int align)
-    : TaggedVideoFrame(space, width, height, IsField) { PlaneInit(align); }  
-  
+  //conversion constructor
+  InterleavedVideoFrame(const ColorSpace& space, const TaggedVideoFrame& other) : TaggedVideoFrame(space, other) { }  
+  //normal constructor
+  InterleavedVideoFrame(const ColorSpace& space, int width, int height, bool IsField)
+    : TaggedVideoFrame(space, width, height, IsField) { main.NewWindow(space.WidthToRowSize(width, NOT_PLANAR), height); }  
 
+  virtual void FlipVertical() { main.FlipVertical(); }
 };
 
 
 class RGBVideoFrame : public InterleavedVideoFrame {
 
 public:
+  //copy constructor
   RGBVideoFrame(const RGBVideoFrame& other) : InterleavedVideoFrame(other) { }
-  RGBVideoFrame(const ColorSpace& space, int width, int height, bool IsField, int align)
-    : InterleavedVideoFrame(space, width, height, IsField, align) { }
+  //conversion constructor
+  RGBVideoFrame(const ColorSpace& space, const TaggedVideoFrame& other) : InterleavedVideoFrame(space, other) { }  
+  //normal constructor
+  RGBVideoFrame(const ColorSpace& space, int width, int height, bool IsField)
+    : InterleavedVideoFrame(space, width, height, IsField) { }
 
   virtual void FlipHorizontal();
 
@@ -145,7 +145,7 @@ public:
 
 class RGB32VideoFrame;
 class YUY2VideoFrame;
-class PlanarVideoFrame;
+class YV12VideoFrame;
 
 class RGB24VideoFrame : public RGBVideoFrame {
 
@@ -154,14 +154,15 @@ protected:
   virtual RefCounted * clone() const { return new RGB24VideoFrame(*this); }  
 
 public:
-  RGB24VideoFrame(const RGB32VideoFrame& other);  //converting constrcutors
-  RGB24VideoFrame(const YUY2VideoFrame& other);
-  RGB24VideoFrame(const PlanarVideoFrame& other);
   RGB24VideoFrame(const RGB24VideoFrame& other) : RGBVideoFrame(other) { } 
-  RGB24VideoFrame(int width, int height, bool IsField, int align)
-    : RGBVideoFrame(RGB24::instance, width, height, IsField, align) { }
+  RGB24VideoFrame(int width, int height, bool IsField) : RGBVideoFrame(RGB24::instance, width, height, IsField) { }
+  //converting constructors
+  RGB24VideoFrame(const RGB32VideoFrame& other);
+  RGB24VideoFrame(const YUY2VideoFrame& other);
+  RGB24VideoFrame(const YV12VideoFrame& other);
 
-  virtual CPVideoFrame ConvertTo(const ColorSpace& space, int align = FRAME_ALIGN) const;
+
+  virtual CPVideoFrame ConvertTo(const ColorSpace& space) const;
 
 };
 
@@ -171,15 +172,14 @@ protected:
   virtual RefCounted * clone() const { return new RGB32VideoFrame(*this); }
 
 public:
-  RGB32VideoFrame(const RGB24VideoFrame& other);  //converting constrcutors
-  RGB32VideoFrame(const YUY2VideoFrame& other);
-  RGB32VideoFrame(const PlanarVideoFrame& other);
   RGB32VideoFrame(const RGB32VideoFrame& other) : RGBVideoFrame(other) { } 
-  RGB32VideoFrame(int width, int height, bool IsField, int align)
-    : RGBVideoFrame(RGB32::instance, width, height, IsField, align) { }
+  RGB32VideoFrame(int width, int height, bool IsField) : RGBVideoFrame(RGB32::instance, width, height, IsField) { }
+  //converting constructors
+  RGB32VideoFrame(const RGB24VideoFrame& other);
+  RGB32VideoFrame(const YUY2VideoFrame& other);
+  RGB32VideoFrame(const YV12VideoFrame& other);
 
-
-  virtual CPVideoFrame ConvertTo(const ColorSpace& space, int align = FRAME_ALIGN) const;
+  virtual CPVideoFrame ConvertTo(const ColorSpace& space) const;
 
 };
 
@@ -193,12 +193,12 @@ protected:
 public:
   YUY2VideoFrame(const RGB32VideoFrame& other);  //converting constructors
   YUY2VideoFrame(const RGB24VideoFrame& other);
-  YUY2VideoFrame(const PlanarVideoFrame& other);
+  YUY2VideoFrame(const YV12VideoFrame& other);
   YUY2VideoFrame(const YUY2VideoFrame& other) : InterleavedVideoFrame(other) { } //spec of the above
-  YUY2VideoFrame(int width, int height, bool IsField, int align)
-    : InterleavedVideoFrame(YUY2::instance, width, height, IsField, align) { }
+  YUY2VideoFrame(int width, int height, bool IsField)
+    : InterleavedVideoFrame(YUY2::instance, width, height, IsField) { }
 
-  virtual CPVideoFrame ConvertTo(const ColorSpace& space, int align = FRAME_ALIGN) const;
+  virtual CPVideoFrame ConvertTo(const ColorSpace& space) const;
 
   virtual void FlipHorizontal();
 
@@ -216,6 +216,7 @@ class PlanarVideoFrame : public TaggedVideoFrame {
 
   typedef smart_ptr_to_cst<PlanarVideoFrame> CPPlanarVideoFrame;
 
+protected:
   BufferWindow y, u ,v;
 
   virtual const BufferWindow& GetPlane(Plane plane) const throw(NoSuchPlaneException)
@@ -238,19 +239,15 @@ class PlanarVideoFrame : public TaggedVideoFrame {
     throw NoSuchPlaneException();
   }
 
-protected:
-  virtual RefCounted * clone() const { return new PlanarVideoFrame(*this); }
+  virtual void InitPlanes(int width, int height) = 0;
 
 public:
-  PlanarVideoFrame(const RGB32VideoFrame& other);  //converting constructors
-  PlanarVideoFrame(const RGB24VideoFrame& other);
-  PlanarVideoFrame(const YUY2VideoFrame& other);
+  //copy constructor
   PlanarVideoFrame(const PlanarVideoFrame& other) : TaggedVideoFrame(other), y(other.y), u(other.u), v(other.v) { }
-  PlanarVideoFrame(int width, int height, bool IsField, int align) 
-    : TaggedVideoFrame(YV12::instance, width, height, IsField) { InitPlanes(align); }
+  //normal constructor
+  PlanarVideoFrame(const ColorSpace& space, int width, int height, bool IsField) 
+    : TaggedVideoFrame(space, width, height, IsField) { InitPlanes(width, height); }
   
-
-  virtual CPVideoFrame ConvertTo(const ColorSpace& space, int align = FRAME_ALIGN) const;
 
   virtual void Copy(CPVideoFrame other, int left, int top);
 
@@ -266,16 +263,40 @@ public:
 }; 
 
 
+class YV12VideoFrame : public PlanarVideoFrame {
 
+protected:
+  virtual void InitPlanes(int width, int height);
+  virtual RefCounted * clone() const { return new YV12VideoFrame(*this); }
 
+public:
+  //copy constructor
+  YV12VideoFrame(const YV12VideoFrame& other) : PlanarVideoFrame(other) { }
+  //normal constructor
+  YV12VideoFrame(int width, int height, bool IsField) : PlanarVideoFrame(YV12::instance, width, height, IsField) { }
+  //conversions constructor
+  YV12VideoFrame(const RGB24VideoFrame& other);
+  YV12VideoFrame(const RGB32VideoFrame& other);
+  YV12VideoFrame(const YUY2VideoFrame& other);
 
+  virtual CPVideoFrame ConvertTo(const ColorSpace& space) const;
 
+};
 
+class VFWYV12VideoFrame : public YV12VideoFrame {
 
+protected:
+  virtual void InitPlanes(int width, int height);
 
+public:
+  VFWYV12VideoFrame(int width, int height, bool IsField) : YV12VideoFrame(width, height, IsField) { }
 
+};
 
-
+class VFWI420VideoFrame : public VFWYV12VideoFrame {
+public:
+  VFWI420VideoFrame(int width, int height, bool IsField) : VFWYV12VideoFrame(width, height, IsField) { std::swap(u, v); }
+};
 
 
 #endif  //ifndef __VIDEOFRAME_H__

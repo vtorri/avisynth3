@@ -79,70 +79,38 @@ protected:
 public:
   Property() { }
 
-  //protected properties are not supposed to be altered directly
-  //but through special methods
-  virtual bool IsProtected() const = 0;
-
   virtual PPropertyKey GetKey() const  = 0;
 
 };
 
-class ProtectedProperty : public Property {
-
-public:
-  ProtectedProperty() { }
-
-  virtual bool IsProtected() const { return true; }
-};
-
-
-
-
-typedef smart_ptr_to_cst<Property> CPProperty;  //smart const Property *
 typedef smart_ptr<Property> PProperty;
-typedef smart_ptr_to_cst<PropertySet> CPPropertySet;
-typedef smart_ptr<PropertySet> PPropertySet;
+typedef smart_ptr_to_cst<Property> CPProperty;  
 
-class PropertySet : public RefCounted {
 
-  struct Entry {
-    
-    PPropertyKey key;
-    CPProperty value;
+typedef vector<CPProperty> PropertyVector;
 
-    Entry(CPProperty _value) : key(_value->GetKey()), value(_value) { }
-    Entry(const Entry& other) : key(other.key), value(other.value) { }
+class PropertySet : public PropertyVector, public RefCounted {
 
-    bool operator== (const Entry& other) const { return key == other.key; }
-    bool operator== (PPropertyKey _key) const { return key == _key; }
-  };
-
-  typedef vector<Entry> PropertyVector;
-
-  PropertyVector propVector;
-
-protected:
   //ask each property to check integrity
-  void IntegrityCheck() const;
+  void IntegrityCheck() const { for( const_iterator it = begin(); it != end(); ++it ) (*it)->IntegrityCheck(*this); }
+
+  iterator find(PPropertyKey key);
 
 public:
   PropertySet() { }
-  PropertySet(const PropertySet& other) : propVector(other.propVector) { }
+  PropertySet(const PropertySet& other) : PropertyVector(other) { }
 
-  virtual RefCounted * clone() const { return new PropertySet(*this); }
+  virtual PropertySet * clone() const { return new PropertySet(*this); }
 
   //mutations methods
-  void Set(CPProperty prop);
-  void Remove(PPropertyKey key);
+  void Set(CPProperty prop) { iterator it = find(prop->GetKey()); if ( it != end() ) *it = prop; else push_back(prop); }
+  void Remove(PPropertyKey key) { iterator it = find(key); if ( it != end() ) erase(it); }
 
-  //same as above but with no effect on protected properties
-  //throw an exception ?
-  void ProtectedSet(CPProperty prop);
-  void ProtectedRemove(PPropertyKey key);
-
-  CPProperty Get(PPropertyKey key) const;
+  CPProperty Get(PPropertyKey key) const; 
 };
 
+typedef smart_ptr<PropertySet> PPropertySet;
+typedef smart_ptr_to_cst<PropertySet> CPPropertySet;
 
 
 

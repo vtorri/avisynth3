@@ -169,8 +169,6 @@ public:
   virtual /*static*/ long __stdcall GetCPUFlags() = 0;
 
 
-  __declspec(noreturn) void __stdcall ThrowError(const string& err_msg) { throw AvisynthError(err_msg); }
-
   class NotFound /*exception*/ {};  // thrown by Invoke and GetVar
 
 
@@ -181,10 +179,8 @@ public:
 
   static void __stdcall BitBlt(BYTE* dstp, int dst_pitch, const BYTE* srcp, int src_pitch, int row_size, int height);
 
-  typedef void (__cdecl *ShutdownFunc)(void* user_data, IScriptEnvironment* env);
-  virtual void __stdcall AtExit(ShutdownFunc function, void* user_data) = 0;
 
-  virtual void __stdcall CheckVersion(int version = AVISYNTH_INTERFACE_VERSION) = 0;
+//  virtual void __stdcall CheckVersion(int version = AVISYNTH_INTERFACE_VERSION) = 0;
 
 	virtual int __stdcall SetMemoryMax(int mem) = 0;
 

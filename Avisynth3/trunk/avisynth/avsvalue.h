@@ -23,7 +23,7 @@
 #include <boost/any.hpp>  //which includes <typeinfo>
 using boost::any_cast;
 
-
+/*
 class AVSValue {
 
   boost::any content;
@@ -54,7 +54,9 @@ public:
   template <typename T> operator T() const { return IsDefined()? any_cast<T>(value) : any_cast<void>(value); }
 
   template <typename T> const AVSValue& SetType() { content = any(T()); return *this; }
-};
+};*/
+
+typedef boost::any AVSValue;
 
 typedef vector<AVSValue> ArgVector;
 

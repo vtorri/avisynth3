@@ -107,7 +107,7 @@ public:
    ************************************************************************************/
 
   //ColorSpace conversion method
-  virtual CPVideoFrame ConvertTo(const ColorSpace& space, int align = FRAME_ALIGN) const = 0;
+  virtual CPVideoFrame ConvertTo(const ColorSpace& space) const = 0;
 
   //Please Note that those dimensions are in PIXELS, and can be negative
   //positive values crop, negatives increase size, buffers won't be reallocated if possible

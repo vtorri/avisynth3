@@ -95,12 +95,13 @@ void TaggedVideoFrame::SizeChange(int left, int right, int top, int bottom) //ar
   for(int i = 4; i-- > 0; )
   {
     Plane p = IndexToPlane(i);
-    if (space.HasPlane(p))
-    {
-      BufferWindow & buf = GetPlane(p);
-      buf = BufferWindow(buf, space.WidthToRowSize(left, p), space.WidthToRowSize(right, p),
-        space.HeightToPlaneHeight(top, p), space.HeightToPlaneHeight(bottom, p));
-    }
+    if (space.HasPlane(p))    
+      GetPlane(p).Crop(
+        space.WidthToRowSize(left, p),
+        space.WidthToRowSize(right, p),
+        space.HeightToPlaneHeight(top, p),
+        space.HeightToPlaneHeight(bottom, p)
+      );            
   }//done
 }
 
@@ -147,13 +148,13 @@ void RGBVideoFrame::FlipHorizontal()
 /************************************ RGB32VideoFrame *****************************************/
 /**********************************************************************************************/
 
-CPVideoFrame RGB32VideoFrame::ConvertTo(const ColorSpace& space, int align) const
+CPVideoFrame RGB32VideoFrame::ConvertTo(const ColorSpace& space) const
 {
   switch(space.id)
   {
     case I_RGB24: return new RGB24VideoFrame(*this);
     case I_YUY2:  return new YUY2VideoFrame(*this);
-    case I_YV12:  return new PlanarVideoFrame(*this);
+    case I_YV12:  return new YV12VideoFrame(*this);
   }
   AddRef();   
   return this; //aka case I_RGB32:
@@ -165,13 +166,13 @@ CPVideoFrame RGB32VideoFrame::ConvertTo(const ColorSpace& space, int align) cons
 /************************************ RGB24VideoFrame *****************************************/
 /**********************************************************************************************/
 
-CPVideoFrame RGB24VideoFrame::ConvertTo(const ColorSpace& space, int align) const
+CPVideoFrame RGB24VideoFrame::ConvertTo(const ColorSpace& space) const
 {
   switch(space.id)
   {
     case I_RGB32: return new RGB32VideoFrame(*this);
     case I_YUY2:  return new YUY2VideoFrame(*this);
-    case I_YV12:  return new PlanarVideoFrame(*this);
+    case I_YV12:  return new YV12VideoFrame(*this);
   }
   AddRef();   
   return this; //aka case I_RGB24:
@@ -186,13 +187,13 @@ CPVideoFrame RGB24VideoFrame::ConvertTo(const ColorSpace& space, int align) cons
 
 
 
-CPVideoFrame YUY2VideoFrame::ConvertTo(const ColorSpace& space, int align) const
+CPVideoFrame YUY2VideoFrame::ConvertTo(const ColorSpace& space) const
 {
   switch(space.id)
   {
     case I_RGB32: return new RGB32VideoFrame(*this);
     case I_RGB24: return new RGB24VideoFrame(*this);
-    case I_YV12:  return new PlanarVideoFrame(*this);
+    case I_YV12:  return new YV12VideoFrame(*this);
   }
   AddRef();   
   return this; //aka case I_YUY2:
@@ -202,7 +203,7 @@ void YUY2VideoFrame::FlipHorizontal()
 {  
   int row_size = main.GetRowSize();
   int height   = main.GetHeight();
-  BufferWindow dst(row_size, height, -main.GetAlign());
+  BufferWindow dst(row_size, height);  
   
   BYTE * dstp = dst.GetWritePtr();  
   const BYTE * srcp = main.GetReadPtr();
@@ -232,21 +233,6 @@ void YUY2VideoFrame::FlipHorizontal()
 
 
 
-CPVideoFrame PlanarVideoFrame::ConvertTo(const ColorSpace& space, int align) const
-{
-  switch(space.id)
-  {
-    case I_RGB32: return new RGB32VideoFrame(*this);
-    case I_RGB24: return new RGB24VideoFrame(*this);
-    case I_YUY2:  return new YUY2VideoFrame(*this);
-  }
-  AddRef();   
-  return this; //aka case I_YUY2:
-}
-
-
-
-
 void PlanarVideoFrame::FlipVertical()
 {
   for(int i = 3; i--> 0; ) //reverse loop  
@@ -260,7 +246,7 @@ void PlanarVideoFrame::FlipHorizontal()
     BufferWindow& src = GetPlane(IndexToPlane(i));
     int row_size = src.GetRowSize();
     int height   = src.GetHeight();
-    BufferWindow dst(row_size, height, -src.GetAlign());
+    BufferWindow dst(row_size, height);
     BYTE* dstp = dst.GetWritePtr();  
     const BYTE* srcp = src.GetReadPtr();
     int src_pitch = src.GetPitch();
@@ -278,3 +264,38 @@ void PlanarVideoFrame::FlipHorizontal()
   }
 }
 
+
+
+CPVideoFrame YV12VideoFrame::ConvertTo(const ColorSpace& space) const
+{
+  switch(space.id)
+  {
+    case I_RGB32: return new RGB32VideoFrame(*this);
+    case I_RGB24: return new RGB24VideoFrame(*this);
+    case I_YUY2:  return new YUY2VideoFrame(*this);
+  }
+  AddRef();   
+  return this; //aka case I_YV12:
+}
+
+
+
+
+void YV12VideoFrame::InitPlanes(int width, int height)
+{
+  y.NewWindow(width, height);
+  u.NewWindow(width>>1, height>>1);
+  v.NewWindow(width>>1, height>>1);
+}
+
+void VFWYV12VideoFrame::InitPlanes(int width, int height)
+{
+  int pitchY = (width + 3) & -4;  //mod 4 pitch
+  int neededSize = (pitchY * height * 3) >> 1 + 4;
+  PVideoFrameBuffer solid = new SolidFrameBuffer(neededSize);
+  int solidOffset = -int(solid->GetReadPtr()) & 3; 
+  
+  y.NewSolidWindow(width, height, pitchY, solid, solidOffset);
+  u.NewSolidWindow(width>>1, height>>1, pitchY>>1, solid, solidOffset + pitchY * height);
+  v.NewSolidWindow(width>>1, height>>1, pitchY>>1, solid, solidOffset + (pitchY * height * 5 >>2));
+}

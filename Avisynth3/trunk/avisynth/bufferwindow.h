@@ -27,71 +27,17 @@
 #include "avisynth.h"
 #include "colorspace.h"
 #include <vector>
-
-
-//simpler replacement for auto_ptr (saves a bool)
-//and with a operator=(T*)  (replacement for reset(T*) missing in VC6 STL)
-template <class T> class simple_auto_ptr {
-
-  mutable T * ptr;
-
-public:
-  simple_auto_ptr() : ptr(NULL) { }
-  simple_auto_ptr(T * _ptr) : ptr(_ptr) { }
-  simple_auto_ptr(const simple_auto_ptr<T>& other) : ptr(other.release()) { }
-  ~simple_auto_ptr() { if (ptr) delete ptr; }
-
-  simple_auto_ptr<T>& operator=(T * _ptr) { if (ptr && ptr != _ptr) delete ptr; ptr = _ptr; return *this; }
-  simple_auto_ptr<T>& operator=(const simple_auto_ptr<T>& other) {
-    if (this != &other) {
-      if (ptr) delete ptr;
-      ptr = other.release();
-    }
-    return *this;
-  }
-  operator bool() const { return ptr != NULL; }
-
-  T * get() const { return ptr; }  
-  T * release() const { T * result = ptr; ptr = NULL; return result; }
-  void swap(simple_auto_ptr<T>&) { std::swap<T*>(ptr, other.ptr); }
-
-}; 
+#include <utility>   //for pair
+#include <boost/shared_ptr.hpp>
 
 
 
-class AbstractVideoFrameBuffer : public RefCounted {
+
+
+class VideoFrameBuffer : public RefCounted {
 
 protected:
-
-  static int SizeFor(int pitch, int height, int align) { return pitch * height + align * 4; }  
-
-  int pitch;
-  int align;
-
-public:
-  AbstractVideoFrameBuffer(int row_size, int _align);
-
-  //virtual methods to be implented by subclasses
-  virtual const BYTE * GetReadPtr() const = 0;
-  virtual BYTE * GetWritePtr() { return NULL; }
-  virtual int GetSize() const = 0;
-
-  int GetPitch() const { return pitch; }
-  int GetAlign() const { return align; }
-
-  int FirstOffset() const { return int(GetReadPtr()) % align; }
-
-  int Aligned(int dim) { return (dim + align - 1) / align * align; }
-
-
-};
-
-
-// VideoFrameBuffer holds information about a memory block which is used
-// for video data.  
-class VideoFrameBuffer : public AbstractVideoFrameBuffer {  
-
-  typedef simple_auto_ptr<BYTE> Buffer;  //auto_ptr<BYTE> Buffer;
+  typedef boost::shared_ptr<BYTE> Buffer;
   
   struct MemoryPiece {
 
@@ -105,39 +51,113 @@ class VideoFrameBuffer : public AbstractVideoFrameBuffer {
     MemoryPiece(int _size);
     MemoryPiece(const MemoryPiece& other) : size(other.size), data(other.data) { }
 
+    static Save(const MemoryPiece & piece);
   };
 
-  MemoryPiece buffer;
+  static int SizeFor(int pitch, int height) { return pitch * height + FRAME_ALIGN; }
 
 public:
-  VideoFrameBuffer(int row_size, int height, int _align)
-    : AbstractVideoFrameBuffer(row_size, _align), buffer(SizeFor(row_size, height, _align)) { }
-  ~VideoFrameBuffer() { MemoryPiece::alloc.push_back(buffer); }
+  virtual const BYTE * GetReadPtr() const = 0;
+  //returns NULL when you are not allowed to write 
+  virtual BYTE * GetWritePtr() = 0;
 
-  const BYTE * GetReadPtr() const { return buffer.data.get(); }
-  BYTE * GetWritePtr()  { return IsShared()? NULL : buffer.data.get(); }
+  virtual int GetSize() const = 0;
+  virtual int GetPitch() const = 0;
 
-  int GetSize() const { return buffer.size; }
 
-  
+  static int Aligned(int row_size, int align = FRAME_ALIGN) { return (row_size + (align - 1)) / align * align; }
 };
 
 
 typedef smart_ptr<VideoFrameBuffer> PVideoFrameBuffer;  
 
-//framebuffer for the dummy alpha planes (init to 255)
-//so BufferWindow will correctly reallocate the buffer 
-class AlphaVideoFrameBuffer : public AbstractVideoFrameBuffer {
+
+
+
+//frame buffer used to have multiple planes in one block
+//used when inputting from vfw
+class SolidFrameBuffer : public VideoFrameBuffer {
+
+  MemoryPiece buffer;
+
+public:
+  SolidFrameBuffer(int size) : buffer(size) { }
+
+  virtual const BYTE * GetReadPtr() const { return buffer.data.get(); }
+  virtual BYTE * GetWritePtr() { return buffer.data.get(); }
+
+  virtual int GetSize() const { return buffer.size; }
+  virtual int GetPitch() const { throw std::logic_error(""); }
+
+  ~SolidFrameBuffer() { MemoryPiece::Save(buffer); }
+};
+
+//standard frame buffer who holds one plane
+class PlaneFrameBuffer : public SolidFrameBuffer {
+
+  const int pitch;
+
+public:
+  PlaneFrameBuffer(int row_size, int height)
+    : SolidFrameBuffer(SizeFor(Aligned(row_size), height)), pitch(Aligned(row_size)) { }
+
+  virtual int GetPitch() const { return pitch; }
+};
+
+
+
+class ForwardingBuffer : public VideoFrameBuffer {
+
+protected:
+  const int pitch;
+  PVideoFrameBuffer forwardTo;
+
+  ForwardingBuffer(int row_size, int align) : pitch(Aligned(row_size, align)) { }
+
+public:
+  ForwardingBuffer(int _pitch, PVideoFrameBuffer _forwardTo) : pitch(_pitch), forwardTo(_forwardTo) { }
+
+  virtual const BYTE * GetReadPtr() const { return forwardTo->GetReadPtr(); }
+  virtual BYTE * GetWritePtr() { return forwardTo->GetWritePtr(); }
+
+  virtual int GetPitch() const { return pitch; }
+  virtual int GetSize() const { return forwardTo->GetSize(); }
+};
+
+
+//used in combo with SolidFrameBuffer
+class PlaneForwardingBuffer : public ForwardingBuffer {
+
+  int offset, size;
+
+public:
+  PlaneForwardingBuffer(int pitch, int _offset, int height, PVideoFrameBuffer forwardTo)
+    : ForwardingBuffer(pitch, forwardTo), offset(_offset), size(pitch * height) { }
+
+  virtual const BYTE * GetReadPtr() const { return forwardTo->GetReadPtr() + offset; }
+  virtual BYTE * GetWritePtr() { return IsShared() ? NULL : forwardTo->GetWritePtr() + offset; }
+
+  virtual int GetSize() const { return size; }
+
+};
+
+
+
+class AlphaForwardingBuffer : public ForwardingBuffer {
+  
+  //shared buffer for alpha planes
+  class SharedAlphaBuffer : public SolidFrameBuffer {
+  public:
+    SharedAlphaBuffer(int size) : SolidFrameBuffer(size) { memset(GetWritePtr(), 255, GetSize()); }
+  };
 
   static PVideoFrameBuffer largest;
 
-  PVideoFrameBuffer buffer;
-
 public:
-  AlphaVideoFrameBuffer(int row_size, int height, int _align);
+  AlphaForwardingBuffer(int row_size, int height);
 
-  const BYTE * GetReadPtr() const { return buffer->GetReadPtr(); }  
-  virtual int GetSize() const { return buffer->GetSize(); }
+  //never write into shared alpha buffers
+  virtual BYTE * GetWritePtr() { return NULL; }
 
 };
 
@@ -151,29 +171,37 @@ public:
 class BufferWindow {
 
   PVideoFrameBuffer vfb;
-  int offset;
-  int row_size, height;
-  
+  int offset, row_size, height;  
+
+  static int FirstOffset(PVideoFrameBuffer vfb);
+
 public:
-  BufferWindow() { } 
-  BufferWindow(int _row_size, int _height, int align = FRAME_ALIGN)
-    : row_size(_row_size), height(_height), vfb(new VideoFrameBuffer(row_size, height, align)), offset(vfb->FirstOffset()) { }
-  //copy constructor
-  BufferWindow(const BufferWindow& other) : row_size(other.row_size), height(other.height), vfb(other.vfb), offset(other.offset) { }
-  //redimensioning constructor, will try reusing buffer if the new window can fit in 
-  BufferWindow(const BufferWindow& other, int left, int right, int top, int bottom);
+  BufferWindow() { }
+  BufferWindow(int _row_size, int _height) { NewWindow(_row_size, _height); }
+  BufferWindow(const BufferWindow& other) : vfb(other.vfb), offset(other.offset), row_size(other.row_size), height(other.height) { }
+
+  void NewWindow(int _row_size, int _height);
+  void NewSolidWindow(int _row_size, int _height, int pitch, PVideoFrameBuffer solid, int solidOffset);
+  void NewAlphaWindow(int _row_size, int _height);
 
   int GetPitch()   const { return vfb->GetPitch(); }
   int GetRowSize() const { return row_size; }
   int GetAlignedRowSize() const { int r = vfb->Aligned(row_size); return r <= vfb->GetPitch()? r : row_size; }
   int GetHeight()  const { return height; }
-  int GetAlign() const { return vfb->GetAlign(); }
   
   const BYTE * GetReadPtr() const { return vfb->GetReadPtr() + offset; }
   BYTE * GetWritePtr();  
 
+  //helper struct to simplify the code of Copy
+  struct Vector {
+    int x, y;
+    Vector(int _x, int_y) : x(_x), y(_y) { }
+  };
+
   bool IsInWindow(int x, int y) const { return x >= 0 && x < row_size && y >= 0 && y < height; }
   int VectorToWindowOffset(int x, int y) const { return y * GetPitch() + x; }
+
+  Vector StickToWindow(int x, int y) const { return Vector( max(0, min(x, row_size)), max(0, min(y, height)) ); }
 
   const BYTE * GetReadPtr(int x, int y) const { return IsInWindow(x, y) ? GetReadPtr() + VectorToWindowOffset(x, y) : NULL; }
   BYTE * GetWritePtr(int x, int y) { return IsInWindow(x, y) ? GetWritePtr() + VectorToWindowOffset(x, y) : NULL; }
@@ -182,14 +210,13 @@ public:
   //only overlap is copied, no effect if there is none
   void Copy(const BufferWindow& other, int x, int y); 
   
+  //smart crop (can upsize with negative params)
+  //wil try to avoid buffer reallocation when possible
+  void Crop(int left, int right, int top, int bottom);
+
   void Blend(const BufferWindow& other, float factor);
 
-  void FlipVertical() {
-    BufferWindow result(row_size, height, -vfb->GetAlign());
-    IScriptEnvironment::BitBlt(result.GetWritePtr(), result.GetPitch(), 
-      GetReadPtr() + (height - 1)*GetPitch(), -GetPitch(), row_size, height);
-    *this = result;
-  }
+  void FlipVertical();
 
 };
 

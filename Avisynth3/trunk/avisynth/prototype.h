@@ -26,6 +26,7 @@
 #include <algorithm>
 using namespace std;
 
+
 #include "avsvalue.h"
 
 
@@ -33,56 +34,41 @@ using namespace std;
 /********************************* Arguments classes ******************************************/
 /**********************************************************************************************/
 
-class Argument {
+
+//argument class used by the parser to describe what he has
+//when linking functions
+class LinkageArgument {
 
   const string name;
-
-protected:
-  static const type_info & IsNotVoid(const type_info&  type)
-  {
-    if ( type == typeid(void) )
-      throw std::invalid_argument("void is not a valid argument type");
-    return type;
-  }
+  const type_info& type;
 
 public:
-  Argument(const string& _name) : name(_name) { }
+  LinkageArgument(const type_info& _type, const string& _name = "") : name(_name), type(_type) { }  
+  LinkageArgument(const AVSValue& val) : name(""), type(val.type()) { }
 
   const string& GetName() const { return name; }
-  bool unNamed() const { return name.empty(); }
+  const type_info& Type() const { return type; }
 
+  bool unNamed() const { return name.empty(); }
   bool operator==(const string& _name) const { return name == _name; }
 };
 
 
-class LinkageArgument : public Argument {
 
-  const type_info& type;
-
-public:
-  LinkageArgument(const type_info& _type, const string& name = "") : Argument(name), type(IsNotVoid(_type)) { }
-  LinkageArgument(const AVSValue& val) : Argument(""), type(IsNotVoid(val.Type())) { }
-
-  const type_info& Type() const { return type; }
-};
-
-
-class DescriptionArgument : public Argument {
+class DescriptionArgument : public LinkageArgument {
 
   const AVSValue defaut;
 
+  static inline const string& CheckName(const string& name) { if (name.empty()) throw std::invalid_argument("the null chain is not a valid arg name"); }
+
 public:
+  DescriptionArgument(const string& name, const type_info& type, const AVSValue& _defaut = AVSValue())
+    : LinkageArgument(type, CheckName(name)), defaut(_defaut) { }
   DescriptionArgument(const string& name, const AVSValue& _defaut)
-    : Argument(name), defaut(_defaut)
-  { 
-    IsNotVoid(defaut.Type());
-    if (name.empty())
-      throw std::invalid_argument("the null chain is not a valid arg name");
-  }
+    : LinkageArgument(_defaut.type(), CheckName(name)), defaut(_defaut) { }
 
   const AVSValue& GetDefault() const { return defaut; }
-  const type_info & Type() const { return defaut.Type(); }
-  bool IsOptional() const { return ! defaut.IsDefined(); }
+  bool IsOptional() const { return ! defaut.empty(); }
 
 };
 
@@ -92,70 +78,45 @@ public:
 /*********************************** Prototype classes *****************************************/
 /***********************************************************************************************/
 
-template <typename ArgumentType> class prototype {
-
-protected:
-  typedef ArgumentType arg_type;
-  typedef vector<ArgumentType> ArgList;
-  
-  ArgList argList;
-
-  prototype() { }
-  prototype(const prototype<ArgumentType>& other) : argList(other.argList) { }
 
 
-  void add(const arg_type& arg)
+class LinkagePrototype : public vector<LinkageArgument> {
+
+  struct IsNameEmpty : unary_function<LinkageArgument, bool>
   {
-    if (! arg.GetName().empty() && find(arg.GetName()) != end() )
-      throw std::invalid_argument(arg.GetName() + " is already a defined arg");
-    argList.push_back(arg);
-  }
-
-public:
-  int size() const { return argList.size(); }
-  bool empty() const { return argList.empty(); }
-
-  const arg_type& back() const { return argList.back(); }
-
-  typedef typename ArgList::const_iterator iterator;
-
-  iterator begin() const { return argList.begin(); }
-  iterator end() const { return argList.end(); }
-  iterator find(const string& name) const { return std::find(argList.begin(), argList.end(), name); }
-
-};
-
-
-class LinkagePrototype : public prototype<LinkageArgument> {
+    bool operator()(const LinkageArgument& arg) const { return arg.GetName().empty(); }
+  };
 
 public:
   LinkagePrototype() { }
-  LinkagePrototype(const LinkagePrototype& other) : prototype<LinkageArgument>(other) { }
-  LinkagePrototype(const ArgVector& args)
+  LinkagePrototype(const LinkagePrototype& other) : vector<LinkageArgument>(other) { }
+  LinkagePrototype(const ArgVector& args) : vector<LinkageArgument>(args.begin(), args.end()) { }
+
+  //just check that no empty named args follow named ones
+  bool IsLegal() const
   {
-    for(ArgVector::const_iterator it = args.begin(); it != args.end(); )
-      argList.push_back(LinkageArgument(*it));
+    const_iterator it = find_if(begin(), end(), compose1(logical_not<bool>(), IsNameEmpty()) );
+    return find_if(it, end(), IsNameEmpty()) != end();
   }
 
-  void Add(const LinkageArgument& arg)
-  {
-    if( arg.unNamed() && ! empty() && ! back().unNamed() )
-      throw std::invalid_argument("Only named arg can follow named one");
-    add(arg);
-  }
 };
 
-class DescriptionPrototype : public prototype<DescriptionArgument> {
+class DescriptionPrototype : public vector<DescriptionArgument> {
+
+  struct IsNotOptional : unary_function<DescriptionArgument, bool>
+  {
+    bool operator()(const DescriptionArgument& arg) const { return ! arg.IsOptional(); }
+  };
 
 public:
   DescriptionPrototype() { }
-  DescriptionPrototype(const DescriptionPrototype& other) : prototype<DescriptionArgument>(other) { }
+  DescriptionPrototype(const DescriptionPrototype& other) : vector<DescriptionArgument>(other) { }
   
-  void Add(const DescriptionArgument& arg)
+  //just check that no non-optional args follow optional ones
+  bool IsLegal() const
   {
-    if (! arg.IsOptional() && ! empty() && back().IsOptional())
-      throw std::invalid_argument("can't have optional arg followed by plain one");
-    add(arg);
+    const_iterator it = find_if(begin(), end(), compose1(logical_not<bool>(), IsNotOptional()) );
+    return find_if(it, end(), IsNotOptional()) != end();
   }
 
 };

@@ -21,173 +21,127 @@
 #define  __LINKER_H__
 
 #include "prototype.h"
-#include <utility> //for pair
 #include <map>
 
 
-class AVSTypeCaster {
+
+//holds a caster
+class CasterHolder {
+  
+protected:
+  //polymorphic struct used for avs type casting
+  struct Caster {
+
+    virtual AVSValue operator()(const AVSValue& arg) const = 0;
+  };
+
+  struct IntToFloatCaster : Caster {
+
+    virtual AVSValue operator()(const AVSValue& arg) const { return AVSValue( (float)boost::any_cast<int>(arg) ); }
+  };
+
+  struct IdentityCaster : Caster {
+
+    virtual AVSValue operator()(const AVSValue& arg) const { return arg; }
+  };
+
+  static const IntToFloatCaster itf;
+  static const IdentityCaster id;
+
+  const Caster * caster;
 
 public:
-  virtual const AVSValue operator()(const AVSValue& arg) const = 0;
-  virtual ~AVSTypeCaster() { }
+  CasterHolder() : caster(&id) { }
+  CasterHolder(const CasterHolder& other) : caster(other.caster) { }
+
+  AVSValue operator()(const AVSValue& arg) const { return (*caster)(arg); }
+
+  DescriptionArgument operator()(const DescriptionArgument& arg) const { if ( IsIdentity() ) ret
+
+  bool IsIdentity() const { return caster == &id; }
 };
 
-
-class ArgumentMatcher {
+//
+class ArgumentMatcher : public CasterHolder {
 
   //static info
-  typedef pair<const type_info *, const type_info *> CastPrototype;
-  typedef auto_ptr<AVSTypeCaster> PTypeCaster;
-  typedef map<CastPrototype, PTypeCaster> CastMap;
+  struct  CastPrototype {
+    const type_info& src;
+    const type_info& dst;
+
+    CastPrototype(const type_info& _src, const type_info& _dst) : src(_src), dst(_dst) { }
+
+    bool operator==(const CastPrototype& other) const { return src == other.src && dst == other.dst; }
+    bool operator<(const CastPrototype& other) const { return src.before(other.src) || ( src == other.src && dst.before(other.dst) ); }
+  };
+  typedef map<CastPrototype, const Caster *> CastMap;
 
   static const CastMap castMap;
-
-  static const CastMap CreateCastMap();
+  //method to initialize the cast map
+  static CastMap CreateCastMap();
 
   //instance info
   bool success;
-  AVSTypeCaster * caster;
+
 
 public:
   ArgumentMatcher(const DescriptionArgument& descript, const LinkageArgument& link);
 
   bool Success() const { return success; }
-  bool NeedCast() const { return caster != NULL; }
-
-  AVSTypeCaster * GetTypeCaster() const { return caster; }
-
-  operator bool() const { return Success(); }
 };
 
 
+class ReorderInfo : public CasterHolder {
 
+  int position;
+
+public:
+  ReorderInfo(const ArgumentMatcher& arg, int _position) : CasterHolder(arg), position(_position) { }
+
+  int GetPosition() const { return position; }
+  operator int() const { return position; }
+
+  //used by Reorderpattern to test its legality
+  bool operator==(const ReorderInfo& other) const { return position == other.position; }
+};
 
 //ReorderPattern keep track of reordering which must be performed
 //to get args from the LinkagePrototype format to the DescriptionPrototype format
-//now it only takes positions into account,
-//but eventually it may take care of type cast too (int to float)
-class ReorderPattern {
+class ReorderPattern : public vector<ReorderInfo> {
 
 public:
-  //structure holding the reorder info for one argument
-  struct ReorderInfo {
-
-    ReorderInfo(int _position);
-
-    int position;
-
-    bool operator==(const ReorderInfo& other) const { return position == other.position; }
-  };
-
-  typedef vector<ReorderInfo> InfoVector;
-  typedef InfoVector::const_iterator iterator;
-
-
-  //constructors
   ReorderPattern() { }
-  ReorderPattern(const ReorderPattern& other) : infos(other.infos) { }
+  ReorderPattern(const ReorderPattern& other) : vector<ReorderInfo>(other) { }
 
-  void AddArgument(int position);
-
-  int size() const { return infos.size(); }
   bool IsTrivial() const; //return true if no reorder to take
-  
-  iterator begin() const { return infos.begin(); }
-  iterator end() const { return infos.end(); }
-
-private:
-  InfoVector infos;
+ 
+  DescriptionPrototype Adapt(const DescriptionPrototype& old) const;
 
 };
 
 
 
 
-class PrototypeMatcher {
+class PrototypeMatcher : public ReorderPattern {
 
-  bool match, useImplicitLast;
-  ReorderPattern pattern;
+  bool match, useImplicitLast;  
+
+  void TryToMatch(const DescriptionPrototype& descript, const LinkagePrototype& link);
+
+  bool AddToPattern(const ArgumentMatcher& arg, int position)
+  {
+    bool result = arg.Success();
+    if ( result )
+      push_back(ReorderInfo(arg, position));
+    return result;
+  }
 
 public:
   PrototypeMatcher(const DescriptionPrototype& descript, const LinkagePrototype& link);
 
-  bool IsValid() const { return match; }
+  bool Success() const { return match; }
   bool UseImplicitLast() const { return useImplicitLast; }
-
-  const ReorderPattern& GetReorderPattern() const { return pattern; }
-
-  operator bool() const { return IsValid(); }  
 };
-
-
-//Reorder performs the actual reordering
-//through its (virtual) operator ()
-class Reorderer {
-
-protected:
-  const DescriptionPrototype& prototype;
-
-  //fill args (supposedly empty) with the default arguments from prototype
-  void DefaultFill(ArgVector& args) const;
-
-public:
-  Reorderer(const DescriptionPrototype& _prototype) : prototype(_prototype) { }
-
-  virtual const ArgVector operator()(const ArgVector& rawArgs) const = 0;
-  virtual ~Reorderer() { }  //virtual destructor
-
-  static Reorderer * MakeReorderer(const DescriptionPrototype& prototype, const ReorderPattern& pattern);
-};
-
-//reorder who just forwards args without alteration
-class TrivialReorderer : public Reorderer {
-
-public:
-  TrivialReorderer(const DescriptionPrototype& _prototype) : Reorderer(_prototype) { }
-
-  virtual const ArgVector operator()(const ArgVector& rawArgs) const;
-};
-
-//reorder who performs reordering according to its pattern parameter
-class PatternReorderer : public Reorderer {
-
-  const ReorderPattern pattern;
-
-public:
-  PatternReorderer(const DescriptionPrototype& prototype, const ReorderPattern& _pattern)
-    : Reorderer(prototype), pattern(_pattern) { }
-
-  virtual const ArgVector operator()(const ArgVector& rawArgs) const;
-};
-
-
-
-class Linker {
-
-  bool useImplicitLast;
-
-public:
-  Linker(const string& functionName, const LinkagePrototype&  lp, bool ImplicitLastAllowed = true);
-
-  //test if last should be used, so it can be passed as first arg
-  //this is necessary so this class won't have to fetch it herself
-  //for Invoke calls, the vartable don't exist anymore
-  //then it would have been a problem
-  bool UseImplicitLast() const { return useImplicitLast; }
-
-  AVSValue operator()(const ArgVector& args) const;
-
-
-  static AVSValue Invoke(const string& functionName, const ArgVector& args)
-  {
-    LinkagePrototype prototype(args);
-    Linker linker(functionName, prototype, false);
-    return linker(args);
-  }
-};
-
-
-
 
 
 

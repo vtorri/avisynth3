@@ -73,17 +73,11 @@ class RefCounted {
   mutable Counter counter;
 
 public:
-  RefCounted() { }   
+  RefCounted() { }
 
   void AddRef() const { counter.AddRef(); }
   void Release() const { if (counter.Release() == 0) delete this; }  
-  
-
-  //clone method, used by the conversion between smart_ptr and smart_ptr_to_cst
-  //subclass who want to take advantage of this conversion must provide it
-  //if its represents constant objects, you can even make it return this (by casting away constness)
-  virtual RefCounted * clone() const { return 0; }
-  
+    
   virtual ~RefCounted() { }  //virtual destructor 
 
   //used to decide whether clone or steal by smart pointers
@@ -116,7 +110,7 @@ protected:
     ptr = _ptr;
   }
      
-  static inline T * Clone(const smart_ptr_base<T>& other) { return static_cast<T *>(other.ptr->clone()); }
+  static inline T * Clone(const smart_ptr_base<T>& other) { return other.ptr->clone(); }
   static inline T * StealOrClone(smart_ptr_base<T>& other) { return other.ptr->IsShared() ? Clone(other) : other.Release(); }
 
   //specialize these if you want special behavior for conversions
@@ -130,9 +124,10 @@ public:
   //use it at your own risk
   //you have to 
   inline T * Get() const { if (ptr) ptr->AddRef(); return ptr; }  
-  inline T * Release() { T * result = ptr; ptr = NULL; return result; } 
+  inline T * Release() { T * result = ptr; ptr = 0; return result; } 
 
-  operator bool() const { return ptr != NULL; }  //useful in boolean expressions
+  operator bool() const { return ptr != 0; }  //useful in boolean expressions
+  bool empty() const { return ptr == 0; }
 
   ~smart_ptr_base() { if (ptr) ptr->Release(); }
 

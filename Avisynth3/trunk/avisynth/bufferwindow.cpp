@@ -30,8 +30,6 @@
 
 
 
-AbstractVideoFrameBuffer::AbstractVideoFrameBuffer(int row_size, int _align) 
-: align( (_align < 0)? -_align : max(_align, FRAME_ALIGN) ), pitch(Aligned(row_size)) { }
 
 
 
@@ -40,7 +38,7 @@ VideoFrameBuffer::MemoryPiece::MemoryPiece(int _size) : size(_size)
   AllocationVector::iterator it = alloc.begin();
   while( it != alloc.end() && it->size != size ) { ++it; }
   if (it == alloc.end() )
-    data = new BYTE[size];
+    data.reset( new BYTE[size] );
   else {
     data = it->data;
     alloc.erase(it);
@@ -49,17 +47,14 @@ VideoFrameBuffer::MemoryPiece::MemoryPiece(int _size) : size(_size)
 
 
 
-AlphaVideoFrameBuffer::AlphaVideoFrameBuffer(int row_size, int height, int _align)
-: AbstractVideoFrameBuffer(row_size, _align)
+AlphaForwardingBuffer::AlphaForwardingBuffer(int row_size, int height)
+: ForwardingBuffer(row_size, FRAME_ALIGN)
 {
-  int size = SizeFor(pitch, height, align);
-  if (largest && largest->GetSize() >= size)
-    buffer = largest;
-  else {
-    largest = buffer = new VideoFrameBuffer(row_size, height, _align);
-    //Fill it with 255
-    memset(buffer->GetWritePtr(), 255, buffer->GetSize());
-  }
+  int size = SizeFor(pitch, height);
+  if (largest.empty() || largest->GetSize() < size)
+    largest = new SharedAlphaBuffer(size);
+  
+  forwardTo = largest;
 }
 
 
@@ -69,69 +64,100 @@ AlphaVideoFrameBuffer::AlphaVideoFrameBuffer(int row_size, int height, int _alig
 /**********************************************************************************************/
 
 
+
+
+void BufferWindow::NewWindow(int _row_size, int _height)
+{
+  row_size = _row_size;
+  height = _height;
+  vfb = new PlaneFrameBuffer(row_size, height);
+  offset = FirstOffset(vfb);
+}
+
+void BufferWindow::NewSolidWindow(int _row_size, int _height, int pitch, PVideoFrameBuffer solid, int solidOffset)
+{
+  row_size = _row_size;
+  height = _height;  
+  vfb = new PlaneForwardingBuffer(pitch, solidOffset, height, solid);
+  offset = 0;
+}
+
+void BufferWindow::NewAlphaWindow(int _row_size, int _height)
+{
+  row_size = _row_size;
+  height = _height;
+  vfb = new AlphaForwardingBuffer(row_size, height);
+  offset = FirstOffset(vfb);
+}
+
+
 BYTE* BufferWindow::GetWritePtr()
 {  
   BYTE * result = vfb->GetWritePtr(); 
   //returns NULL if we are not allowed to write
   if (result == NULL)
   {
-    VideoFrameBuffer * new_vfb = new VideoFrameBuffer(row_size, height, -vfb->GetAlign());
-    int new_offset = new_vfb->FirstOffset();
+    VideoFrameBuffer * new_vfb = new PlaneFrameBuffer(row_size, height);
+    int new_offset = FirstOffset(new_vfb);
     IScriptEnvironment::BitBlt(new_vfb->GetWritePtr() + new_offset, new_vfb->GetPitch(), vfb->GetReadPtr() + offset, vfb->GetPitch(), row_size, height);
     vfb = new_vfb;
     offset = new_offset;
+
+    result = = vfb->GetWritePtr();     
   }
 
   return result + offset;
 } 
 
 
-BufferWindow::BufferWindow(const BufferWindow& other, int left, int right, int top, int bottom)
-: row_size(other.row_size - left - right), height(other.height - top - bottom),
-    offset(other.offset + left + top*other.GetPitch()), vfb(other.vfb)
-{
-  //three conditions where needed to reallocate the Buffer
-  if (row_size > GetPitch() || offset < 0 || offset + height * GetPitch() >= vfb->GetSize())
-  {
-    vfb = new VideoFrameBuffer(row_size, height, -vfb->GetAlign());
-    offset = vfb->FirstOffset();
-    Copy(other, -left, -top);
-  }
-}
 
 void BufferWindow::Copy(const BufferWindow& other, int left, int top)
 {
   _ASSERTE(this != &other);
-  BYTE * dst = GetWritePtr();  //has to be done first since it can change the pitch of self
-  const BYTE * src = other.GetReadPtr();
-  int copy_offset = 0, copy_offset_other = 0;
+
+  Vector top_left = StickToWindow(left, top);
+  Vector bottom_right = StickToWindow(left + other.row_size, top + other.height);
+
+  BYTE * dstp = GetWritePtr(); 
+  int dst_pitch = GetPitch();
+  const BYTE * srcp = other.GetReadPtr();
+  int src_pitch = other.GetPitch()
+
+  int copy_row_size = bottom_right.x - top_left.x;
+  int copy_height = bottom_right.y - top_left.y;
+
+  if (copy_height > 0 && copy_row_size > 0) //only work if necessary 
+    IScriptEnvironment::BitBlt(
+      dstp + top_left.x + dst_pitch * top_left.y,
+      dst_pitch,
+      srcp + top_left.x - left + src_pitch * (top_left.y - top),
+      src_pitch,
+      copy_row_size,
+      copy_height
+    );
+                                         
+}
+
+void BufferWindow::Crop(int left, int right, int top, int bottom)
+{
+  BufferWindow saved = *this;   //save actual position
+  //updating parameters
+  row_size -= left + right;
+  height -= top + bottom;
+  offset += VectorToWindowOffset(left, top);
+  //three conditions where needed to reallocate the Buffer
   int pitch = GetPitch();
-  int pitch_other = other.GetPitch();
-  int copy_row_size, copy_height;
-  if (left < 0) {
-    copy_row_size = min(row_size, other.row_size + left);
-    copy_offset_other -= left;
-  } else {
-    copy_row_size = min(row_size - left, other.row_size);
-    copy_offset += left;
+  if ( row_size > pitch || offset < 0 || offset + height * pitch >= vfb->GetSize() )
+  {
+    vfb = new PlaneFrameBuffer(row_size, height);  //new buffer
+    offset = FirstOffset(vfb);
+    Copy(saved, -left, -top);                      //copy saved data at the right place
   }
-  if (top < 0) {
-    copy_height = min(height, other.height + top);
-    copy_offset_other -= top*pitch_other;
-  } else {
-    copy_height = min(height - top, other.height);
-    copy_offset += top*pitch;
-  }
-  if (copy_height > 0 && copy_row_size > 0) //these checks should be moved in BitBlt
-    IScriptEnvironment::BitBlt(dst + copy_offset, pitch, src + copy_offset_other, pitch_other, copy_row_size, copy_height);                                          
 }
 
 void BufferWindow::Blend(const BufferWindow& other, float factor)
 {
-  static const AvisynthError UNMATCHING_SIZE("Blend Error: Height or Width don't match");
   _ASSERTE(this != &other);
-  if (row_size != other.row_size || height != other.height)
-    throw UNMATCHING_SIZE;
   if (factor <= 0) 
     return;         //no change
   if (factor >= 1)
@@ -140,3 +166,14 @@ void BufferWindow::Blend(const BufferWindow& other, float factor)
     //TODO: Code ME !!
   }
 }
+
+void BufferWindow::FlipVertical()
+{
+  BufferWindow result(row_size, height);
+
+  IScriptEnvironment::BitBlt(result.GetWritePtr(), result.GetPitch(), 
+    GetReadPtr() + (height - 1)*GetPitch(), -GetPitch(), row_size, height);
+  *this = result;
+}
+
+

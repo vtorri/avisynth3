@@ -517,9 +517,9 @@ STDMETHODIMP CAVIFileSynth::Info(AVIFILEINFOW *pfi, LONG lSize) {
 	pfi->dwFlags				= AVIFILEINFO_HASINDEX | AVIFILEINFO_ISINTERLEAVED;
 	pfi->dwCaps					= AVIFILECAPS_CANREAD | AVIFILECAPS_ALLKEYFRAMES | AVIFILECAPS_NOCOMPRESSION;
 	
-	int nrStreams=0;
-	if (vi->HasVideo()==true)	nrStreams=1;
-	if (vi->HasAudio()==true)	nrStreams++;
+	int nrStreams = 0;
+	if ( vi->HasVideo() )	nrStreams++;
+	if ( vi->HasAudio() )	nrStreams++;
 
 	pfi->dwStreams				= nrStreams;
 	pfi->dwSuggestedBufferSize	= 0;
@@ -545,42 +545,48 @@ STDMETHODIMP CAVIFileSynth::GetStream(PAVISTREAM *ppStream, DWORD fccType, LONG 
 
     *ppStream = NULL;
 
-	if (!fccType) 
-	{
+  bool isAudio = true;  //we default to the audio stream and change if needed
 
-		if ((lParam==0) && (vi->HasVideo()) )
-			fccType = streamtypeVIDEO;
-		else 
-		  if ( ((lParam==1) && (vi->HasVideo())) ||  ((lParam==0) && vi->HasAudio()) )
-		  {
-			lParam=0;
-    		fccType = streamtypeAUDIO;
-		  }
-	}
+  switch(fccType)
+  {
+    case 0: //undefined fccType
+      switch(lParam)
+      {
+        case 0:
+          if ( vi->HasVideo() )
+          {
+            isAudio = false;
+            break;
+          }
+          else if (! vi->HasAudio() )
+            return AVIERR_NODATA;
+        case 1:
+          if ( vi->HasVideo() && vi->HasAudio() )
+            break;
+        default:
+          return AVIERR_NODATA;
+      }
+      break;
+      
+    case streamtypeVIDEO:
+      if ( lParam != 0 || ! vi->HasVideo() )
+        return AVIERR_NODATA;
+      isAudio = false;
+      break;
 
-	if (lParam > 0) return AVIERR_NODATA;
+    case streamtypeAUDIO:
+      if ( lParam == 0 && vi->HasAudio() )        
+        break;
+    default:
+      return AVIERR_NODATA;
+  }
 
-	if (fccType == streamtypeVIDEO) {
-		if (!vi->HasVideo())
-			return AVIERR_NODATA;
+  if ((casr = new CAVIStreamSynth(this, isAudio)) == NULL)
+		return AVIERR_MEMORY;
 
-        if ((casr = new CAVIStreamSynth(this, false)) == 0)
-			return AVIERR_MEMORY;
+  *ppStream = (IAVIStream *)casr;
 
-		*ppStream = (IAVIStream *)casr;
-
-	} else if (fccType == streamtypeAUDIO) {
-		if (!vi->HasAudio())
-			return AVIERR_NODATA;
-
-		if ((casr = new CAVIStreamSynth(this, true)) == 0)
-			return AVIERR_MEMORY;
-
-		*ppStream = (IAVIStream *)casr;
-	} else
-		return AVIERR_NODATA;
-
-	return 0;
+	return 0;  //S_OK !?
 }
 
 

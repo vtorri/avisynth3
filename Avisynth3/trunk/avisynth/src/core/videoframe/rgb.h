@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -53,7 +53,7 @@ public:  //structors
 
 public:  //clone method
 
-  virtual CPVideoFrame clone() const { return CPVideoFrame((VideoFrame *)new RGB24(*this)); }
+  virtual CPVideoFrame clone() const { return CPVideoFrame( static_cast<VideoFrame *>(new RGB24(*this)) ); }
 
 
 public:  //general frame info
@@ -86,7 +86,7 @@ public:  //structors
 
 public:  //clone method
 
-  virtual CPVideoFrame clone() const { return CPVideoFrame( (VideoFrame *)new RGB32(*this) ); }
+  virtual CPVideoFrame clone() const { return CPVideoFrame( static_cast<VideoFrame *>(new RGB32(*this)) ); }
 
 
 public:  //general frame info
@@ -117,7 +117,7 @@ public:  //structors
 
 public:  //clone method
 
-  virtual CPVideoFrame clone() const { return CPVideoFrame( (VideoFrame *)new RGB45(*this) ); }
+  virtual CPVideoFrame clone() const { return CPVideoFrame( static_cast<VideoFrame *>(new RGB45(*this)) ); }
 
 
 public:  //general frame info

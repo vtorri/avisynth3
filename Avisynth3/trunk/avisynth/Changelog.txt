@@ -1,1 +1,1 @@
-   
+Changed core functions registration schem to prevent overzealous linker to elide them   

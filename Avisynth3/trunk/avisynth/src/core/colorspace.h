@@ -32,10 +32,6 @@
 #include "frametype.h"
 
 
-//boost include
-#include <boost/utility.hpp>    //for noncopyable
-
-
 namespace avs {
 
 
@@ -45,7 +41,7 @@ namespace avs {
 //
 //  polymorphic class representing a video color space
 //
-class ColorSpace : private boost::noncopyable
+class ColorSpace
 {
 
 public:
@@ -104,11 +100,15 @@ public:  //ColorSpace interface
   virtual Dimension ToPlaneDim(Dimension const& dim, Plane plane) const;
   virtual Vecteur ToPlaneVect(Vecteur const& vect, Plane plane) const;
 
+
   //method to create a frame of the given colorspace
   virtual CPVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const = 0;
 
-  bool operator== (const ColorSpace& other) const { return this == &other; }
-  bool operator!= (const ColorSpace& other) const { return this != &other; }
+
+public:  //comparison operators
+
+  bool operator== (ColorSpace const& other) const { return this == &other; }
+  bool operator!= (ColorSpace const& other) const { return this != &other; }
 
 
 public:  //helper queries
@@ -130,7 +130,7 @@ public:  //helper queries
   bool IsDepth15() const { return HasProperty(DEPTH15); }
 
 
-public:  //access to relevant instances
+public:  //factory methods
 
   static ColorSpace & rgb24();
   static ColorSpace & rgb32();
@@ -139,6 +139,8 @@ public:  //access to relevant instances
   static ColorSpace & yv12();
   static ColorSpace & yv24();
   static ColorSpace & yv45();
+
+  static ColorSpace & FromString(std::string const& name);
 
 
 public:  //exception helper methods

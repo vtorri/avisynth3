@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -62,7 +62,7 @@ Statement::definition<Scanner>::definition(Statement const & self)
               [
                 bind(&action::Action::ExprStatement)(statement.value, statement.localCtxt, arg1)                        
               ]
-          |   createVar( ref(first(statement.localCtxt)) )  //pass local VarTable
+          |   createVar( ref_(first(statement.localCtxt)) )  //pass local VarTable
           |   ifStatement
           // |   whileStatement
           |   returnStatement
@@ -75,7 +75,7 @@ Statement::definition<Scanner>::definition(Statement const & self)
   createVar
       =   (   spirit::str_p("global")
               [
-                createVar.table = ref(first(self.globalCtxt))    //set global VarTable as the table to use
+                createVar.table = ref_(first(self.globalCtxt))    //set global VarTable as the table to use
               ]
           |   !   spirit::str_p("local")     //optional local keyword
           )
@@ -97,13 +97,13 @@ Statement::definition<Scanner>::definition(Statement const & self)
           [
             statement.value += arg1
           ]
-      >>  subContextBlock( CodeCouple(), get(statement.localCtxt) )
+      >>  subContextBlock( CodeCouple(), get_(statement.localCtxt) )
           [
             ifStatement.value = arg1
           ]          
       >>  (   *   spirit::eol_p
           >>  spirit::str_p("else")
-          >>  subContextBlock( CodeCouple(), get(statement.localCtxt) )
+          >>  subContextBlock( CodeCouple(), get_(statement.localCtxt) )
               [
                 statement.value -= construct_<functor::IfThenElse>(ifStatement.value, arg1)
               ]
@@ -120,7 +120,7 @@ Statement::definition<Scanner>::definition(Statement const & self)
           [
             whileStatement.value = arg1
           ]
-      >>  subContextBlock( CodeCouple(), get(statement.localCtxt) )
+      >>  subContextBlock( CodeCouple(), get_(statement.localCtxt) )
           [
             statement.value -= construct_<functor::WhileDo>(whileStatement.value, arg1)
           ]
@@ -144,14 +144,14 @@ Statement::definition<Scanner>::definition(Statement const & self)
           ]
       >>  *   spirit::eol_p   //skip newlines
       >>  (   '{'     
-          >> *(   statement( CodeCouple(), ref(subContextBlock.localCtxt) )   //a block of statement delimited by { }
+          >> *(   statement( CodeCouple(), ref_(subContextBlock.localCtxt) )   //a block of statement delimited by { }
                   [
                     subContextBlock.value += arg1
                   ]
               |   spirit::eol_p
               )
           >>  '}'
-          |   statement( CodeCouple(), ref(subContextBlock.localCtxt) )       //or a single one
+          |   statement( CodeCouple(), ref_(subContextBlock.localCtxt) )       //or a single one
               [
                 subContextBlock.value += arg1
               ]
@@ -166,7 +166,7 @@ Statement::definition<Scanner>::definition(Statement const & self)
               ]
           >>  argList( 0 )
               [
-                second(get(self.termRecInfo)) = val(true),                //report that terminal recursivity is used
+                second(get_(self.termRecInfo)) = val(true),                //report that terminal recursivity is used
                 statement.value -= construct_<literal<OpType> >(RECURSE)
               ]
           |   expression( value::Expression(), statement.localCtxt, self.globalCtxt )
@@ -183,7 +183,7 @@ Statement::definition<Scanner>::definition(Statement const & self)
       >> !(   expression( value::Expression(), statement.localCtxt, self.globalCtxt )
               [
                 //check the type is the one expected by prototype of outer function
-                bind(&action::Check::TypeIsExpected)(second(arg1), first(get(self.termRecInfo))[argList.value]),
+                bind(&action::Check::TypeIsExpected)(second(arg1), first(get_(self.termRecInfo))[argList.value]),
                 statement.value += first(arg1),
                 ++argList.value
               ]

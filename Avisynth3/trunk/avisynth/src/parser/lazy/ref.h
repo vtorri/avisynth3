@@ -86,8 +86,8 @@ struct ConstReffer
 //  lazy versions of boost::ref and boost::cref
 //  ie wraps their args into a boost::reference_wrapper
 //
-phoenix::function<Reffer> const ref = Reffer();
-phoenix::function<ConstReffer> const cref = ConstReffer();
+phoenix::function<Reffer> const ref_ = Reffer();
+phoenix::function<ConstReffer> const cref_ = ConstReffer();
 
 
 } } } //namespace avs::parser::lazy

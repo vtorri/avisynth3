@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -99,10 +99,10 @@ Script::definition<Scanner>::definition(Script const & self)
       >>  '{'
       >> *(   statement
                   ( CodeCouple()
-                  , ref(function.localCtxt)
+                  , ref_(function.localCtxt)
                   , self.globalCtxt
                   , first(function.ident)
-                  , construct_<value::TRecurseInfo>( ref(third(function.ident)), ref(function.termRecursive) ) 
+                  , construct_<value::TRecurseInfo>( ref_(third(function.ident)), ref_(function.termRecursive) ) 
                   ) 
               [
                 function.code += arg1

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 #include "vmstate.h"
 
 //boost include
-#include <boost/utility.hpp>
+#include <boost/noncopyable.hpp>   
 
 
 namespace avs { namespace parser {

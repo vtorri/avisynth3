@@ -144,6 +144,57 @@ struct caller_impl<Function, 2>
 };
 
 
+template <typename Function>
+struct caller_impl<Function, 3>
+{
+
+  typedef typename boost::function_traits<Function>::result_type ResultType;
+
+  enum { pos3 = 1
+       , pos2 = pos3 + extract<Function, 3>::consume
+       , pos1 = pos2 + extract<Function, 2>::consume
+       , consume = pos1 + extract<Function, 1>::consume - 1 
+  };
+
+  template <typename CallBack>
+  ResultType operator()(VMState& state, CallBack const& callBack) const
+  {
+    return callBack
+        ( extract<Function, 1>()(state, pos1)
+        , extract<Function, 2>()(state, pos2) 
+        , extract<Function, 3>()(state, pos3)
+        );
+  }
+
+};
+
+
+template <typename Function>
+struct caller_impl<Function, 4>
+{
+
+  typedef typename boost::function_traits<Function>::result_type ResultType;
+
+  enum { pos4 = 1
+       , pos3 = pos4 + extract<Function, 4>::consume
+       , pos2 = pos3 + extract<Function, 3>::consume
+       , pos1 = pos2 + extract<Function, 2>::consume
+       , consume = pos1 + extract<Function, 1>::consume - 1 
+  };
+
+  template <typename CallBack>
+  ResultType operator()(VMState& state, CallBack const& callBack) const
+  {
+    return callBack
+        ( extract<Function, 1>()(state, pos1)
+        , extract<Function, 2>()(state, pos2) 
+        , extract<Function, 3>()(state, pos3)
+        , extract<Function, 4>()(state, pos4)
+        );
+  }
+
+};
+
 } //namespace detail
 
 

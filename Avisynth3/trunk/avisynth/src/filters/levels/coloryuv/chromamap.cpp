@@ -25,9 +25,6 @@
 #include "chromamap.h"
 #include "../../../core/utility/saturate.h"
 
-//stl include
-#include <cmath>           //for floor
-
 
 namespace avs { namespace filters { namespace coloryuv {
 
@@ -43,7 +40,7 @@ ChromaMap::ChromaMap(Levels const& levels, int (* adjust)(int), bool coring)
 
     value += value * levels.gain / 256 + (value - 128) * levels.contrast / 256 + levels.brightness;
 
-    int val = static_cast<int>( std::floor(value + 0.5f) );
+    int val = static_cast<int>( value + 0.5f );
 
     *ptr = coring ? saturate<BYTE, 16, 240>(val)
                   : saturate<BYTE, 0, 255>(val);    

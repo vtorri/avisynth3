@@ -32,9 +32,9 @@ namespace avs { namespace text { namespace freetype {
 
 
 TextWalker::TextWalker(PFace const& face, VecteurFP6 const& pen)
-  : slot_( face )
-  , hasKerning_( face->HasKerning() )
-  , pen_( pen ) { }
+  : pen_( pen )
+  , slot_( face )
+  , hasKerning_( face->HasKerning() ) { }
 
 
 

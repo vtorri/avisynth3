@@ -49,14 +49,11 @@ PClip Parser::operator ()(std::string const& src)
 
   PEnvironment env = RuntimeEnvironment::Create(10000000);
 
-  function::Table functionTable;
-
-  functionTable.AddPlugin(linker::core::Plugin::Get());
-
-
   CodeCouple code;
   LocalContext localCtxt;
   GlobalContext globalCtxt;
+
+  globalCtxt.template get<1>().AddPlugin(linker::core::Plugin::Get());
 
   Script script;
   //Statement statement;

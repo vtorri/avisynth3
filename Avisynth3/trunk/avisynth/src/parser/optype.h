@@ -38,12 +38,12 @@ enum OpType
 {
   NORMAL,    //normal operation
   RETURN,    //return operation : stop code execution until exiting function context
-  RECURSE    //initiate terminal recursivity optimisation
+  RECURSE,   //initiate terminal recursivity optimisation
+  BREAK      //exits for or while context
 };
 
 
-//replace plain type == RETURN test so terminal recursivity case
-//may be added later with less changes
+//return true for returning operation types (ie RETURN and RECURSE)
 inline bool IsReturning(OpType type) { return type == RETURN || type == RECURSE; }
 
 

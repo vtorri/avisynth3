@@ -73,9 +73,9 @@ PClip Trim::clone(PClip const& child) const
 
 
 
-PClip Trim::Refactor(KillAudio const& parent) const
+PClip Trim::Refactor(KillAudio const& /*parent*/) const
 {
-  return clone( parent.clone(GetChild()) );
+  return clone( KillAudio::Create(GetChild()) );
 }
 
 

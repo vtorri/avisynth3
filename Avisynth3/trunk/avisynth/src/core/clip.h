@@ -36,6 +36,12 @@
 #pragma warning (disable : 4250)  
 #endif //_MSC_VER
 
+#ifdef _MSC_VER
+#define NOVTABLE __declspec(novtable)
+#else
+#define NOVTABLE
+#endif
+
 
 namespace avs {
 
@@ -46,7 +52,7 @@ namespace avs {
 //
 //  base class for all filters
 //
-class Clip : public boost::enable_shared_from_this<Clip>
+class NOVTABLE Clip : public boost::enable_shared_from_this<Clip>
 {
 
 public:  //structors

@@ -83,6 +83,14 @@ struct adaptor_impl<Function, void>
 } //namespace detail
 
 
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//  adaptor<Function>
+//
+//  adapts a C++ free function in a functor operating on the virtual machine,
+//  taking its argument from the stack, performing arg cleanup and pushing
+//  its result onto the stack
+//
 template <typename Function>
 struct adaptor : public detail::adaptor_impl<Function>
 {
@@ -93,6 +101,11 @@ struct adaptor : public detail::adaptor_impl<Function>
 };
 
 
+/////////////////////////////////////////////////////////////////////////////////////////
+//  adapt(Function * function)
+//
+//  wraps the appropriate adaptor around a free function
+//
 template <typename Function>
 adaptor<Function> adapt(Function * function)
 {

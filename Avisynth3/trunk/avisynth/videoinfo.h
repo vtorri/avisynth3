@@ -110,6 +110,20 @@ public:
   
   PEnvironment GetEnvironment() const { return env; }
 
+  bool IsNullClip() const
+  {
+    return ( ! HasVideo() || GetFrameCount() == 0 )        //if has video no frames   
+        && ( ! HasAudio() || GetSamplesCount() == 0 );     //if has audio no samples
+  }
+
+  void SetNullClip()
+  {
+    if ( HasVideo() )
+      SetFrameCount(0);
+    if ( HasAudio() )
+      SetSamplesCount(0);
+  }
+
   /*
    * Video stuff
    */ 
@@ -207,6 +221,7 @@ public:
   VideoInfo& SetSamplesPerSecond(int samplesPerSecond) { ChangeAudioProperties().SetSamplesPerSecond(samplesPerSecond); return *this; }
   VideoInfo& SetSamplesCount(__int64 samplesCount) { ChangeAudioProperties().SetSamplesCount(samplesCount); return *this; }
   VideoInfo& SetChannelCount(int channelCount) { ChangeAudioProperties().SetChannelCount(channelCount); return *this; }
+
 
 
 };

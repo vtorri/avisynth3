@@ -35,22 +35,22 @@ BYTE * AudioSwitch::GetAudio(BYTE * buffer, long long start, long count, Splice 
   //search where start insert itself in the audio switchs
   SwitchVector::const_iterator it = std::upper_bound(switchs_.begin(), switchs_.end(), start);
 
-  if ( it == switchs_.end() )                                    //if at end (no child or after last one)
-    return splice.GetVideoInfo()->GetBlankNoise(buffer, count);  //we make blank noise
+  if ( it == switchs_.end() )                                       //if at end (no child or after last one)
+    return splice.GetVideoInfo()->GetBlankNoise(buffer, count);     //we make blank noise
 
   while( count > 0 && it != switchs_.end() )
   {
-    PClip const& clip = splice.GetChild(it - switchs_.begin());  //fetch corresponding clip
-    int consume = std::min(count, int(*it - start));             //calculate how much samples it should provide
+    PClip const& clip = splice.GetChild(it - switchs_.begin());     //fetch corresponding clip
+    long consume = std::min(count, static_cast<long>(*it - start)); //calculate how much samples it should provide
 
-    buffer = clip->GetAudio(buffer, start, consume);             //have clip make his thing (and update buffer)   
+    buffer = clip->GetAudio(buffer, start, consume);                //have clip make his thing (and update buffer)   
 
-    count -= consume;                                            //update parameters
+    count -= consume;                                               //update parameters
     start += consume;
     ++it;
   }
 
-  return splice.GetVideoInfo()->GetBlankNoise(buffer, count);    //complete with blank if count still > 0 else nothing
+  return splice.GetVideoInfo()->GetBlankNoise(buffer, count);       //complete with blank if count still > 0 else nothing
 }
 
 

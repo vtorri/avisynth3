@@ -27,6 +27,7 @@
 //avisynth includes
 #include "font.h"
 #include "forward.h"
+#include "../align.h"
 #include "../../core/bufferwindow.h"
 #include "../../core/geometry/dimension.h"
 
@@ -60,9 +61,9 @@ public:
 
 private:
 
-  static VecteurFP6 GetFreeTypeOrigin(VecteurFP6 pen, BoxFP6 const& box, Align align);
+  static VecteurFP6 GetFTOrigin(VecteurFP6 pen, BoxFP6 const& box, Align align);
 
-  void Draw(char * begin, char * end, VecteurFP6 pen, MonoBitmap const& target) const;
+  void Draw(std::string::const_iterator begin, std::string::const_iterator end, TextWalker& walker, MonoBitmap const& bitmap) const;
 
 };
 

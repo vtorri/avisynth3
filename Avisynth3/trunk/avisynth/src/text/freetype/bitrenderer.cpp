@@ -21,13 +21,15 @@
 // General Public License cover the whole combination.
 
 
-//avisynth include
-#include "bitrenderer.h"
-#include "face.h"
-#include "glyphslot.h"
+//avisynth includes
 #include "outline.h"
 #include "monobitmap.h"
+#include "textwalker.h"
+#include "bitrenderer.h"
 #include "../../core/ownedblock.h"
+
+//assert include
+#include <assert.h>
 
 
 namespace avs { namespace text { namespace freetype {
@@ -36,7 +38,7 @@ namespace avs { namespace text { namespace freetype {
 
 BufferWindow BitRenderer::operator()(std::string const& text, VecteurFP6 const& pen, Align align) const
 {
-  BufferWindow bw(dim_, env);
+  BufferWindow bw(dim_, env_);
   // set the buffer to 0.
   // if several call of RenderingText occurs on the same bw,
   // only the last one is taken into account.
@@ -46,8 +48,7 @@ BufferWindow BitRenderer::operator()(std::string const& text, VecteurFP6 const& 
   if ( text.size() == 0 )   //if no text, return a black bw
     return bw;
 
-  Draw( text.c_str(), text.c_str() + text.size()
-      , GetFTOrigin(pen, font_.GetTextBoundingBox(text), align), GlyphSlot(face_), MonoBitmap(bw) );
+  Draw( text.begin(), text.end(), TextWalker(face_, GetFTOrigin(pen, Font(face_).GetTextBoundingBox(text), align)), MonoBitmap(bw) );
 
   return bw;
 }
@@ -75,36 +76,22 @@ VecteurFP6 BitRenderer::GetFTOrigin(VecteurFP6 pen, BoxFP6 const& box, Align ali
 }
 					  
 
-void BitRenderer::Draw(char * begin, char * end, VecteurFP6 pen, GlyphSlot& slot, MonoBitmap const& target) const
+void BitRenderer::Draw(std::string::const_iterator begin, std::string::const_iterator end, TextWalker& walker, MonoBitmap const& bitmap) const
 {
-  if ( begin != end )    //or else no work
-  {
-    bool hasKerning = face_->HasKerning();
-    unsigned prevIndex = slot.GetGlyphIndex(*begin++);
+  assert( begin != end );    //method shouldn't be called for naught
 
-    POutline outline = slot.GetOutline(prevIndex);
+  POutline outline = walker.Reset(*begin++);
     
-    outline->Translate(pen);
+  outline->Translate(walker.pen);    
+  outline->Draw(bitmap);
+
+  while ( begin != end )
+  {
+    outline = walker.LoadChar(*begin++);
+
+    outline->Translate(walker.pen);
     outline->Draw(bitmap);
-
-    pen += slot.GetAdvance();
-
-    while( begin != end )
-    {
-      unsigned glyphIndex = slot.GetGlyphIndex(*begin++);
-
-      if ( hasKerning )
-        pen += face_->GetKerning(prevIndex, glyphIndex);
-
-      outline = slot.GetOutline(glyphIndex);
-
-      outline->Translate(pen);
-      outline->Draw(bitmap);
-
-      pen += slot.GetAdvance();
-      prevIndex = glyphIndex;
-    }
-  }
+  }  
 }
 
 

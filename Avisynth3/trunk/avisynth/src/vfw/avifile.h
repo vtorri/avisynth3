@@ -26,7 +26,10 @@
 
 //avisynth include
 #include "../com/base.h"
-#include "../core/forward.h"   //for PClip, CPVideoInfo
+#include "../core/forward.h"     //for PClip, CPVideoInfo typedefs
+
+//boost include
+#include <boost/shared_ptr.hpp>  //so those are defined
 
 //stl include
 #include <string>

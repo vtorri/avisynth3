@@ -148,12 +148,14 @@ public:  //audio methods
   virtual void MergeAudio(VideoInfo const& other) = 0;
 
 
-public:  
+public:  //misc
 
   int BytesPerAudioSample() const { return BytesPerChannelSample() * GetChannelCount(); }
   virtual int BytesPerChannelSample() const;
 
   virtual int AudioSamplesFromFrames(int frames) const;
+
+  virtual BYTE * GetBlankNoise(BYTE * buffer, int count) const;
 
 
 public:  //various check methods (failure means proper exception)

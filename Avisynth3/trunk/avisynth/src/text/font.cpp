@@ -25,8 +25,9 @@
 #include "font.h"
 #include "../core/exception.h"
 
-//boost include
-#include <boost/bind.hpp>
+//windows includes
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>             
 
 
 namespace avs { namespace text {
@@ -51,15 +52,15 @@ Dimension Font::GetTextBoundingBox(std::string const& text)
 {
   HDC hdc = GetDC(NULL);
 
-  HFONT oldHFont = (HFONT)SelectObject(hdc, *pFont_);
+  HFONT oldHFont = (HFONT)SelectObject( hdc, *(HFONT *)pFont_.get() );
   int oldMapMode = SetMapMode(hdc, MM_TEXT);
-  //UINT oldAlign = SetTextAlign(hdc, align);
+  UINT oldAlign = SetTextAlign(hdc, TA_BASELINE | TA_LEFT );
 
   RECT r = { 0, 0, 0, 0 };
 
-  int height = DrawText(hdc, text.c_str(), text.length(), &r, DT_CALCRECT | DT_NOPREFIX);
+  int height = DrawText(hdc, text.c_str(), text.length(), &r, DT_CALCRECT /*| DT_NOPREFIX*/);
 
-  //SetTextAlign(hdc, old_text_align);
+  SetTextAlign(hdc, oldAlign);
   SetMapMode(hdc, oldMapMode);
   SelectObject(hdc, oldHFont);
 
@@ -70,6 +71,11 @@ Dimension Font::GetTextBoundingBox(std::string const& text)
 
   return Dimension(r.right + 8, height + 8);
 }
+
+
+
+void Font::HFONTDeleter::operator()(void * ptr) const { DeleteObject( *(HFONT *)ptr ); }
+
 
 
 

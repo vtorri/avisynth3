@@ -24,7 +24,7 @@
 #include "get.h"
 #include "../adapt.h"
 #include "binaryopmapper.h"
-#include "../../core/Exception/generic.h"
+#include "../../core/exception/generic.h"
 
 
 namespace avs { namespace parser { namespace action {
@@ -48,13 +48,27 @@ ElementalOperation const Get::not_equal_op[5] =
     }; 
 
 
+struct StringSubscript
+{
+  std::string operator()(std::string const& val, int begin, int end) const
+  {
+    if ( begin < 0 )
+      begin = 0;
+    if ( end < 0 )
+      end = 0;
+    return val.substring(begin, end);
+  }
+}
 
-ElementalOperation const& Get::SubscriptOperation(char type, bool /*firstArgOnly*/)
+ElementalOperation const subscript_op = adapt( StringSubscript() );
+
+ElementalOperation const& Get::SubscriptOperation(char type, bool firstArgOnly)
 {
 
   switch( type )
   {
-  case 's':
+  case 's': if ( ! firstArgOnly )
+              return subscript_op;
 
   default: throw exception::Generic("Illegal use of operator[]");
   }

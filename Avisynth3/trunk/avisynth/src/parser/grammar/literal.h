@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,10 @@ namespace spirit = boost::spirit;
 
 namespace avs { namespace parser { namespace grammar {
   
-  
+
+//typedef
+namespace value { typedef boost::tuples::tuple<ElementalOperation, char> Literal; }
+
 
 namespace closure {
 
@@ -63,7 +66,7 @@ template <class Type> struct Value : spirit::closure<Value, Type>
 //
 //  grammar to recognize literals
 //
-struct Literal : public spirit::grammar<Literal, closure::Value<TypedOp>::context_t>
+struct Literal : public spirit::grammar<Literal, closure::Value<value::Literal>::context_t>
 {
 
   template <typename ScannerT>

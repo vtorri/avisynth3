@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -53,12 +53,14 @@ struct Function : spirit::closure
     < Function
     , function::FunctionId
     , LocalContext
-    , StatementCode
+    , CodeCouple
+    , bool
     >
 {
   member1 ident;
   member2 localCtxt;
   member3 code;
+  member4 termRecursive;
 };
 
 
@@ -83,7 +85,7 @@ struct Script : public spirit::grammar<Script, closure::Script::context_t>
       top
           =  *(   statement( CodeCouple(), self.localCtxt, self.globalCtxt, 'c' )
                   [
-                    self.value += arg1
+                    self.value += arg1       //accumulate code
                   ]
               |   spirit::str_p("function")
               >>  function
@@ -105,16 +107,14 @@ struct Script : public spirit::grammar<Script, closure::Script::context_t>
           >>  !(  arg   %   ','   )
           >>  spirit::ch_p(')')
               [
-                bind(&function::Table::DeclareScriptFunction)( second(self.globalCtxt), function.ident )
+                bind(&function::Table::DeclareScriptFunction)( second(self.globalCtxt), function.ident ),
+                function.termRecursive = val(false)       //init recursive flag
               ]
           >>  functionBody
-              [
-                function.code = arg1
-              ]
           >>  spirit::eol_p
               [
                 bind(&function::Table::DefineScriptFunction)
-                    ( second(self.globalCtxt), function.ident, function.code )                    
+                    ( second(self.globalCtxt), function.ident, function.code, function.termRecursive )                    
               ]
           ;
 
@@ -134,9 +134,15 @@ struct Script : public spirit::grammar<Script, closure::Script::context_t>
       functionBody
           =   *   spirit::eol_p
           >>  '{'
-          >> *(   statement( CodeCouple(), wrap(function.localCtxt), self.globalCtxt, first(function.ident) ) 
+          >> *(   statement
+                      ( CodeCouple()
+                      , ref(function.localCtxt)
+                      , self.globalCtxt
+                      , first(function.ident)
+                      , construct_<value::TRecurseInfo>( ref(third(function.ident)), ref(function.termRecursive) ) 
+                      ) 
                   [
-                    functionBody.value += arg1
+                    function.code += arg1
                   ]
               |   spirit::eol_p
               )
@@ -153,7 +159,7 @@ struct Script : public spirit::grammar<Script, closure::Script::context_t>
     spirit::rule<ScannerT> top;
     spirit::rule<ScannerT, closure::Function::context_t> function;
     spirit::rule<ScannerT, closure::Value<char>::context_t> arg;
-    spirit::rule<ScannerT, closure::Value<CodeCouple>::context_t> functionBody;
+    spirit::rule<ScannerT> functionBody;
 
     Name name;                    //Name grammar
     Statement statement;          //statement grammar

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,12 +25,12 @@
 #define __AVS_PARSER_GRAMMAR_EXPRESSION_H__
 
 //avisynth includes
+#include "get.h"
 #include "check.h"
-#include "action.h"
 #include "literal.h"
 #include "vartable.h"
 #include "../vmcode.h"
-#include "../lazy/unwrap.h"
+#include "../lazy/ref.h"
 #include "../function/table.h"
 #include "../binaryop/parser.h"
 #include "../functor/var.h"
@@ -196,7 +196,7 @@ public:  //definition nested class
                   ]
               >>  add_expr
                   [
-                    first(self.value) += bind(&Action::GetEqualityOperation)(expression.type, arg1, equality_expr.value),
+                    first(self.value) += bind(&Get::EqualityOperation)(expression.type, arg1, equality_expr.value),
                     --second(self.localCtxt)
                   ]
               )
@@ -324,7 +324,7 @@ public:  //definition nested class
               )
           >>  spirit::ch_p(']')
               [
-                first(self.value) += bind(&Action::GetSubscriptOperation)(atom_expr.value, subscript_helper.value)
+                first(self.value) += bind(&Get::SubscriptOperation)(atom_expr.value, subscript_helper.value)
               ]
           ;
 

@@ -24,27 +24,22 @@
 //avisynth includes
 #include "voidclip.h"
 #include "../../core/videoinfo.h"
-#include "../../core/exception/novideo.h"
 #include "../../core/exception/noaudio.h"
+#include "../../core/exception/novideo.h"
 
 
 namespace avs { namespace filters {
 
 
+CPVideoInfo VoidClip::GetVideoInfo() const { return VideoInfo::Create(); }
 
-CPVideoInfo VoidClip::GetVideoInfo() const
-{
-  return VideoInfo::Create();
-}
+CPVideoFrame VoidClip::GetFrame(int /*n*/) const { throw exception::NoVideo(); }
+BYTE * VoidClip::GetAudio(BYTE * /*buffer*/, long long /*start*/, int /*count*/) const { throw exception::NoAudio(); }
 
-CPVideoFrame VoidClip::GetFrame(int /*n*/) const
-{
-  throw exception::NoVideo();
-}
 
-BYTE * VoidClip::GetAudio(BYTE * /*buffer*/, long long /*start*/, int /*count*/) const
+PClip VoidClip::Create(PEnvironment const& env)
 {
-  throw exception::NoAudio();
+  return PClip( static_cast<Clip *>(new VoidClip(env)) );
 }
 
 

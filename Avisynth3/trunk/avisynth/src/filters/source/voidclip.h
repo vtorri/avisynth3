@@ -24,12 +24,8 @@
 #ifndef __AVS_FILTERS_VOIDCLIP_H__
 #define __AVS_FILTERS_VOIDCLIP_H__
 
-//avisynth includes
-#include "../../clip/folded.h"
+//avisynth include
 #include "../../clip/nochild.h"
-#include "../../clip/noaudio.h"
-#include "../../clip/novideo.h"
-#include "../../core/videoinfo.h"
 
 
 namespace avs { namespace filters {
@@ -42,15 +38,12 @@ namespace avs { namespace filters {
 //  clip who has no video and no audio
 //
 class VoidClip : public clip::NoChild                    //has no child
-               , public clip::NoAudio                    //has no audio
-               , public clip::NoVideo                    //has no video
-               , public clip::Folded<WeakPEnvironment>   //folded on the environment
 {
 
   PEnvironment env_;
 
 
-public:  //structors
+private:  //structors
 
   VoidClip(PEnvironment const& env)
     : env_( env ) { }
@@ -61,17 +54,15 @@ public:  //structors
 public:  //Clip general interface
 
   virtual PEnvironment const& GetEnvironment() const { return env_; }
-  virtual CPVideoInfo GetVideoInfo() const { return VideoInfo::Create(); }
+  virtual CPVideoInfo GetVideoInfo() const;
 
-
-private:  //GetKey method
-
-  virtual KeyType GetKey() const { return env_; }
+  virtual CPVideoFrame GetFrame(int n) const;
+  virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const;
 
 
 public:  //factory method
 
-  static PClip Create(PEnvironment const& env) { return PClip( static_cast<Clip *>(new VoidClip(env)) ); }
+  static PClip Create(PEnvironment const& env);
 
 };
 

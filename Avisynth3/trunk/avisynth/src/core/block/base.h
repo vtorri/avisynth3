@@ -91,8 +91,8 @@ public:  //structors
 
   //spawning constructor
   //spawns a holder for this from the one of an already existing block
-  base( BaseBlockType const& other, int size )
-    : block_( other.block_->spawn(size) ) { }
+  base( BaseBlockType const& other, int size, bool recycle )
+    : block_( other.block_->spawn(size, recycle) ) { }
 
   //generated copy constructor and destructor are fine
 

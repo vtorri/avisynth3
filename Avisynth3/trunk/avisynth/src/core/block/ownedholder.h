@@ -54,7 +54,7 @@ public:  //OwnedHolder interface
   virtual PEnvironment const& GetEnvironment() const = 0;
 
   //spawns a new holder of the same type holding mem of the asked size
-  virtual OwnedHolder * spawn(int size) const = 0;
+  virtual OwnedHolder * spawn(int size, bool recycle) const = 0;
 
 
 public:  //definition for subclasses

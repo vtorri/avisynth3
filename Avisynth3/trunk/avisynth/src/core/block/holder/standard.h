@@ -54,7 +54,7 @@ public:  //structors
 public:  //Holder interface
 
   virtual BYTE * get() const { return ptr_; }
-  virtual Holder * spawn(int size) const { return new Standard(size, recycle_); }
+  virtual Holder * spawn(int size, bool recycle) const { return new Standard(size, recycle); }
 
   enum { Align = block::Align };
 

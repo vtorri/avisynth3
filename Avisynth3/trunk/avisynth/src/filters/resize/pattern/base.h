@@ -47,7 +47,7 @@ class Base
 protected:  //structors
 
   Base(PEnvironment const& env)
-    : pattern_( env ) { }
+    : pattern_( env, false ) { }
 
   Base(Base const& other)
     : count_( other.count_ )
@@ -82,7 +82,7 @@ public:  //access
 
 protected:  //at the disposition of subclasses constructor
 
-  void init(int count, int size) { count_ = count; pattern_.reset(size << 2); }
+  void init(int count, int size) { count_ = count; pattern_.reset(size << 2, false); }
 
   int * get() { return reinterpret_cast<int *>(pattern_.get()); }
 

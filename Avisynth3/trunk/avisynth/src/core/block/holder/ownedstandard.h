@@ -54,7 +54,7 @@ public:  //structors
 public:  //Holder interface
 
   virtual BYTE * get() const { return ptr_; }
-  virtual OwnedHolder * spawn(int size) const { return new OwnedStandard(GetEnvironment(), size, recycle_); }
+  virtual OwnedHolder * spawn(int size, bool recycle) const { return new OwnedStandard(GetEnvironment(), size, recycle); }
 
   enum { Align = block::Align };
 

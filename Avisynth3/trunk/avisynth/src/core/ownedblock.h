@@ -66,8 +66,8 @@ public:  //structors
     : BaseBlockType( other ) { }
 
   //spawning constructor
-  owned_block(BlockType const& other, int size)
-    : BaseBlockType( other, size ) { }
+  owned_block(BlockType const& other, int size, bool recycle)
+    : BaseBlockType( other, size, recycle ) { }
 
   //generated copy constructor and destructor are fine
 
@@ -86,15 +86,15 @@ public:  //assignment
 
 public:  //misc
 
-  void reset(int size)
+  void reset(int size, bool recycle)
   { 
-    spawn(size).swap(*this);
+    spawn(size, recycle).swap(*this);
   }
 
   //spawn method, just calls the spawning constructor, but is more explicit
-  BlockType spawn(int size) const 
+  BlockType spawn(int size, bool recycle) const 
   { 
-    return BlockType(*this, size); 
+    return BlockType(*this, size, recycle); 
   }
 
 };
@@ -121,7 +121,7 @@ public:  //typedefs
 
 public:  //structors
 
-  explicit owned_block(PEnvironment const& env);
+  explicit owned_block(PEnvironment const& env, bool recycle);
 
   //normal constructor
   owned_block(PEnvironment const& env, int size, bool recycle);
@@ -135,8 +135,8 @@ public:  //structors
     : BaseBlockType( other ) { }
 
   //spawning constructor
-  owned_block(BlockType const& other, int size)
-    : BaseBlockType( other, size ) { }
+  owned_block(BlockType const& other, int size, bool recycle)
+    : BaseBlockType( other, size, recycle ) { }
 
   //generated copy constructor and destructor are fine
 
@@ -155,15 +155,15 @@ public:  //assignment
 
 public:  //misc
 
-  void reset(int size)
+  void reset(int size, bool recycle)
   { 
-    spawn(size).swap(*this); 
+    spawn(size, recycle).swap(*this); 
   }
 
   //spawn method, just calls the spawning constructor, but is more explicit
-  BlockType spawn(int size) const 
+  BlockType spawn(int size, bool recycle) const 
   { 
-    return BlockType(*this, size); 
+    return BlockType(*this, size, recycle); 
   }
 
 };

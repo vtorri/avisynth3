@@ -35,7 +35,7 @@ namespace avs { namespace environment {
 
 
 Base::Base(int memMax)
-  : temp_( 1000 )
+  : temp_( 1000, false )
   , memMax_( memMax > 0 ? memMax : 10000000 )
   , memUsed_( 0 ) { }
 
@@ -45,7 +45,7 @@ Block Base::TempBlock(int size)
 {
   //if internal block is shared or too small
   if ( ! temp_.unique() || temp_.size() < size )
-    temp_.reset( size );             //we reset it
+    temp_.reset( size, false );          //we reset it
 
   return temp_;
 }

@@ -123,7 +123,7 @@ public:  //structors
     : dim_( dim )
     , pitch_( RoundUp<Align>(width()) )
     , offset_( Guard )
-    , buffer_( other.buffer_.spawn(pitch() * height() + Guard * 2) ) { }
+    , buffer_( other.buffer_.spawn(pitch() * height() + Guard * 2, true) ) { }
 
   //constructor using a given buffer
   template <class BufferOther>

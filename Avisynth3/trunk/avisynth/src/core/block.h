@@ -77,8 +77,8 @@ public:  //structors
     : BaseBlockType( other ) { }
 
   //spawning constructor
-  block_(BlockType const& other, int size)
-    : BaseBlockType( other, size ) { }
+  block_(BlockType const& other, int size, bool recycle)
+    : BaseBlockType( other, size, recycle ) { }
 
   //generated copy constructor and destructor are fine
 
@@ -97,14 +97,14 @@ public:  //assignemnt
 
 public:  //misc
 
-  void reset(int size)
+  void reset(int size, bool recycle)
   {
-    spawn(size).swap(*this);
+    spawn(size, recycle).swap(*this);
   }
 
-  BlockType spawn(int size) const
+  BlockType spawn(int size, bool recycle) const
   {
-    return BlockType(*this, size);
+    return BlockType(*this, size, recycle);
   }
 
 };
@@ -128,7 +128,7 @@ public:  //typedefs
 
 public:  //structors
   
-  explicit block_(int size, bool recycle = false);
+  explicit block_(int size, bool recycle);
 
   template <class Holder>
   explicit block_(Holder * holder)
@@ -139,8 +139,8 @@ public:  //structors
     : BaseBlockType( other ) { }
 
   //spawning constructor
-  block_(BlockType const& other, int size)
-    : BaseBlockType( other, size ) { }
+  block_(BlockType const& other, int size, bool recycle)
+    : BaseBlockType( other, size, recycle ) { }
 
   //generated copy constructor and destructor are fine
 
@@ -159,14 +159,14 @@ public:  //assignemnt
 
 public:  //misc
 
-  void reset(int size)
+  void reset(int size, bool recycle)
   { 
-    spawn(size).swap(*this); 
+    spawn(size, recycle).swap(*this); 
   }
   
-  BlockType spawn(int size) const 
+  BlockType spawn(int size, bool recycle) const 
   { 
-    return BlockType(*this, size); 
+    return BlockType(*this, size, recycle); 
   }
 
 };

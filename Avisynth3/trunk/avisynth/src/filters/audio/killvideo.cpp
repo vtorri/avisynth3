@@ -63,7 +63,7 @@ PClip KillVideo::Simplify() const
 
 PClip KillVideo::Create(PClip const& child)
 { 
-  return PClip( (Clip *)new clip::folded::Make<KillVideo, WeakPClip>(child) ); 
+  return PClip( static_cast<Clip *>(new clip::folded::Make<KillVideo, WeakPClip>(child)) ); 
 }
 
 

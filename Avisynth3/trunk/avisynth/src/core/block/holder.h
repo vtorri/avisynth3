@@ -24,6 +24,9 @@
 #ifndef __AVS_BLOCK_HOLDER_H__
 #define __AVS_BLOCK_HOLDER_H__
 
+//avisynth include
+#include "../forward.h"          //for BYTE
+
 
 namespace avs { namespace block {
 
@@ -47,12 +50,11 @@ public:  //Holder interface
 
   virtual int size() const = 0;
   virtual BYTE * get() const = 0;
-  
 
-public:  //some definitions for subclasses
+
+public:  //definition for subclasses
 
   enum { Align = 1 };               //default alignment guarantee (ie not aligned)
-  typedef unsigned char BYTE;       //BYTE typedef
 
 };
 

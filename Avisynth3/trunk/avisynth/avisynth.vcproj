@@ -21,6 +21,10 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				GlobalOptimizations="FALSE"
+				InlineFunctionExpansion="0"
+				EnableIntrinsicFunctions="TRUE"
+				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="2"
 				PreprocessorDefinitions="_DEBUG;DEBUG;_STLP_DEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_DLL;_USRDLL;AVISYNTH_EXPORTS"
 				BasicRuntimeChecks="3"
@@ -35,7 +39,8 @@
 				BrowseInformationFile=".\Debug/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="4"/>
+				DebugInformationFormat="4"
+				CallingConvention="2"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -90,9 +95,10 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Gs "
-				Optimization="0"
+				Optimization="3"
 				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="2"
 				PreprocessorDefinitions="NDEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_DLL;_USRDLL;AVISYNTH_EXPORTS"
@@ -106,7 +112,8 @@
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="2"/>
+				DebugInformationFormat="2"
+				CallingConvention="2"/>
 			<Tool
 				Name="VCCustomBuildTool"
 				CommandLine="release\upx -9 release\avisynth.dll
@@ -179,7 +186,8 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="3"/>
+				DebugInformationFormat="3"
+				CallingConvention="2"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -230,6 +238,102 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 	</References>
 	<Files>
 		<Filter
+			Name="Clip"
+			Filter="">
+			<File
+				RelativePath=".\src\clip\caching.h">
+			</File>
+			<File
+				RelativePath=".\src\clip\folded.h">
+			</File>
+			<File
+				RelativePath=".\src\clip\nochild.h">
+			</File>
+			<File
+				RelativePath=".\src\clip\onechild.h">
+			</File>
+			<File
+				RelativePath=".\src\clip\refactorable.h">
+			</File>
+			<File
+				RelativePath=".\src\clip\twochilds.h">
+			</File>
+			<Filter
+				Name="Caching"
+				Filter="">
+				<File
+					RelativePath=".\src\clip\caching\concrete.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Folded"
+				Filter="">
+				<File
+					RelativePath=".\src\clip\folded\make.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="OneChild"
+				Filter="">
+				<File
+					RelativePath=".\src\clip\onechild\audioprocess.h">
+				</File>
+				<File
+					RelativePath=".\src\clip\onechild\cachingpipeline.h">
+				</File>
+				<File
+					RelativePath=".\src\clip\onechild\concrete.h">
+				</File>
+				<File
+					RelativePath=".\src\clip\onechild\foldedsimplifiable.h">
+				</File>
+				<File
+					RelativePath=".\src\clip\onechild\pipeline.h">
+				</File>
+				<File
+					RelativePath=".\src\clip\onechild\simplifiable.h">
+				</File>
+				<File
+					RelativePath=".\src\clip\onechild\videoprocess.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="TwoChilds"
+				Filter="">
+				<File
+					RelativePath=".\src\clip\twochilds\concrete.h">
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="COM"
+			Filter="">
+			<File
+				RelativePath=".\src\com\base.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Profile|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\src\com\base.h">
+			</File>
+		</Filter>
+		<Filter
 			Name="Core"
 			Filter="">
 			<File
@@ -240,9 +344,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			</File>
 			<File
 				RelativePath=".\src\core\block.h">
-			</File>
-			<File
-				RelativePath=".\src\core\bufferwindow.cpp">
 			</File>
 			<File
 				RelativePath=".\src\core\bufferwindow.h">
@@ -264,6 +365,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			</File>
 			<File
 				RelativePath=".\src\core\exception.h">
+			</File>
+			<File
+				RelativePath=".\src\core\forward.h">
 			</File>
 			<File
 				RelativePath=".\src\core\frametype.h">
@@ -290,9 +394,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				RelativePath=".\src\core\saturate.h">
 			</File>
 			<File
-				RelativePath=".\src\core\smart_ptr_fwd.h">
-			</File>
-			<File
 				RelativePath=".\src\core\vecteur.h">
 			</File>
 			<File
@@ -304,6 +405,19 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			<File
 				RelativePath=".\src\core\window_ptr.h">
 			</File>
+			<Filter
+				Name="Blitter"
+				Filter="">
+				<File
+					RelativePath=".\src\core\blitter\blitter.cpp">
+				</File>
+				<File
+					RelativePath=".\src\core\blitter\memcopy.cpp">
+				</File>
+				<File
+					RelativePath=".\src\core\blitter\memcopy.h">
+				</File>
+			</Filter>
 			<Filter
 				Name="Block"
 				Filter="">
@@ -330,6 +444,46 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 				<File
 					RelativePath=".\src\core\block\recycler.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="BufferWindow"
+				Filter="">
+				<File
+					RelativePath=".\src\core\bufferwindow\blender.cpp">
+				</File>
+				<File
+					RelativePath=".\src\core\bufferwindow\blender.h">
+				</File>
+				<File
+					RelativePath=".\src\core\bufferwindow\copier.cpp">
+				</File>
+				<File
+					RelativePath=".\src\core\bufferwindow\copier.h">
+				</File>
+				<File
+					RelativePath=".\src\core\bufferwindow\horizontalflipper.h">
+				</File>
+				<File
+					RelativePath=".\src\core\bufferwindow\leftturner.cpp">
+				</File>
+				<File
+					RelativePath=".\src\core\bufferwindow\leftturner.h">
+				</File>
+				<File
+					RelativePath=".\src\core\bufferwindow\rightturner.h">
+				</File>
+				<File
+					RelativePath=".\src\core\bufferwindow\sizechanger.cpp">
+				</File>
+				<File
+					RelativePath=".\src\core\bufferwindow\sizechanger.h">
+				</File>
+				<File
+					RelativePath=".\src\core\bufferwindow\verticalflipper.cpp">
+				</File>
+				<File
+					RelativePath=".\src\core\bufferwindow\verticalflipper.h">
 				</File>
 			</Filter>
 			<Filter
@@ -395,31 +549,32 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath=".\src\core\environment\base.h">
 				</File>
 				<File
-					RelativePath=".\src\core\environment\concrete.cpp">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Profile|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath=".\src\core\environment\concrete.h">
 				</File>
 				<File
 					RelativePath=".\src\core\environment\runtime_environment.cpp">
+				</File>
+			</Filter>
+			<Filter
+				Name="Exception"
+				Filter="">
+				<File
+					RelativePath=".\src\core\exception\baddimension.h">
+				</File>
+				<File
+					RelativePath=".\src\core\exception\generic.h">
+				</File>
+				<File
+					RelativePath=".\src\core\exception\noaudio.h">
+				</File>
+				<File
+					RelativePath=".\src\core\exception\nosuchframe.h">
+				</File>
+				<File
+					RelativePath=".\src\core\exception\novideo.h">
+				</File>
+				<File
+					RelativePath=".\src\core\exception\unsupportedcolorspace.h">
 				</File>
 			</Filter>
 			<Filter
@@ -488,54 +643,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath=".\src\core\videoinfo\videoinfo.cpp">
 				</File>
 			</Filter>
-			<Filter
-				Name="Blitter"
-				Filter="">
-				<File
-					RelativePath=".\src\core\blitter\blitter.cpp">
-				</File>
-				<File
-					RelativePath=".\src\core\blitter\memcopy.cpp">
-				</File>
-				<File
-					RelativePath=".\src\core\blitter\memcopy.h">
-				</File>
-			</Filter>
-			<Filter
-				Name="BufferWindow"
-				Filter="">
-				<File
-					RelativePath=".\src\core\bufferwindow\blender.cpp">
-				</File>
-				<File
-					RelativePath=".\src\core\bufferwindow\blender.h">
-				</File>
-				<File
-					RelativePath=".\src\core\bufferwindow\horizontalflipper.h">
-				</File>
-				<File
-					RelativePath=".\src\core\bufferwindow\leftturner.cpp">
-				</File>
-				<File
-					RelativePath=".\src\core\bufferwindow\leftturner.h">
-				</File>
-				<File
-					RelativePath=".\src\core\bufferwindow\rightturner.h">
-				</File>
-				<File
-					RelativePath=".\src\core\bufferwindow\verticalflipper.cpp">
-				</File>
-				<File
-					RelativePath=".\src\core\bufferwindow\verticalflipper.h">
-				</File>
-			</Filter>
-			<Filter
-				Name="Exception"
-				Filter="">
-				<File
-					RelativePath=".\src\core\exception\baddimension.h">
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Filters"
@@ -567,6 +674,16 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				Filter="">
 			</Filter>
 			<Filter
+				Name="Fps"
+				Filter="">
+				<File
+					RelativePath=".\src\filters\fps\assumefps.cpp">
+				</File>
+				<File
+					RelativePath=".\src\filters\fps\assumefps.h">
+				</File>
+			</Filter>
+			<Filter
 				Name="Levels"
 				Filter="">
 				<File
@@ -575,10 +692,202 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				<File
 					RelativePath=".\src\filters\levels\tweak.h">
 				</File>
+				<Filter
+					Name="Tweak"
+					Filter="">
+					<File
+						RelativePath=".\src\filters\levels\tweak\yuy2.cpp">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\src\filters\levels\tweak\yuy2.h">
+					</File>
+					<File
+						RelativePath=".\src\filters\levels\tweak\yv12.cpp">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\src\filters\levels\tweak\yv12.h">
+					</File>
+					<Filter
+						Name="YUY2"
+						Filter="">
+						<File
+							RelativePath=".\src\filters\levels\tweak\yuy2\isse.cpp">
+						</File>
+						<File
+							RelativePath=".\src\filters\levels\tweak\yuy2\isse.h">
+						</File>
+					</Filter>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="Resize"
+				Filter="">
+				<File
+					RelativePath=".\src\filters\resize\filter.h">
+				</File>
+				<File
+					RelativePath=".\src\filters\resize\forward.h">
+				</File>
+				<File
+					RelativePath=".\src\filters\resize\horizontal.h">
+				</File>
+				<File
+					RelativePath=".\src\filters\resize\resize.h">
+				</File>
+				<File
+					RelativePath=".\src\filters\resize\resize_horizontal.h">
+				</File>
+				<File
+					RelativePath=".\src\filters\resize\subrange.h">
+				</File>
+				<Filter
+					Name="Pattern"
+					Filter="">
+					<File
+						RelativePath=".\src\filters\resize\pattern\base.h">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\pattern\interleaved2x2.cpp">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\pattern\interleaved2x2.h">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\pattern\interleaved2x4.cpp">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\pattern\interleaved2x4.h">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\pattern\interleaved4x4.h">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\pattern\maker.cpp">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\pattern\maker.h">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\pattern\packer.h">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\pattern\simple.cpp">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\pattern\simple.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="Filter"
+					Filter="">
+					<File
+						RelativePath=".\src\filters\resize\filter\filter.cpp">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\filter\lanczos3.h">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\filter\mitchellnetravali.h">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\filter\point.h">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\filter\triangle.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="Horizontal"
+					Filter="">
+					<File
+						RelativePath=".\src\filters\resize\horizontal\rgb.h">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\horizontal\rgb24.cpp">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\horizontal\rgb24.h">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\horizontal\rgb32.cpp">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\horizontal\rgb32.h">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\horizontal\yuy2.cpp">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\horizontal\yuy2.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Source"
 				Filter="">
+				<File
+					RelativePath=".\src\filters\source\avisource.h">
+				</File>
+				<File
+					RelativePath=".\src\filters\source\colorbars.cpp">
+				</File>
+				<File
+					RelativePath=".\src\filters\source\colorbars.h">
+				</File>
 				<File
 					RelativePath=".\src\filters\source\messageclip.h">
 				</File>
@@ -617,115 +926,265 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath=".\src\filters\transform\turn.h">
 				</File>
 			</Filter>
+		</Filter>
+		<Filter
+			Name="Functions"
+			Filter="">
+			<File
+				RelativePath=".\src\functions\audio.h">
+			</File>
+			<File
+				RelativePath=".\src\functions\script.cpp">
+			</File>
+			<File
+				RelativePath=".\src\functions\script.h">
+			</File>
+			<File
+				RelativePath=".\src\functions\source.cpp">
+			</File>
+			<File
+				RelativePath=".\src\functions\source.h">
+			</File>
+		</Filter>
+		<Filter
+			Name="Linker"
+			Filter="">
+			<File
+				RelativePath=".\src\linker\forward.h">
+			</File>
+			<File
+				RelativePath=".\src\linker\function.h">
+			</File>
+			<File
+				RelativePath=".\src\linker\plugin.h">
+			</File>
 			<Filter
-				Name="Resize"
+				Name="Plugin"
 				Filter="">
 				<File
-					RelativePath=".\src\filters\resize\filter.h">
+					RelativePath=".\src\linker\plugin\native.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Core"
+				Filter="">
+				<File
+					RelativePath=".\src\linker\core\function.cpp">
 				</File>
 				<File
-					RelativePath=".\src\filters\resize\resize.h">
+					RelativePath=".\src\linker\core\function.h">
 				</File>
 				<File
-					RelativePath=".\src\filters\resize\resize_horizontal.h">
+					RelativePath=".\src\linker\core\plugin.cpp">
 				</File>
 				<File
-					RelativePath=".\src\filters\resize\subrange.h">
+					RelativePath=".\src\linker\core\plugin.h">
 				</File>
-				<Filter
-					Name="Pattern"
-					Filter="">
-					<File
-						RelativePath=".\src\filters\resize\pattern\base.h">
-					</File>
-					<File
-						RelativePath=".\src\filters\resize\pattern\Interleaved.h">
-					</File>
-					<File
-						RelativePath=".\src\filters\resize\pattern\maker.cpp">
-					</File>
-					<File
-						RelativePath=".\src\filters\resize\pattern\maker.h">
-					</File>
-					<File
-						RelativePath=".\src\filters\resize\pattern\packer.h">
-					</File>
-					<File
-						RelativePath=".\src\filters\resize\pattern\simple.cpp">
-					</File>
-					<File
-						RelativePath=".\src\filters\resize\pattern\simple.h">
-					</File>
-				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
-			Name="Clip"
+			Name="Parser"
 			Filter="">
 			<File
-				RelativePath=".\src\clip\caching.h">
+				RelativePath=".\src\parser\avsvalue.h">
 			</File>
 			<File
-				RelativePath=".\src\clip\folded.h">
+				RelativePath=".\src\parser\failure.h">
 			</File>
 			<File
-				RelativePath=".\src\clip\nochild.h">
+				RelativePath=".\src\parser\functionpool.cpp">
 			</File>
 			<File
-				RelativePath=".\src\clip\onechild.h">
+				RelativePath=".\src\parser\functionpool.h">
 			</File>
 			<File
-				RelativePath=".\src\clip\refactorable.h">
+				RelativePath=".\src\parser\functiontable.cpp">
 			</File>
 			<File
-				RelativePath=".\src\clip\twochilds.h">
+				RelativePath=".\src\parser\functiontable.h">
+			</File>
+			<File
+				RelativePath=".\src\parser\parser.cpp">
+			</File>
+			<File
+				RelativePath=".\src\parser\parser.h">
+			</File>
+			<File
+				RelativePath=".\src\parser\scopeenforcer.h">
+			</File>
+			<File
+				RelativePath=".\src\parser\vmcode.h">
+			</File>
+			<File
+				RelativePath=".\src\parser\vmoperation.h">
+			</File>
+			<File
+				RelativePath=".\src\parser\vmstate.h">
 			</File>
 			<Filter
-				Name="OneChild"
+				Name="Grammar"
 				Filter="">
 				<File
-					RelativePath=".\src\clip\onechild\audioprocess.h">
+					RelativePath=".\src\parser\grammar\expression.cpp">
 				</File>
 				<File
-					RelativePath=".\src\clip\onechild\cachingpipeline.h">
+					RelativePath=".\src\parser\grammar\expression.h">
 				</File>
 				<File
-					RelativePath=".\src\clip\onechild\concrete.h">
+					RelativePath=".\src\parser\grammar\keywords.cpp">
 				</File>
 				<File
-					RelativePath=".\src\clip\onechild\foldedsimplifiable.h">
+					RelativePath=".\src\parser\grammar\keywords.h">
 				</File>
 				<File
-					RelativePath=".\src\clip\onechild\pipeline.h">
+					RelativePath=".\src\parser\grammar\literal.h">
 				</File>
 				<File
-					RelativePath=".\src\clip\onechild\simplifiable.h">
+					RelativePath=".\src\parser\grammar\name.h">
 				</File>
 				<File
-					RelativePath=".\src\clip\onechild\videoprocess.h">
+					RelativePath=".\src\parser\grammar\script.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\grammar\statement.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\grammar\vartable.h">
 				</File>
 			</Filter>
 			<Filter
-				Name="TwoChilds"
+				Name="Visitor"
 				Filter="">
 				<File
-					RelativePath=".\src\clip\twochilds\concrete.h">
+					RelativePath=".\src\parser\visitor\add.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\visitor\mult.h">
 				</File>
 			</Filter>
 			<Filter
-				Name="Caching"
+				Name="BinaryOp"
 				Filter="">
 				<File
-					RelativePath=".\src\clip\caching\concrete.h">
+					RelativePath=".\src\parser\binaryop\make.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\binaryop\parser.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\binaryop\typemapped.cpp">
+				</File>
+				<File
+					RelativePath=".\src\parser\binaryop\typemapped.h">
 				</File>
 			</Filter>
 			<Filter
-				Name="Folded"
+				Name="Lazy"
 				Filter="">
 				<File
-					RelativePath=".\src\clip\folded\make.h">
+					RelativePath=".\src\parser\lazy\add_symbol.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\lazy\tuple.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\lazy\unwrap.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="Functor"
+				Filter="">
+				<File
+					RelativePath=".\src\parser\functor\adaptor.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\functor\assigner.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\functor\caller.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\functor\extractor.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\functor\if.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\functor\literal.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\functor\popper.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\functor\pusher.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\functor\swapper.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\functor\var.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\functor\while.h">
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Text"
+			Filter="">
+			<File
+				RelativePath=".\src\text\align.h">
+			</File>
+			<File
+				RelativePath=".\src\text\antialiaser.cpp">
+			</File>
+			<File
+				RelativePath=".\src\text\antialiaser.h">
+			</File>
+			<File
+				RelativePath=".\src\text\font.cpp">
+			</File>
+			<File
+				RelativePath=".\src\text\font.h">
+			</File>
+			<File
+				RelativePath=".\src\text\gethfont.h">
+			</File>
+			<Filter
+				Name="Antialiaser"
+				Filter="">
+				<File
+					RelativePath=".\src\text\antialiaser\bitcount.cpp">
+				</File>
+				<File
+					RelativePath=".\src\text\antialiaser\bitcount.h">
+				</File>
+				<File
+					RelativePath=".\src\text\antialiaser\bitexpand.cpp">
+				</File>
+				<File
+					RelativePath=".\src\text\antialiaser\bitexpand.h">
+				</File>
+				<File
+					RelativePath=".\src\text\antialiaser\bitrenderer.cpp">
+				</File>
+				<File
+					RelativePath=".\src\text\antialiaser\bitrenderer.h">
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Utility"
+			Filter="">
+			<File
+				RelativePath=".\src\utility\bytemap.h">
+			</File>
+			<File
+				RelativePath=".\src\utility\folder.h">
+			</File>
+			<File
+				RelativePath=".\src\utility\threshold.h">
+			</File>
 		</Filter>
 		<Filter
 			Name="VFW"
@@ -795,95 +1254,14 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 			</Filter>
 		</Filter>
-		<Filter
-			Name="COM"
-			Filter="">
-			<File
-				RelativePath=".\src\com\base.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Profile|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\src\com\base.h">
-			</File>
-		</Filter>
-		<Filter
-			Name="Text"
-			Filter="">
-			<File
-				RelativePath=".\src\text\align.h">
-			</File>
-			<File
-				RelativePath=".\src\text\antialiaser.cpp">
-			</File>
-			<File
-				RelativePath=".\src\text\antialiaser.h">
-			</File>
-			<File
-				RelativePath=".\src\text\font.cpp">
-			</File>
-			<File
-				RelativePath=".\src\text\font.h">
-			</File>
-			<File
-				RelativePath=".\src\text\gethfont.h">
-			</File>
-			<Filter
-				Name="Antialiaser"
-				Filter="">
-				<File
-					RelativePath=".\src\text\antialiaser\bitcount.cpp">
-				</File>
-				<File
-					RelativePath=".\src\text\antialiaser\bitcount.h">
-				</File>
-				<File
-					RelativePath=".\src\text\antialiaser\bitexpand.cpp">
-				</File>
-				<File
-					RelativePath=".\src\text\antialiaser\bitexpand.h">
-				</File>
-				<File
-					RelativePath=".\src\text\antialiaser\bitrenderer.cpp">
-				</File>
-				<File
-					RelativePath=".\src\text\antialiaser\bitrenderer.h">
-				</File>
-			</Filter>
-		</Filter>
 		<File
 			RelativePath="distrib\AviSynth.ico">
-		</File>
-		<File
-			RelativePath=".\src\bytemap.h">
-		</File>
-		<File
-			RelativePath=".\src\folder.h">
 		</File>
 		<File
 			RelativePath=".\src\main.cpp">
 		</File>
 		<File
 			RelativePath=".\src\main.h">
-		</File>
-		<File
-			RelativePath=".\src\weakexpired.h">
 		</File>
 	</Files>
 	<Globals>

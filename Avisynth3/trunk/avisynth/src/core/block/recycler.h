@@ -76,10 +76,10 @@ public:  //Recycler interface
   BYTE * Acquire(int size); 
 
 
-private:  //mem alloc/dealloc
+private:  //aligned mem alloc/dealloc
 
-  static BYTE * mem_alloc(int size);
-  static void mem_free(BYTE * ptr);
+  static void * mem_alloc(int size);
+  static void mem_free(void * ptr);
 
 };
 

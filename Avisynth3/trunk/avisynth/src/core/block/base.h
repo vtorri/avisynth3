@@ -82,6 +82,11 @@ public:  //structors
                )
     : block_( other.block_ ) { }
 
+  //spawning constructor
+  //spawns a holder for this from the one of an already existing block
+  base( BaseBlockType const& other, int size )
+    : block_( other.block_->spawn(size) ) { }
+
   //generated copy constructor and destructor are fine
 
 

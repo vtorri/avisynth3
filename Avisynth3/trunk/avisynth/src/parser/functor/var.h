@@ -21,8 +21,8 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_PARSER_FUNCTOR_LOCALVAR_H__
-#define __AVS_PARSER_FUNCTOR_LOCALVAR_H__
+#ifndef __AVS_PARSER_FUNCTOR_VAR_H__
+#define __AVS_PARSER_FUNCTOR_VAR_H__
 
 //avisynth include
 #include "../vmstate.h"
@@ -50,6 +50,24 @@ struct LocalVar
 };
 
 
+///////////////////////////////////////////////////////////////////////////////////
+//  GlobalVar
+//
+//  provides access to a global var
+//
+struct GlobalVar
+{
+
+  int const index_;
+
+  GlobalVar(int index)
+    : index_( index ) { }
+
+  AVSValue& operator()(VMState& state) const { return state.global(index_); }
+
+};
+
+
 } } } //namespace avs::parser::functor
 
-#endif //__AVS_PARSER_FUNCTOR_LOCALVAR_H__
+#endif //__AVS_PARSER_FUNCTOR_VAR_H__

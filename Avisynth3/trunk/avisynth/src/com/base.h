@@ -24,6 +24,9 @@
 #ifndef __AVS_COM_BASE_H__
 #define __AVS_COM_BASE_H__
 
+//avisynth include
+#include "../utility/instancecounted.h"
+
 //windows includes
 #include "initguid.h"
 #include "objbase.h"
@@ -35,6 +38,11 @@
 namespace avs { namespace com {
 
 
+//declaration and typedef
+struct Tag { };
+typedef instance_counted<Tag> InstanceCounted;
+
+
 
 //////////////////////////////////////////////////////////////////////////////
 //  com::Base
@@ -44,26 +52,22 @@ namespace avs { namespace com {
 class Base : public boost::noncopyable
 {
 
-  static LONG objectCount_;
-
   ULONG refCount_;
+  InstanceCounted instCounted_;
 
 
 public:  //structors
 
-  Base();
-  virtual ~Base();
+  Base()
+    : refCount_( 1 ) { }
+
+  virtual ~Base() { }
 
 
 protected:  //IUnknown like
 
   ULONG AddRef_();
 	ULONG Release_();
-
-
-public:
-
-  static LONG ObjectCount() { return objectCount_; }
 
 };
 

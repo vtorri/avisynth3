@@ -28,20 +28,6 @@
 namespace avs { namespace com {
 
 
-LONG Base::objectCount_ = 0;
-
-
-Base::Base()
-  : refCount_( 1 )
-{
-  InterlockedIncrement(&objectCount_);
-}
-
-Base::~Base()
-{
-  InterlockedDecrement(&objectCount_);
-}
-
 
 ULONG Base::AddRef_()
 { 

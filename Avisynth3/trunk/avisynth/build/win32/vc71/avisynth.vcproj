@@ -307,9 +307,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath="..\..\..\src\clip\onechild\concrete.h">
 				</File>
 				<File
-					RelativePath="..\..\..\src\clip\onechild\foldedsimplifiable.h">
-				</File>
-				<File
 					RelativePath="..\..\..\src\clip\onechild\pipeline.h">
 				</File>
 				<File
@@ -397,6 +394,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\frametype.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\guardedblock.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\core\key.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\core\ownedblock.h">
@@ -554,26 +557,48 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				Name="ColorSpace"
 				Filter="">
 				<File
-					RelativePath="..\..\..\src\core\colorspace\colorspace.cpp">
+					RelativePath="..\..\..\src\core\colorspace\external.h">
 				</File>
 				<File
 					RelativePath="..\..\..\src\core\colorspace\interleaved.h">
 				</File>
 				<File
-					RelativePath="..\..\..\src\core\colorspace\map.cpp">
+					RelativePath="..\..\..\src\core\colorspace\planar.h">
 				</File>
-				<File
-					RelativePath="..\..\..\src\core\colorspace\map.h">
-				</File>
-				<File
-					RelativePath="..\..\..\src\core\colorspace\planar_yuv.h">
-				</File>
-				<File
-					RelativePath="..\..\..\src\core\colorspace\rgb.h">
-				</File>
-				<File
-					RelativePath="..\..\..\src\core\colorspace\yuy2.h">
-				</File>
+				<Filter
+					Name="Implementation"
+					Filter="">
+					<File
+						RelativePath="..\..\..\src\core\colorspace\impl\colorspace.cpp">
+					</File>
+					<File
+						RelativePath="..\..\..\src\core\colorspace\impl\creator.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\core\colorspace\impl\externalcreator.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\core\colorspace\impl\interleaved.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\core\colorspace\impl\internalcreator.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\core\colorspace\impl\map.cpp">
+					</File>
+					<File
+						RelativePath="..\..\..\src\core\colorspace\impl\map.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\core\colorspace\impl\planar_yuv.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\core\colorspace\impl\rgb.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\core\colorspace\impl\yuy2.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Environment"
@@ -725,6 +750,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 				<File
 					RelativePath="..\..\..\src\core\videoframe\base.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\core\videoframe\flowpropertyhandler.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\core\videoframe\forward.h">
 				</File>
 				<File
 					RelativePath="..\..\..\src\core\videoframe\interleaved.h">
@@ -1110,6 +1141,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					Name="Avi"
 					Filter="">
 					<File
+						RelativePath="..\..\..\src\filters\source\avi\audiodecompressor.h">
+					</File>
+					<File
 						RelativePath="..\..\..\src\filters\source\avi\framedecompressor.cpp">
 					</File>
 					<File
@@ -1296,11 +1330,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			</File>
 			<File
 				RelativePath="..\..\..\src\parser\parser.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\src\parser\parser.h">
@@ -1602,6 +1631,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				RelativePath="..\..\..\src\vfw\bitmapinfoheader.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\vfw\forward.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\vfw\hic.cpp">
 			</File>
 			<File
@@ -1699,6 +1731,10 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			<File
 				RelativePath="..\..\..\src\freetype\monobitmap.h">
 			</File>
+		</Filter>
+		<Filter
+			Name="DirectStream"
+			Filter="">
 		</Filter>
 		<File
 			RelativePath="..\..\..\distrib\Avisynth.ico">

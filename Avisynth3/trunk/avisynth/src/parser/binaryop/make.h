@@ -55,7 +55,7 @@ public:  //structors
 
   OpType operator()(VMState& state) const
   {
-    state.peek(1) = boost::apply_visitor(visitor_, state.peek(1), state.top());
+    state.peek(2) = boost::apply_visitor(visitor_, state.peek(2), state.top());
     state.pop();
     return NORMAL;
   }

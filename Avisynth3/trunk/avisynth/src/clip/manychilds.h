@@ -37,15 +37,15 @@ namespace avs { namespace clip {
 //
 //  clip subinterface for clip with an unlimited number of childs
 //
-class ManyChilds : public virtual Clip
+class NOVTABLE ManyChilds : public virtual Clip
 {
 
 public:  //access to childs
 
   virtual int GetChildCount() const = 0;
 
-  //return child n if there is such one, else a 'NULL' PClip
-  virtual PClip GetChild(int n) const = 0;
+  //undefined behavior if n < 0 or >= GetChildCount()
+  virtual PClip const& GetChild(int n) const = 0;
 
 };
 

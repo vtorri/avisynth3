@@ -29,6 +29,10 @@
 namespace avs { namespace filters { namespace resize { namespace horizontal {
 
 
+void resize_horizontal_rgb32_mmx_nasm
+    (BYTE const* src_ptr, BYTE * dst_ptr, int dst_width, int const *pptr, int count, int y, int src_pitch, int pad);
+
+
 
 void RGB32::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
 {
@@ -36,15 +40,14 @@ void RGB32::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
   CWindowPtr src = source.ReadFrom(NOT_PLANAR);
   WindowPtr dst = target.WriteTo(NOT_PLANAR);  
   
-
   int count = GetPattern().count();       //coeff count
   int const * pptr = GetPattern().get();  //pattern ptr
-    
+
+
+#if defined(_INTEL_ASM) && ! defined(_FORCE_NASM)
+
   int y = dst.height;                     //y loop counter
   int pad = dst.padValue();               //padding from end of dst row to start of next one
-
-
-#ifdef _INTEL_ASM
 
   __asm
   {
@@ -117,8 +120,11 @@ void RGB32::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
   }
 
 #else
-#error "resize horizontal RGB32: missing code path"
-#endif //_INTEL_ASM
+
+  //use nasm code
+  resize_horizontal_rgb32_mmx_nasm(src.ptr, dst.ptr, dst.width, pptr, count, dst.height, src.pitch, dst.padValue());
+
+#endif //defined(_INTEL_ASM) && ! defined(_FORCE_NASM)
 
 }
 

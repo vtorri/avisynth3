@@ -30,7 +30,14 @@
 namespace avs { namespace filters { namespace resize { namespace horizontal {
 
 
-  
+//asm equivalent code
+extern "C" void resize_horizontal_yuy2_mmx_nasm(BYTE const* src_ptr, BYTE * dst_ptr, int src_width,
+    BYTE * tempY, BYTE * tempUV, int const* pptrUV, int const* pptrY, int countY, int countUV, int x);
+
+extern "C" void emms_();
+
+
+
 void YUY2::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
 {
 
@@ -54,11 +61,11 @@ void YUY2::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
   
   for( int y = dst.height; y-- > 0; src.to(0, 1), dst.to(0, 1) )
   {
+
+#if defined(_INTEL_ASM) && ! defined(_FORCE_NASM)
+
     int x = dst.width;
     BYTE * dstp = dst.ptr;
-
-
-#ifdef _INTEL_ASM
 
     __asm
     {
@@ -198,14 +205,31 @@ void YUY2::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
       jnz         xloop
     }
 
-#else
-#error "resize horizontal YUY2: missing code path"
-#endif //_INTEL_ASM
+#else 
+
+  //use nasm code
+  resize_horizontal_yuy2_mmx_nasm(src.ptr, dst.ptr, src.width, tempY, tempUV,
+			     pptrUV, pptrY, countY, countUV, dst.width);
+
+#endif // defined(_INTEL_ASM) && ! defined(_FORCE_NASM)
 
   }//for
 
+
 #ifdef _INTEL_ASM
+
   __asm { emms }
+
+#else
+  #ifdef _ATT_ASM
+
+  __asm __volatile ("emms;":::"memory");
+
+  #else
+
+  emms_();
+
+  #endif //_ATT_ASM
 #endif
 
 }

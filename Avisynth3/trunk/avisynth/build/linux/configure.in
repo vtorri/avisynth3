@@ -805,7 +805,7 @@ echo " OS..................: $target_os"
 echo
 echo " Core debug mode.....: $core_debug_mode"
 echo " FFMPEG debug mode...: $ffmpeg_debug_mode"
-echo " ASM support.........: $use_asm"
+echo " ASM support.........: $assembly"
 echo " FFMPEG support......: $ffmpeg_enable"
 echo
 echo " Install path........: $prefix"

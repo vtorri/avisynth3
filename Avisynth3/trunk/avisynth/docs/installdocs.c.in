@@ -59,6 +59,15 @@ export LD_LIBRARY_PATH="/usr/local/lib"
 @endcode
 just before the last line (which should be cd "$HOME")
 
+- setting PATH variables
+
+Add to the 'path variables' the folders C:/Msys/1.0/local/bin, C:/Msys/1.0/local/lib and C:/Msys/1.0/mingw/bin
+
+For W2K for example : go to the desktop, right click on 'My Computer' -> Properties -> Advanced tab -> Environment Variables -> select the Variable 'path' -> edit -> add the two folders above:
+
+***;C:/Msys/1.0/bin;C:/Msys/1.0/mingw/bin
+
+
 - Finally, check whether Msys and MinGW are installed correctly:\n\n
 W2K: go to the desktop, double click on 'MSYS'. The MINGW32 terminal (or shell) will pop up, and you will see something like this\n\n
 @code

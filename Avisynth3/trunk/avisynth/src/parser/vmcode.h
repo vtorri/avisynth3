@@ -25,10 +25,7 @@
 #define __AVS_PARSER_VMCODE_H__
 
 //avisynth include
-#include "stackoperation.h"
-
-//boost include
-//#include <boost/function.hpp>
+#include "vmoperation.h"
 
 //stl include
 #include <vector>
@@ -39,10 +36,15 @@ namespace avs { namespace parser {
 
 
 
+/////////////////////////////////////////////////////////////////////////////
+//  VMCode
+//
+//  code for the virtual machine
+//
 class VMCode
 {
 
-  typedef std::vector<StackOperation> OperationVector;
+  typedef std::vector<VMOperation> OperationVector;
 
   OperationVector code_;
 
@@ -51,7 +53,7 @@ public:  //structors
 
   VMCode() { }
 
-  VMCode(StackOperation const& op) 
+  VMCode(VMOperation const& op) 
   {
     assert( ! op.empty() );
     code_.push_back(op);
@@ -62,7 +64,7 @@ public:  //structors
 
 public:  
 
-  VMCode& operator+=(StackOperation const& op) 
+  VMCode& operator+=(VMOperation const& op) 
   { 
     assert( ! op.empty() );
     code_.push_back(op); 
@@ -76,31 +78,16 @@ public:
   }
 
 
-  void operator()(Stack& stack) const
+  void operator()(VMState& state) const
   {
     for( OperationVector::const_iterator it = code_.begin(); it != code_.end(); ++it )
-      (*it)(stack);
+      (*it)(state);
   }
 
   int size() const { return code_.size(); }
+
 };
 
-
-/*
-struct TypedCode
-{
-
-  VMCode code;
-  char type;
-
-  TypedCode& operator=(TypedOp const& typedOp)
-  {
-    code = (VMCode() += typedOp.op);
-    type = typedOp.type;
-    return *this;
-  }
-
-};*/
 
 typedef std::pair<VMCode, char> TypedCode;
 

@@ -43,6 +43,13 @@ struct Combine
   static linker::core::Function stackVertical;
   static linker::core::Function stackHorizontal;
 
+
+private:  //functions register method
+
+  static void RegisterAll(linker::core::Plugin& core);
+
+  friend class linker::core::Plugin;  //so can call the above
+
 };
 
 

@@ -24,6 +24,7 @@
 //avisynth includes
 #include "convert.h"
 #include "../parser/adapt.h"
+#include "../linker/core/plugin.h"
 #include "../filters/convert/torgb24.h"
 
 
@@ -36,6 +37,11 @@ using linker::core::Function;
 
 Function Convert::toRGB24( 'c', "ConvertToRGB24", "c", adapt( &filters::convert::ToRGB24::Create ) );
 
+
+void functions::Convert::RegisterAll(linker::core::Plugin& core)
+{
+  core.Register(&toRGB24);
+}
 
 
 } } //namespace avs::functions

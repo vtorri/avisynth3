@@ -42,6 +42,13 @@ struct Convert
 
   static linker::core::Function toRGB24;
 
+
+private:  //functions register method
+
+  static void RegisterAll(linker::core::Plugin& core);
+
+  friend class linker::core::Plugin;  //so can call the above
+
 };
 
 

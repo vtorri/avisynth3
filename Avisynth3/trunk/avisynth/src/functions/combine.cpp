@@ -24,6 +24,7 @@
 //avisynth includes
 #include "combine.h"
 #include "../parser/adapt.h"
+#include "../linker/core/plugin.h"
 #include "../filters/combine/stack/vertical.h"
 #include "../filters/combine/stack/horizontal.h"
 
@@ -38,5 +39,11 @@ using linker::core::Function;
 Function Combine::stackVertical( 'c', "StackVertical", "cc", adapt( filters::stack::Vertical::Creator() ) );
 Function Combine::stackHorizontal( 'c', "StackHorizontal", "cc", adapt( filters::stack::Horizontal::Creator() ) );
 
+
+void Combine::RegisterAll(linker::core::Plugin& core)
+{
+  core.Register(&stackVertical);
+  core.Register(&stackHorizontal);
+}
 
 } } //namespace avs::functions

@@ -25,6 +25,7 @@
 #include "edit.h"
 #include "../parser/adapt.h"
 #include "../filters/edit/trim.h"
+#include "../linker/core/plugin.h"
 
 
 namespace avs { namespace functions {
@@ -35,6 +36,12 @@ using linker::core::Function;
 
   
 Function Edit::trim( 'c', "Trim", "cii", adapt( filters::Trim::Creator() ) );
+
+
+void Edit::RegisterAll(linker::core::Plugin& core)
+{
+  core.Register(&trim);
+}
 
 
 } } //namespace avs::functions

@@ -24,6 +24,7 @@
 //avisynth includes
 #include "audio.h"
 #include "../parser/adapt.h"
+#include "../linker/core/plugin.h"
 #include "../filters/audio/killaudio.h"
 #include "../filters/audio/killvideo.h"
 
@@ -37,6 +38,13 @@ using linker::core::Function;
   
 Function Audio::killAudio( 'c', "KillAudio", "c", adapt( filters::KillAudio::Creator() ) );
 Function Audio::killVideo( 'c', "KillVideo", "c", adapt( filters::KillVideo::Creator() ) );
+
+
+void Audio::RegisterAll(linker::core::Plugin& core)
+{
+  core.Register(&killAudio);
+  core.Register(&killVideo);
+}
 
 
 } } //namespace avs::functions

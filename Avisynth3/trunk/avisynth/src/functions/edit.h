@@ -42,6 +42,13 @@ struct Edit
 
   static linker::core::Function trim;
 
+
+private:  //functions register method
+
+  static void RegisterAll(linker::core::Plugin& core);
+
+  friend class linker::core::Plugin;  //so can call the above
+
 };
 
 

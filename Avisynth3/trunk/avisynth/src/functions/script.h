@@ -43,6 +43,13 @@ struct Script
   static linker::core::Function sinus;
   static linker::core::Function cosinus;
 
+
+private:  //functions register method
+
+  static void RegisterAll(linker::core::Plugin& core);
+
+  friend class linker::core::Plugin;  //so can call the above
+
 };
 
 

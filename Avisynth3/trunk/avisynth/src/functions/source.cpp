@@ -24,6 +24,7 @@
 //avisynth includes
 #include "source.h"
 #include "../parser/adapt.h"
+#include "../linker/core/plugin.h"
 #include "../filters/source/colorbars.h"
 
 
@@ -37,5 +38,10 @@ using linker::core::Function;
 
 Function Source::colorBars( 'c', "ColorBars", "ii", adapt( &filters::ColorBars::Create ) );
 
+
+void Source::RegisterAll(linker::core::Plugin& core)
+{
+  core.Register(&colorBars);
+}
 
 } } //namespace avs::functions

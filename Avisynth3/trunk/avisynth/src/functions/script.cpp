@@ -24,6 +24,7 @@
 //avisynth includes
 #include "script.h"
 #include "../parser/adapt.h"
+#include "../linker/core/plugin.h"
 
 //boost include
 #include <cmath>
@@ -43,5 +44,11 @@ inline double cos(double value) { return std::cos(value); }
 Function Script::sinus( 'd', "sin", "d", adapt( &sin ) );
 Function Script::cosinus( 'd', "cos", "d", adapt( &cos ) );
     
+
+void Script::RegisterAll(linker::core::Plugin& core)
+{
+  core.Register(&sinus);
+  core.Register(&cosinus);
+}
 
 } } //namespace avs::functions

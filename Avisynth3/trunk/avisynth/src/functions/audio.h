@@ -43,6 +43,13 @@ struct Audio
   static linker::core::Function killAudio;
   static linker::core::Function killVideo;
 
+
+private:  //functions register method
+
+  static void RegisterAll(linker::core::Plugin& core);
+
+  friend class linker::core::Plugin;  //so can call the above
+
 };
 
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -38,16 +38,19 @@ CPVideoFrame ISSE::MakeFrame(CPVideoFrame const& source) const
   WindowPtr wp = frame->WriteTo(NOT_PLANAR);
 
   	
-  static __int64 const norm = 0x0080000000800000;
+  static int64 const norm = 0x0080000000800000LL;
 
   int y = wp.height;
   int x = wp.width >> 2;   //2 pixels (4 bytes) per x loop
 
   int modulo = wp.padValue();
 
- 	__int64 hue64 = (__int64(Cos)<<48) + (__int64(-Sin)<<32) + (__int64(Sin)<<16) + __int64(Cos);
-	__int64 satcont64 = (__int64(Sat)<<48) + (__int64(Cont)<<32) + (__int64(Sat)<<16) + __int64(Cont);
-	__int64 bright64 = (__int64(Bright_p16)<<32) + __int64(Bright_p16);
+ 	int64 hue64 = (int64(Cos)<<48) + (int64(-Sin)<<32) + (int64(Sin)<<16) + int64(Cos);
+	int64 satcont64 = (int64(Sat)<<48) + (int64(Cont)<<32) + (int64(Sat)<<16) + int64(Cont);
+	int64 bright64 = (int64(Bright_p16)<<32) + int64(Bright_p16);
+
+
+#ifdef _INTEL_ASM
 
 	 __asm
    {
@@ -94,6 +97,10 @@ CPVideoFrame ISSE::MakeFrame(CPVideoFrame const& source) const
 
  		emms
  	}
+
+#else
+#error "Tweak YUY2 ISSE : missing code path"
+#endif //_INTEL_ASM
 
   return frame;
 }

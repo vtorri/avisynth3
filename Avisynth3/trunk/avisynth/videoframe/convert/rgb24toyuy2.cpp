@@ -22,39 +22,34 @@
 
 
 //avisynth includes
-#include "../yuy2videoframe.h"
-#include "../rgb24videoframe.h"
-#include "../../colorspace/yuy2.h"
+#include "../vframe_rgb24.h"
+#include "../vframe_yuy2.h"
+#include "../../colorspace.h"
 
 
 namespace avs {
 
 
-YUY2VideoFrame::YUY2VideoFrame(const RGB24VideoFrame& other)
-  : InterleavedVideoFrame( CS::YUY2::instance(), other )
+VideoFrame::YUY2::YUY2(RGB24 const& source)
+  : Interleaved( ColorSpace::yuy2(), source )
 {
 
-  CWindowPtr src = other.GetMain().GetReadPtr();
-  WindowPtr dst = GetMain().GetWidth();
+  CWindowPtr src = source.GetMain().GetReadPtr();
+  WindowPtr dst = GetMain().GetWritePtr();
 
-  const Dimension dim = GetDimension();
+  src.to(0, src.height - 1);           //rgb is upside down
 
-  src.to(0, dim.GetHeight() - 1);           //rgb is upside down
+  static int const cyb = int(0.114 * 219 / 255 * 65536 + 0.5);
+  static int const cyg = int(0.587 * 219 / 255 * 65536 + 0.5);
+  static int const cyr = int(0.299 * 219 / 255 * 65536 + 0.5);
 
-  const int cyb = int(0.114*219/255*65536+0.5);
-  const int cyg = int(0.587*219/255*65536+0.5);
-  const int cyr = int(0.299*219/255*65536+0.5);
 
-  const int yuv_offset = dst->GetPitch() - dst->GetRowSize();
-  const int rgb_offset = -src->GetPitch() - src->GetRowSize();
-  const int rgb_inc = ((src_cs&VideoInfo::CS_BGR32)==VideoInfo::CS_BGR32) ? 4 : 3;
-
-  for ( int y = dim.GetHeight(); y-- > 0; src.to(0, -1), dst.to(0, 1) ) 
+  for ( int y = src.height; y-- > 0; src.to(0, -1), dst.to(0, 1) ) 
   {
     BYTE * yuv = dst.ptr;
-    const BYTE * rgb = src.ptr;
+    BYTE const * rgb = src.ptr;
 
-    for ( int x = dim.GetWidth()>>1; x-- > 0; yuv += 4, rgb += 3 ) 
+    for ( int x = src.width / 3; x-- > 0; yuv += 4, rgb += 6 ) 
     {
       // y1 and y2 can't overflow
       int y1 = ( cyb * rgb[0] + cyg * rgb[1] + cyr * rgb[2] + 0x108000 ) >> 16;

@@ -25,7 +25,10 @@
 #define __AVS_KEY_H__
 
 //avisynth include
-#include "forward.h"      //for PKey
+#include "forward.h"             //for PKey typedef
+
+//boost include
+#include <boost/shared_ptr.hpp>  //so its defined 
 
 
 namespace avs {

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -28,15 +28,9 @@
 #include "forward.h"
 #include "../define.h"    //for AVS_NOVTABLE macro
 
-//boost include
+//boost includes
+#include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
-
-
-#ifdef _MSC_VER
-//definitely get rid of warning 4250 : MI dominance decisions
-#pragma warning (disable : 4250)  
-#endif //_MSC_VER
-
 
 
 namespace avs {

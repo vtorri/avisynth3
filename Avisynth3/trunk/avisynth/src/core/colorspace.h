@@ -29,10 +29,12 @@
 #include "forward.h"
 #include "frametype.h"
 #include "../define.h"             //for AVS_NOVTABLE
+#include "cow_shared_ptr.h"        //so PVideoFrame is defined
 #include "geometry/vecteur.h"
 #include "geometry/dimension.h"
 
-//boost include
+//boost includes
+#include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
 

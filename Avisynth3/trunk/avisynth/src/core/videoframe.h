@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,9 @@
 #include "forward.h"
 #include "frametype.h"
 #include "window_ptr.h"
+
+//boost include
+#include <boost/shared_ptr.hpp>    //so ptr typedefs from forward.h are defined
 
 //stl include
 #include <vector>

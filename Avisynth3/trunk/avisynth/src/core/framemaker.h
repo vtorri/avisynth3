@@ -25,8 +25,11 @@
 #define __AVS_FRAMEMAKER_H__
 
 //avisynth includes
-#include "forward.h"          //for CPVideoFrame
-#include "../define.h"        //for AVS_NOVTABLE
+#include "forward.h"             //for CPVideoFrame
+#include "../define.h"           //for AVS_NOVTABLE
+
+//boost include
+#include <boost/shared_ptr.hpp>  //so CPVideoFrame is defined
 
 
 namespace avs {

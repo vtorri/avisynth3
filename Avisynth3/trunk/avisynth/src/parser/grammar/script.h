@@ -42,7 +42,7 @@ struct Script : spirit::closure
     , boost::reference_wrapper<VarTable>
     , boost::reference_wrapper<boost::optional<int> >
     , boost::reference_wrapper<VarTable>
-    , boost::reference_wrapper<FunctionTable>
+    , boost::reference_wrapper<function::Table>
     >
 {
   member1 value;
@@ -55,18 +55,14 @@ struct Script : spirit::closure
 
 struct Function : spirit::closure
     < Function
-    , char
-    , std::string
-    , std::string
+    , function::FunctionId
     , VarTable
     , StatementCode
     >
 {
-  member1 type;
-  member2 name;
-  member3 prototype;
-  member4 localTable;
-  member5 code;
+  member1 ident;
+  member2 localTable;
+  member3 code;
 };
 
 
@@ -96,7 +92,6 @@ struct Script : public spirit::grammar<Script, closure::Script::context_t>
     {
 
       using namespace lazy;
-      using namespace functor;  
       using namespace phoenix;
 
       top
@@ -113,23 +108,26 @@ struct Script : public spirit::grammar<Script, closure::Script::context_t>
       function
         =   Types::instance
               [
-                function.type = arg1
+                first(function.ident) = arg1
               ]
           >>  name
               [
-                function.name = construct_<std::string>(arg1, arg2)
+                second(function.ident) = construct_<std::string>(arg1, arg2)
               ]
           >>  '('
           >>  !(  arg   %   ','   )
-          >>  ')'
+          >>  spirit::ch_p(')')
+              [
+                bind(&function::Table::DeclareScriptFunction)( unwrap(self.functionTable), function.ident )
+              ]
           >>  functionBody
               [
                 function.code = arg1
               ]
           >>  spirit::eol_p
               [
-                bind(&FunctionTable::AddScriptFunction)
-                    ( unwrap(self.functionTable), function.type, function.name, function.prototype, function.code )                    
+                bind(&function::Table::DefineScriptFunction)
+                    ( unwrap(self.functionTable), function.ident, function.code )                    
               ]
           ;
 
@@ -141,14 +139,14 @@ struct Script : public spirit::grammar<Script, closure::Script::context_t>
           >>  (   name - spirit::lazy_p( function.localTable )  )
               [
                 bind(&VarTable::DefineVar)(function.localTable, construct_<std::string>(arg1, arg2), arg.value),
-                function.prototype += arg.value
+                third(function.ident) += arg.value
               ]
           ;
 
       functionBody
           =   *   spirit::eol_p
           >>  '{'
-          >> *(   statement( CodeCouple(), wrap(function.localTable), wrap(functionBody.last), self.globalTable, self.functionTable, function.type ) 
+          >> *(   statement( CodeCouple(), wrap(function.localTable), wrap(functionBody.last), self.globalTable, self.functionTable, first(function.ident) ) 
                   [
                     functionBody.code += arg1
                   ]

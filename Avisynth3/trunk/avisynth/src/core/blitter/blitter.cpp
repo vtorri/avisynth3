@@ -21,9 +21,9 @@
 // General Public License cover the whole combination.
 
 
-//avisynth includes
+//avisynth include
 #include "memcopy.h"
-#include "../bufferwindow.h"
+
 
 namespace avs {
 

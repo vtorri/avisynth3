@@ -49,6 +49,10 @@ BOOST_VERSION_MAJOR="1"
 BOOST_VERSION_MINOR="32"
 BOOST_VERSION="${BOOST_VERSION_MAJOR}_${BOOST_VERSION_MINOR}"
 
+dnl Gstreamer version requirement
+GST_REQS=0.8.7.1
+GSTPLUG_REQS=0.8.6.1
+
 dnl Default CFLAGS -- Big impact on overall speed
 our_cxxflags_defaults="-O2 -Wall"
 our_cxxflags_defaults="$our_cxxflags_defaults -fstrength-reduce"
@@ -145,6 +149,22 @@ fi
 dnl Now we can safely check for the C++ compiler
 AC_LANG([C++])
 AC_PROG_CXXCPP([${gpp}])
+
+dnl ==========================================================================
+dnl Check for the visibility feature of GCC 4.0
+dnl ==========================================================================
+
+GCC_VISIBILITY_FEATURE=
+AC_MSG_CHECKING([whether ${CXX} supports -fvisibility=hidden])
+save_CXXFLAGS=${CXXFLAGS}
+CXXFLAGS="$CXXFLAGS -fvisibility=hidden"
+AC_TRY_LINK(
+   [],
+   [return 0;],
+   [HAVE_GCC_VISIBILITY_FEATURE="-DHAVE_GCC_VISIBILITY_FEATURE"
+    visibility="yes"],
+   [visibility="no"])
+CXXFLAGS=${save_CXXFLAGS}
 
 dnl ==========================================================================
 dnl Check for the install program
@@ -517,6 +537,25 @@ AM_CHECK_FFMPEG(
    [our_cxxflags_defaults="-ansi ${our_cxxflags_defaults}"])
 
 dnl ==========================================================================
+dnl Gstreamer header and library files
+dnl ==========================================================================
+
+GST_MAJORMINOR=0.8
+PKG_CHECK_MODULES(GST, \
+   gstreamer-$GST_MAJORMINOR >= $GST_REQS \
+   gstreamer-gconf-$GST_MAJORMINOR >= $GSTPLUG_REQS \
+   gstreamer-interfaces-$GST_MAJORMINOR >= $GSTPLUG_REQS,
+   HAVE_GSTREAMER="yes", HAVE_GSTREAMER="no")
+
+case "$target_os" in
+   *bsd*|linux*|beos|irix*|solaris*)
+      if test "${ffmpeg_enable}" = "no" && test "${HAVE_GSTREAMER}" = "no" ; then
+         AC_MSG_ERROR([FFMPEG or Gstreamer support are needed when building Avisynth 3.0 on linux])
+      fi
+   ;;
+esac
+
+dnl ==========================================================================
 dnl FREETYPE header and library files
 dnl ==========================================================================
 
@@ -610,6 +649,7 @@ AC_SUBST(ASSEMBLY_EXTENSION)
 AC_SUBST(GENERIC_SOURCES)
 AC_SUBST(ASSEMBLY_SOURCES)
 AC_SUBST(CXX)
+AC_SUBST(HAVE_GCC_VISIBILITY_FEATURE)
 AC_SUBST(LDFLAGS)
 AC_SUBST(CXXFLAGS)
 AC_SUBST(SPECIFIC_CFLAGS)
@@ -652,10 +692,12 @@ echo "------------------------------------------------------------------------"
 echo
 echo " OS..................: $target_os"
 echo
+echo " Visibility feature..: $visibility"
 echo " Core debug mode.....: $core_debug_mode"
 echo " FFMPEG debug mode...: $ffmpeg_debug_mode"
 echo " ASM support.........: $assembly"
 echo " FFMPEG support......: $ffmpeg_enable"
+echo " Gstreamer support...: $HAVE_GSTREAMER"
 echo
 echo " Install path........: $prefix"
 echo

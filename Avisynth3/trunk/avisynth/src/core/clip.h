@@ -72,12 +72,15 @@ public:  //clip general interface
   virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const = 0;  
 
 
-public:  //filter chain simplication method
+public:  //filter chain simplication methods
 
   //attempts to refactor self and its childs (if there is any)
   //into a more compact filter chain
   //a default version is provided (with no refactoring)
-  virtual PClip Simplify() const { return shared_from_this(); }
+  virtual PClip InitialSimplify() const { return shared_from_this(); }
+
+
+  virtual PClip FinalSimplify() const { return shared_from_this(); }
 
 };//Clip
 

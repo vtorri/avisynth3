@@ -30,14 +30,24 @@
 #include "../../../core/videoinfo.h"
 #include "../../../core/exception/generic.h"
 
-//boost include
-#include <boost/bind.hpp>
-
 //stl include
 #include <algorithm>     //for std::min
 
 
 namespace avs { namespace filters { namespace source {
+
+
+namespace {
+
+
+//stream deleter to use with boost::shared_ptr
+struct ACMSTreamCloser
+{
+  void operator()(HACMSTREAM stream) const { acmStreamClose(stream, 0); }
+};
+
+
+} //namespace anonymous
 
 
 
@@ -69,7 +79,7 @@ ACMAudioDecompressor::ACMAudioDecompressor(RawAudio const& src, vfw::PWaveFormat
   if ( acmStreamOpen(&hACMStream, NULL, wfe.get(), output.get(), NULL, 0, 0, ACM_STREAMOPENF_NONREALTIME) != 0 )
     throw exception::Generic("Error initializing audio stream decompression");
  
-  hACMStream_.reset( hACMStream, boost::bind(acmStreamClose, _1, 0) );
+  hACMStream_.reset( hACMStream, ACMSTreamCloser() );
 
   DWORD outputBufferSize = 0;
   //gets size of output buffer for given size of input buffer

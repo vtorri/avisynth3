@@ -437,13 +437,10 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath=".\src\core\block\block.cpp">
 				</File>
 				<File
-					RelativePath=".\src\core\block\deleter.cpp">
+					RelativePath=".\src\core\block\holder.h">
 				</File>
 				<File
-					RelativePath=".\src\core\block\deleter.h">
-				</File>
-				<File
-					RelativePath=".\src\core\block\owneddeleter.h">
+					RelativePath=".\src\core\block\ownedholder.h">
 				</File>
 				<File
 					RelativePath=".\src\core\block\recycler.cpp">
@@ -451,6 +448,38 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				<File
 					RelativePath=".\src\core\block\recycler.h">
 				</File>
+				<Filter
+					Name="Deleter"
+					Filter="">
+					<File
+						RelativePath=".\src\core\block\deleter\base.h">
+					</File>
+					<File
+						RelativePath=".\src\core\block\deleter\ownedbase.h">
+					</File>
+					<File
+						RelativePath=".\src\core\block\deleter\ownedstandard.h">
+					</File>
+					<File
+						RelativePath=".\src\core\block\deleter\standard.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="Holder"
+					Filter="">
+					<File
+						RelativePath=".\src\core\block\holder\base.h">
+					</File>
+					<File
+						RelativePath=".\src\core\block\holder\ownedbase.h">
+					</File>
+					<File
+						RelativePath=".\src\core\block\holder\ownedstandard.h">
+					</File>
+					<File
+						RelativePath=".\src\core\block\holder\standard.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="BufferWindow"
@@ -665,6 +694,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 				<File
 					RelativePath=".\src\core\geometry\dimension.h">
+				</File>
+				<File
+					RelativePath=".\src\core\geometry\fixed_point.h">
 				</File>
 				<File
 					RelativePath=".\src\core\geometry\vecteur.h">

@@ -75,10 +75,10 @@ void * Recycler::mem_alloc(int size)
   if ( raw == NULL )
     throw std::bad_alloc();
 
-  BYTE * result = (BYTE *)AlignValue(int(raw));
+  BYTE * result = (BYTE *)AlignValue(int(raw + 1));   //align raw + 1 (need a byte to store shift)
 
-  *(result - 1) = result - raw;
-#endif
+  *(result - 1) = result - raw;   //store shift value
+#endif //_MSC_VER
 
   return result;
 }
@@ -90,7 +90,7 @@ void Recycler::mem_free(void * ptr)
   _aligned_free(ptr);
 #else
   free( (BYTE *)ptr - *((BYTE *)ptr - 1) );
-#endif
+#endif //_MSC_VER
 }
 
 

@@ -24,16 +24,23 @@
 //avisynth include
 #include "threadclock.h"
 
-//windows include
-#include <windows.h>
-#include <winbase.h>
+#ifdef _WIN32
+//windows includes
+# include <windows.h>
+# include <winbase.h>
+#else
+//posix include
+# include <pthread.h>
+#endif
 
 
 namespace avs { namespace timing {
 
 
+
 int64 ThreadClock::operator ()() const
 {
+#ifdef _WIN32
 
   union
   {
@@ -45,6 +52,13 @@ int64 ThreadClock::operator ()() const
 
   return kt.i64 + ut.i64;
 
+#else
+
+  struct timespec tp;
+  if (clock_gettime(CLOCK_REALTIME, &tp) == -1) return 0LL;
+  else return (1000000000LL*tp.tv_sec + tp.tv_nsec);
+
+#endif  //_WIN32
 }
 
 

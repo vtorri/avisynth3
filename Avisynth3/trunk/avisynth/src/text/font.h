@@ -60,6 +60,14 @@ public:
 
   HFONT operator*() const { return *pFont_; }
 
+
+private:  //HFONTDeleter struct
+
+  struct HFONTDeleter
+  {
+    void operator()(void * pFont) const { DeleteObject( *(HFONT *)pFont ); }
+  };
+
 };
 
 

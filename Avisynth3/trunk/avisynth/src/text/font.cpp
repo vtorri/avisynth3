@@ -25,6 +25,9 @@
 #include "font.h"
 #include "../core/exception.h"
 
+//boost include
+#include <boost/bind.hpp>
+
 
 namespace avs { namespace text {
 
@@ -32,11 +35,14 @@ namespace avs { namespace text {
 
 Font::Font(std::string const& name, int size, bool bold, bool italic)
 {
-  HFONT hfont = CreateFont( size, 0, 0, 0, bold ? FW_BOLD : FW_NORMAL,
+  //try new before creating so thazt we don't miss a DeleOBject through bad_alloc
+  HFONT * pFont = new HFONT(  CreateFont( size, 0, 0, 0, bold ? FW_BOLD : FW_NORMAL, 
                      italic, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
-                     CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE | DEFAULT_PITCH, name.c_str() );
-  if ( hfont == NULL )
+                     CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE | DEFAULT_PITCH, name.c_str() )  );
+  if ( *pFont == NULL )
     throw Exception("Unable to create font");
+
+  pFont_.reset( pFont, HFONTDeleter() );
 }
 
 

@@ -1,4 +1,4 @@
-// Avisynth v2.5.  Copyright 2002 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2002 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -35,11 +35,10 @@
 
 
 
-
 #ifndef __AVISYNTH_H__
 #define __AVISYNTH_H__
 
-enum { AVISYNTH_INTERFACE_VERSION = 2 };
+enum { AVISYNTH_INTERFACE_VERSION = 3 };
 
 
 /* Define all types necessary for interfacing with avisynth.dll
@@ -60,6 +59,9 @@ typedef long			PixCoord;
 typedef	long			PixDim;
 typedef	long			PixOffset;
 
+//STL relatives include
+#include <string>
+using namespace std;
 
 /* Compiler-specific crap */
 
@@ -92,146 +94,13 @@ typedef	long			PixOffset;
 #define FRAME_ALIGN 16 
 // Default frame alignment is 16 bytes, to help P4, when using SSE2
 
-// The VideoInfo struct holds global information about a clip (i.e.
-// information that does not depend on the frame number).  The GetVideoInfo
-// method in IClip returns this struct.
 
-// Audio Sample information
-typedef float SFLOAT;
 
-enum {SAMPLE_INT8  = 1<<0,
-        SAMPLE_INT16 = 1<<1, 
-        SAMPLE_INT24 = 1<<2,    // Int24 is a very stupid thing to code, but it's supported by some hardware.
-        SAMPLE_INT32 = 1<<3,
-        SAMPLE_FLOAT = 1<<4};
+#include "videoinfo.h"
+#include "refcounted.h"
 
-enum {
-   PLANAR_Y=1<<0,
-   PLANAR_U=1<<1,
-   PLANAR_V=1<<2,
-   PLANAR_ALIGNED=1<<3,
-   PLANAR_Y_ALIGNED=PLANAR_Y|PLANAR_ALIGNED,
-   PLANAR_U_ALIGNED=PLANAR_U|PLANAR_ALIGNED,
-   PLANAR_V_ALIGNED=PLANAR_V|PLANAR_ALIGNED,
-  };
 
-struct VideoInfo {
-  int width, height;    // width=0 means no video
-  unsigned fps_numerator, fps_denominator;
-  int num_frames;
-  // This is more extensible than previous versions. More properties can be added seeminglesly.
 
-  // Colorspace properties.
-  enum {
-    CS_BGR = 1<<28,  
-    CS_YUV = 1<<29,
-    CS_INTERLEAVED = 1<<30,
-    CS_PLANAR = 1<<31
-  };
-
-  // Specific colorformats
-  enum { CS_UNKNOWN = 0,
-         CS_BGR24 = 1<<0 | CS_BGR | CS_INTERLEAVED,
-         CS_BGR32 = 1<<1 | CS_BGR | CS_INTERLEAVED,
-         CS_YUY2 = 1<<2 | CS_YUV | CS_INTERLEAVED,
-         CS_YV12 = 1<<3 | CS_YUV | CS_PLANAR,  // y-v-u, planar
-         CS_I420 = 1<<4 | CS_YUV | CS_PLANAR,  // y-u-v, planar
-         CS_IYUV = 1<<4 | CS_YUV | CS_PLANAR  // same as above
-         };
-  int pixel_type;                // changed to int as of 2.5
-  
-
-  int audio_samples_per_second;   // 0 means no audio
-  int sample_type;                // as of 2.5
-  __int64 num_audio_samples;      // changed as of 2.5
-  int nchannels;                  // as of 2.5
-
-  // Imagetype properties
-
-  int image_type;
-
-  enum {
-    IT_BFF = 1<<0,
-    IT_TFF = 1<<1,
-    IT_FIELDBASED = 1<<2
-  };
-
-  // useful functions of the above
-  bool HasVideo() const { return (width!=0); }
-  bool HasAudio() const { return (audio_samples_per_second!=0); }
-  bool IsRGB() const { return !!(pixel_type&CS_BGR); }
-  bool IsRGB24() const { return (pixel_type&CS_BGR24)==CS_BGR24; } // Clear out additional properties
-  bool IsRGB32() const { return (pixel_type & CS_BGR32) == CS_BGR32 ; }
-  bool IsYUV() const { return !!(pixel_type&CS_YUV ); }
-  bool IsYUY2() const { return (pixel_type & CS_YUY2) == CS_YUY2; }  
-  bool IsYV12() const { return ((pixel_type & CS_YV12) == CS_YV12)||((pixel_type & CS_I420) == CS_I420); }
-  bool IsColorSpace(int c_space) const { return ((pixel_type & c_space) == c_space); }
-  bool Is(int property) const { return ((pixel_type & property)==property ); }
-  bool IsPlanar() const { return !!(pixel_type & CS_PLANAR); }
-  bool IsFieldBased() const { return !!(image_type & IT_FIELDBASED); }
-  bool IsParityKnown() const { return ((image_type & IT_FIELDBASED)&&(image_type & (IT_BFF||IT_TFF))); }
-  bool IsBFF() const { return !!(image_type & IT_BFF); }
-  bool IsTFF() const { return !!(image_type & IT_TFF); }
-  
-  bool IsVPlaneFirst() const {return ((pixel_type & CS_YV12) == CS_YV12); }  // Don't use this 
-  int BytesFromPixels(int pixels) const { return pixels * (BitsPerPixel()>>3); }   // Will not work on planar images, but will return only luma planes
-  int RowSize() const { return BytesFromPixels(width); }  // Also only returns first plane on planar images
-  int BMPSize() const { if (IsPlanar()) {int p = height * ((RowSize()+3) & ~3); p+=p>>1; return p;  } return height * ((RowSize()+3) & ~3); }
-  __int64 AudioSamplesFromFrames(__int64 frames) const { return ((__int64)(frames) * audio_samples_per_second * fps_denominator / fps_numerator); }
-  int FramesFromAudioSamples(__int64 samples) const { return (int)(samples * (__int64)fps_numerator / (__int64)fps_denominator / (__int64)audio_samples_per_second); }
-  __int64 AudioSamplesFromBytes(__int64 bytes) const { return bytes / BytesPerAudioSample(); }
-  __int64 BytesFromAudioSamples(__int64 samples) const { return samples * BytesPerAudioSample(); }
-  int AudioChannels() const { return nchannels; }
-  int SampleType() const{ return sample_type;}
-  int SamplesPerSecond() const { return audio_samples_per_second; }
-  int BytesPerAudioSample() const { return nchannels*BytesPerChannelSample();}
-  void SetFieldBased(bool isfieldbased)  { if (isfieldbased) image_type|=IT_FIELDBASED; else  image_type&=~IT_FIELDBASED; }
-  void Set(int property)  { image_type|=property; }
-  void Clear(int property)  { image_type&=~property; }
-
-  int BitsPerPixel() const { 
-    switch (pixel_type) {
-      case CS_BGR24:
-        return 24;
-      case CS_BGR32:
-        return 32;
-      case CS_YUY2:
-        return 16;
-      case CS_YV12:
-      case CS_I420:
-        return 12;
-      default:
-        return 0;
-    }
-  }
-  int BytesPerChannelSample() const { 
-    switch (sample_type) {
-    case SAMPLE_INT8:
-      return sizeof(signed char);
-    case SAMPLE_INT16:
-      return sizeof(signed short);
-    case SAMPLE_INT24:
-      return 3;
-    case SAMPLE_INT32:
-      return sizeof(signed int);
-    case SAMPLE_FLOAT:
-      return sizeof(SFLOAT);
-    default:
-      _ASSERTE("Sample type not recognized!");
-      return 0;
-    }
-  }
-
-  // useful mutator
-  void SetFPS(unsigned numerator, unsigned denominator) {
-    unsigned x=numerator, y=denominator;
-    while (y) {   // find gcd
-      unsigned t = x%y; x = y; y = t;
-    }
-    fps_numerator = numerator/x;
-    fps_denominator = denominator/x;
-  }
-};
 
 enum {
   FILTER_TYPE=1,
@@ -254,335 +123,400 @@ enum {  //SUBTYPES
 
 
 
-// VideoFrameBuffer holds information about a memory block which is used
-// for video data.  For efficiency, instances of this class are not deleted
-// when the refcount reaches zero; instead they're stored in a linked list
-// to be reused.  The instances are deleted when the corresponding AVS
-// file is closed.
 
-class VideoFrameBuffer {
-  BYTE* const data;
-  const int data_size;
-  // sequence_number is incremented every time the buffer is changed, so
-  // that stale views can tell they're no longer valid.
-  long sequence_number;
 
-  friend class VideoFrame;
-  friend class Cache;
-  long refcount;
+/********************************************************************************************
+ * Polymorphic VideoFrame class                                                             *
+ ********************************************************************************************
+  VideoFrameBuffer no longer defined in avisynth.h (videoframe.h)
+  VideoFrame still use them, but they are hidden by the VideoFrame API
+  due to architecture changes (3 buffers when planar), you must no longer assume pitchU = pitchV
+  it won't happen often but it can
+  MakeWritable is no longer required : CPVideoFrame are never Writable, nor mutable in any sort
+  PVideoframe are always writable/mutable, and will copy buffers before returning Write Ptr if they are shared
+*/
 
-public:
-  VideoFrameBuffer(int size);
-  VideoFrameBuffer();
-  ~VideoFrameBuffer();
+class VideoFrame;
+typedef smart_ptr<VideoFrame> PVideoFrame;
+typedef smart_ptr_to_cst<VideoFrame> CPVideoFrame;
 
-  const BYTE* GetReadPtr() const { return data; }
-  BYTE* GetWritePtr() { ++sequence_number; return data; }
-  int GetDataSize() { return data_size; }
-  int GetSequenceNumber() { return sequence_number; }
-  int GetRefcount() { return refcount; }
+enum Plane {
+  NOT_PLANAR,
+  PLANAR_Y,
+  PLANAR_U,
+  PLANAR_V
 };
 
+class VideoFrame : public RefCounted {
 
-class IClip;
-class PClip;
-class PVideoFrame;
+public:
+
+  //some typedefs
+  typedef short dimension;  
+  typedef signed char Align;
+
+  //static method to convert index in Plane enum, USE it !!!
+  inline static Plane IndexToYUVPlane(int i) {
+    static Plane planes[] = { PLANAR_Y, PLANAR_U, PLANAR_V };
+    _ASSERTE( i>=0 && i < 3);
+    return planes[i];
+  }
+
+  class NoSuchPlane { }; //exception for inadequate plane requests 
+
+  //some legacy methods, no longer get plane Y when planar
+  dimension GetPitch() const throw(NoSuchPlane) { return GetPitch(NOT_PLANAR); }
+  dimension GetRowSize() const throw(NoSuchPlane) { return GetRowSize(NOT_PLANAR); }
+  dimension GetAlignedRowSize() const throw(NoSuchPlane) { return GetAlignedRowSize(NOT_PLANAR); }
+  dimension GetHeight() const throw(NoSuchPlane) { return GetHeight(NOT_PLANAR); }
+
+  const BYTE * GetReadPtr() const throw(NoSuchPlane) { return GetReadPtr(NOT_PLANAR); }
+  BYTE * GetWritePtr() throw(NoSuchPlane) { return GetWritePtr(NOT_PLANAR); }
+  
+  //new virtual ones
+  virtual dimension GetPitch(Plane plane) const throw(NoSuchPlane) = 0;
+  virtual dimension GetRowSize(Plane plane) const throw(NoSuchPlane) = 0;
+  virtual dimension GetAlignedRowSize(Plane plane) const throw(NoSuchPlane) = 0;
+  virtual dimension GetHeight(Plane plane) const throw(NoSuchPlane) = 0;
+
+  virtual const BYTE * GetReadPtr(Plane plane) const throw(NoSuchPlane) = 0;
+  virtual BYTE * GetWritePtr(Plane plane) throw(NoSuchPlane) = 0;
+  
+  //methods to get some other general infos
+  virtual const ColorSpace& GetColorSpace() const = 0;
+  bool IsPlanar() const { return GetColorSpace().HasFlag(ColorSpace::PLANAR); }  
+  virtual Align GetAlign() const = 0;
+
+  //frames now know about their fieldbased state
+  bool IsFieldBased() const;
+  void SetFieldBased(bool fieldBased);
+
+  //method to get Video width and height, default implementation: not planar case
+  virtual dimension GetVideoHeight() const = 0; 
+  virtual dimension GetVideoWidth() const = 0; 
+
+  //methods used to check that pixels args match Colorspace restrictions
+  //they throw the appropriate error msg when arg are illegal
+  //you are not supposed to use them, all calls are done internally where needed
+  //btw, they don't check sign, just parity and such (sign check are done at a lower level)
+  virtual dimension WidthToRowSize(dimension width) const = 0;
+  virtual dimension HeightCheck(dimension height) const = 0;
+
+  //construction method, moved from IScriptEnvironment
+  static PVideoFrame NewVideoFrame(const VideoInfo& vi, Align align = FRAME_ALIGN);
+  //same as the above but with inheritance of the non volatiles properties
+  virtual PVideoFrame NewVideoFrame(const VideoInfo& vi, Align align = FRAME_ALIGN) const = 0; 
+
+
+  /************************************************************************************
+   *  various ToolBox methods now provided by the VideoFrame API                       *
+   ************************************************************************************/
+
+  //ColorSpace conversion method
+  virtual CPVideoFrame ConvertTo(ColorSpace space) const = 0;
+
+  //Please Note that those dimensions are in PIXELS, and can be negative
+  //positive values crop, negatives increase size, buffers won't be reallocated if possible
+  //if reallocation has to be done, original data is copied at the right place
+  virtual void SizeChange(dimension left, dimension right, dimension top, dimension bottom) = 0;
+
+  //Copy other into self, the coords left and top can be negative
+  //Only the overlapping part is copied
+  virtual void Copy(CPVideoFrame other, dimension left, dimension top) = 0;
+
+  void StackHorizontal(CPVideoFrame other); //implemented using SizeChange and Copy 
+  void StackVertical(CPVideoFrame other);   
+  
+  virtual void FlipVertical() = 0;
+  virtual void FlipHorizontal() = 0;
+
+  virtual void TurnLeft() = 0;  //how do we turn a YUY2 frame !?...
+  virtual void TurnRight() = 0;
+
+  virtual void Blend(CPVideoFrame other, float factor) = 0;
+
+  //what else ???
+
+  /************************************************************************************
+   *  Custom Properties System                                                        *
+   ************************************************************************************/
+
+  //class used as a name/type for properties
+  //use like this: static PropertyName nameOfMyProperty;
+  class PropertyName {
+    char dummy;  //to ensure sizeof > 0, so consecutive instances won't fuck up
+  public:
+    PropertyName() { }
+  };
+
+  //Property class, you can subclass it to add parameters you need
+  //subclass should implement an accurate operator == taking new parameters into account
+  //if your subclass is not made of constant objects, reimplement clone too
+  class Property : public RefCounted {
+    const PropertyName * name;
+    
+  protected:
+    Property(const Property& other) : name(other.name) { }
+    //Property is constant here, so I can return safely this as a clone
+    //REIMPLEMENT if your subclass is mutable
+    virtual RefCounted * clone() const { return const_cast<Property*>(this); } 
+
+  public:
+    Property(const PropertyName& _name) : name(&_name) { }  
+
+    bool IsType(const PropertyName& _name) const { return name == &_name; } //convenience version of IsType
+    bool SameTypeAs(const Property& other) const { return name == other.name; }
+
+    virtual bool IsVolatile() const { return false; }   //properties are sticky by default
+    
+    //virtual == operator, should be reimplemented to take new members into account if subclassed
+    virtual bool operator==(const Property& other) const { return SameTypeAs(other); }
+    //does not yield a total order when subclassing but since multiple instance of a subclass
+    //are not supposed to cohabit it pose no problem.
+    bool operator <(const Property& other) const { return name < other.name; }
+  };
+   
+  typedef smart_ptr_to_cst<Property> CPProperty;  //smart const Property *
+  typedef smart_ptr<Property> PProperty;  //you are not really supposed to use it, but you can
+
+  virtual CPProperty GetProperty(const PropertyName& name) const = 0;
+  virtual void SetProperty(CPProperty prop) = 0;
+  void SetProperty(PProperty prop) { SetProperty(CPProperty(prop)); }  //exists so outside PProperty won't be casted to CPProperty by the call of the above and loses its ref
+  virtual void RemoveProperty(const PropertyName& name) = 0;
+
+protected:
+  //cleanup of all volatiles properties
+  virtual void CleanProperties() = 0;
+  friend class smart_ptr<VideoFrame>; //so it can clean
+
+};
+
+//template specialisations, so properties will be get cleaned correctly
+template <> smart_ptr<VideoFrame>::smart_ptr(smart_ptr_to_cst<VideoFrame>& other) { StealOrClone(other); if (ptr) ((VideoFrame*)ptr)->CleanProperties(); }
+template <> smart_ptr<VideoFrame>::smart_ptr(const smart_ptr_to_cst<T>& other) { Clone(other); if (ptr) ((VideoFrame*)ptr)->CleanProperties(); }
+
+template <> const smart_ptr<VideoFrame>& smart_ptr<VideoFrame>::operator =(smart_ptr_to_cst<VideoFrame>& other) { StealOrClone(other); if (ptr) ((VideoFrame*)ptr)->CleanProperties(); return *this; }
+template <> const smart_ptr<VideoFrame>& smart_ptr<VideoFrame>::operator =(const smart_ptr_to_cst<VideoFrame>& other) { Clone(other);  if (ptr) ((VideoFrame*)ptr)->CleanProperties(); return *this; }
+
+
 class IScriptEnvironment;
-class AVSValue;
-
-
-// VideoFrame holds a "window" into a VideoFrameBuffer.  Operator new
-// is overloaded to recycle class instances.
-
-class VideoFrame {
-  int refcount;
-  VideoFrameBuffer* const vfb;
-  const int offset, pitch, row_size, height, offsetU, offsetV, pitchUV;  // U&V offsets are from top of picture.
-
-  friend class PVideoFrame;
-  void AddRef() { ++refcount; }
-  void Release() { if (refcount==1) --vfb->refcount; --refcount; }
-
-  friend class ScriptEnvironment;
-  friend class Cache;
-
-  VideoFrame(VideoFrameBuffer* _vfb, int _offset, int _pitch, int _row_size, int _height);
-  VideoFrame(VideoFrameBuffer* _vfb, int _offset, int _pitch, int _row_size, int _height, int _offsetU, int _offsetV, int _pitchUV);
-
-  void* operator new(unsigned size);
-// TESTME: OFFSET U/V may be switched to what could be expected from AVI standard!
-public:
-  int GetPitch() const { return pitch; }
-  int GetPitch(int plane) const { switch (plane) {case PLANAR_U: case PLANAR_V: return pitchUV;} return pitch; }
-  int GetRowSize() const { return row_size; }
-  int GetRowSize(int plane) const { 
-    switch (plane) {
-    case PLANAR_U: case PLANAR_V: if (pitchUV) return row_size>>1; else return 0;
-    case PLANAR_U_ALIGNED: case PLANAR_V_ALIGNED: 
-      if (pitchUV) { 
-        int r = ((row_size+FRAME_ALIGN-1)&(~(FRAME_ALIGN-1)) )>>1; // Aligned rowsize
-        if (r<=pitchUV) 
-          return r; 
-        return row_size>>1; 
-      } else return 0;
-    case PLANAR_Y_ALIGNED:
-      int r = (row_size+FRAME_ALIGN-1)&(~(FRAME_ALIGN-1)); // Aligned rowsize
-      if (r<=pitch) 
-        return r; 
-      return row_size;
-    }
-    return row_size; }
-  int GetHeight() const { return height; }
-  int GetHeight(int plane) const {  switch (plane) {case PLANAR_U: case PLANAR_V: if (pitchUV) return height>>1; return 0;} return height; }
-
-  // generally you shouldn't use these three
-  VideoFrameBuffer* GetFrameBuffer() const { return vfb; }
-  int GetOffset() const { return offset; }
-  int GetOffset(int plane) const { switch (plane) {case PLANAR_U: return offsetU;case PLANAR_V: return offsetV;default: return offset;}; }
-
-  // in plugins use env->SubFrame()
-  VideoFrame* Subframe(int rel_offset, int new_pitch, int new_row_size, int new_height) const;
-  VideoFrame* Subframe(int rel_offset, int new_pitch, int new_row_size, int new_height, int rel_offsetU, int rel_offsetV, int pitchUV) const;
-
-
-  const BYTE* GetReadPtr() const { return vfb->GetReadPtr() + offset; }
-  const BYTE* GetReadPtr(int plane) const { return vfb->GetReadPtr() + GetOffset(plane); }
-
-  bool IsWritable() const { return (refcount == 1 && vfb->refcount == 1); }
-
-  BYTE* GetWritePtr() const {
-    if (vfb->GetRefcount()>1) {
-      _ASSERT(FALSE);
-//      throw AvisynthError("Error!");
-    }
-    return IsWritable() ? (vfb->GetWritePtr() + offset) : 0;
-  }
-
-  BYTE* GetWritePtr(int plane) const {
-    if (plane==PLANAR_Y) {
-      if (vfb->GetRefcount()>1) {
-        _ASSERT(FALSE);
-//        throw AvisynthError("Error!");
-      }
-      return IsWritable() ? vfb->GetWritePtr() + GetOffset(plane) : 0;
-    }
-    return vfb->data + GetOffset(plane);
-  }
-
-  ~VideoFrame() { --vfb->refcount; }
-};
-
-enum {
-  CACHE_NOTHING=0,
-  CACHE_RANGE=1 };
 
 // Base class for all filters.
-class IClip {
-  friend class PClip;
-  friend class AVSValue;
-  int refcnt;
-  void AddRef() { ++refcnt; }
-  void Release() { if (!--refcnt) delete this; }
+class IClip : public RefCounted {
+
 public:
-  IClip() : refcnt(0) {}
+
+  enum CachePolicy {
+    CACHE_NOTHING,
+    CACHE_RANGE,
+    CACHE_LAST
+  };
+
+  IClip() {}
 
   virtual int __stdcall GetVersion() { return AVISYNTH_INTERFACE_VERSION; }
   
-  virtual PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env) = 0;
+  virtual CPVideoFrame __stdcall GetFrame(int n) = 0;
   virtual bool __stdcall GetParity(int n) = 0;  // return field parity if field_based, else parity of first field in frame
-  virtual void __stdcall GetAudio(void* buf, __int64 start, __int64 count, IScriptEnvironment* env) = 0;  // start and count are in samples
-  virtual void __stdcall SetCacheHints(int cachehints,int frame_range) = 0 ;  // We do not pass cache requests upwards, only to the next filter.
+  virtual void __stdcall GetAudio(void* buf, __int64 start, __int64 count) = 0;  // start and count are in samples
+  virtual void __stdcall SetCacheHints(CachePolicy policy, int size) { }  // We do not pass cache requests upwards, only to the next filter.
   virtual const VideoInfo& __stdcall GetVideoInfo() = 0;
-  virtual __stdcall ~IClip() {}
+
 };
 
+typedef smart_ptr<IClip> PClip;  // smart pointer to IClip
 
-// smart pointer to IClip
-class PClip {
 
-  IClip* p;
 
-  IClip* GetPointerWithAddRef() const { if (p) p->AddRef(); return p; }
-  friend class AVSValue;
-  friend class VideoFrame;
 
-  void Init(IClip* x) {
-    if (x) x->AddRef();
-    p=x;
-  }
-  void Set(IClip* x) {
-    if (x) x->AddRef();
-    if (p) p->Release();
-    p=x;
-  }
-
-public:
-  PClip() { p = 0; }
-  PClip(const PClip& x) { Init(x.p); }
-  PClip(IClip* x) { Init(x); }
-  void operator=(IClip* x) { Set(x); }
-  void operator=(const PClip& x) { Set(x.p); }
-
-  IClip* operator->() const { return p; }
-
-  // useful in conditional expressions
-  operator void*() const { return p; }
-  bool operator!() const { return !p; }
-
-  ~PClip() { if (p) p->Release(); }
+enum AVSType {
+  VOID_T,
+  CLIP_T,
+  BOOL_T,
+  INT_T,
+  //LONG_T,
+  FLOAT_T,
+  STRING_T,
+  ARRAY_T
 };
 
+/*template <class T> class avs { static AVSType type; };
 
-// smart pointer to VideoFrame
-class PVideoFrame {
-
-  VideoFrame* p;
-
-  void Init(VideoFrame* x) {
-    if (x) x->AddRef();
-    p=x;
-  }
-  void Set(VideoFrame* x) {
-    if (x) x->AddRef();
-    if (p) p->Release();
-    p=x;
-  }
-
-public:
-  PVideoFrame() { p = 0; }
-  PVideoFrame(const PVideoFrame& x) { Init(x.p); }
-  PVideoFrame(VideoFrame* x) { Init(x); }
-  void operator=(VideoFrame* x) { Set(x); }
-  void operator=(const PVideoFrame& x) { Set(x.p); }
-
-  VideoFrame* operator->() const { return p; }
-
-  // for conditional expressions
-  operator void*() const { return p; }
-  bool operator!() const { return !p; }
-
-  ~PVideoFrame() { if (p) p->Release(); }
-};
-
+AVSType avs<void>::type  = VOID_T;
+AVSType avs<PClip>::type = CLIP_T;
+AVSType avs<bool>::type  = BOOL_T;
+AVSType avs<int>::type   = INT_T;
+//AVSType avs<__int64>::type = LONG_T;
+AVSType avs<float>::type = FLOAT_T;
+AVSType avs<string>::type = STRING_T;  */
 
 class AVSValue {
+
+  AVSType type;
+  bool defined;
+
+  void * data;
+  
+  void * buildValue() {
+    switch(type)
+    {      
+      case CLIP_T:   return new PClip();
+      case INT_T:    return new int;
+      case BOOL_T:   return new bool;
+      case FLOAT_T:  return new float;
+      case STRING_T: return new string();
+    }
+    return NULL;  
+  }
+  void build() { data = buildValue(); }
+
+  void destroy()
+  {
+    switch(type)
+    {
+      case CLIP_T:   delete (PClip *)data; break;
+      case INT_T:    delete (int *)data; break;
+      case BOOL_T:   delete (bool *)data; break;
+      case FLOAT_T:  delete (float *)data; break;
+      case STRING_T: delete (string *)data; break;
+    }
+  }
+
+  void Assign(const AVSValue& other) {
+    destroy();
+    type = other.type;
+    build();
+    switch(type)
+    {
+      case CLIP_T:   *((PClip *)data) = *((PClip *)other.data); break;
+      case INT_T:    *((int *)data) = *((int *)other.data); break;
+      case BOOL_T:   *((bool *)data) = *((bool *)other.data); break;
+      case FLOAT_T:  *((float *)data) = *((float *)other.data); break;
+      case STRING_T: *((string *)data) = *((string *)other.data); break;
+    }    
+  }
+
+  //three methods repeatly used in operators
+  inline TypeCheck(AVSType expected) const {
+    if (expected != type)
+      throw InternalError("improper use of an AVSValue");
+  }
+  inline BeforeAffectCheck(AVSType expected)
+  {
+    TypeCheck(expected);
+    defined = true;
+  }
+  inline BeforeCastCheck(AVSType expected) const
+  {
+    TypeCheck(expected);
+    if (! defined)
+      throw AvisynthError("use of an AVSValue who was not initialised");
+  }
+
 public:
 
-  AVSValue() { type = 'v'; }
-  AVSValue(IClip* c) { type = 'c'; clip = c; if (c) c->AddRef(); }
-  AVSValue(const PClip& c) { type = 'c'; clip = c.GetPointerWithAddRef(); }
-  AVSValue(bool b) { type = 'b'; boolean = b; }
-  AVSValue(int i) { type = 'i'; integer = i; }
-//  AVSValue(__int64 l) { type = 'l'; longlong = l; }
-  AVSValue(float f) { type = 'f'; floating_pt = f; }
-  AVSValue(double f) { type = 'f'; floating_pt = float(f); }
-  AVSValue(const char* s) { type = 's'; string = s; }
-  AVSValue(const AVSValue* a, int size) { type = 'a'; array = a; array_size = size; }
-  AVSValue(const AVSValue& v) { Assign(&v, true); }
+  AVSValue() : defined(false), type(VOID_T) { }
+  AVSValue(const AVSValue& other) : type(VOID_T) { Assign(other); }
 
-  ~AVSValue() { if (IsClip() && clip) clip->Release(); }
-  AVSValue& operator=(const AVSValue& v) { Assign(&v, false); return *this; }
+  ~AVSValue() { destroy(); }
+
+  //constructor by type, used by the parser
+  AVSValue(AVSType _type) : defined(false), type(_type) { build(); }
+
+  AVSValue(PClip clip)      : defined(true), type(CLIP_T)   { build(); *((PClip *)data) = clip; }
+  AVSValue(int b)          : defined(true), type(BOOL_T)   { build(); *((int *)data) = b; }
+  AVSValue(bool i)           : defined(true), type(INT_T)    { build(); *((bool *)data) = i; }
+  AVSValue(float f)         : defined(true), type(FLOAT_T)  { build(); *((float *)data) = f; }
+  AVSValue(const string& s) : defined(true), type(STRING_T) { build(); *((string *)data) = s; }
+
+
+  const AVSValue& operator=(const AVSValue& other) { Assign(other); return *this; }
 
   // Note that we transparently allow 'int' to be treated as 'float'.
-  // There are no int<->bool conversions, though.
+  // There are no int<->bool conversions, though..
 
-  bool Defined() const { return type != 'v'; }
-  bool IsClip() const { return type == 'c'; }
-  bool IsBool() const { return type == 'b'; }
-  bool IsInt() const { return type == 'i'; }
-//  bool IsLong() const { return (type == 'l'|| type == 'i'); }
-  bool IsFloat() const { return type == 'f' || type == 'i'; }
-  bool IsString() const { return type == 's'; }
-  bool IsArray() const { return type == 'a'; }
-
-  PClip AsClip() const { _ASSERTE(IsClip()); return IsClip()?clip:0; }
-  bool AsBool() const { _ASSERTE(IsBool()); return boolean; }
-  int AsInt() const { _ASSERTE(IsInt()); return integer; }   
-//  int AsLong() const { _ASSERTE(IsLong()); return longlong; } 
-  const char* AsString() const { _ASSERTE(IsString()); return IsString()?string:0; }
-  double AsFloat() const { _ASSERTE(IsFloat()); return IsInt()?integer:floating_pt; }
-
-  bool AsBool(bool def) const { _ASSERTE(IsBool()||!Defined()); return IsBool() ? boolean : def; }
-  int AsInt(int def) const { _ASSERTE(IsInt()||!Defined()); return IsInt() ? integer : def; }
-  double AsFloat(double def) const { _ASSERTE(IsFloat()||!Defined()); return IsInt() ? integer : type=='f' ? floating_pt : def; }
-  const char* AsString(const char* def) const { _ASSERTE(IsString()||!Defined()); return IsString() ? string : def; }
-
-  int ArraySize() const { _ASSERTE(IsArray()); return IsArray()?array_size:1; }
-  const AVSValue& operator[](int index) const {
-    _ASSERTE(IsArray() && index>=0 && index<array_size);
-    return (IsArray() && index>=0 && index<array_size) ? array[index] : *this;
+  const AVSValue& operator=(PClip value)  { BeforeAffectCheck(CLIP_T);   *((PClip *)data)  = value; return *this; }
+  const AVSValue& operator=(int value)    { 
+    if (type == FLOAT_T) 
+      return operator=( float(value) ); //allows float avsvalues to receive int values
+    BeforeAffectCheck(INT_T);    *((int *)data)    = value; return *this;
   }
+  const AVSValue& operator=(bool value)   { BeforeAffectCheck(BOOL_T);   *((bool *)data)   = value; return *this; }
+  const AVSValue& operator=(float value)  { BeforeAffectCheck(FLOAT_T);  *((float *)data)  = value; return *this; }
+  const AVSValue& operator=(string value) { BeforeAffectCheck(STRING_T); *((string *)data) = value; return *this; }
 
-private:
-
-  short type;  // 'a'rray, 'c'lip, 'b'ool, 'i'nt, 'f'loat, 's'tring, 'v'oid, or 'l'ong
-  short array_size;
-  union {
-    IClip* clip;
-    bool boolean;
-    int integer;
-    float floating_pt;
-    const char* string;
-    const AVSValue* array;
-//    __int64 longlong;
-  };
-
-  void Assign(const AVSValue* src, bool init) {
-    if (src->IsClip() && src->clip)
-      src->clip->AddRef();
-    if (!init && IsClip() && clip)
-      clip->Release();
-    // make sure this copies the whole struct!
-    ((__int32*)this)[0] = ((__int32*)src)[0];
-    ((__int32*)this)[1] = ((__int32*)src)[1];
+  operator PClip() const  { BeforeCastCheck(CLIP_T); return *((PClip *)data); }
+  operator int()   const  { BeforeCastCheck(INT_T);  return *((int *)data); }
+  operator bool()  const  { BeforeCastCheck(BOOL_T); return *((bool *)data); }
+  operator float() const  { 
+    if (type == INT_T)
+      return operator int();  //alows int avsvalues to be treated as float
+    BeforeCastCheck(FLOAT_T); return *((float *)data);
   }
+  operator string() const { BeforeCastCheck(STRING_T); return *((string *)data); }
+
+  //may come in handy in some overload resolution
+  operator double() const { return operator float(); }
+
+  //test if initialised
+  bool Defined() const { return defined; }
+  AVSType GetType() const { return type; }
+
+  bool Is(AVSType _type) const { return type == _type; }
+
+  bool IsClip()   const { return Is(CLIP_T); }
+  bool IsBool()   const { return Is(BOOL_T); }
+  bool IsInt()    const { return Is(INT_T); }
+  bool IsFloat()  const { return Is(FLOAT_T) || Is(INT_T); }
+  bool IsString() const { return Is(STRING_T); }
+
 };
 
+typedef vector<AVSValue> ArgVector;
 
-// instantiable null filter
-class GenericVideoFilter : public IClip {
+
+// instanciable null filter that forwards all requests to child
+// use for filter who don't change VideoInfo
+class StableVideoFilter : public IClip {
+
 protected:
   PClip child;
-  VideoInfo vi;
+
+  //protected constructor
+  StableVideoFilter(PClip _child) : child(_child) { }
+
 public:
-  GenericVideoFilter(PClip _child) : child(_child) { vi = child->GetVideoInfo(); }
-  PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env) { return child->GetFrame(n, env); }
-  void __stdcall GetAudio(void* buf, __int64 start, __int64 count, IScriptEnvironment* env) { child->GetAudio(buf, start, count, env); }
-  const VideoInfo& __stdcall GetVideoInfo() { return vi; }
+  CPVideoFrame __stdcall GetFrame(int n) { return child->GetFrame(n); }
+  void __stdcall GetAudio(void* buf, __int64 start, __int64 count) { child->GetAudio(buf, start, count); }
+  const VideoInfo& __stdcall GetVideoInfo() { return child->GetVideoInfo(); }
   bool __stdcall GetParity(int n) { return child->GetParity(n); }
-  void __stdcall SetCacheHints(int cachehints,int frame_range) { } ;  // We do not pass cache requests upwards, only to the next filter.
 };
 
 
-class AvisynthError /* exception */ {
+// instance null filter
+// use when VideoInfo is changed
+class GenericVideoFilter : public StableVideoFilter {
+
+protected:
+  VideoInfo vi;
+
+  //protected constructor
+  GenericVideoFilter(PClip _child, const VideoInfo& _vi) : StableVideoFilter(_child), vi(_vi) { }
+
+    
 public:
-  const char* const msg;
-  AvisynthError(const char* _msg) : msg(_msg) {}
+  const VideoInfo& __stdcall GetVideoInfo() { return vi; }
+
 };
+
+
+
+
 
 
 
 
 /* Helper classes useful to plugin authors */
-
-class AlignPlanar : public GenericVideoFilter 
-{
-public:
-  AlignPlanar(PClip _clip);
-  static PClip Create(PClip clip);
-  PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
-};
-
-
-
-class FillBorder : public GenericVideoFilter 
-{
-public:
-  FillBorder(PClip _clip);
-  static PClip Create(PClip clip);
-  PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
-};
-
 
 
 class ConvertAudio : public GenericVideoFilter 
@@ -592,13 +526,13 @@ class ConvertAudio : public GenericVideoFilter
 {
 public:
   ConvertAudio(PClip _clip, int prefered_format);
-  void __stdcall GetAudio(void* buf, __int64 start, __int64 count, IScriptEnvironment* env);
+  void __stdcall GetAudio(void* buf, __int64 start, __int64 count);
 
   static PClip Create(PClip clip, int sample_type, int prefered_type);
-  static AVSValue __cdecl Create_float(AVSValue args, void*, IScriptEnvironment*);
-  static AVSValue __cdecl Create_32bit(AVSValue args, void*, IScriptEnvironment*);
-  static AVSValue __cdecl Create_16bit(AVSValue args, void*, IScriptEnvironment*);
-  static AVSValue __cdecl Create_8bit(AVSValue args, void*, IScriptEnvironment*);
+  static AVSValue __cdecl Create_float(AVSValue args, void*);
+  static AVSValue __cdecl Create_32bit(AVSValue args, void*);
+  static AVSValue __cdecl Create_16bit(AVSValue args, void*);
+  static AVSValue __cdecl Create_8bit(AVSValue args, void*);
   virtual ~ConvertAudio()
   {if (tempbuffer_size) {delete[] tempbuffer;tempbuffer_size=0;}}
 private:
@@ -644,12 +578,8 @@ public:
 
   virtual /*static*/ long __stdcall GetCPUFlags() = 0;
 
-  virtual char* __stdcall SaveString(const char* s, int length = -1) = 0;
-  virtual char* __stdcall Sprintf(const char* fmt, ...) = 0;
-  // note: val is really a va_list; I hope everyone typedefs va_list to a pointer
-  virtual char* __stdcall VSprintf(const char* fmt, void* val) = 0;
 
-  __declspec(noreturn) virtual void __stdcall ThrowError(const char* fmt, ...) = 0;
+  __declspec(noreturn) void __stdcall ThrowError(const string& err_msg) { throw AvisynthError(err_msg); }
 
   class NotFound /*exception*/ {};  // thrown by Invoke and GetVar
 
@@ -666,19 +596,13 @@ public:
   virtual void __stdcall PushContext(int level=0) = 0;
   virtual void __stdcall PopContext() = 0;
 
-  // align should be 4 or 8
-  virtual PVideoFrame __stdcall NewVideoFrame(const VideoInfo& vi, int align=FRAME_ALIGN) = 0;
 
-  virtual bool __stdcall MakeWritable(PVideoFrame* pvf) = 0;
-
-  virtual /*static*/ void __stdcall BitBlt(BYTE* dstp, int dst_pitch, const BYTE* srcp, int src_pitch, int row_size, int height) = 0;
+  static void __stdcall BitBlt(BYTE* dstp, int dst_pitch, const BYTE* srcp, int src_pitch, int row_size, int height);
 
   typedef void (__cdecl *ShutdownFunc)(void* user_data, IScriptEnvironment* env);
   virtual void __stdcall AtExit(ShutdownFunc function, void* user_data) = 0;
 
   virtual void __stdcall CheckVersion(int version = AVISYNTH_INTERFACE_VERSION) = 0;
-
-  virtual PVideoFrame __stdcall Subframe(PVideoFrame src, int rel_offset, int new_pitch, int new_row_size, int new_height) = 0;
 
 	virtual int __stdcall SetMemoryMax(int mem) = 0;
 

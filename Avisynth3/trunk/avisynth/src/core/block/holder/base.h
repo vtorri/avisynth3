@@ -45,7 +45,8 @@ class AVS_NOVTABLE Base : public Holder
 
 public:  //structors
 
-  Base(int size) : size_( std::max(size, 0) ) { }
+  Base(int size)
+    : size_( std::max(size, 0) ) { }
 
   //generated destructor is fine
 

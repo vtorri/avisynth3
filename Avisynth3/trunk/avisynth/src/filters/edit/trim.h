@@ -88,7 +88,10 @@ public:  //read access
 
 public:  //factory method and functors
 
-  static PClip Create(PClip const& child, int begin, int end) { return PClip( static_cast<Clip *>(new Trim(child, begin, end)) ); }
+  static PClip Create(PClip const& child, int begin, int end) 
+  { 
+    return PClip( static_cast<Clip *>(new Trim(child, begin, end)) ); 
+  }
 
   struct Creator
   {
@@ -97,7 +100,18 @@ public:  //factory method and functors
 
   struct OneArgCreator
   {
-    PClip operator()(PClip const& child, int begin) const { return Create(child, begin, child->GetVideoInfo()->GetFrameCount()); }
+    PClip operator()(PClip const& child, int begin) const 
+    { 
+      return Create(child, begin, child->GetVideoInfo()->GetFrameCount()); 
+    }
+  };
+
+  struct NegEndCreator
+  {
+    PClip operator()(PClip const& child, int begin, int end) const
+    {
+      return Create(child, begin, child->GetVideoInfo()->GetFrameCount() - end);
+    }
   };
 
 };

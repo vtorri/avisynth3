@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -68,7 +68,7 @@ public:  //clip general interface
 
   //fill the passed buffer with audio samples
   //out of bounds values are allowed, the excess is filled with blank noise
-  virtual void GetAudio(void * buffer, int64 start, int count) const = 0;  
+  virtual void GetAudio(void * buffer, long long start, int count) const = 0;  
 
 
 public:  //filter chain simplication method

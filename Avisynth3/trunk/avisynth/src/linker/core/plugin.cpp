@@ -39,10 +39,11 @@ void Plugin::FillFunctionList(FunctionList& addTo) const
 }
 
 
-core::Plugin Plugin::instance;
-
-
-PPlugin Plugin::Get() { return PPlugin( &instance, std::identity<void *>() ); }
+Plugin::PCore Plugin::Get() 
+{ 
+  static Plugin instance;
+  return PCore( &instance, std::identity<void *>() ); 
+}
 
 
 } } } //namespace avs::linker::core

@@ -41,6 +41,7 @@ namespace avs { namespace linker { namespace core {
 class Plugin : public linker::Plugin
 {
 
+  typedef boost::shared_ptr<core::Plugin> PCore;
   typedef std::vector<core::Function *> CoreFunctionList;
 
   CoreFunctionList list_;
@@ -64,17 +65,12 @@ private:  //register method for core functions
 
   void Register(core::Function * funct) { list_.push_back( funct ); }
 
-
-private:  //sole instance
-
-  static core::Plugin instance;
-
-  friend class core::Function;
+  friend class core::Function;  //so can call the above
 
 
 public:  //Get instance method
 
-  static PPlugin Get();
+  static PCore Get();
 
 };
 

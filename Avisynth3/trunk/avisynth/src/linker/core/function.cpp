@@ -37,7 +37,7 @@ Function::Function(char returnType, char const * name, char const * prototype, p
   , prototype_( prototype )
   , op_( op )
 {
-  Plugin::instance.Register( this );
+  Plugin::Get()->Register( this );
 }
 
 

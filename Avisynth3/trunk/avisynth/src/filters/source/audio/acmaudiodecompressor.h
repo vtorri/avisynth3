@@ -50,7 +50,7 @@ namespace avs { namespace filters { namespace source {
 
 
 
-class ACMAudioDecompressor : public AudioDecompressor
+class AVS_NOVTABLE ACMAudioDecompressor : public AudioDecompressor
 {
  
   RawAudio const& src_;
@@ -72,7 +72,7 @@ class ACMAudioDecompressor : public AudioDecompressor
 
 public:  //structors
 
-  ACMAudioDecompressor(RawAudio const& src, vfw::PWaveFormatEx& wfe);
+  ACMAudioDecompressor(RawAudio const& src, vfw::WaveFormatEx const& input, vfw::WaveFormatEx const& output);
 
   virtual ~ACMAudioDecompressor();
 
@@ -82,15 +82,24 @@ public:  //AudioDecompressor interface
   virtual long operator()(BYTE *& buffer, long long start, long count) const;
 
 
-private:  //implementation
+private:  //ACMAudioDecompressor interface
+
+  virtual void Seek(long long current) const = 0;
+
+  virtual void Register(long long block, long long current) const = 0;
+
+
+protected:  //implementation
 
   void DecompressNext() const;
 
   long Read(BYTE *& buffer, long size) const;
   long ReadFromBuffer(BYTE *& buffer, long& size) const;
 
-  void Skip(long size) const;
-  long SkipFromBuffer(long size) const;
+  void Skip(long long size) const;
+  long SkipFromBuffer(long long size) const;
+
+  void SetPosition(long long block, long long current) const;
 
 
 public:  //factory method

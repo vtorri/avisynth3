@@ -23,8 +23,10 @@
 
 #ifdef _WIN32
 
-//avisynth include
+//avisynth includes
 #include "acmaudiodecompressor.h"
+#include "cbracmaudiodecompressor.h"
+#include "vbracmaudiodecompressor.h"
 #include "trivialaudiodecompressor.h"
 #include "../../../vfw/waveformatex.h"
 #include "../../../core/videoinfo.h"
@@ -51,32 +53,14 @@ struct ACMSTreamCloser
 
 
 
-ACMAudioDecompressor::ACMAudioDecompressor(RawAudio const& src, vfw::PWaveFormatEx& wfe)
+ACMAudioDecompressor::ACMAudioDecompressor(RawAudio const& src, vfw::WaveFormatEx const& input, vfw::WaveFormatEx const& output)
   : src_( src )
   , current_( 0 )
   , nextBlock_( 0 )
-  , blockAlign_( wfe->nBlockAlign )
-  , samplesPerSec_( wfe->nSamplesPerSec )
-  , avgBytesPerSec_( wfe->nAvgBytesPerSec )
 {
 
-  DWORD maxSizeFormat = 0;
-  //fetchs max size of a WAVEFORMATEX object (into maxSizeFormat)
-  MMRESULT mmResult = acmMetrics(NULL, ACM_METRIC_MAX_SIZE_FORMAT, &maxSizeFormat);
-  assert( mmResult == 0 );                    //the above can't fail (or can it ?)
-
-  //creates a WaveFormatEx of that size
-  boost::shared_ptr<void> temp( new BYTE[maxSizeFormat] );
-  vfw::PWaveFormatEx output = boost::static_pointer_cast<vfw::WaveFormatEx>(temp);
-
-  output->wFormatTag = WAVE_FORMAT_PCM;       //and inits it with PCM format
-
-  //ask ACM for a PCM format suggestion
-  if ( acmFormatSuggest(NULL, wfe.get(), output.get(), maxSizeFormat, ACM_FORMATSUGGESTF_WFORMATTAG) != 0 )
-    throw exception::Generic("ACM failed to suggest a compatible PCM format");
-  
-  HACMSTREAM__ * hACMStream = NULL;
-  if ( acmStreamOpen(&hACMStream, NULL, wfe.get(), output.get(), NULL, 0, 0, ACM_STREAMOPENF_NONREALTIME) != 0 )
+  HACMSTREAM hACMStream = NULL;
+  if ( acmStreamOpen(&hACMStream, NULL, const_cast<vfw::WaveFormatEx *>(&input), const_cast<vfw::WaveFormatEx *>(&output), NULL, 0, 0, ACM_STREAMOPENF_NONREALTIME) != 0 )
     throw exception::Generic("Error initializing audio stream decompression");
  
   hACMStream_.reset( hACMStream, ACMSTreamCloser() );
@@ -86,11 +70,11 @@ ACMAudioDecompressor::ACMAudioDecompressor(RawAudio const& src, vfw::PWaveFormat
 	if ( acmStreamSize(hACMStream, inputBufferSize, &outputBufferSize, ACM_STREAMSIZEF_SOURCE) != 0 )
 		throw exception::Generic("Error initializing audio stream output size");
 
-  //allocates memory for both buffers
-  inputBuffer_.reset( new BYTE[inputBufferSize] );
+
+  inputBuffer_.reset( new BYTE[inputBufferSize] );           //allocates memory for both buffers
   outputBuffer_.reset( new BYTE[outputBufferSize] );
 		
-  memset(&ash_, 0, sizeof(ACMSTREAMHEADER));
+  memset(&ash_, 0, sizeof(ACMSTREAMHEADER));                 //inits stream header 
 
 	ash_.cbStruct		  = sizeof(ACMSTREAMHEADER);
   ash_.pbSrc			  = inputBuffer_.get();
@@ -98,13 +82,11 @@ ACMAudioDecompressor::ACMAudioDecompressor(RawAudio const& src, vfw::PWaveFormat
 	ash_.pbDst			  = outputBuffer_.get();
 	ash_.cbDstLength	= outputBufferSize;
 
-	if ( acmStreamPrepareHeader(hACMStream, &ash_, 0) != 0)
+	if ( acmStreamPrepareHeader(hACMStream, &ash_, 0) != 0)    //and prepare it
 		throw exception::Generic("Error preparing audio decompression buffers");
 
-	ash_.cbSrcLength = 0;
+	ash_.cbSrcLength = 0;                                      //set input buffer to being empty
 	ash_.cbDstLengthUsed = 0;
-
-  wfe = output;              //finally reports output waveformat to caller
 }
 
 
@@ -124,20 +106,7 @@ long ACMAudioDecompressor::operator()(BYTE *& buffer, long long start, long coun
   if ( 0 <= advance && advance <= ash_.cbDstLengthUsed )  //if the data start is in the output buffer
     SkipFromBuffer( static_cast<long>(advance) );         //skip to that point
   else
-  {                                                       //else we must seek :(
-    //round to nearest audio block
-    long long block = (start * avgBytesPerSec_) / (static_cast<long long>(blockAlign_) * samplesPerSec_);
-    long long roundedStart = (block * blockAlign_ * samplesPerSec_) / avgBytesPerSec_;
-
-    nextBlock_ = block;                                   //set rounded as new position
-    current_ = roundedStart * bps;
-
-    DecompressNext();                                     //decompress data there
-
-    Skip(static_cast<long>(start - roundedStart));        //skip to reach start
-    //NB: it may skip less than that if it reachs end of stream
-    //but then it will correctly read nothing after, so it's not a pb
-  }
+    Seek( start * bps );                                  //else we must seek :(
 
   return Read(buffer, count * bps) / bps;                 //just read and return samples read (ie bytes read / bps )
 }
@@ -164,6 +133,8 @@ void ACMAudioDecompressor::DecompressNext() const
     long left = ash_.cbSrcLength - ash_.cbSrcLengthUsed;             //unused data in the input buffer
     if ( left > 0 )                                                  //if there is some                                
       memmove(ash_.pbSrc, ash_.pbSrc + ash_.cbSrcLengthUsed, left);  //copy it down
+    else
+      Register(nextBlock_, current_ + ash_.cbDstLengthUsed);         //else register block/current correspondance
 
     ash_.cbSrcLength = left;                        //update data size in input buffer
   }
@@ -206,7 +177,7 @@ long ACMAudioDecompressor::ReadFromBuffer(BYTE *& buffer, long& size) const
 }
 
 
-void ACMAudioDecompressor::Skip(long size) const
+void ACMAudioDecompressor::Skip(long long size) const
 {
   if ( ash_.cbDstLengthUsed != 0 )           //there is data left in output buffer
     size -= SkipFromBuffer(size);            //skip what we can
@@ -224,9 +195,10 @@ void ACMAudioDecompressor::Skip(long size) const
 
 
 
-long ACMAudioDecompressor::SkipFromBuffer(long size) const
+long ACMAudioDecompressor::SkipFromBuffer(long long size) const
 {
-  long skip = std::min(size, long(ash_.cbDstLengthUsed)); //available to skip
+  //available to skip
+  long skip = static_cast<long>(std::min(size, static_cast<long long>(ash_.cbDstLengthUsed))); 
 
   current_ += skip;                                       //update position
 
@@ -238,12 +210,43 @@ long ACMAudioDecompressor::SkipFromBuffer(long size) const
 
 
 
+void ACMAudioDecompressor::SetPosition(long long block, long long current) const
+{
+  nextBlock_ = block;                               //set new values
+  current_ = current;
+
+  ash_.cbSrcLength = 0;                             //flush input buffer
+  ash_.cbDstLengthUsed = 0;                         //flush output buffer
+  ash_.pbDst = outputBuffer_.get();
+}
+
+
+
 AudioDecompressor * ACMAudioDecompressor::Create(RawAudio const& src, vfw::PWaveFormatEx& wfe)
 {
   if ( wfe->wFormatTag == WAVE_FORMAT_PCM )     //if it's already PCM
     return new TrivialAudioDecompressor(src);   //trivial decompression
 
-  return new ACMAudioDecompressor(src, wfe);    //else use acm decompressor
+  DWORD maxSizeFormat = 0;
+  //fetchs max size of a WAVEFORMATEX object (into maxSizeFormat)
+  MMRESULT mmResult = acmMetrics(NULL, ACM_METRIC_MAX_SIZE_FORMAT, &maxSizeFormat);
+  assert( mmResult == 0 );                    //the above can't fail (or can it ?)
+
+  //creates a WaveFormatEx of that size
+  boost::shared_ptr<void> temp( new BYTE[maxSizeFormat] );
+  vfw::PWaveFormatEx output = boost::static_pointer_cast<vfw::WaveFormatEx>(temp);
+
+  output->wFormatTag = WAVE_FORMAT_PCM;       //and inits it with PCM format
+
+  //ask ACM for a PCM format suggestion
+  if ( acmFormatSuggest(NULL, wfe.get(), output.get(), maxSizeFormat, ACM_FORMATSUGGESTF_WFORMATTAG) != 0 )
+    throw exception::Generic("ACM failed to suggest a compatible PCM format");
+  
+  vfw::PWaveFormatEx input = wfe;
+  wfe = output;                               //reports output waveformat to caller
+
+  return input->IsVBR() ? static_cast<AudioDecompressor *>(new VBRACMAudioDecompressor(src, *input, *output))
+                        : new CBRACMAudioDecompressor(src, *input, *output);
 }
 
 

@@ -42,7 +42,7 @@ class Get
 
   static ElementalOperation const equal_op[5];
   static ElementalOperation const not_equal_op[5];
-  static ElementalOperation const subscript_op[2];
+  static ElementalOperation const subscript_op[4];
 
 
 public:  //Get methods

@@ -24,6 +24,7 @@
 #include "get.h"
 #include "../adapt.h"
 #include "binaryopmapper.h"
+#include "../../filters/edit/trim.h"
 #include "../../core/exception/generic.h"
 
 
@@ -72,11 +73,12 @@ struct StringSubscriptOneArg
 };
 
 
-ElementalOperation const Get::subscript_op[2] =
-    { adapt( StringSubscript() )
+ElementalOperation const Get::subscript_op[4] =
+    { adapt( filters::Trim::Creator() )
+    , adapt( filters::Trim::OneArgCreator() )
+    , adapt( StringSubscript() )
     , adapt( StringSubscriptOneArg() )
     };
-
 
 
 ElementalOperation const& Get::SubscriptOperation(char type, bool firstArgOnly)
@@ -84,7 +86,8 @@ ElementalOperation const& Get::SubscriptOperation(char type, bool firstArgOnly)
 
   switch( type )
   {
-  case 's': return subscript_op[ firstArgOnly ? 1 : 0 ];
+  case 'c': return subscript_op[ firstArgOnly ? 1 : 0 ];
+  case 's': return subscript_op[ firstArgOnly ? 3 : 2 ];
 
   default: throw exception::Generic("Illegal use of operator[]");
   }

@@ -47,10 +47,7 @@ Resize::Resize(PClip const& child, resize::PFilter const& filter, Dimension cons
 
 CPVideoFrame Resize::MakeFrame(CPVideoFrame const& source) const
 {
-  PVideoFrame target = GetEnvironment()->CreateFrame(*GetVideoInfo());
-
-  if ( source->GetType() == FIELD_BOTTOM )  //if src is bottom field 
-    target->SetType( FIELD_BOTTOM );        //make it so too  (only case needing correction, CreateFrame marks 'frames' PROGRESSIVE already)
+  PVideoFrame target = GetEnvironment()->CreateFrame(*GetVideoInfo(), source->GetType());
 
   ResizeFrame(*source, *target);
 

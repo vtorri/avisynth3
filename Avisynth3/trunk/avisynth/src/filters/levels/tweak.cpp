@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -39,7 +39,7 @@ namespace avs { namespace filters {
 
 Tweak::Tweak(PClip const& child, double hue, double sat, double bright, double cont) 
   : clip::onechild::Concrete( child )
-  , clip::caching::Concrete( child->GetEnvironment() )
+  , clip::framemaker::Concrete( child->GetEnvironment() )
   , Sat( int(sat * 512) )
   , Bright_p16( int(bright) + 16 )
   , Cont( int(cont * 512) )
@@ -53,7 +53,7 @@ Tweak::Tweak(PClip const& child, double hue, double sat, double bright, double c
 
 Tweak::Tweak(PClip const& child, Tweak const& other)
   : clip::onechild::Concrete( child )
-  , clip::caching::Concrete( child->GetEnvironment() )
+  , clip::framemaker::Concrete( child->GetEnvironment() )
   , Sin( other.Sin )
   , Cos( other.Cos )
   , Sat( other.Sat )

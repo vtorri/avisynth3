@@ -34,7 +34,7 @@ namespace avs { namespace filters {
 
 Convert::Convert(PClip const& child, PColorSpace const& target)
   : clip::onechild::Concrete( child )
-  , clip::caching::Concrete( child->GetEnvironment() )
+  , clip::framemaker::Concrete( child->GetEnvironment() )
 {
   PVideoInfo vi = child->GetVideoInfo();   //start from child VideoInfo
   
@@ -44,7 +44,7 @@ Convert::Convert(PClip const& child, PColorSpace const& target)
 }
 
 
-CPVideoFrame Convert::MakeFrame(CPVideoFrame const& source) const
+CPVideoFrame Convert::MakeFrame(PVideoFrame const& source) const
 {
   PVideoFrame target = GetEnvironment()->CreateFrame(*vi_, source->GetType());
 

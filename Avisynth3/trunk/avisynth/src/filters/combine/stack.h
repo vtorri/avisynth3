@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,8 @@
 
 //avisynth includes
 #include "../../core/geometry/vecteur.h"
-#include "../../clip/caching/concrete.h"
 #include "../../clip/twochilds/concrete.h"
+#include "../../clip/framemaker/concrete.h"
 
 
 namespace avs { namespace filters { 
@@ -39,7 +39,7 @@ namespace avs { namespace filters {
 //  factorisation superclass for Stack::Horizontal and Stack::Vertical
 //  
 class Stack : public clip::twochilds::Concrete
-            , public clip::caching::Concrete
+            , public clip::framemaker::Concrete
 {
     
   CPVideoInfo vi_;

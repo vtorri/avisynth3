@@ -54,7 +54,7 @@ public:  //structors
   Concrete(PEnvironment const& env)
     : env_( env ) { }
 
-  //generated copy constructor and destructor are fine
+  //generated destructor are fine
 
 
 public:  //clip general interface
@@ -66,6 +66,11 @@ public:  //ManyChilds interface
 
   virtual int GetChildCount() const { return childs_.size(); }
   virtual PClip const& GetChild(int n) const { return childs_[n]; }
+
+
+protected:  //access
+
+  void PushChild(PClip const& child) { childs_.push_back(child); }
 
 };
 

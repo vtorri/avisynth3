@@ -86,6 +86,9 @@ public:  //operators
   FixedPointType& operator+=(FixedPointType const& other) { value_ += other.value_; return *this; }
   FixedPointType& operator-=(FixedPointType const& other) { value_ -= other.value_; return *this; }
 
+  FixedPointType& operator*=(BaseType scalar) { value_ *= scalar; return *this; }
+  FixedPointType& operator/=(BaseType scalar) { value_ /= scalar; return *this; }
+
   FixedPointType& operator<<=(int shift) { value_ <<= shift; return *this; }
   FixedPointType& operator>>=(int shift) { value_ >>= shift; return *this; }
 

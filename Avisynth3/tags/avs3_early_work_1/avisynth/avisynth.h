@@ -277,9 +277,6 @@ protected:
   //will help achieve thread-safety in instance recycling
   RefCounted() : refcount(-1) { } 
 
-  //clean volatile data (if there is any), performed when going from smart_ptr_to_cst to a smart_ptr
-  virtual void clean() { }   //default implementation : no effect
-
   //clone method, used by the conversion between smart_ptr and smart_ptr_to_cst
   //if your subclass represent constant objects, you can even make it return this (by casting away constness)
   virtual RefCounted * clone() const throw(NotClonable) { throw NotClonable(); }
@@ -361,12 +358,10 @@ protected:
     }
   }
 
-  inline void Clean() { if (ptr) ptr->clean(); }
-
 public:
   void release() { if (ptr) { ptr->Release(); ptr = NULL; } } //smart ptr voids itself
   
-  operator bool() const { return ptr; }  //useful in boolean expressions
+  operator bool() const { return ptr != NULL; }  //useful in boolean expressions
 
   ~smart_ptr_base() { if (ptr) ptr->Release(); }
 
@@ -408,6 +403,8 @@ public:
 //smart T * 
 //converting a smart const T * to a smart T * (constructor or operator =) will perform cleanup 
 template <class T> class smart_ptr : public smart_ptr_base {
+
+ inline void Clean() { if (ptr) ((T*)ptr)->clean(); }
 
 public:
   smart_ptr() { }
@@ -460,6 +457,13 @@ typedef smart_ptr_to_cst<VideoFrame> CPVideoFrame;
 
 // polymorphic VideoFrame class
 
+enum Plane {
+  NOT_PLANAR,
+  PLANAR_Y,
+  PLANAR_U,
+  PLANAR_V
+};
+
 class VideoFrame : public RefCounted {
 
 public:
@@ -468,14 +472,9 @@ public:
   typedef signed char Align;
   typedef VideoInfo::ColorSpace ColorSpace;
 
-  enum Plane {
-    NOT_PLANAR,
-    PLANAR_Y,
-    PLANAR_U,
-    PLANAR_V
-  };
 
-  //method to convert index in Plane enum, USE it !!!
+
+  //static method to convert index in Plane enum, USE it !!!
   inline static Plane IndexToYUVPlane(int i) {
     static Plane planes[] = { PLANAR_Y, PLANAR_U, PLANAR_V };
     _ASSERTE( i>=0 && i < 3);
@@ -505,8 +504,10 @@ public:
 
   virtual ColorSpace GetColorSpace() const = 0;
   bool IsPlanar() const { return GetColorSpace() & VideoInfo::CS_PLANAR != 0; }
-  dimension GetVideoHeight() const { return GetHeight( IsPlanar()? PLANAR_Y : NOT_PLANAR ); }
-  dimension GetVideoWidth() const;  
+
+  //method to get Video width and height, default implementation: not planar case
+  virtual dimension GetVideoHeight() const { return GetHeight(NOT_PLANAR); }  
+  virtual dimension GetVideoWidth() const { return 2 * GetRowSize(NOT_PLANAR) / WidthToRowSize(2); }
 
   //frames now know about their fieldbased state
   bool IsFieldBased() const;
@@ -514,10 +515,10 @@ public:
 
   //methods used to check that pixels args match Colorspace restrictions
   //they throw the appropriate error msg when arg are illegal
-  //you are not supposed to use them, all calls are done internally when needed
+  //you are not supposed to use them, all calls are done internally where needed
   //btw, they don't check sign, just parity and such (sign check are done at a lower level)
-  dimension WidthToRowSize(dimension width) const;
-  dimension HeightCheck(dimension height) const;
+  virtual dimension WidthToRowSize(dimension width) const;
+  virtual dimension HeightCheck(dimension height) const;
 
   //construction method, moved from IScriptEnvironment
   static PVideoFrame NewVideoFrame(const VideoInfo& vi, Align align = FRAME_ALIGN);
@@ -756,20 +757,44 @@ public:
 
 };
 
+typedef vector<AVSValue> ArgVector;
 
-// instantiable null filter
-class GenericVideoFilter : public IClip {
+
+// instanciable null filter that forwards all requests to child
+// use for filter who don't change VideoInfo
+class StableVideoFilter : public IClip {
+
 protected:
   PClip child;
-  VideoInfo vi;
+
+  //protected constructors
+  StableVideoFilter(PClip _child) : child(_child) { }
+
 public:
-  GenericVideoFilter(PClip _child) : child(_child) { vi = child->GetVideoInfo(); }
   CPVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env) { return child->GetFrame(n, env); }
   void __stdcall GetAudio(void* buf, __int64 start, __int64 count, IScriptEnvironment* env) { child->GetAudio(buf, start, count, env); }
-  const VideoInfo& __stdcall GetVideoInfo() { return vi; }
+  const VideoInfo& __stdcall GetVideoInfo() { return child->GetVideoInfo(); }
   bool __stdcall GetParity(int n) { return child->GetParity(n); }
-  void __stdcall SetCacheHints(int cachehints,int frame_range) { } ;  // We do not pass cache requests upwards, only to the next filter.
 };
+
+
+// instance null filter
+// use when VideoInfo is changed
+class GenericVideoFilter : public StableVideoFilter {
+
+protected:
+  VideoInfo vi;
+
+  //protected constructor
+  GenericVideoFilter(PClip _child, const VideoInfo& _vi)
+    : StableVideoFilter(_child), vi(_vi) { }
+
+public:
+  const VideoInfo& __stdcall GetVideoInfo() { return vi; }
+
+};
+
+
 
 
 class AvisynthError /* exception */ {

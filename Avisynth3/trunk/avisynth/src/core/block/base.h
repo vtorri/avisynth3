@@ -47,7 +47,6 @@ template <class BaseHolder, int align> class base
 public:  //typedefs
 
   enum { Align = align };
-  typedef unsigned char BYTE;
   typedef base<BaseHolder, align> BaseBlockType;
 
   //helper struct for the below enable_ifs
@@ -68,7 +67,7 @@ private:  //member
 public:  //structors
 
   //construction from a Deleter
-  //instantation is blocked when the alignment guarantee is not satisfied
+  //defined only if the Holder satisifies our alignment requirement
   template <class Holder>
   explicit base( Holder * holder
                , typename boost::enable_if< compatible<Holder::Align>, void>::type * dummy = NULL

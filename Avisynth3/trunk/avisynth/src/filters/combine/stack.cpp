@@ -71,7 +71,7 @@ CPVideoFrame Stack::MakeFrame(int n) const
   PVideoFrame result = env->CreateFrame(*vi_, left->GetType());
   Vecteur shift = GetShiftVecteur();
 
-  for ( Plane p = Plane(0); p < PlaneCount; p = Plane(p + 1) )
+  for ( Plane p = Plane(0); p < int(PlaneCount); p = Plane(p + 1) )
     if ( space.HasPlane(p) )
     {
       WindowPtr dst = result->WriteTo(p);

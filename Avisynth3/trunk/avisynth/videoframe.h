@@ -63,7 +63,7 @@ class VideoFrame
   PropertyVector propVector;
 
 
-public:  //constructors
+public:  //structors
 
   //normal constructor
   VideoFrame(CPFrameVidProps vidProps)
@@ -73,6 +73,8 @@ public:  //constructors
   VideoFrame(const VideoFrame& other)
     : vidProps_( other.vidProps_ )
     , propVector( other.propVector )  { }
+
+  virtual ~VideoFrame() { }
 
 
 public:  //clone method (expected by smart_ptrs for PVideoFrame/CPVideoFrame conversions)

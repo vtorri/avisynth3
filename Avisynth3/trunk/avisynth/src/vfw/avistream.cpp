@@ -75,7 +75,7 @@ STDMETHODIMP AviStream::QueryInterface(IID const& iid, void **ppv)
 
 STDMETHODIMP_(LONG) AviStream::Info(AVISTREAMINFOW *psi, LONG lSize)
 {
-  if ( lSize < sizeof(AVISTREAMINFOW) )
+  if ( lSize < (long)sizeof(AVISTREAMINFOW) )
     return AVIERR_BUFFERTOOSMALL; 
 
   memset(psi, 0, lSize);

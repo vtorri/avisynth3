@@ -59,6 +59,10 @@ public:  //structors
   explicit owned_block(owned_block<alignOther> const& other)
     : BaseBlockType( other ) { }
 
+  //spawning constructor
+  owned_block(owned_block<align> const& other, int size)
+    : BaseBlockType( other, size ) { }
+
   //generated copy constructor and destructor are fine
 
 
@@ -74,12 +78,18 @@ public:  //assignment
   //swap inherited from superclass
 
 
-public:  //reset methods
+public:  //misc
 
   void reset(int size, bool recycle)
   { 
     owned_block tmp(GetEnvironment(), size, recycle);
     swap(tmp); 
+  }
+
+  //spawn method, just calls the spawning constructor, but is more explicit
+  owned_block<align> spawn(int size) const 
+  { 
+    return owned_block<align>(*this, size); 
   }
 
 
@@ -118,6 +128,10 @@ public:  //structors
   explicit owned_block(owned_block<alignOther> const& other)
     : BaseBlockType( other ) { }
 
+  //spawning constructor
+  owned_block(owned_block<block::Align> const& other, int size)
+    : BaseBlockType( other, size ) { }
+
   //generated copy constructor and destructor are fine
 
 
@@ -133,12 +147,18 @@ public:  //assignment
   //swap inherited from superclass
 
 
-public:  //reset methods
+public:  //misc
 
   void reset(int size, bool recycle)
   { 
     owned_block tmp(GetEnvironment(), size, recycle);
     swap(tmp); 
+  }
+
+  //spawn method, just calls the spawning constructor, but is more explicit
+  owned_block<block::Align> spawn(int size) const 
+  { 
+    return owned_block<block::Align>(*this, size); 
   }
 
 

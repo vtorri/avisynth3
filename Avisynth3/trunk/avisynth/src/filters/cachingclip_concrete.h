@@ -46,18 +46,18 @@ namespace avs { namespace filters {
 class CachingClip::Concrete : public virtual CachingClip
 {
 
-  boost::scoped_ptr<Cache> cache;
+  boost::scoped_ptr<Cache> cache_;
 
 
 public:  //constructor
 
   Concrete(PEnvironment env)
-    : cache( env->NewCache() ) { }
+    : cache_( env->NewCache(*this) ) { }
 
 
 private:  //CachingClip requirement
 
-  virtual Cache& GetCache() const { return *cache; }
+  virtual Cache& GetCache() const { return *cache_; }
 
 };//CachingClip::Concrete
 

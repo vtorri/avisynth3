@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,8 +24,7 @@
 #ifndef __AVS_VIDEOFRAME_RGB_H__
 #define __AVS_VIDEOFRAME_RGB_H__
 
-
-//avisynth include
+//avisynth includes
 #include "interleaved.h"
 #include "../colorspace.h"
 
@@ -39,14 +38,18 @@ namespace avs { namespace vframe {
 //
 //  RGB24 specific VideoFrame subclass
 //
-class RGB24 : public interleaved<3, 1>
+class RGB24 : public Interleaved
 {
 
 public:  //structors
 
   //normal constructor
   RGB24(Dimension const& dim, FrameType type, PEnvironment const& env)
-    : interleaved<3, 1>( ColorSpace::rgb24(), dim, type, env ) { }
+    : Interleaved( ColorSpace::rgb24(), dim, type, env ) { }
+
+  //constructs using the given buffer
+  RGB24(Dimension const& dim, FrameType type, BufferWindow const& main)
+    : Interleaved( ColorSpace::rgb24(), dim, type, main ) { }
 
   //generated copy constructor and destructor are fine
 
@@ -61,9 +64,7 @@ public:  //general frame info
   virtual ColorSpace& GetColorSpace() const { return ColorSpace::rgb24(); }
 
 
-};//RGB24
-
-
+};
 
 
 
@@ -72,14 +73,18 @@ public:  //general frame info
 //
 //  RGB32 specific VideoFrame subclass
 //
-class RGB32 : public interleaved<4, 1>
+class RGB32 : public Interleaved
 {
 
 public:  //structors
 
   //normal constructor
   RGB32(Dimension const& dim, FrameType type, PEnvironment const& env)
-    : interleaved<4, 1>( ColorSpace::rgb32(), dim, type, env ) { }
+    : Interleaved( ColorSpace::rgb32(), dim, type, env ) { }
+
+  //constructs using the given buffer
+  RGB32(Dimension const& dim, FrameType type, BufferWindow const& main)
+    : Interleaved( ColorSpace::rgb32(), dim, type, main ) { }
 
   //generated copy constructor and destructor are fine
 
@@ -93,8 +98,7 @@ public:  //general frame info
 
   virtual ColorSpace& GetColorSpace() const { return ColorSpace::rgb32(); }
 
-};//RGB32
-
+};
 
 
 
@@ -103,14 +107,18 @@ public:  //general frame info
 //
 //  RGB45 specific VideoFrame subclass
 //
-class RGB45 : public interleaved<8, 2>
+class RGB45 : public Interleaved
 {
 
 public:  //structors
 
   //normal constructor
   RGB45(Dimension const& dim, FrameType type, PEnvironment const& env)
-    : interleaved<8, 2>( ColorSpace::rgb45(), dim, type, env ) { }
+    : Interleaved( ColorSpace::rgb45(), dim, type, env ) { }
+
+  //constructs using the given buffer
+  RGB45(Dimension const& dim, FrameType type, BufferWindow const& main)
+    : Interleaved( ColorSpace::rgb45(), dim, type, main ) { }
 
   //generated copy constructor and destructor are fine
 
@@ -124,10 +132,7 @@ public:  //general frame info
 
   virtual ColorSpace& GetColorSpace() const { return ColorSpace::rgb45(); }
 
-};//RGB45
-
-
-
+};
 
 
 

@@ -26,12 +26,12 @@
 
 //avisynth includes
 #include "base.h"
+#include "../colorspace.h"
 #include "../bufferwindow.h"
-#include "../bufferwindow/blender.h"
-#include "../bufferwindow/leftturner.h"
-#include "../bufferwindow/rightturner.h"
-#include "../bufferwindow/verticalflipper.h"
-#include "../bufferwindow/horizontalflipper.h" 
+#include "../exception/nosuchplane.h"
+
+//assert include
+#include "assert.h"
 
 
 namespace avs { namespace vframe {
@@ -39,11 +39,12 @@ namespace avs { namespace vframe {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-// InterleavedBase
+//  Interleaved
 //
+//  VideoFrame factorisation superclass for interleaved colorspaces (YUY2, RGB24, RGB32, RGB45)
+//  where all the data is in only one frame buffer
 //
-//
-class InterleavedBase : public Base
+class Interleaved : public Base
 {
   
   BufferWindow main_;
@@ -52,10 +53,17 @@ class InterleavedBase : public Base
 public:  //structors
 
   //normal constructor
-  InterleavedBase(ColorSpace& space, Dimension const& dim, FrameType type, PEnvironment const& env);
+  Interleaved(ColorSpace& space, Dimension const& dim, FrameType type, PEnvironment const& env)
+    : Base( space, dim, type )
+    , main_( space.ToPlaneDim(dim, NOT_PLANAR), env ) { }
 
-  //conversion constructor
-  InterleavedBase(ColorSpace& space, Base const& other);
+  //constructs using the given buffer
+  Interleaved(ColorSpace& space, Dimension const& dim, FrameType type, BufferWindow const& main)
+    : Base( space, dim, type )
+    , main_( main )
+  {
+    assert( main.GetDimension() == space.ToPlaneDim(dim, NOT_PLANAR) );   //check the given buffer fits
+  }
 
   //generated copy constructor and destructor are fine
 
@@ -67,73 +75,24 @@ public:  //fetch environment method
 
 public:  //plane access
 
-  virtual BufferWindow& operator[](Plane plane);
-  virtual const BufferWindow& operator[](Plane plane) const;
+  virtual BufferWindow& operator[](Plane plane)
+  {
+    if ( plane != NOT_PLANAR )
+      throw exception::NoSuchPlane(GetColorSpace(), plane);
+    return GetMain();
+  }
+
+  virtual const BufferWindow& operator[](Plane plane) const
+  {
+    if ( plane != NOT_PLANAR )
+      throw exception::NoSuchPlane(GetColorSpace(), plane);
+    return GetConstMain();
+  }
 
   BufferWindow& GetMain() { ClearStaticProperties(); return main_; }
-  BufferWindow const& GetMain() const { return main_; }
   BufferWindow const& GetConstMain() const { return main_; }
 
-
-public:  //toolbox methods
-
-  virtual void ChangeSize(Vecteur const& topLeft, Vecteur const& bottomRight);
-  virtual void Copy(VideoFrame const& other, Vecteur const& coords);
-
-  virtual void FlipVertical() { GetMain() = bw::VerticalFlipper()(GetConstMain()); }
-
-  virtual void TurnLeft();
-  virtual void TurnRight();
-
-  virtual void Blend(VideoFrame const& other, float factor);
-
-
-private:  //implementation helpers
-
-  virtual BufferWindow DoTurnLeft() = 0;
-  virtual BufferWindow DoTurnRight() = 0;
-
-  virtual void DoBlend(BufferWindow const& other, float factor) = 0;
-
-};//InterleavedBase
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-// interleaved<int bpp, int bps>
-//
-// VideoFrame factorisation superclass for interleaved colorspaces (YUY2, RGB24, RGB32, RGB45)
-// where all the data is in only one frame buffer
-//
-template <int bpp, int bps> class interleaved : public InterleavedBase
-{
-
-public:  //structors
-
-  //normal constructor
-  interleaved(ColorSpace& space, Dimension const& dim, FrameType type, PEnvironment const& env)
-    : InterleavedBase( space, dim, type, env ) { }
-
-  //conversion constructor
-  interleaved(ColorSpace& space, Base const& other)
-    : InterleavedBase( space, other ) { }
-
-  //generated copy constructor and destructor are fine
-
-
-public:  //toobox methods
-
-  virtual void FlipHorizontal() { GetMain() = bw::HorizontalFlipper<bpp>()(GetConstMain()); }
-
-
-private:  //implementation helpers
-
-  virtual BufferWindow DoTurnLeft() { return bw::LeftTurner<bpp>()(GetConstMain()); }
-  virtual BufferWindow DoTurnRight() { return bw::RightTurner<bpp>()(GetConstMain()); }
-
-  virtual void DoBlend(BufferWindow const& other, float factor) { return bw::Blender<bps>(factor)(GetMain(), other); }
-
-};//interleaved<int bpp, int bps>
+};
 
 
 

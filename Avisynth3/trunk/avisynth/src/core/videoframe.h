@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -93,27 +93,6 @@ public:  //plane access (can do more with them than with the above)
   virtual BufferWindow const& operator[](Plane plane) const = 0;
 
 
-public:  //toolbox methods
-
-  //Please Note that shift vecteurs are in PIXELS
-  //buffers won't be reallocated if possible
-  //if reallocation has to be done, original data is copied at the right place
-  //new data, if there is any, is not initialized 
-  virtual void ChangeSize(Vecteur const& topLeft, Vecteur const& bottomRight) = 0;
-
-  //Copy other into self at the specified coords (in Pixels)
-  //Only the overlapping part is copied
-  virtual void Copy(VideoFrame const& other, Vecteur const& coords) = 0;
-  
-  virtual void FlipVertical() = 0;
-  virtual void FlipHorizontal() = 0;
-
-  virtual void TurnLeft() = 0;
-  virtual void TurnRight() = 0;
-
-  virtual void Blend(VideoFrame const& other, float factor) = 0; 
-
-
 public:  //property system
 
   typedef Property::PKey PKey;
@@ -128,9 +107,7 @@ public:  //property system
 
   virtual void RemoveFlowProperties(PKey const& key) = 0;
 
-};//VideoFrame
-
-
+};
 
 
 } //namespace avs

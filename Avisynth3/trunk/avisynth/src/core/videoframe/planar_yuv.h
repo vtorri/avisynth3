@@ -28,12 +28,10 @@
 #include "base.h"
 #include "../colorspace.h"
 #include "../bufferwindow.h"
-#include "../bufferwindow/blender.h"
 #include "../exception/nosuchplane.h"
-#include "../bufferwindow/leftturner.h"
-#include "../bufferwindow/rightturner.h"
-#include "../bufferwindow/verticalflipper.h"
-#include "../bufferwindow/horizontalflipper.h" 
+
+//assert include
+#include "assert.h"
 
 
 namespace avs { namespace vframe {
@@ -41,7 +39,7 @@ namespace avs { namespace vframe {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-//  PlanarYUVBase
+//  PlanarYUV
 //
 //
 //
@@ -60,12 +58,18 @@ public:  //structors
     , u_( space.ToPlaneDim(dim, PLANAR_U), env )
     , v_( space.ToPlaneDim(dim, PLANAR_V), env ) { }
 
-  //colorspace conversion constructor
-  PlanarYUV(ColorSpace& space, Base const& other, Dimension const& dim, PEnvironment const& env)
-    : Base( space, other )
-    , y_( space.ToPlaneDim(dim, PLANAR_Y), env )
-    , u_( space.ToPlaneDim(dim, PLANAR_U), env )
-    , v_( space.ToPlaneDim(dim, PLANAR_V), env ) { }
+  //constructs using given buffers
+  PlanarYUV(ColorSpace& space, Dimension const& dim, FrameType type, BufferWindow const& y, BufferWindow const& u, BufferWindow const& v)
+    : Base( space, dim, type )
+    , y_( y )
+    , u_( u )
+    , v_( v )
+  {
+    assert( y.GetDimension() == space.ToPlaneDim(dim, PLANAR_Y) );
+    assert( u.GetDimension() == space.ToPlaneDim(dim, PLANAR_U) );
+    assert( v.GetDimension() == space.ToPlaneDim(dim, PLANAR_V) );
+    assert( y.GetEnvironment() == u.GetEnvironment() && y.GetEnvironment() == v.GetEnvironment() );
+  }
 
   //generated copy constructor and destructor are fine
 
@@ -109,66 +113,7 @@ public:  //plane access
   BufferWindow const& GetConstU() const { return u_; }
   BufferWindow const& GetConstV() const { return v_; }
 
-
-public:  //toolbox methods
-
-  virtual void ChangeSize(Vecteur const& topLeft, Vecteur const& bottomRight);
-
-  virtual void Copy(VideoFrame const& other, Vecteur const& coords);
-
-  virtual void FlipVertical()
-  {
-    bw::VerticalFlipper flip;
-
-    BufferWindow Y = flip(GetConstY());
-    BufferWindow U = flip(GetConstU());
-    GetV() = flip(GetConstV());
-    GetY() = Y; GetU() = U;
-  }
-
-  virtual void FlipHorizontal()
-  {
-    bw::HorizontalFlipper<1> flip;
-
-    BufferWindow Y = flip(GetConstY());
-    BufferWindow U = flip(GetConstU());
-    GetV() = flip(GetConstV());
-    GetY() = Y; GetU() = U;
-  }
-
-
-  virtual void TurnLeft()
-  {
-    bw::LeftTurner<1> turn;
-    BufferWindow Y = turn( GetConstY() );
-    BufferWindow U = turn( GetConstU() );
-    GetV() = turn( GetConstV() );
-    GetY() = Y; GetU() = U;
-  }
-
-  virtual void TurnRight()
-  {
-    bw::RightTurner<1> turn;
-    BufferWindow Y = turn( GetConstY() );
-    BufferWindow U = turn( GetConstU() );
-    GetV() = turn( GetConstV() );
-    GetY() = Y; GetU() = U;
-  }
-
-
-  virtual void Blend(VideoFrame const& other, float factor)
-  {
-    if ( GetColorSpace() == other.GetColorSpace() )
-    {
-      bw::Blender<1> blend(factor);
-
-      blend(GetY(), other[PLANAR_Y]);
-      blend(GetY(), other[PLANAR_U]);
-      blend(GetY(), other[PLANAR_V]);
-    }
-  }
-
-};//PlanarYUV
+};
 
 
 
@@ -186,6 +131,10 @@ public:  //structors
   YV12(Dimension const& dim, FrameType type, PEnvironment env)
     : PlanarYUV( ColorSpace::yv12(), dim, type, env ) { }
 
+  //constructs using given buffers
+  YV12(Dimension const& dim, FrameType type, BufferWindow const& y, BufferWindow const& u, BufferWindow const& v)
+    : PlanarYUV( ColorSpace::yv12(), dim, type, y, u, v ) { }
+
   //generated copy constructor and destructor are fine
 
 
@@ -199,7 +148,7 @@ public:  //general frame info
   virtual ColorSpace& GetColorSpace() const { return ColorSpace::yv12(); }
 
 
-};//YV12
+};
 
 
 
@@ -217,6 +166,10 @@ public:  //constructors
   YV24(Dimension const& dim, FrameType type, PEnvironment const& env)
     : PlanarYUV( ColorSpace::yv24(), dim, type, env ) { }
 
+  //constructs using given buffers
+  YV24(Dimension const& dim, FrameType type, BufferWindow const& y, BufferWindow const& u, BufferWindow const& v)
+    : PlanarYUV( ColorSpace::yv24(), dim, type, y, u, v ) { }
+
   //generated copy constructor and destructor are fine
 
 
@@ -229,7 +182,7 @@ public:  //general frame info
 
   virtual ColorSpace& GetColorSpace() const { return ColorSpace::yv24(); }
 
-};//YV24
+};
 
 
 
@@ -247,6 +200,10 @@ public:  //constructors
   YV45(Dimension const& dim, FrameType type, PEnvironment const& env)
     : PlanarYUV( ColorSpace::yv45(), dim, type, env ) { }
 
+  //constructs using given buffers
+  YV45(Dimension const& dim, FrameType type, BufferWindow const& y, BufferWindow const& u, BufferWindow const& v)
+    : PlanarYUV( ColorSpace::yv45(), dim, type, y, u, v ) { }
+
   //generated copy constructor and destructor are fine
 
 
@@ -259,23 +216,7 @@ public:  //general frame info
 
   virtual ColorSpace& GetColorSpace() const { return ColorSpace::yv45(); }
 
-
-public:  //toolbox methods
-
-  virtual void Blend(VideoFrame const& other, float factor)
-  {
-    if ( GetColorSpace() == other.GetColorSpace() )
-    {
-      bw::Blender<2> blend(factor);
-
-      blend(GetY(), other[PLANAR_Y]);
-      blend(GetY(), other[PLANAR_U]);
-      blend(GetY(), other[PLANAR_V]);
-    }
-  }
-
-
-};//YV45
+};
 
 
 

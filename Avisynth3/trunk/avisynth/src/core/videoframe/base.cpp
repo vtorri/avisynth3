@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -37,15 +37,6 @@ Base::Base(ColorSpace& space, Dimension const& dim, FrameType type)
   , type_( type )
 {
   space.CheckDim(dim, MaybeInterlaced(type));
-}
-
-
-Base::Base(ColorSpace& space, Base const& other)
-  : dim_( other.dim_ )
-  , type_( other.type_ )
-  , flows_( other.flows_ )
-{
-  space.CheckDim(dim_, MaybeInterlaced(type_));
 }
 
 

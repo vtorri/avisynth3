@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -38,36 +38,32 @@ namespace avs { namespace vframe {
 //
 //  YUY2 specific VideoFrame subclass
 //
-class YUY2 : public interleaved<2, 1>
+class YUY2 : public Interleaved
 {
            
 public:  //structors
 
   //normal constructor
   YUY2(Dimension const& dim, FrameType type, PEnvironment env)
-    : interleaved<2, 1>( ColorSpace::yuy2(), dim, type, env ) { }
+    : Interleaved( ColorSpace::yuy2(), dim, type, env ) { }
+
+  //constructs using the given buffer
+  YUY2(Dimension const& dim, FrameType type, BufferWindow const& main)
+    : Interleaved( ColorSpace::yuy2(), dim, type, main ) { }
 
   //generated copy constructor and destructor are fine
 
 
 public:  //clone method
 
-  virtual CPVideoFrame clone() const { return CPVideoFrame( (VideoFrame *)new YUY2(*this) ); }
+  virtual CPVideoFrame clone() const { return CPVideoFrame( static_cast<VideoFrame *>(new YUY2(*this)) ); }
 
 
 public:  //general frame info
 
   virtual ColorSpace& GetColorSpace() const { return ColorSpace::yuy2(); }
 
-
-public:  //toolbox methods
-
-  //virtual void FlipHorizontal();
-
-  //virtual void TurnLeft();  
-  //virtual void TurnRight();
-
-};//YUY2
+};
 
 
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -28,10 +28,6 @@
 #include "../../clip/caching/concrete.h"
 #include "../../clip/onechild/concrete.h"
 #include "../../clip/onechild/cachingpipeline.h"
-
-
-#pragma warning ( push )           //push warning state
-#pragma warning (disable : 4250)   //get rid of MI dominance decisions
 
 
 namespace avs { namespace filters {
@@ -174,7 +170,5 @@ public:  //factory method
 
 
 } } //namespace avs::filters
-
-#pragma warning ( pop )
 
 #endif //__AVS_FILTERS_FLIPVERTICAL_H__

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -30,9 +30,10 @@
 namespace avs { namespace block {
 
 
+
 void Deleter::operator ()(void * ptr) const
 {
-  Recycler().Return(ptr, size_, recycle_);
+  Recycler::instance.Return(ptr, size_, recycle_);
 }
 
 

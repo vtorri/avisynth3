@@ -32,13 +32,11 @@
 namespace avs { namespace block {
 
 
-Recycler::Mutex Recycler::mutex_;
-Recycler::RecycleMap Recycler::map_;  
-
-
 
 void Recycler::Return(void * ptr, int size, bool recycle)
 { 
+  Lock lock(mutex_);
+
   if ( recycle )
     map_.insert( std::make_pair(size, ptr) ); 
   else mem_free( ptr );
@@ -47,6 +45,8 @@ void Recycler::Return(void * ptr, int size, bool recycle)
 
 Recycler::BYTE * Recycler::Acquire(int size) 
 {
+  Lock lock(mutex_);
+
   void * result;
 
   RecycleMap::iterator it = map_.find(size);
@@ -59,6 +59,17 @@ Recycler::BYTE * Recycler::Acquire(int size)
   else result = mem_alloc(size);
 
   return static_cast<BYTE *>(result);
+}
+
+
+void Recycler::Clear()
+{
+  Lock lock(mutex_);
+
+  for ( RecycleMap::iterator it = map_.begin(); it != map_.end(); ++it )
+    mem_free( it->second );
+
+  map_.clear();
 }
 
 
@@ -94,17 +105,7 @@ void Recycler::mem_free(void * ptr)
 }
 
 
-void Recycler::CleanUp()
-{
-  for ( RecycleMap::iterator it = map_.begin(); it != map_.end(); ++it )
-    mem_free( it->second );
-
-  map_.clear();
-}
-
-
-Recycler::Cleaner Recycler::cleaner;
-
+Recycler Recycler::instance;
 
 
 } } //namespace avs::block

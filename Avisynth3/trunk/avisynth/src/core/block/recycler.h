@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,7 @@
 
 //boost include
 #include <boost/thread/mutex.hpp>    //for mutex
+#include <boost/utility.hpp>         //for noncopyable
 
 //stl include
 #include <map>                       //for multimap
@@ -46,7 +47,7 @@ namespace avs { namespace block {
 //
 //  handles reycling of (aligned) memory blocks allocated by Block and OwnedBlock
 //
-class Recycler
+class Recycler : public boost::noncopyable
 {
 
   typedef unsigned char BYTE;
@@ -54,17 +55,14 @@ class Recycler
   typedef Mutex::scoped_lock Lock;
   typedef std::multimap<int, void *> RecycleMap; //maps size to memory blocks of that size
 
-
-  Lock lock_;
-
-  static Mutex mutex_;  
-  static RecycleMap map_;  
+  Mutex mutex_;  
+  RecycleMap map_;  
 
 
-public:  //constructor
+private:  //structors
 
-  Recycler()
-    : lock_( mutex_ ) { }
+  Recycler() { }
+  ~Recycler() { Clear(); }
 
 
 public:  //Recycler interface
@@ -75,6 +73,9 @@ public:  //Recycler interface
   //acquires memory from the recycling pool (eventually newly allocated)
   BYTE * Acquire(int size); 
 
+  //releases all blocks to the heap
+  void Clear();
+
 
 private:  //aligned mem alloc/dealloc
 
@@ -82,18 +83,9 @@ private:  //aligned mem alloc/dealloc
   static void mem_free(void * ptr);
 
 
-private:  //handles deallocation of all blocks when dll unloaded
+public:  //sole instance
 
-  //releases all blocks to the heap
-  void CleanUp();
-
-  //call the above when deleted
-  struct Cleaner 
-  { 
-    ~Cleaner() { Recycler().CleanUp(); } 
-  };
-
-  static Cleaner cleaner;   
+  static Recycler instance;
 
 };
 

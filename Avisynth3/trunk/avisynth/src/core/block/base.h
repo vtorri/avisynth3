@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -47,7 +47,7 @@ class Recycler;
 template <class Deleter> class base
 {
   
-public:  //typedefs
+public:  //typedef
 
   typedef unsigned char BYTE;
 
@@ -60,7 +60,7 @@ private:  //member
 public:  //structors
 
   base(Deleter const& deleter)
-    : block_( Recycler().Acquire(deleter.size()), deleter ) { }
+    : block_( Recycler::instance.Acquire(deleter.size()), deleter ) { }
 
   //generated copy constructor and destructor are fine
 

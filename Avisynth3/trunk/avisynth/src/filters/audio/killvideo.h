@@ -74,9 +74,14 @@ protected:  //GetKey method
   WeakPClip GetKey() const { return GetChild(); }
 
 
-public:  //factory method
+public:  //factory method and functor
 
   static PClip Create(PClip const& child); 
+
+  struct Creator
+  {
+    PClip operator()(PClip const& child) const { return Create(child); }
+  };
 
 };
 

@@ -27,6 +27,8 @@
 //avisynth includes
 #include "../core/geometry/box.h"
 #include "../core/geometry/vecteur.h"
+#include "../core/bufferwindow.h"
+#include "../core/block.h"
 
 //boost include
 #include <boost/shared_ptr.hpp>
@@ -38,6 +40,10 @@ struct FT_GlyphRec_;
 
 namespace avs { namespace freetype {
   
+
+typedef buffer_window<1, 0, block_<1> > Bitmap;
+typedef std::pair<Bitmap, Vecteur> PositionedBitmap;
+
 
 
 class Glyph
@@ -65,6 +71,8 @@ public:  //API
   Vecteur GetAdvance() const;
   Box GetControlBox() const;
 
+  PositionedBitmap GetBitmap() const;
+
  /*   void render           (FT_GlyphSlot    slot,
 			   FT_Render_Mode render_mode);
     
@@ -80,8 +88,11 @@ public:  //API
 };
 
 
-} } // namespace avs::freetype
+//global scope swap
+inline void swap(Glyph& left, Glyph& right) { left.swap(right); }
 
+
+} } // namespace avs::freetype
 
 
 #endif //__AVS_FREETYPE_GLYPH_H__

@@ -26,9 +26,11 @@
 
 //avisynth include
 #include "base.h"
+#include "../forward.h"
 
 
 namespace avs { namespace filters { namespace resize { namespace pattern {
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,7 +50,7 @@ namespace avs { namespace filters { namespace resize { namespace pattern {
 //
 //  Where  | coeff block |  =  | c0a|c0b | c1a|c1b |   2 short coeffs for each pixel
 //
-//  The pattern is 8 bytes aligned, making each offset int aligned
+//  The pattern is quaranteed 8 bytes aligned, making each offset int aligned
 //  and each coeff block 8 bytes aligned
 //
 class Interleaved : public Base
@@ -56,7 +58,7 @@ class Interleaved : public Base
 
 public:  //constructor
 
-  Interleaved(Filter const& filter, SubRange const& subrange, int size);
+  Interleaved(PEnvironment const& env, Filter const& filter, SubRange const& subrange, int size);
 
 };
 

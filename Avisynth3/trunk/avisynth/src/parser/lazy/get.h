@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -18,14 +18,14 @@
 //
 // Linking Avisynth statically or dynamically with other modules is making a
 // combined work based on Avisynth.  Thus, the terms and conditions of the GNU
-// General Public License cover the whole combination.
 
 
-#ifndef __AVS_PARSER_LAZY_UNWRAP_H__
-#define __AVS_PARSER_LAZY_UNWRAP_H__
+#ifndef __AVS_PARSER_LAZY_GET_H__
+#define __AVS_PARSER_LAZY_GET_H__
 
 //boost includes
 #include <boost/ref.hpp>
+#include <boost/optional.hpp>
 #include <boost/spirit/phoenix/functions.hpp>
 
 
@@ -33,58 +33,45 @@ namespace avs { namespace parser { namespace lazy {
 
 
 
-////////////////////////////////////////////////////////////////////////
-//  Wrapper
+//////////////////////////////////////////////////////////////////////////////
+//  Getter
 //
-//  functor to wraps a ref into a reference_wrapper
+//  functor from which is made the get lazy function
 //
-struct Wrapper
+struct Getter
 {
 
   template <typename T>
   struct result
   {
-    typedef typename boost::reference_wrapper<T> type;
+    typedef typename boost::unwrap_reference<T>::type & type;
   };
 
   template <typename T>
-  typename result<T>::type operator()(T& val) const
+  struct result<boost::optional<T> >
   {
-    return boost::reference_wrapper<T>(val);
-  }
-
-};
-
-
-
-/////////////////////////////////////////////////////////////////////////
-//  Unwrapper
-//
-//  functor to extract the ref from a reference wrapper
-//
-struct Unwrapper
-{
+    typedef T & type;
+  };
 
   template <typename T>
-  struct result
+  struct result<boost::optional<T> const>
   {
-    typedef typename boost::unwrap_reference<T>::type& type;
+    typedef T const& type;
   };
 
   template <typename T>
   typename result<T>::type operator()(T& val) const
   {
     return val.get();
-  };
+  }
 
 };
 
 
 
-phoenix::function<Wrapper> const wrap = Wrapper();
-phoenix::function<Unwrapper> const unwrap = Unwrapper();
+phoenix::function<Getter> const get = Getter();
 
 
 } } } //namespace avs::parser::lazy
 
-#endif //__AVS_PARSER_LAZY_UNWRAP_H__
+#endif //__AVS_PARSER_LAZY_GET_H__

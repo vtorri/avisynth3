@@ -163,14 +163,6 @@ public:  //various check methods (failure means proper exception)
 
   virtual void CheckHasFrame(int n) const;
 
-
-public:  
-
-  __declspec(noreturn) static void ThrowNoVideoException();
-  __declspec(noreturn) static void ThrowNoAudioException();
-  __declspec(noreturn) static void ThrowNoSuchFrameException(int n);
-
-
 };//VideoInfo
 
 

@@ -25,9 +25,9 @@
 #include "concrete.h"
 #include "../exception.h"
 #include "../colorspace.h"
-
-//boost include
-#include <boost/format.hpp>
+#include "../exception/noaudio.h"
+#include "../exception/novideo.h"
+#include "../exception/nosuchframe.h"
 
 
 namespace avs {
@@ -84,39 +84,21 @@ int VideoInfo::AudioSamplesFromFrames(int frames) const
 void VideoInfo::CheckHasVideo() const
 {
   if ( ! HasVideo() )
-    ThrowNoVideoException();
+    throw exception::NoVideo();
 }
 
 void VideoInfo::CheckHasAudio() const
 {
   if ( ! HasVideo() )
-    ThrowNoAudioException();
+    throw exception::NoAudio();
 }
 
 
 void VideoInfo::CheckHasFrame(int n) const
 {
   if ( n < 0 || GetFrameCount() <= n )
-    ThrowNoSuchFrameException(n);
+    throw exception::NoSuchFrame(n);
 }
-
-
-void VideoInfo::ThrowNoVideoException()
-{
-  throw GenericException("clip has no video");
-}
-
-void VideoInfo::ThrowNoAudioException()
-{
-  throw GenericException("clip has no audio");
-}
- 
-void VideoInfo::ThrowNoSuchFrameException(int n)
-{
-  throw GenericException(str( boost::format("clip has no frame %d") % n ));
-}
-
-
 
 
 

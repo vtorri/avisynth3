@@ -26,7 +26,7 @@
 #include "yuy2.h"
 #include "planar_yuv.h"
 #include "../dimension.h"
-#include "../exception.h"
+#include "../exception/generic.h"
 #include "../exception/unsupportedcolorspace.h"
 
 //boost include
@@ -78,23 +78,23 @@ void ColorSpace::ThrowUnsupportedColorSpaceException() const
 
 void ColorSpace::ThrowNoSuchPlaneException(Plane plane) const
 {
-  throw GenericException(str( boost::format("%s doesn't have plane %s") % GetName() % NameOf(plane) ));
+  throw exception::Generic(str( boost::format("%s doesn't have plane %s") % GetName() % NameOf(plane) ));
 }
 
 
 void ColorSpace::ThrowInvalidInterlacedHeightException(int modulo, int height) const
 {
-  throw GenericException(str( boost::format("%s: interlaced height must be mod %d") % GetName() % modulo ));
+  throw exception::Generic(str( boost::format("%s: interlaced height must be mod %d") % GetName() % modulo ));
 }
 
 void ColorSpace::ThrowInvalidHeightException(int modulo, int height) const
 {
-  throw GenericException(str( boost::format("%s: height must be mod %d") % GetName() % modulo ));
+  throw exception::Generic(str( boost::format("%s: height must be mod %d") % GetName() % modulo ));
 }
 
 void ColorSpace::ThrowInvalidWidthException(int modulo, int width) const
 {
-  throw GenericException(str( boost::format("%s: width must be mod %d") % GetName() % modulo ));
+  throw exception::Generic(str( boost::format("%s: width must be mod %d") % GetName() % modulo ));
 }
 
 

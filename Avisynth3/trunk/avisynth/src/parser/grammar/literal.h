@@ -28,6 +28,7 @@
 #include "../stack.h"
 #include "../lazy/pair.h"
 #include "../stackoperation.h"
+#include "../functor/pusher.h"
 
 //spirit include
 #include <boost/spirit/core.hpp>
@@ -60,21 +61,6 @@ template <class Type> struct Value : spirit::closure<Value, Type>
 struct Literal : public spirit::grammar<Literal, closure::Value<TypedOp>::context_t>
 {
 
-  //stack_pusher template functor
-  template <class Value>
-  struct stack_pusher
-  {
-
-    Value const value_;
-
-    stack_pusher(Value const& value)
-      : value_( value ) { }
-
-    void operator()(Stack& stack) const { stack.push( value_ ); }
-
-  };
-
-
   template <typename ScannerT>
   struct definition 
   {
@@ -88,17 +74,17 @@ struct Literal : public spirit::grammar<Literal, closure::Value<TypedOp>::contex
       literal
           =   spirit::strict_real_p
               [
-                first(self.value) = construct_<stack_pusher<double> >(arg1),
+                first(self.value) = construct_<functor::pusher<double> >(arg1),
                 second(self.value) = val('d')
               ]
           |   spirit::int_p
               [
-                first(self.value) = construct_<stack_pusher<int> >(arg1),
+                first(self.value) = construct_<functor::pusher<int> >(arg1),
                 second(self.value) = val('i')
               ]
           |   string
               [
-                first(self.value) = construct_<stack_pusher<std::string> >(arg1),
+                first(self.value) = construct_<functor::pusher<std::string> >(arg1),
                 second(self.value) = val('s')
               ]
           ;

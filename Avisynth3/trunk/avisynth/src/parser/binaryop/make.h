@@ -24,7 +24,8 @@
 #ifndef __AVS_PARSER_BINARYOP_MAKE_H__
 #define __AVS_PARSER_BINARYOP_MAKE_H__
 
-//avisynth include
+//avisynth includes
+#include "../optype.h"
 #include "../vmstate.h"
 
 //boost include
@@ -35,6 +36,11 @@ namespace avs { namespace parser { namespace binaryop {
 
 
 
+///////////////////////////////////////////////////////////////////////////////
+//  make<Visitor>
+//
+//  helper template to transform a binary visitor into a stack functor
+//
 template <typename Visitor> struct make
 {
 
@@ -47,10 +53,11 @@ public:  //structors
     : visitor_( visitor ) { }
 
 
-  void operator()(VMState& state) const
+  OpType operator()(VMState& state) const
   {
     state.peek(1) = boost::apply_visitor(visitor_, state.peek(1), state.top());
     state.pop();
+    return NORMAL;
   }
 
 };

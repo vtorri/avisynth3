@@ -24,7 +24,7 @@
 #ifdef _WIN32
 
 //avisynth includes
-#include "vfwframedecompressor.h"
+#include "icmframedecompressor.h"
 #include "trivialframedecompressor.h"
 #include "../../../core/colorspace.h"
 #include "../../../core/exception/generic.h"
@@ -34,10 +34,10 @@ namespace avs { namespace filters { namespace source {
 
 
 
-char const * const VFWFrameDecompressor::preferredColorSpace_[4] = { "YV12", "YUY2", "RGB32", "RGB24" };
+char const * const ICMFrameDecompressor::preferredColorSpace_[4] = { "YV12", "YUY2", "RGB32", "RGB24" };
 
 
-VFWFrameDecompressor::VFWFrameDecompressor(RawVideo const& src, vfw::PBitmapInfoHeader const& bih, PColorSpace& space)
+ICMFrameDecompressor::ICMFrameDecompressor(RawVideo const& src, vfw::PBitmapInfoHeader const& bih, PColorSpace& space)
   : FrameDecompressor( src )
   , hic_( bih->biCompression )
   , input_( bih )
@@ -57,13 +57,13 @@ VFWFrameDecompressor::VFWFrameDecompressor(RawVideo const& src, vfw::PBitmapInfo
 }
 
 
-VFWFrameDecompressor::~VFWFrameDecompressor()
+ICMFrameDecompressor::~ICMFrameDecompressor()
 {
   hic_.DecompressEnd();
 }
 
 
-OwnedBlock VFWFrameDecompressor::operator()(bool keyframe, bool preroll, OwnedBlock const& src, long bytesRead) const
+OwnedBlock ICMFrameDecompressor::operator()(bool keyframe, bool preroll, OwnedBlock const& src, long bytesRead) const
 {
  
   input_->biSizeImage = bytesRead;  
@@ -79,7 +79,7 @@ OwnedBlock VFWFrameDecompressor::operator()(bool keyframe, bool preroll, OwnedBl
 
 
 
-FrameDecompressor * VFWFrameDecompressor::Create(RawVideo const& src, vfw::PBitmapInfoHeader const& bih, PColorSpace& output)
+FrameDecompressor * ICMFrameDecompressor::Create(RawVideo const& src, vfw::PBitmapInfoHeader const& bih, PColorSpace& output)
 {
   return (output = bih->GetColorSpace()) ? static_cast<FrameDecompressor *>(new TrivialFrameDecompressor(src))
                                          : new VFWFrameDecompressor(src, bih, output);

@@ -27,7 +27,7 @@
 #include "../../../core/videoinfo.h"
 #include "../../../vfw/avistreaminfo.h"
 #include "../../../vfw/bitmapinfoheader.h"
-#include "../video/vfwframedecompressor.h"
+#include "../video/icmframedecompressor.h"
 #include "../../../core/exception/generic.h"
 
 //windows includes
@@ -68,7 +68,7 @@ void RawVideo::InitVideo(PAVIStream const& video, VideoInfo& vi)
 
     PColorSpace space;
     //sets frame decompressor (and gets output colorspace)
-    SetFrameDecompressor( VFWFrameDecompressor::Create(*this, bih, space) );
+    SetFrameDecompressor( ICMFrameDecompressor::Create(*this, bih, space) );
     vfw::AviStreamInfo asi(*video);
 
     vi.AddVideo(space, bih->GetDimension(), 0);

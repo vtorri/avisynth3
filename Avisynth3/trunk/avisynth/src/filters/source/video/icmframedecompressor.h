@@ -23,8 +23,8 @@
 
 #ifdef _WIN32
 
-#ifndef __AVS_FILTERS_SOURCE_VFWFRAMEDECOMPRESSOR_H__
-#define __AVS_FILTERS_SOURCE_VFWFRAMEDECOMPRESSOR_H__
+#ifndef __AVS_FILTERS_SOURCE_ICMFRAMEDECOMPRESSOR_H__
+#define __AVS_FILTERS_SOURCE_ICMFRAMEDECOMPRESSOR_H__
 
 //avisynth includes
 #include "framedecompressor.h"
@@ -41,11 +41,11 @@ namespace avs { namespace filters { namespace source {
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-//  VFWFrameDecompressor
+//  ICMFrameDecompressor
 //
 //  a frame decompressor using VFW
 //
-class VFWFrameDecompressor : public FrameDecompressor
+class ICMFrameDecompressor : public FrameDecompressor
 {
 
   vfw::Hic hic_;                   //smart handle to a VFW decompressor
@@ -59,9 +59,9 @@ class VFWFrameDecompressor : public FrameDecompressor
 public:  //structors
 
   //returns output colorspace in space
-  VFWFrameDecompressor(RawVideo const& src, vfw::PBitmapInfoHeader const& bih, PColorSpace& space);
+  ICMFrameDecompressor(RawVideo const& src, vfw::PBitmapInfoHeader const& bih, PColorSpace& space);
 
-  virtual ~VFWFrameDecompressor();
+  virtual ~ICMFrameDecompressor();
 
 
 private:  //FrameDecompressor private interface
@@ -79,6 +79,6 @@ public:  //factory method
 
 } } } //namespace avs::filters::source
 
-#endif //__AVS_FILTERS_SOURCE_VFWFRAMEDECOMPRESSOR_H__
+#endif //__AVS_FILTERS_SOURCE_ICMFRAMEDECOMPRESSOR_H__
 
 #endif //_WIN32

@@ -27,7 +27,8 @@
 //avisynth include
 #include "../core/forward.h"       //for VideoInfo
 
-//windows includes
+//windows include
+#define NOMINMAX          //prevents generation of min and max macros
 #include <windows.h>
 
 

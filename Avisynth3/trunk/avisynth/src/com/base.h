@@ -28,6 +28,7 @@
 #include "../utility/instancecounted.h"
 
 //windows includes
+#define NOMINMAX          //prevents generation of min and max macros
 #include "initguid.h"
 #include "objbase.h"
 

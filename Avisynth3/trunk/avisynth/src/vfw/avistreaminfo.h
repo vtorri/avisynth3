@@ -28,6 +28,7 @@
 #include "../core/forward.h"
 
 //windows include
+#define NOMINMAX          //prevents generation of min and max macros
 #include <windows.h>
 #include <vfw.h>
 

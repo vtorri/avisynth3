@@ -27,7 +27,7 @@
 namespace avs {
 
 
-template <>
+
 block_<block::Align>::block_(int size, bool recycle)
   : BaseBlockType( new block::holder::Standard(size, recycle) ) { }
 

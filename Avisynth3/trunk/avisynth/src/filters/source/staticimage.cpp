@@ -23,13 +23,13 @@
 
 //avisynth includes
 #include "staticimage.h"
-#include "../../core/videoinfo.h"
 #include "../../core/colorspace.h"
 #include "../../core/videoframe.h"
 #include "../../text/antialiaser.h"
 #include "../../core/bufferwindow.h"
 #include "../../core/cow_shared_ptr.h"
 #include "../../core/exception/noaudio.h"
+#include "../../core/videoinfo/concrete.h"
 #include "../../core/runtime_environment.h"
 
 
@@ -40,7 +40,7 @@ namespace avs { namespace filters {
 StaticImage::StaticImage(CPVideoFrame const& frame)
   : frame_( frame )
 {
-  PVideoInfo vi = VideoInfo::Create();
+  PVideoInfo vi = videoinfo::Concrete::Create();
 
   vi->AddVideo(frame->GetColorSpace(), frame->GetDimension(), 25);
 

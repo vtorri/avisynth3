@@ -27,6 +27,7 @@
 #include "../colorspace.h"
 #include "../timing/threadclock.h"
 #include "../runtime_environment.h"
+#include "../videoinfo/concrete.h"
 
 
 namespace avs {
@@ -39,9 +40,21 @@ OwnedBlock RuntimeEnvironment::NewOwnedBlock(int size, bool recycle)
 }
 
 
-CPVideoFrame RuntimeEnvironment::CreateFrame(ColorSpace& space, Dimension const& dim, FrameType type)
+PVideoInfo RuntimeEnvironment::CreateVideoInfo() const
+{
+  return videoinfo::Concrete::Create();
+}
+
+
+PVideoFrame RuntimeEnvironment::CreateFrame(ColorSpace& space, Dimension const& dim, FrameType type)
 {
   return space.CreateFrame( shared_from_this(), dim, type );
+}
+
+
+PVideoFrame RuntimeEnvironment::CreateFrame(VideoInfo const& vi, FrameType type)
+{
+  return vi.GetColorSpace().CreateFrame( shared_from_this(), vi.GetDimension(), type );
 }
 
 

@@ -23,9 +23,9 @@
 
 //avisynth includes
 #include "voidclip.h"
-#include "../../core/videoinfo.h"
 #include "../../core/exception/novideo.h"
 #include "../../core/exception/noaudio.h"
+#include "../../core/videoinfo/concrete.h"
 
 
 namespace avs { namespace filters {
@@ -34,7 +34,7 @@ namespace avs { namespace filters {
 
 CPVideoInfo VoidClip::GetVideoInfo() const
 {
-  return VideoInfo::Create();
+  return videoinfo::Concrete::Create();
 }
 
 CPVideoFrame VoidClip::GetFrame(int /*n*/) const

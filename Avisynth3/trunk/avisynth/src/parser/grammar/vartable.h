@@ -71,7 +71,7 @@ public:  //VarTable interface
   int size() const { return size_; }
 
   //change an index from base of stack to one from top (context independant)
-  int FromTop(int index) const { return size_ - 1 - index; }
+  int FromTop(int index) const { return size_ - index; }
 
 };
 

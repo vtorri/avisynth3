@@ -1071,6 +1071,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				Name="Source"
 				Filter="">
 				<File
+					RelativePath="..\..\..\src\filters\source\avifilesource.cpp">
+				</File>
+				<File
 					RelativePath="..\..\..\src\filters\source\avifilesource.h">
 				</File>
 				<File
@@ -1157,6 +1160,24 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			</File>
 			<File
 				RelativePath="..\..\..\src\functions\convert.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Profile|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\src\functions\convert.h">
@@ -1641,12 +1662,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				RelativePath="..\..\..\src\freetype\bitmapglyph.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\freetype\bitmapholder.cpp">
-			</File>
-			<File
-				RelativePath="..\..\..\src\freetype\bitmapholder.h">
-			</File>
-			<File
 				RelativePath="..\..\..\src\freetype\face.cpp">
 			</File>
 			<File
@@ -1664,6 +1679,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			<File
 				RelativePath="..\..\..\src\freetype\library.h">
 			</File>
+			<File
+				RelativePath="..\..\..\src\freetype\monobitmap.h">
+			</File>
 		</Filter>
 		<File
 			RelativePath="..\..\..\distrib\Avisynth.ico">
@@ -1673,6 +1691,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 		</File>
 		<File
 			RelativePath="..\..\..\src\core.h">
+		</File>
+		<File
+			RelativePath="..\..\..\src\define.h">
 		</File>
 		<File
 			RelativePath="..\..\..\src\main.cpp">

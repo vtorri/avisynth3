@@ -24,7 +24,7 @@
 //avisynth include
 #include "main.h"
 #include "com/base.h"
-#include "vfw/factory.h"
+#include "vfw/avifilefactory.h"
 
 
 
@@ -67,7 +67,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, ULONG ulReason, LPVOID lpReserved) {
 
 STDAPI DllGetClassObject(CLSID const& rclsid, IID const& riid, void ** ppv)
 {
-  return rclsid == CLSID_CAVIFileSynth ? avs::AviFileFactory::Create(riid, ppv)
+  return rclsid == CLSID_CAVIFileSynth ? avs::vfw::AviFileFactory::Create(riid, ppv)
                                        : CLASS_E_CLASSNOTAVAILABLE;
 }
 

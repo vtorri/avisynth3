@@ -95,7 +95,7 @@ std::pair<OwnedBlock, long> AviFileSource::ReadVideo(int n) const
   long size = 0;
   video_->Read(n, 1, NULL, 0, &size, NULL);  //get needed size for the block
 
-  OwnedBlock block(GetEnvironment(), size, true);
+  OwnedBlock block(GetEnvironment(), size + BufferWindow::Guard * 2, true);
 
   if ( size != 0 )
   {

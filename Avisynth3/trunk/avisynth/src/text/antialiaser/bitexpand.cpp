@@ -42,7 +42,7 @@ BitExpandLeft::BitExpandLeft()
     if ( i &  64 ) l |= 0xC0;
     if ( i & 128 ) l |= 0x80;
 
-    (*this)[i] = l;
+    (*this)[i] = static_cast<unsigned char>(l);
   }
 }
 
@@ -61,14 +61,14 @@ BitExpandRight::BitExpandRight()
     if ( i &  64 ) r |= 0x7F;
     if ( i & 128 ) r |= 0xFF;
 
-    (*this)[i] = r;
+    (*this)[i] = static_cast<unsigned char>(r);
   }
 }
 
 
-BitExpandLeft const BitExpandLeft::instance = BitExpandLeft();
+BitExpandLeft const BitExpandLeft::instance;
 
-BitExpandRight const BitExpandRight::instance = BitExpandRight();
+BitExpandRight const BitExpandRight::instance;
 
 
 } } } //namespace avs::text::aliaser

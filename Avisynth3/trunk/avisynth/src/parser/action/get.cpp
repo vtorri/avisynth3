@@ -56,9 +56,9 @@ struct StringSubscript
       begin = 0;
     if ( end < 0 )
       end = 0;
-    return val.substring(begin, end);
+    return val.substr(begin, end);
   }
-}
+};
 
 ElementalOperation const subscript_op = adapt( StringSubscript() );
 
@@ -67,8 +67,8 @@ ElementalOperation const& Get::SubscriptOperation(char type, bool firstArgOnly)
 
   switch( type )
   {
-  case 's': if ( ! firstArgOnly )
-              return subscript_op;
+  case 's': //if ( ! firstArgOnly )
+              //return subscript_op;
 
   default: throw exception::Generic("Illegal use of operator[]");
   }

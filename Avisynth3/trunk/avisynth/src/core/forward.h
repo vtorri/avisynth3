@@ -41,22 +41,24 @@ class Key;
 class Clip;
 class Blitter;
 class Property;
-struct Vecteur;
-class Dimension;
 class VideoInfo;
 class ColorSpace;
 class VideoFrame;
 class RuntimeEnvironment;
 template <int align> class block_;
 template <int align> class owned_block;
+template <typename T> struct vecteur;
+template <typename T> class dimension;
 template <int align, int guard = block::Align, class Buffer = owned_block<1> > class buffer_window;
 
 //typedefs
 typedef unsigned char BYTE;
+typedef vecteur<long> Vecteur;
+typedef dimension<long> Dimension;
 typedef block_<block::Align> Block;
 typedef owned_block<block::Align> OwnedBlock;
 typedef buffer_window<block::Align> BufferWindow;
-typedef boost::rational<int> Fraction;
+typedef boost::rational<long> Fraction;
 
 //ptr typedefs
 typedef boost::shared_ptr<Key const> PKey;

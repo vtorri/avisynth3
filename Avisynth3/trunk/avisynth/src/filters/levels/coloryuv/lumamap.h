@@ -72,12 +72,6 @@ public:  //methods usable as parameter in the constructor
     return ( value * shift * pcFactor / tvFactor + 16 * shift + shift / 2 ) / shift;
   }
 
-  static int identity(int value) { return value; }
-
-
-  //method to choose the constructor adjust function given a mode
-  static int (* Adjust(Mode mode))(int);
-
 };
 
 

@@ -58,18 +58,4 @@ LumaMap::LumaMap(Levels const& levels, float gamma, int (* adjust)(int), bool co
 
 
 
-int (* LumaMap::Adjust(Mode mode))(int)
-{
-  switch ( mode )
-  {
-  case PCtoTV:      return &PCtoTVAdjust<65536, 76309>;
-  case TVtoPC:
-  case TVtoPCOnlyY: return &TVtoPCAdjust<65536, 76309>;
-
-  default:          return &identity;
-  }
-}
-
-
-
 } } } //namespace avs::filters::coloryuv

@@ -23,7 +23,8 @@
 
 //avisynth includes
 #include "glyph.h"
-#include "bitmapholder.h"
+#include "library.h"
+#include "monobitmap.h"
 //#include "../core/exception/generic.h"
 
 //assert include
@@ -33,6 +34,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
+#include FT_OUTLINE_H
 
 
 
@@ -40,7 +42,10 @@ namespace avs { namespace freetype {
 
 
 Glyph::Glyph(FT_GlyphRec_ * glyph)
-  : glyph_( glyph, &FT_Done_Glyph ) { }
+  : glyph_( glyph, &FT_Done_Glyph ) 
+{
+  assert( glyph_->format == FT_GLYPH_FORMAT_OUTLINE );
+}
 
 
 Vecteur Glyph::GetAdvance() const
@@ -58,7 +63,20 @@ Box Glyph::GetControlBox() const
 }
 
 
-/////////////////////////////////////////////////////////////////////////////////////
+void Glyph::Draw(Vecteur const& pen, MonoBitmap const& bitmap) const
+{
+  FT_Outline * outline = &reinterpret_cast<FT_OutlineGlyphRec_ *>(glyph_.get())->outline;
+
+  FT_Outline_Translate(outline, pen.x, pen.y); 
+  FT_Error error = FT_Outline_Get_Bitmap(Library::instance, outline, const_cast<MonoBitmap *>(&bitmap));
+  FT_Outline_Translate(outline, -pen.x, -pen.y);
+  
+  assert( error == 0 );
+}
+
+
+
+/*/////////////////////////////////////////////////////////////////////////////////////
 //  BitmapGlyphRecDeleter
 // 
 //  shared_ptr custom deleter for freetype FT_BitmapGlyphRec_ objects
@@ -90,7 +108,7 @@ PositionedBitmap Glyph::GetBitmap() const
                        );
 }
 
-/*  // Basic API
+  // Basic API
   
   void Glyph::render (FT_GlyphSlot    slot,
 		      FT_Render_Mode render_mode)

@@ -21,15 +21,11 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_FILTERS_RESIZE_HORIZONTAL_RGB24_H__
-#define __AVS_FILTERS_RESIZE_HORIZONTAL_RGB24_H__
+#ifndef __AVS_FILTERS_RESIZE_HORIZONTAL_RGB32_H__
+#define __AVS_FILTERS_RESIZE_HORIZONTAL_RGB32_H__
 
 //avisynth include
 #include "rgb.h"
-
-
-#pragma warning ( push )           //push warning state
-#pragma warning (disable : 4250)   //get rid of MI dominance decisions
 
 
 namespace avs { namespace filters { namespace resize { namespace horizontal {
@@ -37,11 +33,11 @@ namespace avs { namespace filters { namespace resize { namespace horizontal {
 
 
 //////////////////////////////////////////////////////////////////////////////////////
-//  resize::horizontal::RGB24
+//  resize::horizontal::RGB32
 //
-//  resize horizontal RGB24 code path
+//  resize horizontal RGB32 code path
 //
-class RGB24 : public RGB
+class RGB32 : public RGB
 {
 
 public:  //structors
@@ -60,8 +56,6 @@ private:  //Resize method
 
 
 
-} } } }  //namespace avs::filters::resize::horizontal
+} } } } //namespace avs::filters::resize::horizontal
 
-#pragma warning ( pop )
-
-#endif //__AVS_FILTERS_RESIZE_HORIZONTAL_RGB24_H__
+#endif //__AVS_FILTERS_RESIZE_HORIZONTAL_RGB32_H__

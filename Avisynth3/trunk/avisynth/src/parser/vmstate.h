@@ -69,7 +69,7 @@ public:  //stack behavior
   void pop() { stack_.pop_back(); }
 
   AVSValue& top() { return stack_.back(); }
-  AVSValue& peek(int index) { return stack_[stack_.size() - 1 - index]; }
+  AVSValue& peek(int index) { return *(stack_.end() - index); }  //beware it's 1-based
 
   AVSValue& operator[](int index) { return stack_[index]; }
 

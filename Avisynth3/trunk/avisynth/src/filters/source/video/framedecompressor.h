@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,8 @@
 #define __AVS_FILTERS_SOURCE_FRAMEDECOMPRESSOR_H__
 
 //avisynth includes
-#include "../../../vfw/forward.h"
+#include "../../../define.h"              //for AVS_NOVTABLE
+//
 #include "../../../core/ownedblock.h"
 #include "../../../core/bufferwindow.h"
 
@@ -43,10 +44,10 @@ class RawVideo;
 //
 //  takes care of decompressing the input video data to a format readable by avs
 //
-class FrameDecompressor
+class AVS_NOVTABLE FrameDecompressor
 {
 
-  RawVideo const& src_;
+  RawVideo const& src_;      //back reference to owner
 
 
 public:  //structors

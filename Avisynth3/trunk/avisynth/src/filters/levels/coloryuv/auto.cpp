@@ -23,9 +23,10 @@
 
 //avisynth includes
 #include "auto.h"
+#include "lumamap.h"
+#include "chromamap.h"
 #include "../../../core/videoframe.h"
 #include "../../../utility/bytecounter.h"
-#include "../../../core/utility/saturate.h"
 
 
 namespace avs { namespace filters { namespace coloryuv {
@@ -78,11 +79,11 @@ CPVideoFrame Auto::MakeFrame(PVideoFrame const& source) const
     }
   }
 
-  /*      
-  
-
-    MakeGammaLUT();*/
-
+  Apply( *source
+       , LumaMap(Y_, gamma_, AdjustY(mode_), coring_)
+       , ChromaMap(U_, AdjustU(mode_), coring_)
+       , ChromaMap(V_, AdjustV(mode_), coring_)
+       );
 
   return source;
 }

@@ -26,7 +26,6 @@
 
 //avisynth includes
 #include "../vmcode.h"
-#include "../scopeenforcer.h"
 
 //boost include
 #include <boost/variant/get.hpp>
@@ -44,29 +43,14 @@ namespace avs { namespace parser { namespace functor {
 struct WhileDo
 {
 
-  VMCode cond_, code_;
+  ElementalCode cond_;
+  StatementCode code_;
 
-  WhileDo(VMCode const& cond, VMCode const& code)
+  WhileDo(ElementalCode const& cond, StatementCode const& code)
     : cond_( cond )
     , code_( code ) { }
 
-  void operator()(VMState& state) const
-  {
-    while( true )
-    {
-      cond_(state);
-
-      bool cond = boost::get<bool>(state.top());
-      state.pop();
-
-      if ( ! cond )
-        break;       //break while and exit
-
-      ScopeEnforcer enforcer(state);
-
-      code_(state);
-    }    
-  }
+  OpType operator()(VMState& state) const;
 
 };
 

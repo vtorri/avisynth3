@@ -1121,6 +1121,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath="..\..\..\src\filters\levels\coloryuv.h">
 				</File>
 				<File
+					RelativePath="..\..\..\src\filters\levels\rgbadjust.h">
+				</File>
+				<File
 					RelativePath="..\..\..\src\filters\levels\tweak.cpp">
 				</File>
 				<File
@@ -1303,6 +1306,16 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					</File>
 					<File
 						RelativePath="..\..\..\src\filters\levels\coloryuv\yv12.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="RGBAdjust"
+					Filter="">
+					<File
+						RelativePath="..\..\..\src\filters\levels\rgbadjust\scale.cpp">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\levels\rgbadjust\scale.h">
 					</File>
 				</Filter>
 			</Filter>
@@ -2261,33 +2274,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				Name="Freetype"
 				Filter="">
 				<File
-					RelativePath="..\..\..\src\text\freetype\bitrenderer.cpp">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Profile|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release static|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath="..\..\..\src\text\freetype\bitrenderer.h">
 				</File>
 				<File
@@ -2349,12 +2335,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 				<File
 					RelativePath="..\..\..\src\text\freetype\outline.h">
-				</File>
-				<File
-					RelativePath="..\..\..\src\text\freetype\renderer.cpp">
-				</File>
-				<File
-					RelativePath="..\..\..\src\text\freetype\renderer.h">
 				</File>
 				<File
 					RelativePath="..\..\..\src\text\freetype\textwalker.cpp">

@@ -66,8 +66,8 @@ public:  //Cache interface
 
   virtual CPVideoFrame GetFrame(int n)
   {
-    if ( CPVideoFrame const * cached = cacheLogic_.GetCachedFrame(n) )
-      return *cached;
+    if ( CPVideoFrame cached = cacheLogic_.GetCachedFrame(n) )
+      return cached;
 
     typename Timer::Chrono chrono(timer_);
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -41,10 +41,11 @@ CacheLogic::CacheLogic()
   , frames_( 0 )
   , score_( 0 )
   , inertia_( 1.0 )
+  , minimum_( 1000 )
   , count_( 1 ) { }
 
 
-CPVideoFrame const * CacheLogic::GetCachedFrame(int n)
+CPVideoFrame CacheLogic::GetCachedFrame(int n)
 {
   ++count_;
 
@@ -53,9 +54,8 @@ CPVideoFrame const * CacheLogic::GetCachedFrame(int n)
 
   FrameList::iterator fit = std::find_if( frames_.begin(), frames_.end(), bind<int>( &CachedVideoFrame::first, _1) == n );
 
-  //if was cached
-  if ( fit != frames_.end() )
-    return &fit->second;       //return it
+  if ( fit != frames_.end() )     //if was cached
+    return fit->second;           //return it
 
   RequestList::iterator rit = std::find( requests_.begin(), requests_.end(), n );
  
@@ -64,7 +64,7 @@ CPVideoFrame const * CacheLogic::GetCachedFrame(int n)
   else
   {
     //that's the size the cache should have had for n to be cached
-    int depth = 1 + (rit - requests_.end());    
+    int depth = requests_.end() - rit;    
 
     if ( depth < minimum_ ) 
       minimum_ = depth;
@@ -74,7 +74,7 @@ CPVideoFrame const * CacheLogic::GetCachedFrame(int n)
     UpdateCacheSize(); 
   }
 
-  return NULL;
+  return CPVideoFrame();
 }
 
 

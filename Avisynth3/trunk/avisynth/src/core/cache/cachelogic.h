@@ -64,7 +64,7 @@ public:  //structors
 
 public:  //CacheLogic interface
 
-  CPVideoFrame const * GetCachedFrame(int n);
+  CPVideoFrame GetCachedFrame(int n);
   void StoreFrame(int n, CPVideoFrame const& frame) { frames_.push_back( std::make_pair(n, frame) ); }
 
   bool Drop();

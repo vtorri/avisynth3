@@ -29,10 +29,10 @@
 #include <objbase.h>
 
 
-extern "C" const GUID CLSID_CAVIFileSynth;   // {E6D6B700-124D-11D4-86F3-DB80AFD98778}
+extern "C" GUID const CLSID_CAVIFileSynth;   // {E6D6B700-124D-11D4-86F3-DB80AFD98778}
 
 
-extern "C" const GUID IID_IAvisynthClipInfo;   // {E6D6B708-124D-11D4-86F3-DB80AFD98778}
+//extern "C" const GUID IID_IAvisynthClipInfo;   // {E6D6B708-124D-11D4-86F3-DB80AFD98778}
 
 
 #endif //__AVS_MAIN_H__

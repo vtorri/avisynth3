@@ -64,14 +64,14 @@ BoxFP6 Outline::GetControlBox() const
   FT_BBox box;
   FT_Outline_Get_CBox(const_cast<Outline *>(this), &box);        //can't fail: returns void
 
-  return BoxFP6(VecteurFP6(FP6(box.xMin), FP6(box.yMin)), VecteurFP6(FP6(box.xMax), FP6(box.yMax)));
+  return BoxFP6(VecteurFP6(FP6::Wrap(box.xMin), FP6::Wrap(box.yMin)), VecteurFP6(FP6::Wrap(box.xMax), FP6::Wrap(box.yMax)));
 }
 
 
 
-void Outline::Draw(MonoBitmap const& bitmap) const
+void Outline::Draw(Bitmap const& bitmap) const
 {
-  FT_Error error = FT_Outline_Get_Bitmap(Library::instance, const_cast<Outline *>(this), const_cast<MonoBitmap *>(&bitmap));
+  FT_Error error = FT_Outline_Get_Bitmap(Library::instance, const_cast<Outline *>(this), const_cast<Bitmap *>(&bitmap));
 
   assert( error == 0 );
 }

@@ -67,7 +67,7 @@ VecteurFP6 Face::GetKerning(unsigned leftGlyph, unsigned rightGlyph) const
   if ( error != 0 )
     throw avs::exception::Generic ("Error while retrieving the kerning.");
   
-  return VecteurFP6(result.x, result.y);
+  return reinterpret_cast<VecteurFP6&>(result);  //ok they have same layout
 }
 
 

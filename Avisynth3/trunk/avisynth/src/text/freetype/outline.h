@@ -74,7 +74,7 @@ public:  //Outline interface
 
   BoxFP6 GetControlBox() const;
 
-  void Draw(MonoBitmap const& bitmap) const;
+  void Draw(Bitmap const& bitmap) const;
 
 };
 

@@ -51,7 +51,7 @@ void GlyphSlot::LoadGlyph (unsigned int index)
 
 VecteurFP6 GlyphSlot::GetAdvance() const
 {
-  return VecteurFP6( glyphslot_->advance.x, glyphslot_->advance.y);
+  return VecteurFP6( FP6::Wrap(glyphslot_->advance.x), FP6::Wrap(glyphslot_->advance.y) );
 }
 
 

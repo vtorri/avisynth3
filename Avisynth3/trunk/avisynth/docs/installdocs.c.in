@@ -291,8 +291,8 @@ You also need an add-on to boost: circular_buffer. This is included with the Avi
 C:/dev/avs_v3/avisynth/build/circular_buffer_v3.6.zip
 
 - Unpack the C:/dev/avs_v3/avisynth/build/circular_buffer_v3.6.zip to C:/dev/.
-- Copy the contents of C:/dev/circular_buffer/boost/ to c:/dev/boost_1_31_0/boost/.
-- Copy the contents of C:/dev/circular_buffer/libs/ to c:/dev/boost_1_31_0/libs/.
+- Copy the contents of C:/dev/circular_buffer/boost/ to C:/dev/boost_1_31_0/boost/.
+- Copy the contents of C:/dev/circular_buffer/libs/ to C:/dev/boost_1_31_0/libs/.
 
 To compile boost, you need bjam, a "make" replacement. Get it <a href=http://prdownloads.sourceforge.net/boost/boost-jam-3.1.10-1-ntx86.zip>here</a>:
 
@@ -435,6 +435,23 @@ Copy the 'C:/Program Files/ffmpeg/include/ffmpeg' folder to the include folder o
 
 <b>The following is temporary till FFsource is turned into a plugin:</b>
 
+You need to include the following files to the avs project:
+
+in ../avisynth/src/filters/source
+ffmpegsource.cpp
+ffmpegsource.h
+
+in ../avisynth/src/functions
+source.cpp
+source.h
+
+If you haven't done so, you should do the following first:
+
+@code
+$ ./bootstrap.sh
+$ ./configure --with-stl-path=/usr/mingw/include/stlport --with-boost-path=/usr/mingw/include/boost-1_31
+@endcode
+
 Edit platform.inc (in ../avisynth/build/linux) and go down to Compiler part. Change the lines
 
 <i>
@@ -447,6 +464,7 @@ CXXFLAGS=-Wall -fstrength-reduce -finline-functions -freduce-all-givs -ffast-mat
 into
 
 <i>
+CXX=g++\n
 SPECIFIC_CFLAGS=-Os -mno-cygwin\n
 FREETYPE_CFLAGS=-I/usr/mingw/include/freetype2 -I/usr/mingw/include\n
 CXXFLAGS=-Wall -fstrength-reduce -finline-functions -freduce-all-givs -ffast-math  -I/usr/mingw/include/stlport  -I/usr/mingw/include/boost-1_31  -I/usr/mingw/include/ffmpeg
@@ -455,22 +473,15 @@ CXXFLAGS=-Wall -fstrength-reduce -finline-functions -freduce-all-givs -ffast-mat
 (you are basically removing -ansi option)
 Edit sources.inc (in ../avisynth/build/linux), and add the following line
 
-<i>filters/source/ffmpegsource.cpp</i>
+<i>filters/source/ffmpegsource.cpp \</i>
 
 to the list from SRC_GENERIC.
 
 In C:/Msys/1.0/mingw/include/, edit initguid.h: replace <i>const</i> by <i>static const</i>.
 
-Finally, configure and build AviSynth
+Finally, build AviSynth
 
 @code
-$ ./bootstrap.sh
-@endcode
-
-The configure file is created, and finally AviSynth can be build:
-
-@code
-$ ./configure --with-stl-path=/usr/mingw/include/stlport --with-boost-path=/usr/mingw/include/boost-1_31
 $ make
 $ make install
 @endcode

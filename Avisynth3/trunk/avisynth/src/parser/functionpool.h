@@ -25,7 +25,7 @@
 #define __AVS_PARSER_FUNCTIONPOOL_H__
 
 //avisynth includes
-#include "vmcode.h"
+#include "forward.h"
 #include "../linker/forward.h"
 
 //stl includes

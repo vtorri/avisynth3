@@ -24,48 +24,16 @@
 #ifndef __AVS_PARSER_ADAPTOR_CALLER_H__
 #define __AVS_PARSER_ADAPTOR_CALLER_H__
 
-//avisynth include
+//avisynth includes
+#include "arg.h"
 #include "extractor.h"
 #include "../vmstate.h"
 
 //boost includes
 #include <boost/variant/get.hpp>
-#include <boost/type_traits/function_traits.hpp>
 
 
-namespace avs { namespace parser { namespace adaptor {
-
-
-//implementation namespace
-namespace detail {
-
-
-
-/////////////////////////////////////////////////////////////////////////////
-//  arg<int n> and its specialisations
-//
-//  extracts type of arg n of given function
-//
-template <typename Function, int n>
-struct arg { };
-
-template <typename Function>
-struct arg<Function, 1>
-{
-  typedef typename boost::function_traits<Function>::arg1_type type;
-};
-
-template <typename Function>
-struct arg<Function, 2>
-{
-  typedef typename boost::function_traits<Function>::arg2_type type;
-};
-
-template <typename Function>
-struct arg<Function, 3>
-{
-  typedef typename boost::function_traits<Function>::arg3_type type;
-};
+namespace avs { namespace parser { namespace adaptor { namespace detail {
 
 
 
@@ -82,19 +50,19 @@ struct extract : public extractor<typename arg<Function, n>::type> { };
 
 
 ////////////////////////////////////////////////////////////////////////////////////
-//  caller_impl<Function, int arity> and its specialisations
+//  caller_<Function, int arity> and its specialisations
 //
 //  handles the variable number of args for caller
 //
-template <typename Function, int arity = boost::function_traits<Function>::arity>
-struct caller_impl { };
+template <typename Function, int arity = traits<Function>::arity>
+struct caller_ { };
 
 
 template <typename Function>
-struct caller_impl<Function, 0>
+struct caller_<Function, 0>
 {
 
-  typedef typename boost::function_traits<Function>::result_type ResultType;
+  typedef typename traits<Function>::ResultType ResultType;
 
   enum { consume = 0 };
 
@@ -108,10 +76,10 @@ struct caller_impl<Function, 0>
 
 
 template <typename Function>
-struct caller_impl<Function, 1>
+struct caller_<Function, 1>
 {
 
-  typedef typename boost::function_traits<Function>::result_type ResultType;
+  typedef typename traits<Function>::ResultType ResultType;
 
   enum { consume = extract<Function, 1>::consume };
 
@@ -125,10 +93,10 @@ struct caller_impl<Function, 1>
 
 
 template <typename Function>
-struct caller_impl<Function, 2>
+struct caller_<Function, 2>
 {
 
-  typedef typename boost::function_traits<Function>::result_type ResultType;
+  typedef typename traits<Function>::ResultType ResultType;
 
   enum { pos2 = 1
        , pos1 = pos2 + extract<Function, 2>::consume
@@ -138,17 +106,20 @@ struct caller_impl<Function, 2>
   template <typename CallBack>
   ResultType operator()(VMState& state, CallBack const& callBack) const
   {
-    return callBack( extract<Function, 1>()(state, pos1), extract<Function, 2>()(state, pos2) );
+    return callBack
+        ( extract<Function, 1>()(state, pos1)
+        , extract<Function, 2>()(state, pos2) 
+        );
   }
 
 };
 
 
 template <typename Function>
-struct caller_impl<Function, 3>
+struct caller_<Function, 3>
 {
 
-  typedef typename boost::function_traits<Function>::result_type ResultType;
+  typedef typename traits<Function>::ResultType ResultType;
 
   enum { pos3 = 1
        , pos2 = pos3 + extract<Function, 3>::consume
@@ -170,10 +141,10 @@ struct caller_impl<Function, 3>
 
 
 template <typename Function>
-struct caller_impl<Function, 4>
+struct caller_<Function, 4>
 {
 
-  typedef typename boost::function_traits<Function>::result_type ResultType;
+  typedef typename traits<Function>::ResultType ResultType;
 
   enum { pos4 = 1
        , pos3 = pos4 + extract<Function, 4>::consume
@@ -190,6 +161,171 @@ struct caller_impl<Function, 4>
         , extract<Function, 2>()(state, pos2) 
         , extract<Function, 3>()(state, pos3)
         , extract<Function, 4>()(state, pos4)
+        );
+  }
+
+};
+
+
+template <typename Function>
+struct caller_<Function, 5>
+{
+
+  typedef typename traits<Function>::ResultType ResultType;
+
+  enum { pos5 = 1
+       , pos4 = pos5 + extract<Function, 5>::consume
+       , pos3 = pos4 + extract<Function, 4>::consume
+       , pos2 = pos3 + extract<Function, 3>::consume
+       , pos1 = pos2 + extract<Function, 2>::consume
+       , consume = pos1 + extract<Function, 1>::consume - 1 
+  };
+
+  template <typename CallBack>
+  ResultType operator()(VMState& state, CallBack const& callBack) const
+  {
+    return callBack
+        ( extract<Function, 1>()(state, pos1)
+        , extract<Function, 2>()(state, pos2) 
+        , extract<Function, 3>()(state, pos3)
+        , extract<Function, 4>()(state, pos4)
+        , extract<Function, 5>()(state, pos5)
+        );
+  }
+
+};
+
+
+template <typename Function>
+struct caller_<Function, 6>
+{
+
+  typedef typename traits<Function>::ResultType ResultType;
+
+  enum { pos6 = 1
+       , pos5 = pos6 + extract<Function, 6>::consume
+       , pos4 = pos5 + extract<Function, 5>::consume
+       , pos3 = pos4 + extract<Function, 4>::consume
+       , pos2 = pos3 + extract<Function, 3>::consume
+       , pos1 = pos2 + extract<Function, 2>::consume
+       , consume = pos1 + extract<Function, 1>::consume - 1 
+  };
+
+  template <typename CallBack>
+  ResultType operator()(VMState& state, CallBack const& callBack) const
+  {
+    return callBack
+        ( extract<Function, 1>()(state, pos1)
+        , extract<Function, 2>()(state, pos2) 
+        , extract<Function, 3>()(state, pos3)
+        , extract<Function, 4>()(state, pos4)
+        , extract<Function, 5>()(state, pos5)
+        , extract<Function, 6>()(state, pos6)
+        );
+  }
+
+};
+
+
+template <typename Function>
+struct caller_<Function, 7>
+{
+
+  typedef typename traits<Function>::ResultType ResultType;
+
+  enum { pos7 = 1
+       , pos6 = pos7 + extract<Function, 7>::consume
+       , pos5 = pos6 + extract<Function, 6>::consume
+       , pos4 = pos5 + extract<Function, 5>::consume
+       , pos3 = pos4 + extract<Function, 4>::consume
+       , pos2 = pos3 + extract<Function, 3>::consume
+       , pos1 = pos2 + extract<Function, 2>::consume
+       , consume = pos1 + extract<Function, 1>::consume - 1 
+  };
+
+  template <typename CallBack>
+  ResultType operator()(VMState& state, CallBack const& callBack) const
+  {
+    return callBack
+        ( extract<Function, 1>()(state, pos1)
+        , extract<Function, 2>()(state, pos2) 
+        , extract<Function, 3>()(state, pos3)
+        , extract<Function, 4>()(state, pos4)
+        , extract<Function, 5>()(state, pos5)
+        , extract<Function, 6>()(state, pos6)
+        , extract<Function, 7>()(state, pos7)
+        );
+  }
+
+};
+
+
+template <typename Function>
+struct caller_<Function, 8>
+{
+
+  typedef typename traits<Function>::ResultType ResultType;
+
+  enum { pos8 = 1
+       , pos7 = pos8 + extract<Function, 8>::consume
+       , pos6 = pos7 + extract<Function, 7>::consume
+       , pos5 = pos6 + extract<Function, 6>::consume
+       , pos4 = pos5 + extract<Function, 5>::consume
+       , pos3 = pos4 + extract<Function, 4>::consume
+       , pos2 = pos3 + extract<Function, 3>::consume
+       , pos1 = pos2 + extract<Function, 2>::consume
+       , consume = pos1 + extract<Function, 1>::consume - 1 
+  };
+
+  template <typename CallBack>
+  ResultType operator()(VMState& state, CallBack const& callBack) const
+  {
+    return callBack
+        ( extract<Function, 1>()(state, pos1)
+        , extract<Function, 2>()(state, pos2) 
+        , extract<Function, 3>()(state, pos3)
+        , extract<Function, 4>()(state, pos4)
+        , extract<Function, 5>()(state, pos5)
+        , extract<Function, 6>()(state, pos6)
+        , extract<Function, 7>()(state, pos7)
+        , extract<Function, 8>()(state, pos8)
+        );
+  }
+
+};
+
+
+template <typename Function>
+struct caller_<Function, 9>
+{
+
+  typedef typename traits<Function>::ResultType ResultType;
+
+  enum { pos9 = 1
+       , pos8 = pos9 + extract<Function, 9>::consume
+       , pos7 = pos8 + extract<Function, 8>::consume
+       , pos6 = pos7 + extract<Function, 7>::consume
+       , pos5 = pos6 + extract<Function, 6>::consume
+       , pos4 = pos5 + extract<Function, 5>::consume
+       , pos3 = pos4 + extract<Function, 4>::consume
+       , pos2 = pos3 + extract<Function, 3>::consume
+       , pos1 = pos2 + extract<Function, 2>::consume
+       , consume = pos1 + extract<Function, 1>::consume - 1 
+  };
+
+  template <typename CallBack>
+  ResultType operator()(VMState& state, CallBack const& callBack) const
+  {
+    return callBack
+        ( extract<Function, 1>()(state, pos1)
+        , extract<Function, 2>()(state, pos2) 
+        , extract<Function, 3>()(state, pos3)
+        , extract<Function, 4>()(state, pos4)
+        , extract<Function, 5>()(state, pos5)
+        , extract<Function, 6>()(state, pos6)
+        , extract<Function, 7>()(state, pos7)
+        , extract<Function, 8>()(state, pos8)
+        , extract<Function, 9>()(state, pos9)
         );
   }
 

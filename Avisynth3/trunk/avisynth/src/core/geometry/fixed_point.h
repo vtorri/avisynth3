@@ -122,7 +122,7 @@ public:  //access
 
 //global scope swap
 template <int fp>
-inline void swap(fixed_point<fp>& left, fixed_point<fp>& right) { left.swap(right) }
+inline void swap(fixed_point<fp>& left, fixed_point<fp>& right) { left.swap(right); }
 
 
 

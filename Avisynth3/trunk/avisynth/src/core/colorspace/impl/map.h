@@ -30,10 +30,7 @@
 #endif 
 
 //avisynth includes
-#include "rgb.h"
-#include "yuy2.h"
-#include "planar_yuv.h"
-#include "../../forward.h"    //for PColorSpace
+#include "../../forward.h"      //for PColorSpace
 #include "externalcreator.h"
 #include "internalcreator.h"
 
@@ -64,13 +61,7 @@ class Map
 
   mutable Mutex mutex_;
   
-  internal_creator<RGB24> rgb24_;
-  internal_creator<RGB32> rgb32_;
-  internal_creator<RGB45> rgb45_;
-  internal_creator<YUY2> yuy2_;
-  internal_creator<YV12> yv12_;
-  internal_creator<YV24> yv24_;
-  internal_creator<YV45> yv45_;
+  InternalCreator rgb24_, rgb32_, rgb45_, yuy2_, yv12_, yv24_, yv45_;
 
   InternalColorSpaceMap internalMap_;
   mutable ExternalColorSpaceMap externalMap_;

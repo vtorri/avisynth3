@@ -23,7 +23,7 @@
 
 //avisynth include
 #include "map.h"
-
+#include "../../colorspace.h"
 
 namespace avs {
 
@@ -42,6 +42,7 @@ PColorSpace ColorSpace::FromString(std::string const& name)
 {
   return cspace::impl::Map::instance[name];
 }
+
 
 
 } //namespace avs

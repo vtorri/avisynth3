@@ -24,9 +24,8 @@
 #ifndef __AVS_COLORSPACE_IMPL_INTERNALCREATOR_H__
 #define __AVS_COLORSPACE_IMPL_INTERNALCREATOR_H__
 
-//avisynth includes
+//avisynth include
 #include "../../forward.h"      //for PColorSpace, WeakPColorSpace
-#include "../../../define.h"    //for AVS_NOVTABLE
 
 //boost include
 #include <boost/weak_ptr.hpp>
@@ -44,10 +43,21 @@ namespace avs { namespace cspace { namespace impl {
 //
 //  NB: this class is not synchronized because it is provided by the Map class
 //
-class AVS_NOVTABLE InternalCreator
+class InternalCreator
 {
 
+  typedef ColorSpace * (* CreateMethod)();
+
   mutable WeakPColorSpace value_;
+  CreateMethod create_;
+  
+
+public:  //structors
+
+  InternalCreator(CreateMethod create)
+    : create_( create ) { }
+
+  //generated copy constructor and destructor are fine
 
 
 public:  //interface
@@ -56,34 +66,11 @@ public:  //interface
   {
     PColorSpace result = value_.lock();
     if ( ! result )
-      value_ = result = Create();
+      value_ = result = PColorSpace( create_() );
     return result;
   }
 
-
-private:  //private interface
-
-  //method which creates the colorspace
-  virtual PColorSpace Create() const = 0;
-
 };
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
-//  internal_creator<ColorSpaceType>
-//
-//  straightforward templated implementation of the InternalCreator interface
-//
-template <class ColorSpaceType>
-class internal_creator : public InternalCreator
-{
-
-private:  //Creator private interface
-
-  virtual PColorSpace Create() const { return PColorSpace( static_cast<ColorSpace *>(new ColorSpaceType()) ); }
-
-};
-
 
 
 } } } //namespace avs::cspace::impl

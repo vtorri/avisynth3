@@ -23,13 +23,30 @@
 
 //avisynth includes
 #include "map.h"
+#include "rgb.h"
+#include "yuy2.h"
+#include "planar_yuv.h"
 
 
 namespace avs { namespace cspace { namespace impl {
 
 
+namespace {
+
+template <class CS>
+ColorSpace * Create() { return new CS(); }
+
+}//anonymous namespace
+
 
 Map::Map()
+  : rgb24_( &Create<RGB24> )
+  , rgb32_( &Create<RGB32> )
+  , rgb45_( &Create<RGB45> )
+  , yuy2_( &Create<YUY2> )
+  , yv12_( &Create<YV12> )
+  , yv24_( &Create<YV24> )
+  , yv45_( &Create<YV45> )
 {
   internalMap_["RGB24"] = &rgb24_;
   internalMap_["RGB32"] = &rgb32_;

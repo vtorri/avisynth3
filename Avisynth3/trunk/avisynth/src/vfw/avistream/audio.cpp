@@ -27,6 +27,10 @@
 #include "../../core/exception.h"
 #include "../../core/videoinfo.h"
 
+#ifndef _MSC_VER
+#define AVISTREAMREAD_CONVENIENT  -1
+#endif
+
 
 namespace avs { namespace vfw { namespace avistream {
 

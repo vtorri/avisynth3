@@ -46,7 +46,7 @@ MessageClip::MessageClip(std::string const& msg, CPVideoInfo const& vi, PEnviron
   , msg_( msg ) { }
 
 
-CPVideoFrame MessageClip::CreateFrame(std::string const& msg, text::Font const& font, Dimension const& dim, ColorSpace& space, PEnvironment const& env)
+CPVideoFrame MessageClip::CreateFrame(std::string const& msg, text::Font const& font, Dimension const& dim, PColorSpace const& space, PEnvironment const& env)
 {
   PVideoFrame result = env->CreateFrame(space, dim, PROGRESSIVE);
 

@@ -70,7 +70,7 @@ public:  //various clip factory methods
 
 private:  
 
-  static CPVideoFrame CreateFrame(std::string const& msg, text::Font const& font, Dimension const& dim, ColorSpace& space, PEnvironment const& env);
+  static CPVideoFrame CreateFrame(std::string const& msg, text::Font const& font, Dimension const& dim, PColorSpace const& space, PEnvironment const& env);
 
   static CPVideoFrame CreateFrame(std::string const& msg, PEnvironment const& env);
 

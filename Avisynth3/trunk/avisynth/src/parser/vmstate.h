@@ -54,9 +54,8 @@ class VMState
 
 public:  //structors
 
-  VMState(PEnvironment const& env, int globalCount)
-    : env_( env )
-    , globals_( globalCount ) { }
+  VMState(PEnvironment const& env)
+    : env_( env ) { }
 
   //generated destructor is fine
 

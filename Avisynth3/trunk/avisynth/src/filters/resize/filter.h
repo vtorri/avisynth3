@@ -24,10 +24,6 @@
 #ifndef __AVS_FILTERS_RESIZE_FILTER_H__
 #define __AVS_FILTERS_RESIZE_FILTER_H__
 
-//boost include
-#include <boost/utility.hpp>
-#include <boost/shared_ptr.hpp>
-
 
 namespace avs { namespace filters { namespace resize {
 
@@ -38,7 +34,7 @@ namespace avs { namespace filters { namespace resize {
 //
 //
 //
-class Filter : private boost::noncopyable
+class Filter
 {
 
 public:  //Filter interface
@@ -48,9 +44,6 @@ public:  //Filter interface
   virtual double support() const = 0;
   
 };
-
-
-typedef boost::shared_ptr<Filter const> PFilter;
 
 
 

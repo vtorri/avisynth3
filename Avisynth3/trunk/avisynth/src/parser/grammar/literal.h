@@ -28,8 +28,9 @@
 #include "../lazy/pair.h"
 #include "../vmoperation.h"
 #include "../functor/pusher.h"
+#include "../functor/literal.h"
 
-//spirit include
+//spirit includes
 #include <boost/spirit/core.hpp>
 #include <boost/spirit/symbols.hpp>
 #include <boost/spirit/attribute/closure.hpp>
@@ -56,8 +57,11 @@ template <class Type> struct Value : spirit::closure<Value, Type>
  
 
 
-
-
+////////////////////////////////////////////////////////////////////////////////////////////
+//  grammar::Literal
+//
+//  grammar to recognize literals
+//
 struct Literal : public spirit::grammar<Literal, closure::Value<TypedOp>::context_t>
 {
 
@@ -70,41 +74,42 @@ struct Literal : public spirit::grammar<Literal, closure::Value<TypedOp>::contex
 
       using namespace lazy;
       using namespace phoenix;
+      using namespace functor;
 
-      literal
+      top
           =   spirit::strict_real_p
               [
-                first(self.value) = construct_<functor::pusher<double> >(arg1),
+                first(self.value) = construct_<pusher<literal<double> > >(arg1),
                 second(self.value) = val('d')
               ]
           |   spirit::int_p
               [
-                first(self.value) = construct_<functor::pusher<int> >(arg1),
+                first(self.value) = construct_<pusher<literal<int> > >(arg1),
                 second(self.value) = val('i')
               ]
-          |   string
+          |   stringLiteral
               [
-                first(self.value) = construct_<functor::pusher<std::string> >(arg1),
+                first(self.value) = construct_<pusher<literal<std::string> > >(arg1),
                 second(self.value) = val('s')
               ]
           |   boolLiteral
               [
-                first(self.value) = construct_<functor::pusher<bool> >(arg1),
+                first(self.value) = construct_<pusher<literal<bool> > >(arg1),
                 second(self.value) = val('b')
               ]
           ;
 
-      string
+      stringLiteral
           =   spirit::lexeme_d
               [
                   '"'
               >> *(   spirit::str_p("\\n")
                       [
-                        string.value += val('\n')
+                        stringLiteral.value += val('\n')
                       ]
                   |   ( spirit::anychar_p - '"' )
                       [
-                        string.value += *arg1
+                        stringLiteral.value += *arg1
                       ]
                   )
               >>  '"'
@@ -117,13 +122,13 @@ struct Literal : public spirit::grammar<Literal, closure::Value<TypedOp>::contex
 
     }
 
-    spirit::rule<ScannerT> const & start() const { return literal; }
+    spirit::rule<ScannerT> const & start() const { return top; }
 
 
   private:
 
-    spirit::rule<ScannerT> literal;
-    spirit::rule<ScannerT, closure::Value<std::string>::context_t> string;
+    spirit::rule<ScannerT> top;
+    spirit::rule<ScannerT, closure::Value<std::string>::context_t> stringLiteral;
 
     spirit::symbols<bool> boolLiteral;
 

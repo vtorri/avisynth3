@@ -29,6 +29,7 @@
 #include "../dimension.h"
 #include "../videoinfo.h"
 #include "../colorspace.h"
+#include "../exception/generic.h"
 
 //boost include
 #include <boost/optional.hpp>
@@ -150,7 +151,12 @@ public:  //audio methods
 
 private:
 
-  static int CheckFrameCount(int frameCount) { return frameCount; }
+  static int CheckFrameCount(int frameCount) 
+  { 
+    if ( frameCount < 0 )
+      throw exception::Generic("FrameCount must be positive");
+    return frameCount; 
+  }
   static SampleType CheckSampleType(SampleType sampleType) { return sampleType; }
   static int CheckSampleRate(int sampleRate) { return sampleRate; }
   static long long CheckSampleCount(long long sampleCount) { return sampleCount; }

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -33,6 +33,11 @@
 #include "../core/colorspace.h"
 #include "../core/runtime_environment.h"
 #include "../filters/source/staticimage.h"
+#include "../parser/parser.h"
+
+//stl include
+#include <fstream>
+#include <sstream>
 
 //assert include
 #include <assert.h>
@@ -136,7 +141,13 @@ bool AviFile::DelayedInit()
         throw AvisynthError("The returned video clip was nil (this is a bug)");  */
 
 
-      clip_ = filters::StaticImage::CreateVersionClip( RuntimeEnvironment::Create(10000000) );
+      std::ifstream src( scriptName_.c_str() );
+      std::stringstream dst;
+
+      while ( ! src.eof() )
+        dst.put( src.get() );
+
+      clip_ = parser::Parser()(dst.str());
 
       // get information about the clip
       vi_ = clip_->GetVideoInfo();

@@ -59,11 +59,6 @@ public:  //clone method
   virtual CPVideoInfo clone() const = 0;
 
 
-public:  //factory method
-
-  static CPVideoInfo Create();
-
-
 public:  //video methods
 
   virtual bool HasVideo() const = 0;

@@ -68,7 +68,7 @@ public:  //Simplify method
 //  provides both Simplify and FinalSimplify implementation for OneChild subclasses
 //
 template <class SubClip>
-class NOVTABLE FinalSimplifiable : public Simplifiable<SubClip>
+class AVS_NOVTABLE FinalSimplifiable : public Simplifiable<SubClip>
 {
 
 public:  //typedef

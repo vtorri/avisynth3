@@ -28,6 +28,7 @@
 namespace avs { namespace bw {
 
 
+
 Blender<1>::Blender<1>(float factor)
 {
   int weight = int( factor * 32767.0f );        //that is the weight of the blendFrom window
@@ -62,6 +63,9 @@ void Blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom
   WindowPtr dst = blendIn.Write();
   CWindowPtr src = blendFrom.Read();
   __int64 weight64 = weight64_;
+
+
+#ifdef _MSC_VER
 
   /////////////////////
   // Blends two planes.
@@ -126,8 +130,10 @@ void Blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom
 
     emms
   }
+#endif //_MSC_VER
+
 }
 
 
 
-} }
+} }  //namespace avs::bw

@@ -25,44 +25,45 @@
 
 //avisynth include
 #include "../vmoperation.h"
-#include "../../core/exception/generic.h"
 
 //stl include
 #include <map>
+#include <string>
 
 
 namespace avs { namespace parser { namespace binaryop {
 
 
 
+////////////////////////////////////////////////////////////////////////////
+//  TypeMapped
+//
+//  associates corresponding stack operation to a binary operation
+//  and deduces return type from types of the two args
+//
 class TypeMapped
 {
 
   typedef std::map<std::pair<char, char>, char> TypeMap;
    
   TypeMap map_;
-  VMOperation op_;
+  VMOperation<void> op_;
   std::string opName_;
 
 
 public:  //structors
 
-  TypeMapped(std::string const& opName, VMOperation const& op, std::string const types);
+  TypeMapped(std::string const& opName, VMOperation<void> const& op, std::string const types);
 
   //generated copy constructor and destructor are fine
 
 
 public:  //interface
 
-  char get(char left, char right) const
-  {
-    TypeMap::const_iterator it = map_.find(std::make_pair(left, right));
-    if ( it == map_.end() )
-      throw exception::Generic("parsing failed");
-    return it->second;
-  }
+  //get return type given types of left and right args
+  char get(char left, char right) const;
 
-  VMOperation const& op() const { return op_; }
+  VMOperation<void> const& op() const { return op_; }
 
 };
 

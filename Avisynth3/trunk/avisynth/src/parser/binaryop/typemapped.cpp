@@ -21,14 +21,16 @@
 // General Public License cover the whole combination.
 
 
-//avisynth include
+//avisynth includes
 #include "typemapped.h"
+#include "../../core/exception/generic.h"
 
 
 namespace avs { namespace parser { namespace binaryop {
 
 
-TypeMapped::TypeMapped(std::string const& opName, VMOperation const& op, std::string const types)
+
+TypeMapped::TypeMapped(std::string const& opName, VMOperation<void> const& op, std::string const types)
   : opName_( opName )
   , op_( op )
 {
@@ -40,6 +42,13 @@ TypeMapped::TypeMapped(std::string const& opName, VMOperation const& op, std::st
 }
 
 
+char TypeMapped::get(char left, char right) const
+{
+  TypeMap::const_iterator it = map_.find(std::make_pair(left, right));
+  if ( it == map_.end() )
+    throw exception::Generic("parsing failed");
+  return it->second;
+}
 
 
 } } } //namespace avs::parser::binaryop

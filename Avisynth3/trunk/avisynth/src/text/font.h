@@ -24,7 +24,8 @@
 #ifndef __AVS_TEXT_FONT_H__
 #define __AVS_TEXT_FONT_H__
 
-//avisynth include
+//avisynth includes
+#include "../core/forward.h"                 //for Dimension typedef
 #include "../core/geometry/dimension.h"
 
 //boost include

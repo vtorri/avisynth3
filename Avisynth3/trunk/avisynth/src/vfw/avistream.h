@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@
 #define __AVS_VFW_AVISTREAM_H__
 
 //avisynth includes
+#include "../define.h"
 #include "../com/base.h"
 #include "../core/forward.h"       //for PClip
 
@@ -39,7 +40,8 @@ namespace avs { namespace vfw {
   
 
 //declaration
-class AviFile;      //in avifile.h
+class AviFile;         //in avifile.h
+class AviStreamInfo;   //in avistreaminfo.h
 
 
 
@@ -90,15 +92,15 @@ protected:  //AviStream implementation
   void MakeErrorStream(std::string const& msg);
 	void ReadWrapper(void* lpBuffer, int lStart, int lSamples);
 
-  virtual void FillAviStreamInfo(AVISTREAMINFOW& asi) = 0;
+  virtual void FillAviStreamInfo(AviStreamInfo * asi) = 0;
   virtual void Read(void* lpBuffer, int lStart, int lSamples) = 0;
 
   //helpers for ReadWrapper
-  __declspec(noreturn) void ThrowAccessViolation(EXCEPTION_POINTERS * ei);
-  __declspec(noreturn) void ThrowIllegalInstruction(EXCEPTION_POINTERS * ei);
-  __declspec(noreturn) void ThrowIntDivideByZero(EXCEPTION_POINTERS * ei);
-  __declspec(noreturn) void ThrowStackOverFlow();
-  __declspec(noreturn) void ThrowUnknownException(EXCEPTION_POINTERS * ei, DWORD code);
+  AVS_NORETURN void ThrowAccessViolation(EXCEPTION_POINTERS * ei);
+  AVS_NORETURN void ThrowIllegalInstruction(EXCEPTION_POINTERS * ei);
+  AVS_NORETURN void ThrowIntDivideByZero(EXCEPTION_POINTERS * ei);
+  AVS_NORETURN void ThrowStackOverFlow();
+  AVS_NORETURN void ThrowUnknownException(EXCEPTION_POINTERS * ei, DWORD code);
 
 };
 

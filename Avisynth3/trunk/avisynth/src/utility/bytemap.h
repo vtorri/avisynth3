@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,8 +24,8 @@
 #ifndef __AVS_BYTEMAP_H__
 #define __AVS_BYTEMAP_H__
 
-//boost include
-#include <boost/utility.hpp>
+//stl include
+#include <algorithm>  //for std::copy
 
 //assert include
 #include <assert.h>
@@ -41,7 +41,7 @@ namespace avs {
 //  Maps byte values into processed (byte) values
 //  This class is meant to be used as a base class, subclass constructor doing map init 
 //  
-class ByteMap : private boost::noncopyable
+class ByteMap
 {
 
   unsigned char map_[256];
@@ -51,7 +51,26 @@ protected:  //structors
 
   ByteMap() { }
 
+  ByteMap(ByteMap const& other)
+  {
+    std::copy( other.map_, other.map_ + 256, map_ );
+  }
+
   //generated destructor is fine
+
+
+public:  //assignment
+
+  ByteMap& operator=(ByteMap const& other)
+  {
+    std::copy( other.map_, other.map_ + 256, map_ );
+    return *this;
+  }
+
+  void swap(ByteMap& other)
+  {
+    std::swap_ranges( other.map_, other.map_ + 256, map_ );
+  }
 
 
 public:  //read access
@@ -66,6 +85,10 @@ protected:  //write access
   unsigned char & operator[](int i) { return map_[i]; }
 
 };
+
+
+//global scope swap
+void swap(ByteMap& left, ByteMap& right) { left.swap(right); }
 
 
 } //namespace avs 

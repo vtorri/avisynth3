@@ -27,7 +27,9 @@
 
 #ifdef _WIN32
 
+
 //windows includes
+#define NOMINMAX          //prevents generation of min and max macros
 #include <initguid.h>
 #include <objbase.h>
 

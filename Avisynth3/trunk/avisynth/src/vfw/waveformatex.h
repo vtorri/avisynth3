@@ -29,7 +29,6 @@
 
 //windows includes
 #include <windows.h>
-#include <Mmreg.h>
 
 
 namespace avs { namespace vfw {

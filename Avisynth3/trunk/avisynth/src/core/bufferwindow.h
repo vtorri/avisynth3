@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -85,6 +85,12 @@ public:  //access
   }
 
 
+public:  //comparison operators
+
+  bool operator==(BufferWindow const& other) const { return buffer_ == other.buffer_ && offset_ == other.offset_; }
+  bool operator!=(BufferWindow const& other) const { return buffer_ != other.buffer_ || offset_ != other.offset_; }
+
+
 public:  
 
   //buffer resizing method
@@ -95,44 +101,6 @@ public:
   //only overlap is copied, no effect if there is none
   void Copy(BufferWindow other, Vecteur const& coords); 
   
-
-  BufferWindow FlipVertical() const;
-  template <int grain> BufferWindow FlipHorizontal() const
-  {
-    BufferWindow result( GetDimension(), GetEnvironment() );
-
-    //...
-
-    return result;
-  }
-
-  template <int grain> BufferWindow TurnLeft() const
-  {
-    BufferWindow result( GetDimension().Turn<grain>(), GetEnvironment() );
-
-    //...
-
-    return result;
-  }
-  template <int grain> BufferWindow TurnRight() const
-  {
-    BufferWindow result( GetDimension().Turn<grain>(), GetEnvironment() );
-
-    //...
-
-    return result;
-  }
-
-  //blend other into self at the given factor
-  //unspecified behavior if dimensions don't match
-  template <int bps> void Blend(BufferWindow const& other, float factor);
-
-  template <> void Blend<1>(BufferWindow const& other, float factor) { Blend8(other, factor); }
-  template <> void Blend<2>(BufferWindow const& other, float factor) { Blend15(other, factor); }
-
-  void Blend8(BufferWindow const& other, float factor);
-  void Blend15(BufferWindow const& other, float factor) { }  //TODO:code me
-
 };//BufferWindow
 
 

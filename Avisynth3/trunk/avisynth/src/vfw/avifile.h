@@ -110,7 +110,7 @@ private:  //implementation
   friend class AviStream;  //so can call the above
 
 
-  AviStream * CreateStream(DWORD fccType, int lParam);
+  AviStream * GetStream(DWORD fccType, long lParam);
 
 };
 

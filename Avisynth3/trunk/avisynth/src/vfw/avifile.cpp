@@ -221,7 +221,7 @@ STDMETHODIMP AviFile::GetStream(PAVISTREAM *ppStream, DWORD fccType, LONG lParam
 	if ( ! DelayedInit() ) 
     return E_FAIL;
 
-  try { *ppStream = CreateStream(fccType, lParam); }
+  try { *ppStream = GetStream(fccType, lParam); }
   catch(std::bad_alloc&) 
   { 
     *ppStream = NULL;
@@ -233,7 +233,7 @@ STDMETHODIMP AviFile::GetStream(PAVISTREAM *ppStream, DWORD fccType, LONG lParam
 
 
 
-AviStream * AviFile::CreateStream(DWORD fccType, int lParam)
+AviStream * AviFile::GetStream(DWORD fccType, long lParam)
 {
   if ( vi_->HasVideo() )
   {
@@ -247,9 +247,8 @@ AviStream * AviFile::CreateStream(DWORD fccType, int lParam)
         case ColorSpace::I_RGB32: 
         case ColorSpace::I_YUY2: return new avistream::Interleaved(*this);
         case ColorSpace::I_YV12: return new avistream::YV12(*this);
-        default: break;
+        default: return NULL;
         }
-      return NULL;
     case 1:
       if ( vi_->HasAudio() && ( fccType == 0 || fccType == streamtypeAUDIO ) )
         return new avistream::Audio(*this);

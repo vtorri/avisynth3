@@ -43,12 +43,12 @@ BitCount::BitCount()
     if ( i &  64 ) ++b;
     if ( i & 128 ) ++b;
 
-    (*this)[i] = b;
+    (*this)[i] = static_cast<unsigned char>(b);
   }
 }
 
 
-BitCount const BitCount::instance = BitCount();
+BitCount const BitCount::instance;
 
 
 } } } //namespace avs::text::aliaser

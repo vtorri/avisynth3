@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -28,9 +28,6 @@
 #include "window_ptr.h"
 #include "dimension.h"
 
-//boost include
-#include <boost/utility.hpp>
-
 
 namespace avs {
 
@@ -40,7 +37,12 @@ class BufferWindow;
 
 
 
-class Blitter : private boost::noncopyable
+/////////////////////////////////////////////////////////////////////////////////////
+//  Blitter
+//
+//  functor interface for Blit operations
+//
+class Blitter
 {
 
 public:  
@@ -68,7 +70,8 @@ public:
     return operator()(src.ptr, src.pitch, dst.ptr, dst.pitch, dim);
   }
 
-public:
+
+public:  //access to instance
 
   static Blitter& Get();
 

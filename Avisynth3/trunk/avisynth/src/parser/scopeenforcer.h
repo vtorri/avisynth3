@@ -35,23 +35,38 @@ namespace avs { namespace parser {
 
 
 
+////////////////////////////////////////////////////////////////////////////////////
+//  ScopeEnforcer
+//
+//  ensures that stack state is restored (at the given size) when exiting a scope
+//
 class ScopeEnforcer : public boost::noncopyable
 {
 
   int size_;
   VMState& state_;
+  bool dismissed_;
 
 
 public:  //structors
 
   ScopeEnforcer(VMState& state)
     : size_( state.size() )
-    , state_( state ) { }
+    , state_( state )
+    , dismissed_( false ) { }
 
   ~ScopeEnforcer()
   {
-    state_.restore(size_);
+    if ( ! dismissed_ )
+      state_.restore(size_);
   }
+
+
+public:  //interface
+
+  //Dismiss enforcer, ie it won't restore stack size at destruction
+  //is is used when a return statement is met
+  void Dismiss() { dismissed_ = true; }
 
 };
 

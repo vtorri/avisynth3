@@ -87,7 +87,7 @@ public:  //comparison operators
 
 public:  //operators
 
-  BoxType& operator&=(Box const& other)
+  BoxType& operator&=(BoxType const& other)
   {
     VecteurType position = pmax(pos_, other.pos_);                                  //get top left corner of the box
     dim_ = DimensionType( pmin(pos_ + dim_, other.pos_ + other.dim_) - position );  //calculate bottom right
@@ -95,7 +95,7 @@ public:  //operators
     return *this;
   }
 
-  BoxType& operator|=(Box const& other)
+  BoxType& operator|=(BoxType const& other)
   {
     VecteurType position = pmin(pos_, other.pos_);                                  //get top left corner of the box
     dim_ = DimensionType( pmax(pos_ + dim_, other.pos_ + other.dim_) - position );  //calculate bottom right

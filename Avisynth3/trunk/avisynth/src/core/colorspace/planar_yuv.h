@@ -86,9 +86,9 @@ public:  //ColorSpace interface
     }
   }
 
-  virtual CPVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
+  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
   {
-    return CPVideoFrame( (VideoFrame *)new vframe::YV12(dim, type, env) );
+    return CPVideoFrame( static_cast<VideoFrame *>(new vframe::YV12(dim, type, env)) );
   }
 
 
@@ -135,9 +135,9 @@ public:  //ColorSpace interface
       throw exception::NoSuchPlane(*this, plane);
   }
 
-  virtual CPVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
+  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
   {
-    return CPVideoFrame( (VideoFrame *)new vframe::YV24(dim, type, env) );
+    return CPVideoFrame( static_cast<VideoFrame *>(new vframe::YV24(dim, type, env)) );
   }
 
 
@@ -185,9 +185,9 @@ public:  //ColorSpace interface
     x <<= 1;
   }
 
-  virtual CPVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
+  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
   {
-    return CPVideoFrame( (VideoFrame *)new vframe::YV45(dim, type, env) );
+    return CPVideoFrame( static_cast<VideoFrame *>(new vframe::YV45(dim, type, env)) );
   }
 
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -83,7 +83,7 @@ public:  //ColorSpace interface
   virtual bool HasProperty(Property prop) const = 0;
   virtual bool HasPlane(Plane plane) const = 0;
 
-  virtual void Check(int x, int y, bool interlaced = false) const
+  virtual void Check(int /*x*/, int y, bool interlaced = false) const
   {
     if ( interlaced && (y & 1) )
       ThrowInvalidInterlacedHeightException(2, y);
@@ -102,7 +102,7 @@ public:  //ColorSpace interface
 
 
   //method to create a frame of the given colorspace
-  virtual CPVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const = 0;
+  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const = 0;
 
 
 public:  //comparison operators

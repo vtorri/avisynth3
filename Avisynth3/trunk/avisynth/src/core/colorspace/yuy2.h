@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -63,9 +63,9 @@ public:  //ColorSpace interface
       ThrowInvalidWidthException(2, x);               //exception
   }
 
-  virtual CPVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
+  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
   {
-    return CPVideoFrame( (VideoFrame *)new vframe::YUY2(dim, type, env) );
+    return CPVideoFrame( static_cast<VideoFrame *>(new vframe::YUY2(dim, type, env)) );
   }
 
 

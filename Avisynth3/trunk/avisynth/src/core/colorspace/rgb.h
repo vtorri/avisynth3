@@ -56,9 +56,9 @@ public:  //ColorSpace interface
     return prop == INTERLEAVED || prop == RGB || prop == DEPTH8;
   }
 
-  virtual CPVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
+  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
   {
-    return CPVideoFrame( (VideoFrame *)new vframe::RGB24(dim, type, env) );
+    return CPVideoFrame( static_cast<VideoFrame *>(new vframe::RGB24(dim, type, env)) );
   }
 
 
@@ -93,9 +93,9 @@ public:  //ColorSpace interface
     return prop == INTERLEAVED || prop == RGB || prop == DEPTH8;
   }
 
-  virtual CPVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
+  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
   {
-    return CPVideoFrame( (VideoFrame *)new vframe::RGB32(dim, type, env) );
+    return CPVideoFrame( static_cast<VideoFrame *>(new vframe::RGB32(dim, type, env)) );
   }
 
 
@@ -130,9 +130,9 @@ public:  //ColorSpace interface
     return prop == INTERLEAVED || prop == RGB || prop == DEPTH15;
   }
 
-  virtual CPVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
+  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
   {
-    return CPVideoFrame( (VideoFrame *)new vframe::RGB32(dim, type, env) );
+    return CPVideoFrame( static_cast<VideoFrame *>(new vframe::RGB32(dim, type, env)) );
   }
 
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,12 @@ namespace avs { namespace parser { namespace functor { namespace function {
 
 
 
-template <bool returnVoid = false> struct Call
+////////////////////////////////////////////////////////////////////////////////////
+//  Call<bool ReturnVoid>
+//
+//  functor used to make regular function calls
+//
+template <bool returnVoid> struct Call
 {
 
   int const arity_;
@@ -52,7 +57,7 @@ template <bool returnVoid = false> struct Call
     OpType type = body_(state);
     assert( type == RETURN );
 
-    state.restore(size, returnVoid ? 0 : 1);
+    state.restore(size, returnVoid ? 0 : 1);  //clean temporaries and keep result if any
   }
 
 };

@@ -24,8 +24,14 @@
 #ifndef __AVS_PARSER_FUNCTION_RECURSIVECALL_H__
 #define __AVS_PARSER_FUNCTION_RECURSIVECALL_H__
 
+//avisynth includes
+#include "../optype.h"
+#include "../vmcode.h"
+#include "../vmstate.h"
+#include "../forward.h"
 
-namespace avs { namespace parser { namespace function {
+
+namespace avs { namespace parser { namespace functor { namespace function {
 
 
 
@@ -34,8 +40,7 @@ namespace avs { namespace parser { namespace function {
 //
 //  functor to make a function using terminal recursivity
 //
-template <bool returnVoid = false>
-struct RecursiveCall
+template <bool returnVoid> struct RecursiveCall
 {
 
   int const arity_;
@@ -68,6 +73,6 @@ struct RecursiveCall
 };
 
 
-} } } //namespace avs::parser::function
+} } } } //namespace avs::parser::functor::function
 
 #endif //__AVS_PARSER_FUNCTION_RECURSIVECALL_H__

@@ -29,8 +29,10 @@
 #include "dimension.h"
 #include "ownedblock.h"
 #include "window_ptr.h"
-#include "block/align.h"
 #include "runtime_environment.h"
+
+//assert include
+#include "assert.h"
 
 
 namespace avs {
@@ -42,11 +44,12 @@ namespace bw { struct SizeChanger; }
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-//  BufferWindow
+//  buffer_window<int align, int guard>
 //
 //
 //
-class BufferWindow
+template <int align, int guard> 
+class buffer_window
 {
 
   Dimension dim_;              //dimension of the window
@@ -57,15 +60,36 @@ class BufferWindow
   friend struct bw::SizeChanger;   //need internal knowledge to work
 
 
+public:  //declarations and typedef
+
+  enum { Align = align, Guard = guard };
+
+  typedef buffer_window<align, guard> BufferWindowType;
+
+
 public:  //structors
 
   //normal constructor
-  BufferWindow(Dimension const& dim, PEnvironment const& env)
+  BufferWindowType(Dimension const& dim, PEnvironment const& env)
     : dim_( dim )
-    , pitch_( block::AlignValue(width()) )
-    , offset_( block::Align )
-    , buffer_( env->NewOwnedBlock(pitch() * height() + block::Align * 2, true) ) { }
+    , pitch_( RoundUp<Align>(width()) )
+    , offset_( Guard )
+    , buffer_( env->NewOwnedBlock(pitch() * height() + Guard * 2, true) ) { }
  
+  //constructor using a given block as buffer
+  BufferWindowType(Dimension const& dim, OwnedBlock const& buffer, int offset)
+    : dim_( dim )
+    , pitch_( RoundUp<Align>(width()) )
+    , offset_( offset )
+    , buffer_( buffer )
+  {
+    assert( 0 <= offset && pitch() * height() + offset <= buffer.size() );
+
+    if ( MisAligned() )       //if given values make self not respect align and guard contracts
+      ReAlign();              //realign (blit to correct)
+  }
+
+
   //generated copy constructor and destructor are fine
   
 
@@ -73,7 +97,7 @@ public:  //assignment
 
   //generated operator= is fine
 
-  void swap(BufferWindow& other)  //no throw
+  void swap(BufferWindowType other)  //no throw
   {
     dim_.swap(other.dim_);
     std::swap(pitch_, other.pitch_);
@@ -90,15 +114,8 @@ public:  //access
   BYTE const * read() const { return buffer_.get() + offset_; }
   BYTE * write()
   {
-    if ( ! buffer_.unique() )
-    {
-      PEnvironment const& env = GetEnvironment();
-      BufferWindow buf(dim_, env);
-
-      env->GetBlitter()(*this, buf);
-
-      *this = buf;
-    }
+    if ( ! buffer_.unique() )                      //if data is shared
+      ReAlign();                                   //
     return buffer_.get() + offset_;
   }
 
@@ -113,12 +130,41 @@ public:  //access
 
 public:  //comparison operators
 
-  bool operator==(BufferWindow const& other) const { return buffer_ == other.buffer_ && offset_ == other.offset_ && dim_ == other.dim_; }
-  bool operator!=(BufferWindow const& other) const { return buffer_ != other.buffer_ || offset_ != other.offset_ || dim_ != other.dim_; }
-
+  bool operator==(BufferWindowType const& other) const 
+  { 
+    return buffer_ == other.buffer_ && offset_ == other.offset_ && dim_ == other.dim_; 
+  }
+  
+  bool operator!=(BufferWindowType const& other) const 
+  { 
+    return buffer_ != other.buffer_ || offset_ != other.offset_ || dim_ != other.dim_; 
+  }
  
+
+private:  //alignment stuff
+
+  bool MisAligned() const
+  {
+    return offset_ < Guard                               //not enough head space
+        || offset_ % Align != 0                          //data misaligned
+        || buffer_.size() < offset_ + size() + Guard;    //not enough toe space
+  }
+
+  void ReAlign()
+  {
+    PEnvironment const& env = GetEnvironment();      //fetch owning env
+
+    BufferWindowType temp(dim_, env);                //make a new buffer
+    env->GetBlitter()(Read(), temp.Write(), dim_);   //blit the data into it
+    *this = temp;                                    //and replace self
+  }
+
 };
 
+
+//global scope swap
+template <int align, int guard>
+inline void swap(buffer_window<align, guard>& left, buffer_window<align, guard>& right) { left.swap(right); }
 
 
 } //namespace avs

@@ -24,7 +24,8 @@
 #ifndef __AVS_FORWARD_H__
 #define __AVS_FORWARD_H__
 
-//avisynth include
+//avisynth includes
+#include "block/align.h"           //for block::Align
 #include "cow_shared_ptr.h"        //includes <boost/shared_ptr.hpp>
 
 //boost include
@@ -44,10 +45,13 @@ class Dimension;
 class VideoInfo;
 class ColorSpace;
 class VideoFrame;
-class BufferWindow;
 class RuntimeEnvironment;
+template <int align, int guard = block::Align> class buffer_window;
 
-//typedefs
+//typedef
+typedef buffer_window<block::Align> BufferWindow;
+
+//ptr typedefs
 typedef boost::rational<int> Fraction;
 typedef boost::shared_ptr<Clip const> PClip;
 typedef boost::shared_ptr<Property const> CPProperty;
@@ -55,7 +59,7 @@ typedef boost::shared_ptr<VideoInfo const> CPVideoInfo;
 typedef boost::shared_ptr<VideoFrame const> CPVideoFrame;
 typedef boost::shared_ptr<RuntimeEnvironment> PEnvironment;
 
-//cow typedefs
+//cow ptr typedefs
 typedef cow_shared_ptr<Property> PProperty;
 typedef cow_shared_ptr<VideoInfo> PVideoInfo;
 typedef cow_shared_ptr<VideoFrame> PVideoFrame;

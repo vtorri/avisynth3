@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,7 @@
 #include "planar_yuv.h"
 #include "../dimension.h"
 #include "../exception.h"
+#include "../exception/unsupportedcolorspace.h"
 
 //boost include
 #include <boost/format.hpp>
@@ -72,28 +73,28 @@ ColorSpace& ColorSpace::yv45() { return cspace::YV45::instance; }
 
 void ColorSpace::ThrowUnsupportedColorSpaceException() const
 {
-  throw Exception(str( boost::format("%s is not supported") % GetName() ));
+  throw exception::UnsupportedColorSpace(*this);
 }
 
 void ColorSpace::ThrowNoSuchPlaneException(Plane plane) const
 {
-  throw Exception(str( boost::format("%s doesn't have plane %s") % GetName() % NameOf(plane) ));
+  throw GenericException(str( boost::format("%s doesn't have plane %s") % GetName() % NameOf(plane) ));
 }
 
 
 void ColorSpace::ThrowInvalidInterlacedHeightException(int modulo, int height) const
 {
-  throw Exception(str( boost::format("%s: interlaced height must be mod %d") % GetName() % modulo ));
+  throw GenericException(str( boost::format("%s: interlaced height must be mod %d") % GetName() % modulo ));
 }
 
 void ColorSpace::ThrowInvalidHeightException(int modulo, int height) const
 {
-  throw Exception(str( boost::format("%s: height must be mod %d") % GetName() % modulo ));
+  throw GenericException(str( boost::format("%s: height must be mod %d") % GetName() % modulo ));
 }
 
 void ColorSpace::ThrowInvalidWidthException(int modulo, int width) const
 {
-  throw Exception(str( boost::format("%s: width must be mod %d") % GetName() % modulo ));
+  throw GenericException(str( boost::format("%s: width must be mod %d") % GetName() % modulo ));
 }
 
 
@@ -112,9 +113,4 @@ YV45 YV45::instance;
 
 
 } } //namespace avs::cspace
-
-
-
-
-
 

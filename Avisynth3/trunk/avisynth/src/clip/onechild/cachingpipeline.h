@@ -29,14 +29,15 @@
 #include "../caching.h"
 
 
-#pragma warning ( push )           //push warning state
-#pragma warning (disable : 4250)   //get rid of MI dominance decisions
-
-
 namespace avs { namespace clip { namespace onechild {
 
 
 
+//////////////////////////////////////////////////////////////////////////////////
+//  CachingPipeline
+//
+//  subinterface of Caching and Pipeline, providing the proper MakeFrame call
+//
 class CachingPipeline : public virtual Caching
                       , public virtual Pipeline
 {
@@ -55,7 +56,5 @@ private:  //Caching requirement
 
 
 } } } //namespace avs::clip::onechild
-
-#pragma warning ( pop )
 
 #endif //__AVS_CACHINGCLIP_ONECHILD_H__

@@ -31,8 +31,7 @@
 namespace avs {
 
 
-//declarations
-struct Vecteur;
+//declaration
 template <class Data> struct window_ptr;
 
 //typedefs
@@ -109,8 +108,8 @@ struct window_ptr
 
 
   //using Vecteur
-  Data * at(Vecteur const& vect) const { return at(vect.x, vect.y); }
-  window_ptr<Data>& operator+=(Vecteur const& vect) { to(vect.x, vect.y); return *this; }
+  template <class Vect> Data * at(Vect const& vect) const { return at(vect.x, vect.y); }
+  template <class Vect> window_ptr<Data>& operator+=(Vect const& vect) { to(vect.x, vect.y); return *this; }
   
 };
 

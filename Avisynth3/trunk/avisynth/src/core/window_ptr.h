@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ template <class Data> struct window_ptr;
 //typedefs
 typedef unsigned char BYTE;
 typedef window_ptr<BYTE> WindowPtr;
-typedef window_ptr<const BYTE> CWindowPtr;
+typedef window_ptr<BYTE const> CWindowPtr;
 
 
 

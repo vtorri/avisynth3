@@ -30,7 +30,6 @@
 #include "avs/videoinfo.h"
 #include "avs/colorspace.h"
 #include "avs/videoframe.h"
-#include "avs/cow_shared_ptr.h"
 #include "avs/runtime_environment.h"
 
 #endif //__AVS_CORE_H__

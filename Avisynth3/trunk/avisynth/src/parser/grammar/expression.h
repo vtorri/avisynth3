@@ -45,7 +45,7 @@ namespace avs { namespace parser { namespace grammar {
 
 
 //typedef
-namespace value { typedef boost::tuples::tuple<VMCode, char, bool> Expression; }
+namespace value { typedef boost::tuples::tuple<ElementalCode, char, bool> Expression; }
 
 
 namespace closure {
@@ -62,15 +62,28 @@ struct Expression : spirit::closure
     , value::Expression
     , boost::reference_wrapper<VarTable>
     , boost::optional<int>
+    , boost::reference_wrapper<VarTable>
+    , boost::reference_wrapper<FunctionTable>
     >
 {
   member1 value;
-  member2 varTable;
+  member2 localTable;
   member3 last;
+  member4 globalTable;
+  member5 functionTable;
 };
 
 
-struct InnerExpression : spirit::closure<InnerExpression, TypedCode, bool>
+////////////////////////////////////////////////////////////////////////////////////////////////
+//  closure::InnerExpression
+//
+//  closure for the expression rule within the Expression grammar
+//
+struct InnerExpression : spirit::closure
+    < InnerExpression
+    , TypedCode
+    , bool
+    >
 {
   member1 value;
   member2 implicit;   //mark if implicit last function call are possible within the expression
@@ -96,14 +109,12 @@ struct FunctionCall : spirit::closure<FunctionCall, std::string, FunctionPool co
 class Expression : public spirit::grammar<Expression, closure::Expression::context_t>
 {
 
-  VarTable const& globalVarTable;
-  FunctionTable const& functionTable;
   spirit::symbols<binaryop::TypeMapped const> add_op, mult_op;
 
 
 public:  //structors
 
-  Expression(FunctionTable const& functionTable_, VarTable const& globalVarTable_);
+  Expression();
 
 
 private:  //typedefs 
@@ -147,7 +158,7 @@ public:  //definition nested class
           ;
 
       local_assign_expr
-          =   spirit::lazy_p( unwrap(self.varTable) )
+          =   spirit::lazy_p( unwrap(self.localTable) )
               [ 
                 local_assign_expr.value = arg1 
               ]
@@ -161,7 +172,7 @@ public:  //definition nested class
 
       global_assign_expr
           =   spirit::str_p("global")
-          >>  self.globalVarTable
+          >>  spirit::lazy_p( unwrap( self.globalTable) )
               [
                 global_assign_expr.value = arg1
               ]
@@ -205,13 +216,13 @@ public:  //definition nested class
           ;
 
       var_expr
-          =   spirit::lazy_p( unwrap(self.varTable) )
+          =   spirit::lazy_p( unwrap(self.localTable) )
               [
                 first(atom_expr.value) += construct_<LocalVarPusher>( first(arg1) ),
                 second(atom_expr.value) = second(arg1)
               ]
           |   !   spirit::str_p("global")
-          >>  self.globalVarTable
+          >>  spirit::lazy_p( unwrap(self.globalTable) )
               [
                 first(atom_expr.value) += construct_<GlobalVarPusher>( first(arg1) ),
                 second(atom_expr.value) = second(arg1)
@@ -228,7 +239,7 @@ public:  //definition nested class
           ;
 
       call_expr
-          =   self.functionTable
+          =   spirit::lazy_p( unwrap(self.functionTable) )
               [
                 call_expr.functionPool = bind(&boost::reference_wrapper<FunctionPool>::get_pointer)(arg1)
               ]

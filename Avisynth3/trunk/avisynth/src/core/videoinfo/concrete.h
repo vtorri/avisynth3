@@ -134,7 +134,7 @@ public:  //audio methods
   //write access
 
   virtual void SetSampleType(SampleType sampleType) { CheckHasAudio(); audio_->sampleType_ = CheckSampleType(sampleType); }
-  virtual void SampleRate(int sampleRate) { CheckHasAudio(); audio_->sampleRate_ = CheckSampleRate(sampleRate); }
+  virtual void SetSampleRate(int sampleRate) { CheckHasAudio(); audio_->sampleRate_ = CheckSampleRate(sampleRate); }
   virtual void SetSampleCount(long long sampleCount) { CheckHasAudio(); audio_->sampleCount_ = CheckSampleCount(sampleCount); }
   virtual void SetChannelCount(int channelCount) { CheckHasAudio(); audio_->channelCount_ = CheckChannelCount(channelCount); }
 

@@ -134,7 +134,7 @@ public:  //audio methods
   //write access
 
   virtual void SetSampleType(SampleType sampleType) = 0;
-  virtual void SampleRate(int sampleRate) = 0;
+  virtual void SetSampleRate(int sampleRate) = 0;
   virtual void SetSampleCount(long long sampleCount) = 0;
   virtual void SetChannelCount(int channelCount) = 0;
 

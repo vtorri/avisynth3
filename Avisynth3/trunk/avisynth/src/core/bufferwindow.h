@@ -33,11 +33,50 @@
 #include "assert.h"
 
 
-namespace avs {
+namespace avs { namespace bw { 
 
 
-//declaration
-namespace bw { struct SizeChanger; }
+//declaration  
+struct SizeChanger; 
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+//  bw::realigner<align, guard>
+//
+//  helper struct to help  buffer_window enforce its align and guard guarantee
+//
+//  code has been moved to an external struct so it could be specialised on border cases
+//
+template <int align, int guard> struct realigner
+{
+
+  template <class Buffer>
+  void operator()(buffer_window<align, guard, Buffer> & bw) const
+  {
+    if (  std::max(bw.pitch_, -bw.pitch_) % align != 0      //pitch non aligned
+       || int(bw.buffer_.get() + bw.offset_) % align != 0   //data non aligned
+       || bw.MinOffset() < guard                            //not enough head space
+       || bw.buffer_.size() < bw.MaxOffset() + guard        //not enough toe space
+        )
+      bw.SelfBlit();
+  }
+};
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//  bw::realigner<1, 0>
+//
+//  specialisation for no alignment, no guard, ie no realigning ever
+//
+template <> struct realigner<1, 0>
+{
+  template <class Buffer>
+  void operator()(buffer_window<1, 0, Buffer> & buffer) const { }
+};
+
+
+}  //namespace bw
 
 
 
@@ -55,10 +94,6 @@ class buffer_window
   int offset_;                 //offset from buffer start to window start
   Buffer buffer_;
 
-  friend struct bw::SizeChanger;   //need internal knowledge to work
-  //needed for the converting constructor to access other's members
-  template <int alignOther, int guardOther, class BufferOther> friend class buffer_window;
-
 
 public:  //declarations and typedef
 
@@ -66,6 +101,12 @@ public:  //declarations and typedef
 
   typedef Buffer BufferType;
   typedef buffer_window<align, guard, Buffer> BufferWindowType;
+
+  friend struct bw::SizeChanger;   //need internal knowledge to work
+  friend struct bw::realigner<align, guard>;
+
+  //needed for the converting constructor to access other's members
+  template <int alignOther, int guardOther, class BufferOther> friend class buffer_window;
 
 
 public:  //structors
@@ -77,6 +118,13 @@ public:  //structors
     , offset_( Guard )
     , buffer_( create(pitch() * height() + Guard * 2, true) ) { }
  
+  //spawning constructor
+  buffer_window(Dimension const& dim, BufferWindowType const& other)
+    : dim_( dim )
+    , pitch_( RoundUp<Align>(width()) )
+    , offset_( Guard )
+    , buffer_( other.buffer_.spawn(pitch() * height() + Guard * 2) ) { }
+
   //constructor using a given buffer
   template <class BufferOther>
   buffer_window(Dimension const& dim, BufferOther const& buffer, int offset)
@@ -87,8 +135,7 @@ public:  //structors
   {
     assert( IsLegal() );
 
-    if ( MisAligned() )       //if given values make self not respect align and guard contracts
-      ReAlign();              //realign (blit to correct)
+    bw::realigner<align, guard>()(*this);
   }
 
   //same as above, but allows custom pitch (possibly negative, but not zero)
@@ -101,8 +148,7 @@ public:  //structors
   {
     assert( IsLegal() && pitch_ != 0 );
 
-    if ( MisAligned() && std::max(pitch_, -pitch_) % Align != 0 )    //if do not respect guard and align contracts
-      ReAlign();                                                     //blit to correct
+    bw::realigner<align, guard>()(*this);
   }
 
 
@@ -114,8 +160,7 @@ public:  //structors
     , offset_( other.offset_ )
     , buffer_( other.buffer_ )
   {
-    if ( MisAligned() && pitch_ % Align != 0 )    //if do not respect guard and align contracts
-      ReAlign();                                  //blit to correct
+    bw::realigner<align, guard>()(*this);
   }
 
   //generated copy constructor and destructor are fine
@@ -133,6 +178,12 @@ public:  //assignment
     buffer_.swap(other.buffer_);
   }
 
+  //spawn method
+  BufferWindowType spawn(Dimension const& dim) const
+  {
+    return BufferWindowType(dim, *this);
+  }
+
 
 public:  //access
 
@@ -143,7 +194,7 @@ public:  //access
   BYTE * write()
   {
     if ( ! buffer_.unique() )                      //if data is shared
-      ReAlign();                                   //blit it so we become sole owner
+      SelfBlit();                                  //blit it so we become sole owner
     return buffer_.get() + offset_;
   }
 
@@ -170,7 +221,7 @@ public:  //comparison operators
   }
  
 
-private:  //alignment stuff
+private:  //implementation details
 
   int MinOffset() const { return pitch_ > 0 ? offset_ : offset_ + pitch_ * (height() - 1); }
   int MaxOffset() const { return pitch_ > 0 ? offset_ + pitch_ * height() : offset_ - pitch_; }
@@ -178,20 +229,11 @@ private:  //alignment stuff
   //checks that the data is inside the buffer
   bool IsLegal() const { return ! dim_.empty() && 0 <= MinOffset() && MaxOffset() <= buffer_.size(); }
 
-  bool MisAligned() const
+  void SelfBlit()
   {
-    return MinOffset() < Guard                           //not enough head space
-        || int(buffer_.get() + offset_) % Align != 0     //data misaligned
-        || buffer_.size() < MaxOffset() + Guard;         //not enough toe space
-  }
-
-  void ReAlign()
-  {
-    PEnvironment const& env = GetEnvironment();      //fetch owning env
-
-    BufferWindowType temp(dim_, env);                //make a new buffer
+    BufferWindowType temp(dim_, *this);              //make a new buffer (using spawning contructor)
     Blitter::Get()(Read(), temp.Write(), dim_);      //blit the data into it
-    *this = temp;                                    //and replace self
+    swap(temp);                                      //and replace self
   }
 
 };

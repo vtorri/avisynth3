@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -48,10 +48,10 @@ CPVideoFrame YV12::MakeFrame(CPVideoFrame const& source) const
     for( int x = Y.width; x-- > 0; ++ptr )
     {
       // brightness and contrast 
-      int y = *ptr - 16;
-      y = (Cont * y) >> 9;
-      y += Bright_p16;
-      *ptr = std::min( std::max(15, y), 235);
+      int yy = *ptr - 16;
+      yy = (Cont * yy) >> 9;
+      yy += Bright_p16;
+      *ptr = std::min( std::max(15, yy), 235);
     }
   }
 

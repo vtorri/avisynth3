@@ -25,7 +25,6 @@
 #include "rgb.h"
 #include "yuy2.h"
 #include "planar_yuv.h"
-#include "../dimension.h"
 #include "../exception/generic.h"
 #include "../exception/unsupportedcolorspace.h"
 
@@ -68,13 +67,6 @@ ColorSpace& ColorSpace::yuy2() { return cspace::YUY2::instance; }
 ColorSpace& ColorSpace::yv12() { return cspace::YV12::instance; }
 ColorSpace& ColorSpace::yv24() { return cspace::YV24::instance; }
 ColorSpace& ColorSpace::yv45() { return cspace::YV45::instance; }
-
-
-
-void ColorSpace::ThrowUnsupportedColorSpaceException() const
-{
-  throw exception::UnsupportedColorSpace(*this);
-}
 
 
 

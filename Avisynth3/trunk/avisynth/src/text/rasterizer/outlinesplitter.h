@@ -46,6 +46,7 @@ public:
   bool IsOutlineClosed() const { return spanMaker_.IsPolygonClosed(); }
 
   void LineTo(VecteurFP3 const& pt) { spanMaker_.LineTo(pt); }
+  void BezierCurveTo(VecteurFP3 const& pt2, VecteurFP3 const& pt1);
   void BezierCurveTo(VecteurFP3 const& pt3, VecteurFP3 const& pt2, VecteurFP3 const& pt1);
 
 

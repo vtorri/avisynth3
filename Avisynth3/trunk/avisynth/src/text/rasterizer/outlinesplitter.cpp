@@ -58,7 +58,7 @@ void OutlineSplitter::BezierCurveTo(VecteurFP3 const& pt2, VecteurFP3 const& pt1
 
   InterpolatePolynom(VecteurDb(), VecteurDb(B), VecteurDb(C), D);
 
-  LineTo(pt3);
+  LineTo(pt2);
 }
 
 

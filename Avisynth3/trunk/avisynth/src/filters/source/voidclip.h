@@ -45,7 +45,7 @@ class VoidClip : public clip::NoChild                    //has no child
   PEnvironment env_;
 
 
-public:  //constructor
+public:  //structors
 
   VoidClip(PEnvironment const& env)
     : env_( env ) { }

@@ -21,8 +21,8 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_PARSER_STACKOPERATION_H__
-#define __AVS_PARSER_STACKOPERATION_H__
+#ifndef __AVS_PARSER_VMOPERATION_H__
+#define __AVS_PARSER_VMOPERATION_H__
 
 //boost include
 #include <boost/shared_ptr.hpp>
@@ -31,18 +31,18 @@
 namespace avs { namespace parser {
 
 
-class Stack;
+class VMState;
 
 
 //typedef boost::function<void (Stack&)> StackOperation
 
 
-class StackOperation
+class VMOperation
 {
 
   struct CallBack
   {
-    virtual void operator()(Stack& stack) const = 0;
+    virtual void operator()(VMState& state) const = 0;
   };
 
   template <class Functor>
@@ -53,7 +53,7 @@ class StackOperation
     functor_callback(Functor const& functor)
       : functor_( functor ) { }
 
-    virtual void operator()(Stack& stack) const { functor_(stack); }
+    virtual void operator()(VMState& state) const { functor_(state); }
   };
 
 
@@ -69,21 +69,21 @@ public:  //structors
 
   template <class Functor>
   StackOperation(Functor const& functor)
-  : cb_( new functor_callback<Functor>(functor) ) { }
+    : cb_( new functor_callback<Functor>(functor) ) { }
 
 
 public:  //function-like interface
 
-  void operator()(Stack& stack) const { (*cb_)(stack); }
+  void operator()(VMState& state) const { (*cb_)(state); }
 
   bool empty() const { return ! cb_; }
 
 };
 
 
-typedef std::pair<StackOperation, char> TypedOp;
+typedef std::pair<VMOperation, char> TypedOp;
 
 
 } } //namespace avs::parser
 
-#endif //__AVS_PARSER_STACKOPERATION_H__
+#endif //__AVS_PARSER_VMOPERATION_H__

@@ -29,10 +29,11 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 
+#ifdef _WIN32
 //windows include
 #include <windows.h>
 #include <winbase.h>
-
+#endif //_WIN32
 
 namespace avs { namespace linker { namespace external {
 

@@ -120,6 +120,7 @@ void AviStream::ReadWrapper(void* lpBuffer, int lStart, int lSamples)
   // It's illegal to call GetExceptionInformation() inside an __except
   // block!  Hence this variable and the horrible hack below...
 
+#ifdef _MSC_VER
   EXCEPTION_POINTERS* ei = NULL;    
   DWORD code = 0;          //both init to avoid warning about may be not initialized
 
@@ -135,6 +136,9 @@ void AviStream::ReadWrapper(void* lpBuffer, int lStart, int lSamples)
     default:                            ThrowUnknownException(ei, code);
     }        
   }
+#else
+  Read(lpBuffer, lStart, lSamples);
+#endif
 }
 
 void AviStream::ThrowAccessViolation(EXCEPTION_POINTERS * ei)

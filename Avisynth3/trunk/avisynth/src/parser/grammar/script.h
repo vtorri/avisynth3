@@ -25,6 +25,7 @@
 #define __AVS_PARSER_GRAMMAR_SCRIPT_H__
 
 //avisynth includes
+#include "types.h"
 #include "statement.h"
 
 
@@ -84,18 +85,8 @@ struct FunctionBody : spirit::closure
 } //namespace closure
 
 
-class Script : public spirit::grammar<Script, closure::Script::context_t>
+struct Script : public spirit::grammar<Script, closure::Script::context_t>
 {
-
-  spirit::symbols<char> type;
-
-
-public:  //structors
-
-  Script();
-
-
-public:  //definition nested class
 
   template <typename ScannerT>
   struct definition
@@ -120,7 +111,7 @@ public:  //definition nested class
           ;
 
       function
-          =   self.type
+        =   Types::instance
               [
                 function.type = arg1
               ]
@@ -143,7 +134,7 @@ public:  //definition nested class
           ;
 
       arg
-          =   self.type
+        =   Types::instance
               [
                 arg.value = arg1
               ]

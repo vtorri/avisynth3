@@ -28,8 +28,11 @@
 #include "literal.h"
 #include "../vmcode.h"
 #include "../lazy/pair.h"
-#include "../functionpool.h"
+#include "../functiontable.h"
 #include "../binaryop/parser.h"
+#include "../functor/pusher.h"
+#include "../functor/assigner.h"
+#include "../functor/localvar.h"
 
 //boost include
 #include <boost/spirit/symbols.hpp>
@@ -44,7 +47,6 @@ namespace avs { namespace parser { namespace grammar {
 //typedefs
 typedef std::pair<int, char> TypedIndex;
 typedef spirit::symbols<TypedIndex const> VarTable;
-typedef spirit::symbols<FunctionPool> FunctionTable;
 
 
 namespace closure {
@@ -76,35 +78,10 @@ public:  //structors
   Expression(VarTable const& _varTable, FunctionTable const& _functionTable);
 
 
+private:  //typedefs 
 
-private:  //inner classes
-
-
-  //var_pusher functor
-  struct var_pusher
-  {
-
-    int index_;
-
-    var_pusher(int index)
-      : index_( index ) { }
-
-    void operator()(VMState& state) const { state.push(state[index_]); }
-
-  };
-
-  //var_assigner functor
-  struct var_assigner
-  {
-
-    int index_;
-
-    var_assigner(int index)
-      : index_( index ) { }
-
-    void operator()(VMState& state) const { state[index_] = state.top(); }
-
-  };
+  typedef functor::pusher<functor::LocalVar> LocalVarPusher;
+  typedef functor::assigner<functor::LocalVar> LocalVarAssigner;
 
 
 public:  //definition nested class
@@ -141,11 +118,11 @@ public:  //definition nested class
               >>  expression
                   [
                     atom_expr.value = arg1,
-                    first(atom_expr.value) += construct_<var_assigner>( first(var_expr.value) )
+                    first(atom_expr.value) += construct_<LocalVarAssigner>( first(var_expr.value) )
                   ]
               |   spirit::epsilon_p
                   [
-                    first(atom_expr.value) += construct_<var_pusher>( first(var_expr.value) ),
+                    first(atom_expr.value) += construct_<LocalVarPusher>( first(var_expr.value) ),
                     second(atom_expr.value) = second(var_expr.value)
                   ]
               )

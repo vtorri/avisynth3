@@ -35,7 +35,7 @@
 #ifndef __Cache_H__
 #define __Cache_H__
 
-#include "internal.h"
+#include "videoframe.h"
 #include <vector>
 #include <map>
 #include <utility>
@@ -53,10 +53,8 @@ public:
   virtual ~FrameCache() { }
 
   virtual CPVideoFrame fetch(int n) = 0;
-  virtual void store(int n, CPVideoFrame frame) = 0;
+  virtual CPVideoFrame store(int n, CPVideoFrame frame) = 0;
 
-  virtual void free(int count) { }
-  virtual void flush() { }
 };  
 
 //frame cache who keeps frames within a fixed range
@@ -66,18 +64,18 @@ class RangeCache : public FrameCache {
   typedef map<int, CPVideoFrame> CacheMap;
 
   CacheMap cache;
-  int size;
+  unsigned size;
 
   //predicate used in store
   struct IsOutOfRange {
     int min, max;
-    IsOutOfRange(int n, int size) : min(n - size), max(n + size) { }
+    IsOutOfRange(int n, unsigned size) : min(n - size), max(n + size) { }
 
-    bool operator()(const CacheMap::value_type& value) { return value->first <= min || value->first >= max; }
+    bool operator()(const CacheMap::value_type& value) { return value.first <= min || value.first >= max; }
   };
 
 public:
-  RangeCache(int _size) : size(_size) { }
+  RangeCache(unsigned _size) : size(_size) { }
   
   virtual CPVideoFrame fetch(int n)
   {
@@ -102,10 +100,10 @@ class QueueCache : public FrameCache {
   typedef vector<CachedVideoFrame> CacheVector;
 
   CacheVector cache;
-  int size;
+  unsigned size;
 
 public:
-  QueueCache(int _size) : size(_size) { }
+  QueueCache(unsigned _size) : size(_size) { }
 
   virtual CPVideoFrame fetch(int n)
   {
@@ -127,8 +125,9 @@ public:
   }
 };
 
+class Clip;
 
-
+//helper class to implement caches on clips
 class Cache {
 
   typedef vector<FrameCache *> CacheVector;
@@ -140,29 +139,12 @@ class Cache {
   FrameCache * RegisterClient(Clip& client);
 
 public:
-  Cache(ScriptEnvironment& env) { env.RegisterCache(*this); }
+  Cache() { }
 
   //search the frame in the cache(s),
   //eventually request source if not found and update itself as needed
-  CPVideoFrame GetCachedFrame(int n, Clip& client, Clip& source)
-  {
-    CPVideoFrame result;
-    //first operation : we search all frame caches for frame n
-    for(CacheVector::iterator it = cache.begin(); it != cache.end(); ++it )    
-    {
-      CPVideoFrame result = (*it)->fetch(n);
-      if ( result )       //if found  (not NULL)
-        return result;    //return it
-    }
-    //second operation : we check that client is a registered client
-    //search its entry in the client map
-    ClientToCacheMap::iterator it = clientMap.find(&client);       
-    //if found : use it, else create register client (which creates the entry)
-    FrameCache * targetCache = (it != clientMap.end() ? it->second :
-                               RegisterClient(client);
-    //use the source to make the frame, store it in cache and return it
-    return targetCache->store(n, source.MakeFrame(n) );
-  }
+  CPVideoFrame GetCachedFrame(int n, Clip& client, Clip& source);
+
 
   ~Cache() { for(CacheVector::iterator it = cache.begin(); it != cache.end(); ++it) delete *it; }
 };

@@ -21,7 +21,7 @@
 // General Public License cover the whole combination.
 
 #include "bufferwindow.h"
-#include "videoinfo.h"
+#include "bitblit.h"
 
 /**********************************************************************************************/
 /************************************ VideoFrameBuffer ****************************************/
@@ -33,7 +33,7 @@
 
 
 
-VideoFrameBuffer::MemoryPiece::MemoryPiece(int _size) : size(_size)
+VideoFrameBuffer::MemoryPiece::MemoryPiece(int _size, int& offset) : size(_size + FRAME_ALIGN)
 {
   AllocationVector::iterator it = alloc.begin();
   while( it != alloc.end() && it->size != size ) { ++it; }
@@ -43,9 +43,11 @@ VideoFrameBuffer::MemoryPiece::MemoryPiece(int _size) : size(_size)
     data = it->data;
     alloc.erase(it);
   }
+  offset = ( -int(data.get()) ) & ( -FRAME_ALIGN );
 }
 
 
+/*
 
 AlphaForwardingBuffer::AlphaForwardingBuffer(int row_size, int height)
 : ForwardingBuffer(row_size, FRAME_ALIGN)
@@ -57,7 +59,7 @@ AlphaForwardingBuffer::AlphaForwardingBuffer(int row_size, int height)
   forwardTo = largest;
 }
 
-
+*/
 
 /**********************************************************************************************/
 /************************************** BufferWindow ******************************************/
@@ -66,113 +68,77 @@ AlphaForwardingBuffer::AlphaForwardingBuffer(int row_size, int height)
 
 
 
-void BufferWindow::NewWindow(int _row_size, int _height)
-{
-  row_size = _row_size;
-  height = _height;
-  vfb = new PlaneFrameBuffer(row_size, height);
-  offset = FirstOffset(vfb);
-}
 
-void BufferWindow::NewSolidWindow(int _row_size, int _height, int pitch, PVideoFrameBuffer solid, int solidOffset)
-{
-  row_size = _row_size;
-  height = _height;  
-  vfb = new PlaneForwardingBuffer(pitch, solidOffset, height, solid);
-  offset = 0;
-}
-
-void BufferWindow::NewAlphaWindow(int _row_size, int _height)
-{
-  row_size = _row_size;
-  height = _height;
-  vfb = new AlphaForwardingBuffer(row_size, height);
-  offset = FirstOffset(vfb);
-}
 
 
 BYTE* BufferWindow::GetWritePtr()
 {  
   BYTE * result = vfb->GetWritePtr(); 
   //returns NULL if we are not allowed to write
-  if (result == NULL)
-  {
-    VideoFrameBuffer * new_vfb = new PlaneFrameBuffer(row_size, height);
-    int new_offset = FirstOffset(new_vfb);
-    IScriptEnvironment::BitBlt(new_vfb->GetWritePtr() + new_offset, new_vfb->GetPitch(), vfb->GetReadPtr() + offset, vfb->GetPitch(), row_size, height);
-    vfb = new_vfb;
-    offset = new_offset;
+  if (result != NULL)
+    return result + offset;
+  else {  
+    BufferWindow temp(dimension); //creates a buffer who can accomodates self
 
-    result = = vfb->GetWritePtr();     
+    result = temp.GetWritePtr();
+    Blitter::Blit(result, temp.GetPitch(), GetReadPtr(), GetPitch(), dimension);
+    *this = temp;
+
+    return result;
   }
-
-  return result + offset;
 } 
 
 
 
-void BufferWindow::Copy(const BufferWindow& other, int left, int top)
+void BufferWindow::Copy(const BufferWindow& temp, const Vecteur& coords)
 {
-  _ASSERTE(this != &other);
+  BufferWindow other = temp;   //trick to gracefully handle the other == this case
 
-  Vector top_left = StickToWindow(left, top);
-  Vector bottom_right = StickToWindow(left + other.row_size, top + other.height);
+  Vecteur topLeft = LimitToWindow(coords);
+  Vecteur bottomRight = LimitToWindow(coords + other.dimension);
 
-  BYTE * dstp = GetWritePtr(); 
-  int dst_pitch = GetPitch();
-  const BYTE * srcp = other.GetReadPtr();
-  int src_pitch = other.GetPitch()
+  Dimension toCopy = bottomRight - topLeft;
 
-  int copy_row_size = bottom_right.x - top_left.x;
-  int copy_height = bottom_right.y - top_left.y;
-
-  if (copy_height > 0 && copy_row_size > 0) //only work if necessary 
-    IScriptEnvironment::BitBlt(
-      dstp + top_left.x + dst_pitch * top_left.y,
-      dst_pitch,
-      srcp + top_left.x - left + src_pitch * (top_left.y - top),
-      src_pitch,
-      copy_row_size,
-      copy_height
-    );
-                                         
+  if (! toCopy.empty() )
+    Blitter::Blit(
+      GetWritePtr(topLeft), GetPitch(),
+      other.GetReadPtr(topLeft - coords), other.GetPitch(),
+      toCopy
+    );                                         
 }
 
-void BufferWindow::Crop(int left, int right, int top, int bottom)
+void BufferWindow::SizeChange(const Vecteur& topLeft, const Vecteur& bottomRight)
 {
   BufferWindow saved = *this;   //save actual position
   //updating parameters
-  row_size -= left + right;
-  height -= top + bottom;
-  offset += VectorToWindowOffset(left, top);
+  dimension = dimension + bottomRight - topLeft;
+  offset += VecteurToOffset(topLeft);
   //three conditions where needed to reallocate the Buffer
   int pitch = GetPitch();
-  if ( row_size > pitch || offset < 0 || offset + height * pitch >= vfb->GetSize() )
+  if ( GetWidth() > pitch || offset < 0 || offset + GetHeight() * pitch > vfb->GetSize() )
   {
-    vfb = new PlaneFrameBuffer(row_size, height);  //new buffer
-    offset = FirstOffset(vfb);
-    Copy(saved, -left, -top);                      //copy saved data at the right place
+    BufferWindow resized(dimension);  //new buffer
+    resized.Copy(saved, -topLeft);    //copy saved data at the right place
+    *this = resized;                  //replace self by resized                      
   }
 }
 
 void BufferWindow::Blend(const BufferWindow& other, float factor)
-{
-  _ASSERTE(this != &other);
-  if (factor <= 0) 
-    return;         //no change
-  if (factor >= 1)
-    *this = other;  //we replace this window by the other one
-  else {
-    //TODO: Code ME !!
-  }
+{  
+  if (this != &other && factor > 0) //otherwise nothing to do
+    if (factor >= 1)  //full blend of other into self
+      *this = other;  //we replace this window by the other one
+    else {
+      //TODO: Code ME !!
+    }
 }
 
 void BufferWindow::FlipVertical()
 {
-  BufferWindow result(row_size, height);
+  BufferWindow result(dimension);
 
-  IScriptEnvironment::BitBlt(result.GetWritePtr(), result.GetPitch(), 
-    GetReadPtr() + (height - 1)*GetPitch(), -GetPitch(), row_size, height);
+  Blitter::Blit(result.GetWritePtr(), result.GetPitch(), 
+                GetReadPtr() + (GetHeight() - 1) * GetPitch(), -GetPitch(), dimension);
   *this = result;
 }
 

@@ -63,7 +63,8 @@ public:
   virtual FunctionType GetFunctionType() const = 0;
 
   //method used to list accepted colorspaces
-  virtual bool AcceptColorSpace(const ColorSpace& space) const = 0;
+  //returns true by default
+  virtual bool AcceptColorSpace(const ColorSpace& space) const { return true; }
 
 
 protected:

@@ -24,11 +24,14 @@
 #ifndef __BUFFERWINDOW_H__
 #define __BUFFERWINDOW_H__
 
-#include "avisynth.h"
-#include "colorspace.h"
+#include "videoproperties.h"  //chich includes geometric.h, colorspace.h, refcounted.h
 #include <vector>
-#include <utility>   //for pair
 #include <boost/shared_ptr.hpp>
+
+#define FRAME_ALIGN 16 
+
+typedef unsigned char BYTE;
+
 
 
 
@@ -37,24 +40,23 @@
 class VideoFrameBuffer : public RefCounted {
 
 protected:
-  typedef boost::shared_ptr<BYTE> Buffer;
   
   struct MemoryPiece {
 
-    typedef vector<MemoryPiece> AllocationVector;
-
-    static AllocationVector alloc;
-
-    int size;
+    typedef boost::shared_ptr<BYTE> Buffer;
     Buffer data;
+    int size;
 
-    MemoryPiece(int _size);
+    MemoryPiece(int _size, int& offset);
     MemoryPiece(const MemoryPiece& other) : size(other.size), data(other.data) { }
 
-    static Save(const MemoryPiece & piece);
+    
+    typedef vector<MemoryPiece> AllocationVector;
+    static AllocationVector alloc;
+
+    void Save() const { alloc.push_back(*this); }
   };
 
-  static int SizeFor(int pitch, int height) { return pitch * height + FRAME_ALIGN; }
 
 public:
   virtual const BYTE * GetReadPtr() const = 0;
@@ -64,8 +66,6 @@ public:
   virtual int GetSize() const = 0;
   virtual int GetPitch() const = 0;
 
-
-  static int Aligned(int row_size, int align = FRAME_ALIGN) { return (row_size + (align - 1)) / align * align; }
 };
 
 
@@ -81,15 +81,15 @@ class SolidFrameBuffer : public VideoFrameBuffer {
   MemoryPiece buffer;
 
 public:
-  SolidFrameBuffer(int size) : buffer(size) { }
+  SolidFrameBuffer(int size, int& offset) : buffer(size, offset) { }
 
   virtual const BYTE * GetReadPtr() const { return buffer.data.get(); }
   virtual BYTE * GetWritePtr() { return buffer.data.get(); }
 
   virtual int GetSize() const { return buffer.size; }
-  virtual int GetPitch() const { throw std::logic_error(""); }
+  virtual int GetPitch() const { throw std::logic_error("Illegal GetPitch Call"); }
 
-  ~SolidFrameBuffer() { MemoryPiece::Save(buffer); }
+  ~SolidFrameBuffer() { buffer.Save(); }
 };
 
 //standard frame buffer who holds one plane
@@ -98,8 +98,8 @@ class PlaneFrameBuffer : public SolidFrameBuffer {
   const int pitch;
 
 public:
-  PlaneFrameBuffer(int row_size, int height)
-    : SolidFrameBuffer(SizeFor(Aligned(row_size), height)), pitch(Aligned(row_size)) { }
+  PlaneFrameBuffer(int _pitch, int height, int& offset)
+    : SolidFrameBuffer(_pitch * height, offset), pitch(_pitch) { }
 
   virtual int GetPitch() const { return pitch; }
 };
@@ -112,7 +112,7 @@ protected:
   const int pitch;
   PVideoFrameBuffer forwardTo;
 
-  ForwardingBuffer(int row_size, int align) : pitch(Aligned(row_size, align)) { }
+//  ForwardingBuffer(int row_size, int align) : pitch(Aligned(row_size, align)) { }
 
 public:
   ForwardingBuffer(int _pitch, PVideoFrameBuffer _forwardTo) : pitch(_pitch), forwardTo(_forwardTo) { }
@@ -143,24 +143,6 @@ public:
 
 
 
-class AlphaForwardingBuffer : public ForwardingBuffer {
-  
-  //shared buffer for alpha planes
-  class SharedAlphaBuffer : public SolidFrameBuffer {
-  public:
-    SharedAlphaBuffer(int size) : SolidFrameBuffer(size) { memset(GetWritePtr(), 255, GetSize()); }
-  };
-
-  static PVideoFrameBuffer largest;
-
-public:
-  AlphaForwardingBuffer(int row_size, int height);
-
-  //never write into shared alpha buffers
-  virtual BYTE * GetWritePtr() { return NULL; }
-
-};
-
 
 
 
@@ -170,53 +152,53 @@ public:
 //when asked for a write ptr, it will do a (intelligent) copy of the buffer if shared
 class BufferWindow {
 
+  Dimension dimension;
   PVideoFrameBuffer vfb;
-  int offset, row_size, height;  
+  int offset;  
 
-  static int FirstOffset(PVideoFrameBuffer vfb);
+  //this method expect align to be a power of 2 (FRAME_ALIGN is)
+  static int Align(int dim, int align = FRAME_ALIGN) { return ( dim + align - 1 ) & -align; }
+
+  static PlaneFrameBuffer * MakeFrameBuffer(const Dimension& dimension, int& offset) { return new PlaneFrameBuffer(Align(dimension.GetWidth()), dimension.GetHeight(), offset); }
+
+  static int Limit(int value, int max) { return value < 0 ? 0 : value > max ? max : value; }
 
 public:
-  BufferWindow() { }
-  BufferWindow(int _row_size, int _height) { NewWindow(_row_size, _height); }
-  BufferWindow(const BufferWindow& other) : vfb(other.vfb), offset(other.offset), row_size(other.row_size), height(other.height) { }
+  BufferWindow(const FrameVideoProperties& fvp, Plane plane)
+    : dimension(fvp.GetPlaneDimension(plane)), vfb(MakeFrameBuffer(fvp.GetDimension(), offset)) { }
+  BufferWindow(const Dimension& _dimension) : dimension(_dimension), vfb(MakeFrameBuffer(_dimension, offset)) { }
+  BufferWindow(const BufferWindow& other) : dimension(other.dimension), vfb(other.vfb), offset(other.offset) { }
 
-  void NewWindow(int _row_size, int _height);
-  void NewSolidWindow(int _row_size, int _height, int pitch, PVideoFrameBuffer solid, int solidOffset);
-  void NewAlphaWindow(int _row_size, int _height);
 
-  int GetPitch()   const { return vfb->GetPitch(); }
-  int GetRowSize() const { return row_size; }
-  int GetAlignedRowSize() const { int r = vfb->Aligned(row_size); return r <= vfb->GetPitch()? r : row_size; }
-  int GetHeight()  const { return height; }
+  const Dimension& GetDimension() const { return dimension; }
+  int GetPitch() const { return vfb->GetPitch(); }
+
+  int GetWidth() const { return dimension.GetWidth(); }
+  int GetHeight() const { return dimension.GetHeight(); }
   
   const BYTE * GetReadPtr() const { return vfb->GetReadPtr() + offset; }
   BYTE * GetWritePtr();  
 
-  //helper struct to simplify the code of Copy
-  struct Vector {
-    int x, y;
-    Vector(int _x, int_y) : x(_x), y(_y) { }
-  };
+  Vecteur LimitToWindow(const Vecteur& vect) const { return Vecteur(Limit(vect.GetX(), GetWidth()), Limit(vect.GetY(), GetHeight())); }
 
-  bool IsInWindow(int x, int y) const { return x >= 0 && x < row_size && y >= 0 && y < height; }
-  int VectorToWindowOffset(int x, int y) const { return y * GetPitch() + x; }
+  int VecteurToOffset(const Vecteur& vect) const { return vect.GetY() * GetPitch() + vect.GetX(); }
 
-  Vector StickToWindow(int x, int y) const { return Vector( max(0, min(x, row_size)), max(0, min(y, height)) ); }
+  const BYTE * GetReadPtr(const Vecteur& vect) const { return GetReadPtr() + VecteurToOffset(vect); }
+  BYTE * GetWritePtr(const Vecteur& vect) { return GetWritePtr() + VecteurToOffset(vect); }
 
-  const BYTE * GetReadPtr(int x, int y) const { return IsInWindow(x, y) ? GetReadPtr() + VectorToWindowOffset(x, y) : NULL; }
-  BYTE * GetWritePtr(int x, int y) { return IsInWindow(x, y) ? GetWritePtr() + VectorToWindowOffset(x, y) : NULL; }
+  //buffer resizing method
+  //will try to avoid buffer reallocation when possible
+  void SizeChange(const Vecteur& topLeft, const Vecteur& bottomRight);
 
   //copy other into self at the given coords (which can be negatives)
   //only overlap is copied, no effect if there is none
-  void Copy(const BufferWindow& other, int x, int y); 
+  void Copy(const BufferWindow& other, const Vecteur& coords); 
   
-  //smart crop (can upsize with negative params)
-  //wil try to avoid buffer reallocation when possible
-  void Crop(int left, int right, int top, int bottom);
 
   void Blend(const BufferWindow& other, float factor);
 
   void FlipVertical();
+  void FlipHorizontal(int grain);
 
 };
 

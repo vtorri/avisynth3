@@ -24,21 +24,3 @@
 #include "property.h"
 
 
-
-
-PropertySet::iterator PropertySet::find(PPropertyKey key)
-{
-  for( iterator it = begin(); it != end(); ++it )
-    if ( (*it)->GetKey() == key )
-      break;    //stop loop when found
-  return it;    //return good value (when break above) and end() when not found
-}
-
-
-CPProperty PropertySet::Get(PPropertyKey key) const
-{
-  for( const_iterator it = begin(); it != end(); ++it )
-    if ( (*it)->GetKey() == key)
-      return *it;
-  return CPProperty();   //if we are here, ie not found above
-}

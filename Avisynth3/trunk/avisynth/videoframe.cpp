@@ -18,7 +18,6 @@
 
 
 #include "videoframe.h"
-#include "videoproperty.h"
 #include <functional>   //for unary_function 
 #include <algorithm>    //for remove_if()  
 #pragma warning(disable:4786)
@@ -30,24 +29,75 @@
 /**********************************************************************************************/
 
 
-
-void VideoFrame::StackHorizontal(CPVideoFrame other)
-{  
-  //TODO: the checks  
-  
-  int original_width = GetVideoWidth(); 
-  SizeChange(0, -other->GetVideoWidth(), 0, 0);
-  Copy(other, original_width, 0);
-}
-
-void VideoFrame::StackVertical(CPVideoFrame other)
+void VideoFrame::SizeChange(const Vecteur& topLeft, const Vecteur& bottomRight) //args in pixels
 {
-  //TODO: the checks
+  //fetch ColorSpace
+  const ColorSpace& space = GetColorSpace();
+  //partial check of args validity (otherwise errors from side can compensate themselves)
+  space.IsLegalCoords(topLeft);
 
-  int original_height = GetVideoHeight();
-  SizeChange(0, 0, 0, -other->GetVideoHeight());
-  Copy(other, 0, original_height);
+  //now we do the full change in vidProps;
+  vidProps.ensureOwning();        
+  vidProps->SetDimension(vidProps->GetDimension() + bottomRight - topLeft);
+  //exception if illegal
+
+  //otherwise we have to do the job
+  for(int i = PLANE_COUNT; i-- > 0; )
+  {
+    Plane p = IndexToPlane(i);
+    if (space.HasPlane(p))    
+      GetPlane(p).SizeChange( space.ToPlaneVecteur(topLeft), space.ToPlaneVecteur(bottomRight) );     
+  }//done
 }
+
+void VideoFrame::Copy(const VideoFrame& other, const Vecteur& coords)
+{
+  //fetch ColorSpace
+  const ColorSpace& space = GetColorSpace();
+
+  //check other has same colorspace
+  if ( space != other.GetColorSpace() )  //what about frame types ?
+    throw std::logic_error("Colorspaces don't match");
+  //check left and top are valid copy coords in the frame
+  space.IsLegalCoords(coords);
+
+  //now we do the job
+  for(int i = PLANE_COUNT; i-- > 0; )
+  {
+    Plane p = IndexToPlane(i);
+    if (space.HasPlane(p))    
+      GetPlane(p).Copy(
+        other.GetPlane(p),
+        space.WidthToRowSize(left, p),
+        space.HeightToPlaneHeight(top, p)
+      );            
+  }//done
+
+}
+
+
+void StackHorizontal(const VideoFrame& other)
+{
+  CheckCompatibleColorSpace(other);
+  //check that height are same ? or just leave it be...
+
+  int width = GetWidth();
+  //enlarge so other frame can be fitted at right
+  SizeChange(Vecteur(), Vecteur(other.GetWidth(), 0)); 
+  Copy(other, Vecteur(width, 0);     //copy it at the right place             
+}
+
+void StackVertical(const VideoFrame& other)
+{
+  CheckCompatibleColorSpace(other);
+  //same width ?
+
+  int height = GetHeight();
+  SizeChange(Vecteur(), Vecteur(0, other.GetHeight());
+  Copy(other, Vecteur(0, height));
+}
+
+
 
 
 
@@ -57,53 +107,11 @@ void VideoFrame::StackVertical(CPVideoFrame other)
 /**********************************************************************************************/
 
 
-TaggedVideoFrame::TaggedVideoFrame(const ColorSpace& space, int width, int height, bool IsField)
-{
-  PPropertySet _prop = new PropertySet();
-  _prop->Set(ColorSpaceProperty::GetInstance(space));  //colorspace property set
-  _prop->Set(new DimensionProperty(width, height));    //width and height set
-
-  _prop->Set(new FrameTypeProperty(space, IsField));   //Frame type set
-
-  propSet = _prop;   //integritycheck automatically called, errors thrown as needed
-}
-
-
-const ColorSpace& TaggedVideoFrame::GetColorSpace() const
-{
-  CPColorSpaceProperty prop = propSet->Get(&ColorSpaceProperty::KEY);
-  return prop->space;
-}
 
 
 
-void TaggedVideoFrame::SizeChange(int left, int right, int top, int bottom) //args in pixels
-{
-  //fetch ColorSpace
-  const ColorSpace& space = GetColorSpace();
-  //partial check of args validity (otherwise errors from side can compensate themselves)
-  space.IsLegalHeightShift(left);
-  space.IsLegalHeightShift(top, IsInterlaced());
-  //now we do the full change in the prop set, if it works, args are legal
-  PPropertySet temp = propSet;
-  //update width and height
-  temp->Set(new DimensionProperty(GetVideoWidth() - left - right, GetVideoHeight() - top - bottom)); 
-  //try committing
-  propSet = temp;  //constraintviolation thrown if bad args 
 
-  //now we have to do the job
-  for(int i = 4; i-- > 0; )
-  {
-    Plane p = IndexToPlane(i);
-    if (space.HasPlane(p))    
-      GetPlane(p).Crop(
-        space.WidthToRowSize(left, p),
-        space.WidthToRowSize(right, p),
-        space.HeightToPlaneHeight(top, p),
-        space.HeightToPlaneHeight(bottom, p)
-      );            
-  }//done
-}
+
 
 void TaggedVideoFrame::Copy(CPVideoFrame other, int left, int top)
 {

@@ -23,7 +23,7 @@
 
 
 #include "prototype.h"  //includes linker.h, avsvalue.h...
-#include "pclip.h"
+
 #include <utility>    //for pair
 #include <map>
 
@@ -39,25 +39,14 @@ typedef pair<PAVSFunction, bool> LinkResult;
 
 class ScriptEnvironment : public RefCounted {
 
-  typedef map<string, AVSValue> VarTable;
   typedef vector<PPlugin> PluginVector;
 
-  VarTable varTable;
   PluginVector pluginVector;
   
-  //to avoid refs circularities the env vartable does not take PClip
-  //(PClip may hold a ref to the env)
-  //made this test as a method ot ease further change 
-  static bool AcceptType(const type_info& type) { return type != typeid(PClip) && type != typeid(CPVideoFrame); }
 
 public:
   ScriptEnvironment();
   ScriptEnvironment(const ScriptEnvironment& other);
-
-  //vars stuff
-  bool GlobalVarExists(const string& name) const { return varTable.find(name) != varTable.end(); }
-  const AVSValue& GetGlobarVar(const string& name) { return varTable[name]; }
-  void SetGlobalVar(const string& name, const AVSValue& val) { if (AcceptType(val.type())) varTable[name] = val; }
 
 
   void LoadPlugin(const string& pathName);
@@ -71,7 +60,7 @@ public:
 
   LinkResult Link(const string& name, const LinkagePrototype& link, bool ImplictLastAllowed);
   //simple linkage, implicit last is not allowed here
-  PAVSFunction SimpleLink(const string& name, const LinkagePrototype& link) { return Link(name, link, false).first; }
+//  PAVSFunction SimpleLink(const string& name, const LinkagePrototype& link) { return Link(name, link, false).first; }
 
 
   PAVSFunction Bind(PAVSFunction toBind, const ArgVector& bindedArgs);

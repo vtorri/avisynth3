@@ -26,7 +26,7 @@
 
 #include "refcounted.h"
 #include <vector>
-using namespace std;
+
 
 #pragma warning( disable : 4290 )
 
@@ -37,80 +37,55 @@ public:
   PropertyKey() { }
   virtual ~PropertyKey() { }
 
-  virtual void AddRef() const = 0;
-  virtual void Release() const = 0;  
-
-  virtual bool equals(const PropertyKey * other) const = 0;
-
-  bool operator==(const PropertyKey& other) const { return equals(&other); }
+  virtual bool operator==(const PropertyKey& other) const { return &other == this; }
 };
 
 
-typedef smart_ptr_to_cst<PropertyKey> PPropertyKey;
-
-//keys used by the internals
-//always defined static, so no need to refcount
-//needs to find some way to correctly unwrap them from COM
-class InternalPropertyKey : public PropertyKey {
-
-public:
-  InternalPropertyKey() { }
-
-  virtual void AddRef() const { }
-  virtual void Release() const { }
-
-  virtual bool equals(const PropertyKey * other) const { return other == this; }
-
-};
-
-class PropertySet;
-
-//exception class
-class ConstraintViolation { };
 
 class Property : public RefCounted {
-
-protected:
-  //check that self goes along well with the other properties of the set
-  virtual void IntegrityCheck(const PropertySet& set) const throw(ConstraintViolation) { } 
-
-  friend class PropertySet; //so it can call the above
 
 public:
   Property() { }
 
-  virtual PPropertyKey GetKey() const  = 0;
+  virtual const PropertyKey& GetKey() const  = 0;
 
+  bool operator==(const PropertyKey& key) const { return key == GetKey(); }
 };
 
 typedef smart_ptr<Property> PProperty;
 typedef smart_ptr_to_cst<Property> CPProperty;  
 
 
-typedef vector<CPProperty> PropertyVector;
 
-class PropertySet : public PropertyVector, public RefCounted {
 
-  //ask each property to check integrity
-  void IntegrityCheck() const { for( const_iterator it = begin(); it != end(); ++it ) (*it)->IntegrityCheck(*this); }
+class PropertySet : private std::vector<CPProperty> {
 
-  iterator find(PPropertyKey key);
 
 public:
   PropertySet() { }
-  PropertySet(const PropertySet& other) : PropertyVector(other) { }
-
-  virtual PropertySet * clone() const { return new PropertySet(*this); }
+  PropertySet(const PropertySet& other) : vector<CPProperty>(other) { }
 
   //mutations methods
-  void Set(CPProperty prop) { iterator it = find(prop->GetKey()); if ( it != end() ) *it = prop; else push_back(prop); }
-  void Remove(PPropertyKey key) { iterator it = find(key); if ( it != end() ) erase(it); }
+  void Set(const Property& prop)
+  { 
+    iterator it = find(begin(), end(), prop.GetKey());
+    if ( it != end() )
+      *it = prop;
+    else push_back(prop);
+  }
+  void Remove(const PropertyKey& key)
+  { 
+    iterator it = find(begin(), end(), key); 
+    if ( it != end() )
+      erase(it);
+  }
 
-  CPProperty Get(PPropertyKey key) const; 
+  CPProperty Get(const PropertyKey& key) const
+  {
+    const_iterator it = find(begin(), end(), key);
+    return it != end() ? *it : CPProperty();
+  }
 };
-
-typedef smart_ptr<PropertySet> PPropertySet;
-typedef smart_ptr_to_cst<PropertySet> CPPropertySet;
 
 
 

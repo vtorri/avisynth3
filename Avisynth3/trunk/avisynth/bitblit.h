@@ -21,11 +21,21 @@
 // General Public License cover the whole combination.
 
 
-#include "videoinfo.h"
+
+#ifndef __BITBLIT_H__
+#define __BITBLIT_H__
+
+#include "geometric.h"
+
+typedef unsigned char BYTE;
 
 
 
+class Blitter {
 
+public:
+  static void Blit(BYTE * dst_ptr, int dst_pitch, const BYTE * src_ptr, int src_pitch, const Dimension& toCopy);
 
+};
 
-
+#endif  //#ifndef __BITBLIT_H__

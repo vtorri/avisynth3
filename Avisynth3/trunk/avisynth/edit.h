@@ -47,16 +47,62 @@
  **/
 class Trim : public EditFilter {
 
-  const int firstFrame;
+  const int begin;
   const __int64 audio_offset;
 
 public:
-  Trim(PClip  child, int _firstFrame, int frameCount) : ChildClip(child, child->GetVideoInfo().Trim(frameCount)),
-    firstFrame(_firstFrame), audio_offset(vi.AudioSamplesFromFrames(firstframe)) { }
+  //end is the out of bounds limit
+  Trim(PClip  child, int _begin, int end) : ChildClip(child, child->GetVideoInfo().Trim(_begin, end)),
+    begin(_begin), audio_offset(vi.AudioSamplesFromFrames(begin)) { }
      
-  virtual CPVideoFrame GetFrame(int n, CLip& client) { return child->GetFrame(n + firstframe, client); }
+  virtual CPVideoFrame GetFrame(int n, CLip& client) { return child->GetFrame(n + begin, client); }
   virtual void GetAudio(void* buf, __int64 start, __int64 count) { child->GetAudio( buf, start + audio_offset, + count); }
 
+};
+
+
+
+
+//common superclass for the two classes below
+class DeleteDuplicateFunction : public CoreFilter {
+
+  static const DescriptionPrototype prototype;  //(clip c, int n)
+
+public:
+  DeleteDuplicateFunction(const string& name) : CoreFilter(name) { }
+
+  virtual const DescriptionPrototype& GetPrototype() const { return prototype; }
+
+
+protected:
+  virtual AVSValue operator() (const ArgVector& args, PEnvironment env) const { return Edit(any_cast<PClip>(args[0]), any_cast<int>(args[1]), env); }
+
+  virtual PClip Edit(PClip clip, int n, PEnvironment env) const = 0;
+
+
+};
+
+class DeleteFrameFunction : public DeleteDuplicateFunction {
+
+  DeleteFrameFunction instance;    
+
+  //private constructor 
+  DeleteFrameFunction() : DeleteDuplicateFunction("DeleteFrame") { }
+
+protected:
+  virtual PClip Edit(PClip clip, int n, PEnvironment env) const { return new Splice(new Trim(clip, 0, n), new Trim(clip, n+1, 0)); }
+};
+
+
+class DuplicateFrameFunction : public DeleteDuplicateFunction {
+
+  DuplicateFrameFunction instance;
+
+  //private constructor
+  DuplicateFrameFunction() : DeleteDuplicateFunction("DuplicateFrame") { }
+
+protected:
+  virtual PClip Edit(PClip clip, int n, PEnvironment env) const { return new Splice(new Trim(clip, 0, n+1), new Trim(clip, n, 0)); }
 };
 
 
@@ -77,63 +123,44 @@ public:
 
 
 
-/**
-  * Class to delete a frame
- **/
-class DeleteFrame : public EditFilter {
 
-  const int frame;
+
+class Splice : public MultiChildClip {
+
+  typedef vector<int> IntVector;
+  
+  const IntVector videoSwitchOvers;  
+
+  //merge the videoinfos (and throw errors if not possible)
+  static VideoInfo MergeVideoInfos(const ClipVector& childs);
+
+  struct GetFrameCount {
+    int operator()(const PClip& clip) const { return clip->GetVideoInfo().GetFrameCount(); }
+  };
+
+  static inline IntVector MakeSwitchOverVector(const ClipVector& childs)
+  {
+    IntVector result(childs.size() + 1, 0);  //create with good size
+    transform(childs.begin(), childs.end(), result.begin() + 1, GetFrameCount());  //fill with frame count of each clip
+    partial_sum(result.begin(), result.end(), result.begin());                 //partial sum
+    return result;
+  }
 
 public:
-  DeleteFrame(PClip child, int _frame)
-    : ChildClip(_child, _child->GetVideoInfo().DecreaseFrameCount()), frame(_frame) { }
+  Splice(const ClipVector& _childs) : MultiChildClip(_childs, MergeVideoInfos(_childs)),
+    videoSwitchOvers(MakeSwitchOverVector(_childs)) { }
 
-  virtual CPVideoFrame GetFrame(int n, Clip& client) { return child->GetFrame( n < frame ? n : n + 1, client); }
+  virtual CPVideoFrame GetFrame(int n, Clip& client)
+  {
+    IntVector::const_iterator it = upper_bound(videoSwitchOvers.begin(), videoSwitchOvers.end(), n);
+    //if == begin it's < 0 and if == end it's >= framecount
+    if ( it == videoSwitchOvers.begin() || it == videoSwitchOvers.end() )
+      ThrowOutOfBoundsException();
+    return GetChildFrame(it -  videoSwitchOvers.begin(), n - *it);
+  }
 
 };
 
-
-
-/**
-  * Class to duplicate a frame
- **/
-class DuplicateFrame : public GenericVideoFilter {
-
-  const int frame;
-
-public:
-  DuplicateFrame(PClip child, int _frame)
-    : ChildClip(_child, _child->GetVideoInfo().IncreaseFrameCount()), frame(_frame) { }
-
-  virtual CPVideoFrame GetFrame(int n, Clip& client) { return child->GetFrame( n > frame ? n - 1: n, client); }
-};
-
-
-
-
-
-class Splice : public 
-
-
-class Splice : public GenericVideoFilter 
-/**
-  * Class to splice together video clips
- **/
-{
-public:
-  Splice(PClip _child1, PClip _child2, bool realign_sound, IScriptEnvironment* env);
-  PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
-  void __stdcall GetAudio(void* buf, __int64 start, __int64 count, IScriptEnvironment* env);
-  bool __stdcall GetParity(int n);
-
-  static AVSValue __cdecl CreateUnaligned(AVSValue args, void*, IScriptEnvironment* env);
-  static AVSValue __cdecl CreateAligned(AVSValue args, void*, IScriptEnvironment* env);
-
-private:
-  PClip child2;
-  int video_switchover_point;
-  __int64 audio_switchover_point;
-};
 
 
 
@@ -201,6 +228,52 @@ public:
 };
 
 
+
+class AudioLoop : public EditFilter {
+  
+  const int times;
+  const __int64 audioModulo;
+
+protected:
+  AudioLoop(PClip child, int _times, __int64 _audioModulo) : EditFilter(child, child->GetVideoInfo().Loop(_times),
+    times(_times), audioModulo(_audioModulo) { }
+
+public:
+  virtual void GetAudio(BYTE * buf, __int64 start, __int64 count)
+  {
+    //FIXME : take care of the case start/count out of bounds
+
+    start = start % audioModulo;
+    if ( start + count < audioModulo )     //no overlap    
+      child->GetAudio(buf, start, count);  //we just forward request
+    else {
+      child->GetAudio(buf, start, audioModulo - start);  //we fetch the first part
+
+      //update variables
+      count -= audioModulo - start;   //samples left to fetch
+      int grain = GetVideoInfo().GetAudioGrain();
+      buf += grain * (audioModulo - start);
+
+      //a loop to get all of the complete audio length we can
+      for(int i = count/audioModulo; i-- > 0; buf += grain * audioModulo)
+        child->GetAudio(buf, 0, audioModulo);
+
+      child->GetAudio(buf, 0, count % audioModulo);   //fetch the final part
+    }       
+  }
+
+};
+
+class Loop : public AudioLoop {
+
+  const int videoModulo;
+
+public:
+  Loop(PClip child, int times) : AudioLoop(child, times, child->GetVideoInfo().GetSamplesFromFrameCount()),
+    videoModulo(child->GetVideoInfo().GetFrameCount()) { }
+
+  virtual CPVideoFrame GetFrame(int n, Clip& client) { CheckFrameInBounds(n); return GetChildFrame(n % videoModulo); }
+};
 
 
 class Loop : public GenericVideoFilter {

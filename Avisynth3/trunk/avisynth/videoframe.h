@@ -25,63 +25,146 @@
 #define __VIDEOFRAME_H__
 
 
-#include "pclip.h"
-#include "bufferwindow.h"
-#include "colorspace.h"
-#include "property.h" 
+
 #include "videoinfo.h"
+#include "bufferwindow.h"
+#include "property.h" 
 
 
-#include <string> 
-using namespace std;
+//typedef smart_ptr<FrameVideoProperties> PFrameVidProps;
 
 
 
 
+class PlaneMetrics {
 
-class TaggedVideoFrame : public VideoFrame {
+  Dimension dimension;
+  int pitch;
+
+public:
+  PlaneMetrics() { }
+  PlaneMetrics(const BufferWindow& bw) : dimension(bw.GetDimension()), pitch(bw.GetPitch()) { }
+  PlaneMetrics(const PlaneMetrics& other) : dimension(other.dimension), pitch(other.pitch) { }
+
+  const PlaneMetrics& operator=(const PlaneMetrics& other) { dimension = other.dimension; pitch = other.pitch; return *this; }
+
+  int GetRowSize() const { return dimension.GetWidth(); }
+  int GetAlignedRowSize() const { int r = ( GetRowSize() + FRAME_ALIGN - 1 ) & -FRAME_ALIGN; return r <= pitch ? r : GetRowSize(); }
+  int GetHeight() const { return dimension.GetHeight(); }
+  int GetPitch() const { return pitch; }
+};
+
+
+
+/********************************************************************************************
+ * Polymorphic VideoFrame class                                                             *
+ ********************************************************************************************
+  VideoFrameBuffer no longer defined there (in videoframe.h)
+  VideoFrame still use them, but they are hidden by the VideoFrame API
+
+  MakeWritable is no longer required : CPVideoFrame are never Writable, nor mutable in any sort
+  PVideoframe are always writable/mutable, and will copy buffers before returning Write Ptr if they are shared
+*/
+
+
+
+class VideoFrame;
+typedef smart_ptr<VideoFrame> PVideoFrame;
+typedef smart_ptr_to_cst<VideoFrame> CPVideoFrame;
+
+
+class VideoFrame : public RefCounted {
+
+  PFrameVidProps vidProps;
+  PropertySet propSet;
+
+public:
+  VideoFrame(const FrameVideoProperties& _vidProps)
+    : vidProps(const_cast<FrameVideoProperties &>(_vidProps)) { }
+  //copy constructor
+  VideoFrame(const VideoFrame& other) : vidProps(other.vidProps), propSet(other.propSet)  { }
+
+  //clone method, expected by smart_ptrs for PVideoFrame/CPVideoFrame conversions
+  virtual VideoFrame * clone() const = 0; 
+
+
+  //static method to convert index in Plane enum, USE it !!!
+  //the NOT_PLANAR plane is provided in last position
+  //for cases where you process all planes in the same way (use with ColorSpace::HasPlane(Plane) )
+  inline static Plane IndexToPlane(int i) {
+    static Plane planes[] = { PLANAR_Y, PLANAR_U, PLANAR_V, NOT_PLANAR };
+    return planes[i];
+  }
+
+
+  PlaneMetrics GetMetrics(Plane plane) const throw(invalid_plane) { return PlaneMetrics(GetPlane(plane)); }
+
+  const BYTE * GetReadPtr(Plane plane) const throw(invalid_plane) { return GetPlane(plane).GetReadPtr(); }
+  BYTE * GetWritePtr(Plane plane) throw(invalid_plane) { return GetPlane(plane).GetWritePtr(); }
+
+  
+  //methods to get some other general infos
+  const ColorSpace& GetColorSpace() const { return vidProps->GetColorSpace(); }
+  const Dimension& GetDimension() const { return vidProps->GetDimension(); }
+  FrameType GetFrameType() const { return vidProps->GetFrameType(); }
+
+  int GetWidth() const { return GetDimension().GetWidth(); }
+  int GetHeight() const { return GetDimension().GetHeight(); }
+
+  bool IsPlanar() const { return GetColorSpace().HasProperty(ColorSpace::PLANAR); }  
+
+  bool IsField() const { return vidProps->IsField(); }
+  bool IsFrame() const { return vidProps->IsFrame(); }
+
+
+
+  /************************************************************************************
+   *  various ToolBox methods now provided by the VideoFrame API                      *
+   ************************************************************************************/
+
+  //ColorSpace conversion method
+  virtual CPVideoFrame ConvertTo(const ColorSpace& space) const = 0;
+
+  //Please Note that shift vecteurs are in PIXELS
+  //buffers won't be reallocated if possible
+  //if reallocation has to be done, original data is copied at the right place
+  //new data, if there is any, is not initialized 
+  void SizeChange(const Vecteur& topLeft, const Vecteur& bottomRight);
+
+  //Copy other into self at the specified coords (in Pixels)
+  //Only the overlapping part is copied
+  void Copy(const VideoFrame& other, const Vecteur& coords);
+
+  void StackHorizontal(const VideoFrame& other);  //both implemented using SizeChange and Copy       
+  void StackVertical(const VideoFrame& other);
+  
+  virtual void FlipHorizontal() = 0;
+  virtual void FlipVertical() = 0;
+
+  virtual void TurnLeft() = 0;  //how do we turn a YUY2 frame !?...
+  virtual void TurnRight() = 0;
+
+  virtual void Blend(const VideoFrame& other, float factor) = 0;
+
+  //what else ???
+
+  /************************************************************************************
+   *  properties methods                                                              *
+   ************************************************************************************/
+
+  CPProperty GetProperty(const PropertyKey& key) const { propSet.Get(key); }
+
+  void SetProperty(const Property& prop) { propSet.Set(prop); }
+  void RemoveProperty(const PropertyKey& key) { propSet.Remove(key); }
+
+
 
 protected:
-  CPPropertySet propSet;
-
   //plane fetch methods (must be consistent together)
   //their existence allow to define many things at this level
-  virtual const BufferWindow& GetPlane(Plane plane) const throw(NoSuchPlaneException) = 0;
-  virtual BufferWindow& GetPlane(Plane pane) throw(NoSuchPlaneException) = 0;
-  
-public:
-  //copy constructor
-  TaggedVideoFrame(const TaggedVideoFrame& other) : propSet(other.propSet) { }
-  //conversion construtor
-  TaggedVideoFrame(const ColorSpace& space, const TaggedVideoFrame& other);
-  //normal constructor
-  TaggedVideoFrame(const ColorSpace& space, int width, int height, bool IsField);
+  virtual const BufferWindow& GetPlane(Plane plane) const throw(invalid_plane) = 0;
+  virtual BufferWindow& GetPlane(Plane pane) throw(invalid_plane) = 0;
 
-
-  virtual int GetPitch(Plane plane) const throw(NoSuchPlaneException) { return GetPlane(plane).GetPitch(); }
-  virtual int GetRowSize(Plane plane) const throw(NoSuchPlaneException) { return GetPlane(plane).GetRowSize(); }
-  virtual int GetAlignedRowSize(Plane plane) const throw(NoSuchPlaneException) { return GetPlane(plane).GetAlignedRowSize(); }
-  virtual int GetHeight(Plane plane) const throw(NoSuchPlaneException) { return GetPlane(plane).GetHeight(); }
-
-  virtual const BYTE * GetReadPtr(Plane plane) const throw(NoSuchPlaneException) { return GetPlane(plane).GetReadPtr(); }
-  virtual BYTE * GetWritePtr(Plane plane) throw(NoSuchPlaneException) { return GetPlane(plane).GetWritePtr(); }
-
-
-  virtual const ColorSpace& GetColorSpace() const;
-  virtual int GetVideoHeight() const;
-  virtual int GetVideoWidth() const;
-
-  virtual bool IsInterlaced() const;
-
-  //morphing methods defined generally at this level
-  //they test if plane exist and if yes process it.
-  virtual void SizeChange(int left, int right, int top, int bottom);
-  virtual void Copy(CPVideoFrame other, int left, int top);
-  virtual void Blend(CPVideoFrame other, float factor);
-
-  virtual CPProperty GetProperty(PPropertyKey key) const;
-  virtual void SetProperty(CPProperty prop); 
-  virtual void RemoveProperty(PPropertyKey key);
 
 };
 
@@ -89,114 +172,72 @@ public:
 
 
 
-class InterleavedVideoFrame : public TaggedVideoFrame {
 
-  typedef smart_ptr_to_cst<InterleavedVideoFrame> CPInterleavedVideoFrame;
+
+
+
+class InterleavedVideoFrame : public VideoFrame {
 
 protected:  
   BufferWindow main;
 
-  virtual const BufferWindow& GetPlane(Plane plane) const throw(NoSuchPlaneException)
+  virtual const BufferWindow& GetPlane(Plane plane) const throw(invalid_plane)
   {
     if (plane != NOT_PLANAR)
-      throw NoSuchPlaneException();
+      throw invalid_plane();
     return main;
   }
 
-  virtual BufferWindow& GetPlane(Plane plane) throw(NoSuchPlaneException)
+  virtual BufferWindow& GetPlane(Plane plane) throw(invalid_plane)
   {
     if (plane != NOT_PLANAR)
-      throw NoSuchPlaneException();
+      throw invalid_plane();
     return main;
   }
-
 
 public:
+  InterleavedVideoFrame(const FrameVideoProperties& vidProps) : VideoFrame(vidProps), main(vidProps, NOT_PLANAR) { }
   //copy constructor
-  InterleavedVideoFrame(const InterleavedVideoFrame& other) : TaggedVideoFrame(other), main(other.main) { }
-  //conversion constructor
-  InterleavedVideoFrame(const ColorSpace& space, const TaggedVideoFrame& other) : TaggedVideoFrame(space, other) { }  
-  //normal constructor
-  InterleavedVideoFrame(const ColorSpace& space, int width, int height, bool IsField)
-    : TaggedVideoFrame(space, width, height, IsField) { main.NewWindow(space.WidthToRowSize(width, NOT_PLANAR), height); }  
+  InterleavedVideoFrame(const InterleavedVideoFrame& other) : VideoFrame(other), main(other.main) { }
 
+  virtual void FlipHorizontal() { main.FlipHorizontal(static_cast<const InterLeaved&>(GetColorSpace()).GetBytesPerPixel()); }
   virtual void FlipVertical() { main.FlipVertical(); }
-};
-
-
-class RGBVideoFrame : public InterleavedVideoFrame {
-
-public:
-  //copy constructor
-  RGBVideoFrame(const RGBVideoFrame& other) : InterleavedVideoFrame(other) { }
-  //conversion constructor
-  RGBVideoFrame(const ColorSpace& space, const TaggedVideoFrame& other) : InterleavedVideoFrame(space, other) { }  
-  //normal constructor
-  RGBVideoFrame(const ColorSpace& space, int width, int height, bool IsField)
-    : InterleavedVideoFrame(space, width, height, IsField) { }
-
-  virtual void FlipHorizontal();
 
   virtual void TurnLeft(); 
   virtual void TurnRight();
 
+  virtual void Blend(const VideoFrame& other, float factor);
 };
 
 
-class RGB32VideoFrame;
-class YUY2VideoFrame;
-class YV12VideoFrame;
 
-class RGB24VideoFrame : public RGBVideoFrame {
+class RGBVideoFrame : public InterleavedVideoFrame {
 
-  
-protected:
-  virtual RefCounted * clone() const { return new RGB24VideoFrame(*this); }  
+  //normal constructor, private to avoid construction with illegal colorspace props (unchecked)
+  RGBVideoFrame(const FrameVideoProperties& vidProps) : InterleavedVideoFrame(vidProps) { }
 
 public:
-  RGB24VideoFrame(const RGB24VideoFrame& other) : RGBVideoFrame(other) { } 
-  RGB24VideoFrame(int width, int height, bool IsField) : RGBVideoFrame(RGB24::instance, width, height, IsField) { }
-  //converting constructors
-  RGB24VideoFrame(const RGB32VideoFrame& other);
-  RGB24VideoFrame(const YUY2VideoFrame& other);
-  RGB24VideoFrame(const YV12VideoFrame& other);
+  //copy constructor
+  RGBVideoFrame(const RGBVideoFrame& other) : InterleavedVideoFrame(other) { } 
 
+  virtual VideoFrame * clone() const { return new RGBVideoFrame(*this); }  
 
   virtual CPVideoFrame ConvertTo(const ColorSpace& space) const;
 
 };
 
-class RGB32VideoFrame : public RGBVideoFrame {
 
-protected:
-  virtual RefCounted * clone() const { return new RGB32VideoFrame(*this); }
-
-public:
-  RGB32VideoFrame(const RGB32VideoFrame& other) : RGBVideoFrame(other) { } 
-  RGB32VideoFrame(int width, int height, bool IsField) : RGBVideoFrame(RGB32::instance, width, height, IsField) { }
-  //converting constructors
-  RGB32VideoFrame(const RGB24VideoFrame& other);
-  RGB32VideoFrame(const YUY2VideoFrame& other);
-  RGB32VideoFrame(const YV12VideoFrame& other);
-
-  virtual CPVideoFrame ConvertTo(const ColorSpace& space) const;
-
-};
 
 
 class YUY2VideoFrame : public InterleavedVideoFrame {
          
-protected:
-  virtual RefCounted * clone() const { return new YUY2VideoFrame(*this); }
-
+  YUY2VideoFrame(const FrameVideoProperties& vidProps) : InterleavedVideoFrame(vidProps) { }
   
 public:
-  YUY2VideoFrame(const RGB32VideoFrame& other);  //converting constructors
-  YUY2VideoFrame(const RGB24VideoFrame& other);
-  YUY2VideoFrame(const YV12VideoFrame& other);
-  YUY2VideoFrame(const YUY2VideoFrame& other) : InterleavedVideoFrame(other) { } //spec of the above
-  YUY2VideoFrame(int width, int height, bool IsField)
-    : InterleavedVideoFrame(YUY2::instance, width, height, IsField) { }
+  //copy constructor
+  YUY2VideoFrame(const YUY2VideoFrame& other) : InterleavedVideoFrame(other) { } 
+
+  virtual VideoFrame * clone() const { return new YUY2VideoFrame(*this); }
 
   virtual CPVideoFrame ConvertTo(const ColorSpace& space) const;
 
@@ -212,44 +253,41 @@ public:
 /************************************ PlanarVideoFrame ****************************************/
 /**********************************************************************************************/
 
-class PlanarVideoFrame : public TaggedVideoFrame {
-
-  typedef smart_ptr_to_cst<PlanarVideoFrame> CPPlanarVideoFrame;
+class PlanarVideoFrame : public VideoFrame {
 
 protected:
   BufferWindow y, u ,v;
 
-  virtual const BufferWindow& GetPlane(Plane plane) const throw(NoSuchPlaneException)
+  virtual const BufferWindow& GetPlane(Plane plane) const throw(invalid_plane)
   {
     switch(plane) {
       case PLANAR_Y: return y;
       case PLANAR_U: return u;
       case PLANAR_V: return v;
     }
-    throw NoSuchPlaneException();
+    throw invalid_plane();
   }
 
-  virtual BufferWindow& GetPlane(Plane plane) throw(NoSuchPlaneException)
+  virtual BufferWindow& GetPlane(Plane plane) throw(invalid_plane)
   {
     switch(plane) {
       case PLANAR_Y: return y;
       case PLANAR_U: return u;
       case PLANAR_V: return v;
     }
-    throw NoSuchPlaneException();
+    throw invalid_plane();
   }
 
-  virtual void InitPlanes(int width, int height) = 0;
+  //normal constructor
+  PlanarVideoFrame(const FrameVideoProperties& vidProps) : VideoFrame(vidProps),
+    y(vidProps, PLANAR_Y), u(vidProps, PLANAR_U), v(vidProps, PLANAR_V) { }
 
 public:
   //copy constructor
-  PlanarVideoFrame(const PlanarVideoFrame& other) : TaggedVideoFrame(other), y(other.y), u(other.u), v(other.v) { }
-  //normal constructor
-  PlanarVideoFrame(const ColorSpace& space, int width, int height, bool IsField) 
-    : TaggedVideoFrame(space, width, height, IsField) { InitPlanes(width, height); }
+  PlanarVideoFrame(const PlanarVideoFrame& other) : VideoFrame(other), y(other.y), u(other.u), v(other.v) { }
+
   
 
-  virtual void Copy(CPVideoFrame other, int left, int top);
 
   virtual void FlipHorizontal();
   virtual void FlipVertical();
@@ -257,7 +295,7 @@ public:
   virtual void TurnLeft(); 
   virtual void TurnRight();
 
-  virtual void Blend(CPVideoFrame other, float factor);
+  virtual void Blend(const VideoFrame& other, float factor);
 
   
 }; 
@@ -266,18 +304,14 @@ public:
 class YV12VideoFrame : public PlanarVideoFrame {
 
 protected:
-  virtual void InitPlanes(int width, int height);
-  virtual RefCounted * clone() const { return new YV12VideoFrame(*this); }
+  //normal constructor
+  YV12VideoFrame(const FrameVideoProperties& vidProps) : PlanarVideoFrame(vidProps) { }
 
 public:
   //copy constructor
   YV12VideoFrame(const YV12VideoFrame& other) : PlanarVideoFrame(other) { }
-  //normal constructor
-  YV12VideoFrame(int width, int height, bool IsField) : PlanarVideoFrame(YV12::instance, width, height, IsField) { }
-  //conversions constructor
-  YV12VideoFrame(const RGB24VideoFrame& other);
-  YV12VideoFrame(const RGB32VideoFrame& other);
-  YV12VideoFrame(const YUY2VideoFrame& other);
+
+  virtual VideoFrame * clone() const { return new YV12VideoFrame(*this); }
 
   virtual CPVideoFrame ConvertTo(const ColorSpace& space) const;
 
@@ -285,17 +319,13 @@ public:
 
 class VFWYV12VideoFrame : public YV12VideoFrame {
 
-protected:
-  virtual void InitPlanes(int width, int height);
-
-public:
-  VFWYV12VideoFrame(int width, int height, bool IsField) : YV12VideoFrame(width, height, IsField) { }
+  VFWYV12VideoFrame(const FrameVideoProperties& vidProps) : YV12VideoFrame(vidProps) { }
 
 };
 
-class VFWI420VideoFrame : public VFWYV12VideoFrame {
-public:
-  VFWI420VideoFrame(int width, int height, bool IsField) : VFWYV12VideoFrame(width, height, IsField) { std::swap(u, v); }
+class VFWI420VideoFrame : public YV12VideoFrame {
+
+  VFWI420VideoFrame(const FrameVideoProperties& vidProps) : YV12VideoFrame(vidProps) { std::swap(u, v); }
 };
 
 

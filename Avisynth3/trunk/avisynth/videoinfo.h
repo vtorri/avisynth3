@@ -24,65 +24,123 @@
 #ifndef __VIDEOINFO_H__
 #define __VIDEOINFO_H__
 
-#include "error.h"  //which includes <string>
-#include "videoproperty.h"
+#include "videoproperties.h"  //which includes colorspace.h, refcounted.h
+
+
+
+
+enum SampleType {
+  SAMPLE_INT8,
+  SAMPLE_INT16, 
+  SAMPLE_INT24,    // Int24 is a very stupid thing to code, but it's supported by some hardware.
+  SAMPLE_INT32,
+  SAMPLE_FLOAT
+};  
+
+class ClipAudioProperties : public RefCounted {
+
+  SampleType sampleType;       
+  int samplesPerSecond;   
+  __int64 samplesCount;      
+  int channelCount;        
+  
+  static __int64 CheckSamplesCount(__int64 samplesCount)
+  {
+    if (samplesCount <= 0)
+      throw invalid_argument("Samples Count must be strictly positive");
+    return samplesCount;
+  }
+  static int CheckSign(int value, const string& err_msg)
+  {
+    if (value <= 0)
+      throw invalid_argument(err_msg);
+    return value;
+  }
+
+public:
+  ClipAudioProperties(SampleType _sampleType, __int64 _samplesCount) : sampleType(_sampleType), 
+    samplesPerSecond(44100), samplesCount(CheckSamplesCount(_samplesCount)), channelCount(2) { }
+  ClipAudioProperties(const ClipAudioProperties& other) : sampleType(other.sampleType),
+    samplesPerSecond(other.samplesPerSecond), samplesCount(other.samplesCount), channelCount(other.channelCount) { }
+
+  SampleType GetSampleType() const { return sampleType; }
+  int GetSamplesPerSecond() const { return samplesPerSecond; }
+  __int64 GetSamplesCount() const { return samplesCount; }
+  int GetChannelCount() const { return channelCount; }
+
+  void SetSampleType(SampleType _sampleType) { sampleType = _sampleType; }
+  void SetSamplesPerSecond(int _samplesPerSecond) { samplesPerSecond = CheckSign(_samplesPerSecond, "Samples per second must be strictly positive"); }
+  void SetSamplesCount(__int64 _samplesCount) { samplesCount = CheckSamplesCount(_samplesCount); }
+  void SetChannelCount(int _channelCount) { channelCount = CheckSign(_channelCount, "Channel count must be strictly positive"); }
+
+  ClipAudioProperties * clone() const { return new ClipAudioProperties(*this); }
+};
+
+typedef smart_ptr<ClipAudioProperties> PClipAudProps;
 
 
 
 // The VideoInfo class holds global information about a clip 
 // (i.e. information that does not depend on the frame number).  
-// The GetVideoInfo method in IClip returns this class.
+// The GetVideoInfo method in Clip returns this class.
 
 // As of 3.0 VideoInfo becomes a class and is now responsible of checking all clip constraints.
-// (ie no test anything anymore: you try it and if illegal it will throw the approprite error)
-// All mutating methods return either VideoInfo& or VideoInfo in order to allow chaining 
-// (
+// ie all tests are the responsability of VideoInfo, you try it and if illegal it will throw the appropriate error)
+// All mutating methods return VideoInfo& in order to allow chaining 
+
 
 // Audio Sample information
 typedef float SFLOAT;
 
+
+class ScriptEnvironment;
+typedef smart_ptr<ScriptEnvironment> PEnvironment;
+
 class VideoInfo {
+  
+  PClipVidProps vidProps;  //NULL if no video else valid
+  PClipAudProps audProps;  //NULL if no audio else valid
+  PEnvironment env;
 
 public:
-
-  typedef short dimension;
-  
-  
-  //some enumerations
-  enum SampleType {
-    SAMPLE_INT8,
-    SAMPLE_INT16, 
-    SAMPLE_INT24,    // Int24 is a very stupid thing to code, but it's supported by some hardware.
-    SAMPLE_INT32,
-    SAMPLE_FLOAT
-  };  
-
-
-
   //default constructor : no video, no audio
-  VideoInfo();
-  VideoInfo(const VideoInfo& other);  //copy constructor
-
+  VideoInfo(PEnvironment _env) : env(_env) { }
+  //copy constructor
+  VideoInfo(const VideoInfo& other) : vidProps(other.vidProps), audProps(other.audProps), env(other.env) { }
+  
+  PEnvironment GetEnvironment() const { return env; }
 
   /*
    * Video stuff
-   */
-private:
-
-
-  dimension width, height;    
-  unsigned fps_numerator, fps_denominator;
-  int frameCount;
-
-  void CheckHasVideo() const {
+   */ 
+private:  
+  void CheckHasVideo() const
+  {
     if (! HasVideo())
-      throw InternalError("VideoInfo: Invalid State: no Video");
+      throw logic_error("VideoInfo: Invalid State: no Video");
+  }
+
+  ClipVideoProperties& ChangeVideoProperties()
+  { 
+    CheckHasVideo();
+    vidProps.UnShare(); 
+    return *vidProps;
   }
 
 public:
+  bool HasVideo() const { return vidProps; }
 
+  //use this one if you have many info requests
+  const ClipVideoProperties& GetVideoProperties() const { CheckHasVideo(); return *vidProps; }
 
-  bool HasVideo() const;
+  const ColorSpace& GetColorSpace() const { return GetVideoProperties().GetColorSpace(); }
+  const Dimension& GetDimension() const { return GetVideoProperties().GetDimension(); }
+  int GetWidth() const { return GetVideoProperties().GetWidth(); }
+  int GetHeight() const { return GetVideoProperties().GetHeight(); }
+  bool IsFrameClip() const { return GetVideoProperties().IsFrameClip(); }
+  const Fraction& GetFPS() const { return GetVideoProperties().GetFPS(); }
+  int GetFrameCount() const { return GetVideoProperties().GetFrameCount(); }
+
 
   bool IsColorSpace(const ColorSpace& space) const { return GetColorSpace() == space; } 
   bool HasProperty(ColorSpace::Property prop) const { return GetColorSpace().HasProperty(prop); }
@@ -97,105 +155,64 @@ public:
   bool IsYUY2() const { return IsColorSpace(YUY2::instance); }  
   bool IsYV12() const { return IsColorSpace(YV12::instance); }
 
-  bool IsVPlaneFirst() const { return IsYV12(); }  // Don't use this 
 
+  VideoInfo& KillVideo() { vidProps = NULL; return *this; }
 
-  dimension GetWidth() const { CheckHasVideo(); return width; }
-  dimension GetHeight() const { CheckHasVideo(); return height; }
-  int GetFrameCount() const { CheckHasVideo(); return frameCount; }
+  VideoInfo& AddVideo(const ColorSpace& space, const Dimension& dimension) { vidProps = new ClipVideoProperties(space, dimension); return *this; }
 
-  unsigned GetFPSNumerator() const { CheckHasVideo(); return fps_numerator; }
-  unsigned GetFPSDenominator() const { CheckHasVideo(); return fps_denominator; }
-  double GetFPS() const { CheckHasVideo(); return fps_numerator/fps_denominator; }
-
-  const ColorSpace& GetColorSpace() const;
-
-  VideoInfo& RemoveVideo();
-  VideoInfo  RemoveVideo() const; 
-
-  VideoInfo& SetColorSpace(const ColorSpace& space);
-  VideoInfo  SetColorSpace(const ColorSpace& space) const;
-
-  VideoInfo& SetWidth(dimension _width);
-  VideoInfo  SetWidth(dimension _width) const;
-  VideoInfo& SetHeight(dimension _height);
-  VideoInfo  SetHeight(dimension _height) const;
-
-  VideoInfo& Resize(dimension left, dimension right, dimension top, dimension bottom);
-  VideoInfo  Resize(dimension left, dimension right, dimension top, dimension bottom) const { return VideoInfo(*this).Resize(left, right, top, bottom); }
-
-  VideoInfo& SetFrameCount(int _frameCount) {
-    if (_frameCount <= 0)
-      throw InternalError("Attempted to request a Clip with negative or zero VideoFrame");
-    frameCount = _frameCount;
-    return *this;
-  }
-  VideoInfo  SetFrameCount(int _frameCount) const { return VideoInfo(*this).SetFrameCount(_frameCount); }
-
-  VideoInfo& SetFPS(unsigned numerator, unsigned denominator) {
-    CheckHasVideo();
-    if (denominator == 0)
-      throw InternalError("Attempted to set an infinite fps");
-    unsigned x = numerator, y = denominator;
-    while (y) {   // find gcd
-      unsigned t = x%y; x = y; y = t;
-    }
-    fps_numerator = numerator/x;
-    fps_denominator = denominator/x;
-    return *this;
-  }
-  VideoInfo  SetFPS(unsigned numerator, unsigned denominator) const { return VideoInfo(*this).SetFPS(numerator, denominator); }
-
+  VideoInfo& SetColorSpace(const ColorSpace& space) { ChangeVideoProperties().SetColorSpace(space); return *this; }
+  VideoInfo& SetDimension(const Dimension& dimension) { ChangeVideoProperties().SetDimension(dimension); return *this; }
+  VideoInfo& SetWidth(int width) { ChangeVideoProperties().SetWidth(width); return *this; }
+  VideoInfo& SetHeight(int height) { ChangeVideoProperties().SetHeight(height); return *this; }
+  VideoInfo& SetFrameClip(bool frameClip) { ChangeVideoProperties().SetFrameClip(frameClip); return *this; }
+  VideoInfo& SetFPS(const Fraction& fps) { ChangeVideoProperties().SetFPS(fps); return *this; }
+  VideoInfo& SetFrameCount(int frameCount) { ChangeVideoProperties().SetFrameCount(frameCount); return *this; }
 
 
 
   /*
    * Audio stuff
-   */
+   */ 
 private:
-
-  SampleType sample_type;           
-  int audio_samples_per_second;   // 0 means no audio
-  __int64 num_audio_samples;      // changed as of 2.5
-  int nchannels;                  // as of 2.5
-
-  void CheckHasAudio() const {
+  void CheckHasAudio() const
+  {
     if (! HasAudio())
-      throw InternalError("VideoInfo: Invalid State: no audio");
+      throw logic_error("VideoInfo: Invalid State: no audio");
+  }
+
+  ClipAudioProperties& ChangeAudioProperties()
+  { 
+    CheckHasAudio();
+    audProps.UnShare(); 
+    return *audProps;
   }
 
 public:
 
-  bool HasAudio() const { return audio_samples_per_second != 0; }
-  void RemoveAudio() { audio_samples_per_second = 0; }
+  bool HasAudio() const { return audProps; }
 
-  SampleType GetSampleType() const { return sample_type; }
-  int GetChannelCount() const { return nchannels; }
-  int GetSamplesPerSecond() const { return audio_samples_per_second; }
-  __int64 GetSamplesCount() const { return num_audio_samples; }
+  const ClipAudioProperties& GetAudioProperties() const { CheckHasAudio(); return *audProps; }
 
-  void SetAudio(SampleType _sample_type, int _nchannels, int samples_per_sec, __int64 samples_count) {
-    if (_nchannels <= 0 || samples_per_sec < 0 || samples_count < 0)
-      throw AvisynthError("Filter Error: Requested an illegal VideoInfo");
-    sample_type = _sample_type;
-    nchannels = nchannels;
-    audio_samples_per_second = samples_per_sec;
-    num_audio_samples = samples_count;
-  }
-
-  int FramesFromAudioSamples(__int64 samples) const { return (int)(samples * (__int64)fps_numerator / (__int64)fps_denominator / (__int64)audio_samples_per_second); }
-  __int64 AudioSamplesFromFrames(__int64 frames) const { return (__int64(frames) * audio_samples_per_second * fps_denominator / fps_numerator); }
-  __int64 AudioSamplesFromBytes(__int64 bytes) const { return bytes / BytesPerAudioSample(); }
-  __int64 BytesFromAudioSamples(__int64 samples) const { return samples * BytesPerAudioSample(); }
-
-  int BytesPerAudioSample() const { return nchannels * BytesPerChannelSample();}
-  int BytesPerChannelSample() const { 
-    static int bytes[] = { sizeof(signed char), sizeof(signed short), 3, sizeof(signed int), sizeof(SFLOAT) };
-    return bytes[sample_type];
-  }
+  SampleType GetSampleType() const { return GetAudioProperties().GetSampleType(); }
+  int GetSamplesPerSecond() const { return GetAudioProperties().GetSamplesPerSecond(); }
+  __int64 GetSamplesCount() const { return GetAudioProperties().GetSamplesCount(); }
+  int GetChannelCount() const { return GetAudioProperties().GetChannelCount(); }
 
 
- 
+  VideoInfo& KillAudio() { audProps = NULL; return *this; }
+
+  VideoInfo& AddAudio(SampleType sampleType, __int64 samplesCount) { audProps = new ClipAudioProperties(sampleType, samplesCount); return *this; }
+
+  VideoInfo& SetSampleType(SampleType sampleType) { ChangeAudioProperties().SetSampleType(sampleType); return *this; }
+  VideoInfo& SetSamplesPerSecond(int samplesPerSecond) { ChangeAudioProperties().SetSamplesPerSecond(samplesPerSecond); return *this; }
+  VideoInfo& SetSamplesCount(__int64 samplesCount) { ChangeAudioProperties().SetSamplesCount(samplesCount); return *this; }
+  VideoInfo& SetChannelCount(int channelCount) { ChangeAudioProperties().SetChannelCount(channelCount); return *this; }
+
+
 };
+
+
+
+
 
 #endif  //#ifndef __VIDEOINFO_H__

@@ -24,8 +24,8 @@
 #ifndef __COLORSPACE_H__
 #define __COLORSPACE_H__
 
-#include <string>
-#include "property.h"
+#include "geometric.h"         //which includes string
+#pragma warning(disable:4290)  //to get rid of the C++ exception Notification ignored
 using namespace std;
 
 //ColorSpace ids
@@ -34,9 +34,9 @@ enum CS_ID {
   I_RGB32,
   I_YUY2,
   I_YV12
-  //I_I420
 };
 
+//planes
 enum Plane {
   NOT_PLANAR,
   PLANAR_Y,
@@ -44,25 +44,30 @@ enum Plane {
   PLANAR_V
 };
 
-class NoSuchPlaneException { };
+#define PLANE_COUNT 4   //number of planes, used to loop over planes with HasPlane
 
-class ColorSpace;
 
-class ColorSpaceConstraintViolation : public ConstraintViolation {
+//exception class for requesting about a plane who don't exist
+//subclass of invalid_argument
+class invalid_plane : public invalid_argument {
 
 public:
-  ColorSpaceConstraintViolation(const ColorSpace& space, const string& msg);
+  invalid_plane() : invalid_argument("No such plane") { }
+}; 
 
-};
 
 
 class ColorSpace {
 
 protected:
-  void WidthSignCheck(int width) const throw(ColorSpaceConstraintViolation);
-  void HeightSignCheck(int height) const throw(ColorSpaceConstraintViolation);
+  //factorisation of a common check of YV12 and YUY2
+  void YUVIsLegalWidthShift(int shift) const throw(invalid_argument)
+  {
+    if (shift & 1)
+      ThrowError(": Width must be mod 2");
+  }
 
-  void YUVIsLegalWidthShift(int shift) const throw(ColorSpaceConstraintViolation);
+  void ThrowError(const string& err_msg) const { throw invalid_argument(GetName() + err_msg); }
 
 public:
   ColorSpace(CS_ID _id) : id(_id) { } 
@@ -73,7 +78,11 @@ public:
   bool operator!= (const ColorSpace& other) const { return id != other.id; }
 
   //return the colorspace name ("RGB24" and co..)
-  const string& GetName() const; 
+  const string& GetName() const
+  {
+    static const string names[] = { "RGB24", "RGB32", "YUY2", "YV12" };
+    return names[id];
+  }
 
   //ColorSpace properties
   enum Property {
@@ -93,19 +102,14 @@ public:
   bool IsInterleaved() const { return HasProperty(INTERLEAVED); }
   bool IsPlanar() const { return HasProperty(PLANAR); }
 
-  //methods to check width and height constraints
-  virtual void IsLegalWidthShift(int shift) const throw(ColorSpaceConstraintViolation) = 0;
-  void IsLegalWidth(int width) const throw(ColorSpaceConstraintViolation) { WidthSignCheck(width); IsLegalWidthShift(width); }
+  virtual void IsLegalCoords(const Vecteur& coords, bool interlaced = false) const throw(invalid_argument) = 0;
 
-  virtual void IsLegalHeightShift(int shift, bool interlaced = false) const throw(ColorSpaceConstraintViolation) = 0;
-  void IsLegalHeight(int height, bool interlaced = false) const throw(ColorSpaceConstraintViolation) { HeightSignCheck(height); IsLegalHeightShift(height, interlaced); }
-
-  //methods to convert width and height to plane sizes
-  //unlike the above, they just to the operation 
-  virtual int WidthToRowSize(int width, Plane plane) const throw(NoSuchPlaneException) = 0;
-  virtual int HeightToPlaneHeight(int height, Plane plane) const throw(NoSuchPlaneException) = 0;
+  //methods to convert frame coords into to plane coords
+  //unlike the above, they does not check validity, but just perform the operation   
+  virtual Vecteur ToPlaneCoords(const Vecteur& vect, Plane plane) const throw(invalid_plane) = 0;
 
 };
+
 
 class InterLeaved : public ColorSpace {
 
@@ -114,43 +118,44 @@ class InterLeaved : public ColorSpace {
 public:
   InterLeaved(CS_ID _id, int bpp) : ColorSpace(_id), BytesPerPixel(bpp) { }
 
-  virtual void IsLegalHeightShift(int shift, bool interlaced = false) const throw(ColorSpaceConstraintViolation) = 0;
-
-  virtual int WidthToRowSize(int width, Plane plane) const throw(NoSuchPlaneException);
-  virtual int HeightToPlaneHeight(int height, Plane plane) const throw(NoSuchPlaneException);  
-};
-
-//common ancestor of RGB24 & 32
-//since RGB seems to be a macro, used the name CS_RGB
-class CS_RGB : public InterLeaved {
-
-public:
-  CS_RGB(CS_ID _id, int bpp) : InterLeaved(_id, bpp) { }
-
+  //HasProperty for RGB24 & 32 cases
   virtual bool HasProperty(Property prop) const { return prop == ColorSpace::RGB || prop == ColorSpace::INTERLEAVED; }
 
-  virtual void IsLegalWidthShift(int shift) const throw(ColorSpaceConstraintViolation) { }
+
+  virtual void IsLegalCoords(const Vecteur& coords, bool interlaced = false) const throw(invalid_argument)
+  {
+    if (interlaced && (coords.GetY() & 1))
+      ThrowError(": Interlaced Height must be mod 2");
+  }
+
+  virtual Vecteur ToPlaneCoords(const Vecteur& coords, Plane plane) const throw(invalid_plane)
+  {
+    if (plane != NOT_PLANAR)
+      throw invalid_plane();
+    return Vecteur(coords.GetX() * BytesPerPixel, coords.GetY());
+  }
+
+  int GetBytesPerPixel() const { return BytesPerPixel; }
 };
 
 
-class RGB24 : public CS_RGB {
+class RGB24 : public InterLeaved {
 
-  RGB24() : CS_RGB(I_RGB24, 3) { }
+  RGB24() : InterLeaved(I_RGB24, 3) { }
 
 public:
   static const RGB24 instance;
-
 };
 
 
-class RGB32 : public CS_RGB {
+class RGB32 : public InterLeaved {
 
-  RGB32() : CS_RGB(I_RGB32, 4) { }
+  RGB32() : InterLeaved(I_RGB32, 4) { }
 
 public:
   static const RGB32 instance;
-
 };
+
 
 
 
@@ -163,8 +168,12 @@ public:
 
   virtual bool HasProperty(Property prop) const { return prop == ColorSpace::YUV || prop == ColorSpace::INTERLEAVED; }
 
-  virtual void IsLegalHeightShift(int shift, bool interlaced = false) const throw(ColorSpaceConstraintViolation);  
-  virtual void IsLegalWidthShift(int shift) const throw(ColorSpaceConstraintViolation) { YUVIsLegalWidthShift(shift); }
+  virtual void IsLegalCoords(const Vecteur& coords, bool interlaced = false) const throw(invalid_argument)
+  {
+    YUVIsLegalWidthShift(coords.GetX());
+    InterLeaved::IsLegalCoords(coords, interlaced);
+  }
+
 
 };
 
@@ -180,9 +189,25 @@ public:
   virtual bool HasProperty(Property prop) const { return prop == ColorSpace::YUV || prop == ColorSpace::PLANAR; }
   virtual bool HasPlane(Plane plane) const { return plane != NOT_PLANAR; }
   
-  virtual void IsLegalHeightShift(int shift, bool interlaced = false) const;
-  virtual void IsLegalWidthShift(int shift) const throw(ColorSpaceConstraintViolation) { YUVIsLegalWidthShift(shift); }
+  virtual void IsLegalCoords(const Vecteur& coords, bool interlaced = false) const throw(invalid_argument)
+  {
+    YUVIsLegalWidthShift(coords.GetX());
+    if (interlaced && (coords.GetY() & 3))
+      ThrowError(": Height must be mod 2");
+    if (coords.GetY() & 1)
+      ThrowError(": Interlaced Height must be mod 4");    
+  }
 
+  virtual Vecteur ToPlaneCoords(const Vecteur& coords, Plane plane) const throw(invalid_plane)
+  {
+    switch(plane)
+    {
+      case PLANAR_Y: return coords;
+      case PLANAR_U:
+      case PLANAR_V: return Vecteur(coords.GetX()/2, coords.GetY()/2);
+    }
+    throw invalid_plane();
+  }
 };
 
 #endif //__COLORSPACE_H__

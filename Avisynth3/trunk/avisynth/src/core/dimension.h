@@ -24,7 +24,8 @@
 #ifndef __AVS_DIMENSION_H__
 #define __AVS_DIMENSION_H__
 
-//avisynth include
+//avisynth includes
+#include "roundup.h"
 #include "exception/baddimension.h"
 
 //assert include
@@ -118,8 +119,9 @@ public:  //others
 
   template <int xShift, int yShift> Dimension Shift() const { return Dimension(x_ + xShift, y_ + yShift); }
 
-};//Dimension
+  template <int xRound, int yRound> Dimension Round() const { return Dimension( RoundUp<xRound>(x_), RoundUp<yRound>(y_) ); }
 
+};
 
 
 } //namespace avs

@@ -100,7 +100,7 @@ $(BUILD_DIR):
 #-----------------------------------------------------------------------------
 test: $(OBJECTS)
 	@echo "  Test"
-        @$(CXX) $(STLPORT_CFLAGS) $(BOOST_CFLAGS) $(FREETYPE_CFLAGS) $(FFMPEG_CFLAGS) $(CXXFLAGS) -L$(BUILD_DIR) -lavisynth $(STLPORT_LIBS) $(BOOST_LIBS) $(FREETYPE_LIBS) $(FFMPEG_LIBS) -o $(BUILD_DIR)/test ../../test/test.cpp
+	@$(CXX) $(STLPORT_CFLAGS) $(BOOST_CFLAGS) $(FREETYPE_CFLAGS) $(FFMPEG_CFLAGS) $(CXXFLAGS) -L$(BUILD_DIR) -lavisynth $(STLPORT_LIBS) $(BOOST_LIBS) $(FREETYPE_LIBS) $(FFMPEG_LIBS) -o $(BUILD_DIR)/test ../../test/test.cpp
 	@cd $(BUILD_DIR) && chmod u+x test
 
 #-----------------------------------------------------------------------------
@@ -110,7 +110,7 @@ test: $(OBJECTS)
 .cpp.$(OBJECT_EXTENSION):
 	@echo "  C: $(@D)/$(<F)"
 	@$(INSTALL) -d $(BUILD_DIR)/$(@D)
-        @$(CXX) -c $(ARCHITECTURE) $(BUS) $(ENDIANNESS) $(FEATURES) $(CORE_DEBUG_MODE_CFLAGS) $(FFMPEG_DEBUG_MODE_CFLAGS) $(SPECIFIC_CFLAGS) $(STLPORT_CFLAGS) $(BOOST_CFLAGS) $(FREETYPE_CFLAGS) $(FFMPEG_CFLAGS) $(CXXFLAGS) $< -o $(BUILD_DIR)/$@
+	@$(CXX) -c $(ARCHITECTURE) $(BUS) $(ENDIANNESS) $(FEATURES) $(CORE_DEBUG_MODE_CFLAGS) $(FFMPEG_DEBUG_MODE_CFLAGS) $(SPECIFIC_CFLAGS) $(STLPORT_CFLAGS) $(BOOST_CFLAGS) $(FREETYPE_CFLAGS) $(FFMPEG_CFLAGS) $(CXXFLAGS) $< -o $(BUILD_DIR)/$@
 
 
 #-----------------------------------------------------------------------------
@@ -139,7 +139,7 @@ $(STATIC_LIB): $(BUILD_DIR) $(OBJECTS)
 $(SHARED_LIB): $(BUILD_DIR) $(OBJECTS)
 	@echo "  L: $(@F)"
 	@$(INSTALL) -m 644 libavisynth.def $(BUILD_DIR)/libavisynth.def
-        @cd $(BUILD_DIR) && $(CXX) $(LDFLAGS) $(OBJECTS) -o $(PRE_SHARED_LIB) $(STLPORT_LIBS) $(BOOST_LIBS) $(FREETYPE_LIBS) $(FFMPEG_LIBS) $(SPECIFIC_LDFLAGS)
+	@cd $(BUILD_DIR) && $(CXX) $(LDFLAGS) $(OBJECTS) -o $(PRE_SHARED_LIB) $(STLPORT_LIBS) $(BOOST_LIBS) $(FREETYPE_LIBS) $(FFMPEG_LIBS) $(SPECIFIC_LDFLAGS)
 
 #-----------------------------------------------------------------------------
 # Installation
@@ -157,7 +157,7 @@ install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB)
 	@echo "  D: $(pkgconfigdir)"
 	@$(INSTALL) -d $(pkgconfigdir)
 	@echo "  I: $(pkgconfigdir)/$(AVS_PC)"
-        @$(INSTALL) -m 755 ./$(AVS_PC) $(pkgconfigdir)
+	@$(INSTALL) -m 755 ./$(AVS_PC) $(pkgconfigdir)
 
 #-----------------------------------------------------------------------------
 # Platorm specific file -- dumb rules for people executing make before

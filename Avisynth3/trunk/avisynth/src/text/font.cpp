@@ -54,13 +54,13 @@ Dimension Font::GetTextBoundingBox(std::string const& text)
 
   HFONT oldHFont = (HFONT)SelectObject( hdc, *(HFONT *)pFont_.get() );
   int oldMapMode = SetMapMode(hdc, MM_TEXT);
-  UINT oldAlign = SetTextAlign(hdc, TA_BASELINE | TA_LEFT );
+  //UINT oldAlign = SetTextAlign(hdc, TA_BASELINE | TA_LEFT );
 
   RECT r = { 0, 0, 0, 0 };
 
-  int height = DrawText(hdc, text.c_str(), text.length(), &r, DT_CALCRECT /*| DT_NOPREFIX*/);
+  int height = DrawText(hdc, text.c_str(), text.length(), &r, DT_CALCRECT | DT_NOPREFIX);
 
-  SetTextAlign(hdc, oldAlign);
+  //SetTextAlign(hdc, oldAlign);
   SetMapMode(hdc, oldMapMode);
   SelectObject(hdc, oldHFont);
 

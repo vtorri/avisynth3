@@ -26,6 +26,7 @@
 
 //avisynth includes
 #include "interleaved.h"
+#include "../rgb/depth8.h"
 #include "../../videoframe/concrete/rgb24.h"
 #include "../../videoframe/concrete/rgb32.h"
 #include "../../videoframe/concrete/rgb45.h"
@@ -42,6 +43,7 @@ namespace avs { namespace cspace { namespace concrete {
 //  RGB24 ColorSpace subclass
 //
 class RGB24 : public interleaved<3, 1, vframe::concrete::RGB24>
+            , public rgb::Depth8
 {
 
 public:  //ColorSpace interface
@@ -65,6 +67,7 @@ public:  //ColorSpace interface
 //  RGB32 ColorSpace subclass
 //
 class RGB32 : public interleaved<4, 1, vframe::concrete::RGB32>
+            , public rgb::Depth8
 {
 
 public:  //ColorSpace interface

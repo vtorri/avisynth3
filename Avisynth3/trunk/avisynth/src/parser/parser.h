@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,17 +24,23 @@
 #ifndef __AVS_PARSER_PARSER_H__
 #define __AVS_PARSER_PARSER_H__
 
-//avisynth include
+//avisynth includes
+#include "vmcode.h"
 #include "../core/forward.h"
 
-//stl include
+//stl includes
 #include <string>
 
 
 namespace avs { namespace parser {
 
 
-//embryonal parser class
+
+//////////////////////////////////////////////////////////////////////////////////
+//  Parser
+//
+//  class to parse script into avs pseudo code
+//
 class Parser
 {
 
@@ -43,9 +49,12 @@ public:  //structors
   Parser() { }
 
 
-public:  
+public:  //parsing methods
 
-  PClip operator()(std::string const& src);
+  //returns generated code and the number of distincts globals
+  StatementCode operator()(std::string const& src);
+
+  PClip operator()(std::string const& src, PEnvironment const& env);
 
 };
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,9 +24,8 @@
 //avisynth include
 #include "parser.h"
 #include "grammar/script.h"
-#include "../core/runtime_environment.h"
-#include "../filters/source/staticimage.h"
 #include "../linker/core/plugin.h"
+#include "../filters/source/messageclip.h"
 
 //boost include
 #include <boost/variant/get.hpp>
@@ -40,14 +39,12 @@ namespace avs { namespace parser {
 
 
 
-PClip Parser::operator ()(std::string const& src)
+StatementCode Parser::operator()(std::string const& src)
 {
-  
+
   using namespace lazy;
   using namespace phoenix;
   using namespace avs::parser::grammar;
-
-  PEnvironment env = RuntimeEnvironment::Create(10000000);
 
   CodeCouple code;
   LocalContext localCtxt;
@@ -68,12 +65,19 @@ PClip Parser::operator ()(std::string const& src)
       ]
       , spirit::blank_p);
 
+  return code;
+}
 
-  VMState state(env, globalCtxt.get<0>().size());  
+
+PClip Parser::operator ()(std::string const& src, PEnvironment const& env)
+{
+  
+  StatementCode code = operator()(src);
+
+  VMState state(env);  
   //state.push(1);
 
-  StatementCode statCode = code;
-  statCode(state); 
+  code(state); 
 
   //if top stack value is a clip, we return it
   if ( state.size() != 0 && boost::get<PClip>(&state.top()) != NULL )
@@ -87,7 +91,7 @@ PClip Parser::operator ()(std::string const& src)
   for(int i = 0; i < state.size(); ++i)
     stream << ' '  << state[i];  
 
-  return filters::StaticImage::CreateMessageClip(stream.str(), env );
+  return filters::MessageClip::Create(stream.str(), env );
 }
 
 

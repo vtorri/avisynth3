@@ -169,13 +169,13 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
                 --second(statement.localCtxt)                          //report that the if consumes the bool value
               ]
           >>  ')'
-          >>  block( CodeCouple(), get(statement.localCtxt) )
+          >>  subContextBlock( CodeCouple(), get(statement.localCtxt) )
               [
                 ifStatement.value = arg1
               ]          
           >>  (   *   spirit::eol_p
               >>  spirit::str_p("else")
-              >>  block( CodeCouple(), get(statement.localCtxt) )
+              >>  subContextBlock( CodeCouple(), get(statement.localCtxt) )
                   [
                     statement.value -= construct_<functor::IfThenElse>(ifStatement.value, arg1)
                   ]
@@ -186,17 +186,34 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
               )
           ;
 
-      block
-          =   *   spirit::eol_p
-          >>  '{' //NB: for now last is inherited from upper context.... FIX ME LATER
-          >> *(   statement( CodeCouple(), ref(block.localCtxt) )
+      subContextBlock
+          =   spirit::eps_p
+              [    //get rid of last inherited from upper context
+                third(subContextBlock.localCtxt) = val( boost::detail::none_t() )
+              ]
+          >>  *   spirit::eol_p   //skip newlines
+          >>  (   '{'     
+              >> *(   statement( CodeCouple(), ref(subContextBlock.localCtxt) )   //a block of statement delimited by { }
+                      [
+                        subContextBlock.value += arg1
+                      ]
+                  |   spirit::eol_p
+                  )
+              >>  '}'
+              |   statement( CodeCouple(), ref(subContextBlock.localCtxt) )       //or a single one
                   [
-                    block.value += arg1
+                    subContextBlock.value += arg1
                   ]
-              |   spirit::eol_p
               )
-          >>  '}'
           ;
+
+/*      whileStatement
+          =   spirit::str_p("while")
+          >>  '('
+          >>  expression( value::Expression(), statement.localCtxt, self.globalCtxt )
+          >>  ')'
+          >>  subContextBlock
+          ;*/
 
       returnStatement
           =   spirit::str_p("return")
@@ -242,7 +259,7 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
     spirit::rule<ScannerT, closure::InnerStatement::context_t> statement;
     spirit::rule<ScannerT, closure::CreateVar::context_t> createVar;
     spirit::rule<ScannerT, closure::Value<StatementCode>::context_t> ifStatement;
-    spirit::rule<ScannerT, closure::StatementBlock::context_t> block;
+    spirit::rule<ScannerT, closure::StatementBlock::context_t> subContextBlock;
     spirit::rule<ScannerT> returnStatement;
     spirit::rule<ScannerT, closure::Value<int>::context_t> argList;
 

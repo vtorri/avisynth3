@@ -36,7 +36,7 @@
 namespace avs {
 
 
-void ColorSpace::Check(int /*x*/, int y, bool interlaced = false) const
+void ColorSpace::Check(int /*x*/, int y, bool interlaced) const
 {
   if ( interlaced && (y & 1) )
     throw exception::cspace::InvalidHeight(*this, y, 2, true);

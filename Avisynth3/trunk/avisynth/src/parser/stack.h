@@ -50,11 +50,16 @@ public:  //structors
 
 public:
 
+  int size() const { return stack_.size(); }
+
+  AVSValue& operator[](int pos) { return stack_[pos]; }
+
+
+  void push(AVSValue const& val) { stack_.push_back(val); }
+  void pop() { stack_.pop_back(); }
   AVSValue& top() { return stack_.back(); }
 
-  void push_back(AVSValue const& val) { stack_.push_back(val); }
-
-  int size() const { return stack_.size(); }
+  AVSValue& peek(int pos) { return stack_[size() - 1 - pos]; }
 
 };
 

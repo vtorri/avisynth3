@@ -26,8 +26,8 @@
 #include "coloryuv/lumamap.h"
 #include "coloryuv/chromamap.h"
 #include "../../core/videoinfo.h"
-#include "../../core/colorspace.h"
 #include "../../core/colorspace/yuv/depth8.h"
+#include "../../core/videoframe/yuv/depth8.h"
 #include "../../core/exception/colorspace/unsupported.h"
 
 
@@ -47,196 +47,62 @@ ColorYUV::ColorYUV(PClip const& child)
 
 void ColorYUV::Count(VideoFrame const& frame, ByteCounter& y, ByteCounter& u, ByteCounter& v) const
 {
-  boost::dynamic_pointer_cast<cspace::yuv::Depth8 const>(GetChildVideoInfo()->GetColorSpace())->Count(frame, y, u, v);
+  dynamic_cast<vframe::yuv::Depth8 const&>(frame).Count(y, u, v);
 }
 
 
 void ColorYUV::Apply(VideoFrame& frame, coloryuv::LumaMap const& y, coloryuv::ChromaMap const& u, coloryuv::ChromaMap const& v) const
 {
-  boost::dynamic_pointer_cast<cspace::yuv::Depth8 const>(GetChildVideoInfo()->GetColorSpace())->Apply(frame, y, u, v);
+  dynamic_cast<vframe::yuv::Depth8&>(frame).Apply(y, u, v);
 }
 
 
-/*  FrameMaker * maker 
-    = (autoWhite || autoGain) ? new coloryuv::framemaker::Auto(*this, Y, U, V, gamma, mode, coring, autoWhite, autoGain)
-                              : static_cast<FrameMaker *>(new coloryuv::framemaker::Standard(*this, Y, U, V, gamma, mode, coring));
 
-  SetFrameMaker( child->GetEnvironment(), maker );*/
+namespace { int identity(int value) { return value; }  }
 
-
+  
+using namespace coloryuv;
 
 
-
-
-/*
-ColorYUV::ColorYUV(Clip const& child, InputParameters const& Y, InputParameters const& U, InputParameters const& V
-                  , Levels levels, bool coring, bool analyze, bool autowhite, bool autogain)
-  : clip::onechild::Concrete( child )
-  , clip::caching::Concrete( child->GetEnvironment() )
-  , yIParam_( Y )
-  , uIParam_( U )
-  , vIParam_( V )
-  , levels_( levels )
-  , coring_( coring )
+int (* ColorYUV::AdjustY(Mode mode))(int)
 {
-    
-    //Set boolean processing parameters
-    analyze=_analyze;
-    autowhite=_autowhite;
-    autogain=_autogain;
-    
-    MakeGammaLUT();
-
-    pixels = GetChildVideoInfo()->GetWidth()*
-      GetChildVideoInfo()->GetHeight();
-  }
-  
-  
-  void ColorYUV::MakeGammaLUT() const
+  switch ( mode )
   {
-    static const int scale = 256, shift = 2^10,
-      coeff_y0 =  76309, coeff_y1 =  65536,
-      coeff_u0 = 132201, coeff_u1 = 116129,
-      coeff_v0 = 104597, coeff_v1 =  91881;
-    int val;
-    float g, b, c, gain;
-    
-    yPParam_.thresh1 = uPParam_.thresh1 = vPParam_.thresh1 = -1;
-    yPParam_.thresh2 = uPParam_.thresh2 = vPParam_.thresh2 = 256;
-    
-    // Set luma
-    gain = (boost::get<0>(yIParam_) + scale) / scale;
-    c = (boost::get<1>(yIParam_) + scale) / scale;
-    b = (boost::get<2>(yIParam_) + scale) / scale;
-    g = (boost::get<3>(yIParam_) + scale) / scale;
-    if ( g < 0.01 ) 
-      g = 0.01;
+  case PCtoTV:      return &LumaMap::PCtoTVAdjust<65536, 76309>;
+  case TVtoPC:
+  case TVtoPCOnlyY: return &LumaMap::TVtoPCAdjust<65536, 76309>;
 
-    for ( int i = 0; i < 256; ++i )
-    {
-      val = i * shift;
-      
-      switch ( levels_ )
-      {
-      case PCtoTV:
-        val = (int)((val - 16 * shift) * coeff_y0 / coeff_y1 + shift / 2);
-        break;
-      case TVtoPC:
-      case TVtoPConlyY:
-        val = (int)(val * coeff_y1 / coeff_y0 + 16 * shift + shift / 2);
-        break;
-      default:	//none
-        break;
-      }
-      val = val / shift;
-      
-      float v = static_cast<float>(val) / 256.0f;
-      v = (v * gain) + ((v-0.5) * c + 0.5) - v + (b - 1);
-      
-      if (boost::get<3>(yIParam_) != 0 && v > 0) v = pow( v, 1 / g);
-      v = v * 256;
-      
-      v += 0.5;
-      val = int(floor(v));
-      
-      val = saturate<BYTE>(val);
-      
-      if (val > 235)
-      {
-        if (yPParam_.thresh2 > 255) yPParam_.thresh2 = i;
-        if (opt) val = 235;
-      }
-      else if (val < 16)
-      {
-        yPParam_.thresh1 = i;
-        if (opt) val = 16;
-      }
-      yPParam_.LUT[i] = static_cast<unsigned char>(val);
-    }
-
-    gain = boost::get<0>(uIParam_) + scale;
-    c = boost::get<1>(uIParam_) + scale;
-    b = boost::get<2>(uIParam_);
-    for (i = 0; i < 256; i++)
-    {
-      val = i * shift;
-      switch (levels)
-      {
-      case 1:	// PC->TV Scale
-        val = int((val - 128 * shift) * coeff_u0 / coeff_u1 + 128 * shift + shift / 2);
-        break;
-      case 2:	// TV->PC Scale
-        val = int((val - 128 * shift) * coeff_u1 / coeff_u0 + 128 * shift + shift / 2);
-        break;
-      default:	//none
-        break;
-      }
-      val = val / shift;
-      
-      v = float(val);
-      v = (v * gain / scale) + ((v-128) * c / scale + 128) - v + b;
-    
-      v += 0.5;
-      val = int(floor(v));
-    
-      if (val > 255) val = 255;
-      else if (val < 0) val = 0;
-
-      if (val > 240)
-      {
-        if (uPParam_.thresh2 > 255) uPParam_.thresh2 = i;
-        if (opt) val = 240;
-      }
-      else if (val < 16)
-      {
-        uPParam_.thresh1 = i;
-        if (opt) val = 16;
-      }
-      uPParam_.LUT[i] = static_cast<unsigned char>(val);
-    }
-
-    gain = boost::get<0>(vIParam_) + scale;
-    c = boost::get<1>(vIParam_) + scale;
-    b = boost::get<2>(vIParam_);
-    for (i = 0; i < 256; i++)
-    {
-      val = i * shift;
-      switch (levels)
-      {
-      case 1:	// PC->TV Scale
-        val = int((val - 128 * shift) * coeff_v0 / coeff_v1 + 128 * shift + shift / 2);
-        break;
-      case 2:	// TV->PC Scale
-        val = int((val - 128 * shift) * coeff_v1 / coeff_v0 + 128 * shift + shift / 2);
-        break;
-      default:	//none
-        break;
-      }
-      val = val / shift;
-      
-      v = float(val);
-      v = (v * gain / scale) + ((v-128) * c / scale + 128) - v + b;
-      
-      v += 0.5;
-      val = int(floor(v));
-      
-      if (val > 255) val = 255;
-      else if (val < 0) val = 0;
-      
-      if (val > 240)
-      {
-        if (vPParam_.thresh2 > 255) vPParam_.thresh2 = i;
-        if (opt) val = 240;
-      }
-      else if (val < 16)
-      {
-        vPParam_.thresh1 = i;
-        if (opt) val = 16;
-      }
-      vPParam_.LUT[i] = static_cast<unsigned char>(val);
-    }
+  default:          return &identity;
   }
-*/
+}
+
+
+int (* ColorYUV::AdjustU(Mode mode))(int)
+{
+  switch( mode )
+  {
+  case PCtoTV: return &ChromaMap::PCtoTVAdjust<116129, 132201>;
+  case TVtoPC: return &ChromaMap::TVtoPCAdjust<116129, 132201>;
+
+  default:     return &identity;
+  }
+}
+
+
+int (* ColorYUV::AdjustV(coloryuv::Mode mode))(int)
+{
+  switch( mode )
+  {
+  case PCtoTV: return &ChromaMap::PCtoTVAdjust<91881, 104597>;
+  case TVtoPC: return &ChromaMap::TVtoPCAdjust<91881, 104597>;
+
+  default:     return &identity;
+  }
+}
+
+
+
+
 /*  bool ColorYUV::CheckParms(std::string const& _levels,
                             std::string const& _matrix,
                             std::string const& _opt)

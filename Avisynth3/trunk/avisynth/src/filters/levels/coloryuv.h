@@ -25,6 +25,7 @@
 #define __AVS_FILTERS_COLORYUV_H__
 
 //avisynth includes
+#include "coloryuv/mode.h"
 #include "coloryuv/forward.h"
 #include "../../clip/caching/concrete.h"
 #include "../../clip/onechild/concrete.h"
@@ -62,6 +63,11 @@ protected:  //implementation helpers
   void Count(VideoFrame const& frame, ByteCounter& y, ByteCounter& u, ByteCounter& v) const;
 
   void Apply(VideoFrame& frame, coloryuv::LumaMap const& y, coloryuv::ChromaMap const& u, coloryuv::ChromaMap const& v) const;
+
+  //get the adjust methods used by LumaMap and ChromaMap given a mode
+  static int (*AdjustY(coloryuv::Mode mode))(int);
+  static int (*AdjustU(coloryuv::Mode mode))(int);
+  static int (*AdjustV(coloryuv::Mode mode))(int);
 
 
 public:  //factory method 

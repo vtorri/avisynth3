@@ -63,8 +63,8 @@ template <int n> struct Attribute
   };
 
   //deflect phoenix::nil_t... no idea why it's necessary
-  template <>
-  struct result<phoenix::nil_t, Attribute<n> >
+  template <int d>
+  struct result<phoenix::nil_t, Attribute<d> >
   {
     typedef phoenix::nil_t type;
   };

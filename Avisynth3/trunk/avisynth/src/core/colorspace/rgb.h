@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ namespace avs { namespace cspace {
 //
 //  RGB24 ColorSpace subclass
 //
-class RGB24 : public interleaved<3, true>
+class RGB24 : public interleaved<3, 1, vframe::RGB24>
 {
 
 private:  //constructor
@@ -56,11 +56,6 @@ public:  //ColorSpace interface
     return prop == INTERLEAVED || prop == RGB || prop == DEPTH8;
   }
 
-  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
-  {
-    return CPVideoFrame( static_cast<VideoFrame *>(new vframe::RGB24(dim, type, env)) );
-  }
-
 
 public:  //instance
 
@@ -75,7 +70,7 @@ public:  //instance
 //
 //  RGB32 ColorSpace subclass
 //
-class RGB32 : public interleaved<4, true>
+class RGB32 : public interleaved<4, 1, vframe::RGB32>
 {
 
 private:  //constructor
@@ -93,11 +88,6 @@ public:  //ColorSpace interface
     return prop == INTERLEAVED || prop == RGB || prop == DEPTH8;
   }
 
-  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
-  {
-    return CPVideoFrame( static_cast<VideoFrame *>(new vframe::RGB32(dim, type, env)) );
-  }
-
 
 public:  //instance
 
@@ -112,7 +102,7 @@ public:  //instance
 //
 //  RGB32 ColorSpace subclass
 //
-class RGB45 : public interleaved<6, false>
+class RGB45 : public interleaved<8, 2, vframe::RGB45>
 {
 
 private:  //constructor
@@ -128,11 +118,6 @@ public:  //ColorSpace interface
   virtual bool HasProperty(Property prop) const
   {
     return prop == INTERLEAVED || prop == RGB || prop == DEPTH15;
-  }
-
-  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
-  {
-    return CPVideoFrame( static_cast<VideoFrame *>(new vframe::RGB32(dim, type, env)) );
   }
 
 

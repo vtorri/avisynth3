@@ -34,13 +34,40 @@ namespace avs { namespace cspace {
 
 
 
+template <typename VFrame>
+class planar_yuv : public PlanarYUV
+{
+
+public:  //ColorSpace interface
+
+  virtual bool HasPlane(Plane plane) const
+  {
+    return plane == PLANAR_Y || plane == PLANAR_U || plane == PLANAR_V;
+  }
+
+  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
+  {
+    return CPVideoFrame( static_cast<VideoFrame *>(new VFrame(dim, type, env)) );
+  }
+
+
+public:  //PlanarYUV interface
+
+  virtual PVideoFrame CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& y , BufferWindow const& u, BufferWindow const& v) const
+  {
+    return CPVideoFrame( static_cast<VideoFrame *>(new VFrame(dim, type, y, u, v)) );
+  }
+
+};
+
+
 
 /////////////////////////////////////////////////////////////////////////////////
 //  YV12
 //
 //  YV12 ColorSpace subclass
 //
-class YV12 : public ColorSpace
+class YV12 : public planar_yuv<vframe::YV12>
 {
 
 private:  //constructor
@@ -57,11 +84,6 @@ public:  //ColorSpace interface
   {
     return prop == PLANAR || prop == YUV || prop == DEPTH8;
   }
-  virtual bool HasPlane(Plane plane) const
-  {
-    return plane == PLANAR_Y || plane == PLANAR_U || plane == PLANAR_V;
-  }
-
 
   virtual void Check(int x, int y, bool interlaced = false) const
   {
@@ -86,11 +108,6 @@ public:  //ColorSpace interface
     }
   }
 
-  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
-  {
-    return CPVideoFrame( static_cast<VideoFrame *>(new vframe::YV12(dim, type, env)) );
-  }
-
 
 public:  //instance
 
@@ -106,7 +123,7 @@ public:  //instance
 //
 //  YV24 ColorSpace subclass
 //
-class YV24 : public ColorSpace
+class YV24 : public planar_yuv<vframe::YV24>
 {
 
 private:  //constructor
@@ -123,21 +140,11 @@ public:  //ColorSpace interface
   {
     return prop == PLANAR || prop == YUV || prop == DEPTH8;
   }
-  virtual bool HasPlane(Plane plane) const
-  {
-    return plane == PLANAR_Y || plane == PLANAR_U || plane == PLANAR_V;
-  }
-
 
   virtual void ToPlane(int& /*x*/, int& /*y*/, Plane plane) const
   {
     if ( ! HasPlane(plane) )
       throw exception::NoSuchPlane(*this, plane);
-  }
-
-  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
-  {
-    return CPVideoFrame( static_cast<VideoFrame *>(new vframe::YV24(dim, type, env)) );
   }
 
 
@@ -154,7 +161,7 @@ public:  //instance
 //
 //  YV45 ColorSpace subclass
 //
-class YV45 : public ColorSpace
+class YV45 : public planar_yuv<vframe::YV45>
 {
 
 private:  //constructor
@@ -171,11 +178,6 @@ public:  //ColorSpace interface
   {
     return prop == PLANAR || prop == YUV || prop == DEPTH15;
   }
-  virtual bool HasPlane(Plane plane) const
-  {
-    return plane == PLANAR_Y || plane == PLANAR_U || plane == PLANAR_V;
-  }
-
 
   virtual void ToPlane(int& x, int& /*y*/, Plane plane) const
   {
@@ -183,11 +185,6 @@ public:  //ColorSpace interface
       throw exception::NoSuchPlane(*this, plane);
 
     x <<= 1;
-  }
-
-  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
-  {
-    return CPVideoFrame( static_cast<VideoFrame *>(new vframe::YV45(dim, type, env)) );
   }
 
 

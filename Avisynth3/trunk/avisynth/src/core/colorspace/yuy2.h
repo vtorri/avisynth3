@@ -38,7 +38,7 @@ namespace avs { namespace cspace {
 //
 //  YUY2 ColorSpace subclass
 //
-class YUY2 : public interleaved<2, true>
+class YUY2 : public interleaved<2, 1, vframe::YUY2>
 {
 
 private:  //constructor
@@ -58,14 +58,9 @@ public:  //ColorSpace interface
 
   virtual void Check(int x, int y, bool interlaced = false) const 
   {
-    interleaved<2, true>::Check(x, y, interlaced);
+    InterleavedType::Check(x, y, interlaced);
     if ( x & 1 )                                      //if x is not even
       ThrowInvalidWidthException(2, x);               //exception
-  }
-
-  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
-  {
-    return CPVideoFrame( static_cast<VideoFrame *>(new vframe::YUY2(dim, type, env)) );
   }
 
 

@@ -153,7 +153,42 @@ public:  //exception helper methods
 
 
 
+namespace cspace {
 
-} //namespace avs
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  cspace::Interleaved
+//
+//  ColorSpace sub interface for interleaved color spaces
+//
+class Interleaved : public ColorSpace
+{
+
+public:  //Interleaved interface
+
+  //create a frame using a given buffer
+  virtual PVideoFrame CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& main) const = 0;
+
+};
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  cspace::PlanarYUV
+//
+//  ColorSpace sub interface for YUV planar color spaces
+//
+class PlanarYUV : public ColorSpace
+{
+
+public:  //PlanarYUV interface
+
+  //create a frame using the given buffers
+  virtual PVideoFrame CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& y , BufferWindow const& u, BufferWindow const& v) const = 0;
+
+};
+
+
+} } //namespace avs::cspace
 
 #endif //__AVS_COLORSPACE_H__

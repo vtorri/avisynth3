@@ -34,12 +34,20 @@ namespace avs { namespace cspace {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
-//  interleaved<bpp, depth8>
+//  interleaved<bpp, bps, VFrame>
 //
 //
 //
-template <int bpp_, bool depth8> class interleaved : public ColorSpace
+template <int bpp_, int bps_, typename VFrame> 
+class interleaved : public Interleaved
 {
+
+public:  //declarations and typedefs
+
+  enum { bpp = bpp_, bps = bps_ };
+
+  typedef interleaved<bpp, bps, VFrame> InterleavedType;
+
 
 public:  //ColorSpace interface
 
@@ -52,11 +60,20 @@ public:  //ColorSpace interface
     x *= bpp_;
   }
 
-public:
+  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
+  {
+    return CPVideoFrame( static_cast<VideoFrame *>(new VFrame(dim, type, env)) );
+  }
 
-  enum { bpp = bpp_, bps = depth8 ? 1 : 2 };
 
-};//Interleaved
+public:  //Interleaved interface
+
+  virtual PVideoFrame CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& main) const
+  {
+    return CPVideoFrame( static_cast<VideoFrame *>(new VFrame(dim, type, main)) );
+  }
+
+};
 
 
 

@@ -38,7 +38,7 @@ class OutlineSplitter
   SpanMaker spanMaker_;
 
 
-public:
+public:  //interface
 
   void StartContour(VecteurFP3 const& pt) { spanMaker_.StartPolygon(pt); }
 
@@ -50,7 +50,12 @@ public:
   void BezierCurveTo(VecteurFP3 const& pt3, VecteurFP3 const& pt2, VecteurFP3 const& pt1);
 
 
-private:
+public:  //access
+
+  SpanMaker const& GetSpanMaker() const { return spanMaker_; }
+
+
+private:  //implementation helper
 
   typedef vecteur<double> VecteurDb;
 

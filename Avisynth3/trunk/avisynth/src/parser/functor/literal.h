@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -44,7 +44,7 @@ template <typename Value>
 struct literal
 {
 
-  Value const value_;
+  Value value_;
 
   literal(Value const& value)
     : value_( value ) { }
@@ -52,7 +52,7 @@ struct literal
   literal(boost::reference_wrapper<Value> ref)
     : value_( ref.get() ) { }
 
-  Value const& operator()(VMState& state) const { return value_; }
+  Value const& operator()(VMState& /*state*/) const { return value_; }
 
 };
 

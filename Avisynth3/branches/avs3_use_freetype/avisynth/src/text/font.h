@@ -26,6 +26,7 @@
 
 //avisynth include
 #include "../core/dimension.h"
+#include "../freetype/face.h"
 
 //boost include
 #include <boost/shared_ptr.hpp>
@@ -37,10 +38,6 @@
 namespace avs { namespace text {
 
 
-//declaration
-namespace detail { struct GetHFONT; }  //struct to retrieve the win HFONT from a Font object
-
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //  Font
@@ -50,12 +47,12 @@ namespace detail { struct GetHFONT; }  //struct to retrieve the win HFONT from a
 class Font
 {
 
-  boost::shared_ptr<void> pFont_;
+  avs::freetype::Face font_;
 
 
 public:  //structors
 
-  Font(std::string const& name, int size, bool bold, bool italic);
+  Font(std::string const& name, int size);
 
   //generated copy constructor and destructor are fine
 
@@ -63,16 +60,6 @@ public:  //structors
 public:
 
   Dimension GetTextBoundingBox(std::string const& text);
-
-  
-private:  //HFONTDeleter struct
-
-  struct HFONTDeleter
-  {
-    void operator()(void * ptr) const; // { DeleteObject( *(HFONT *)pFont ); }
-  };
-
-  friend struct GetHFONT;
 
 };
 

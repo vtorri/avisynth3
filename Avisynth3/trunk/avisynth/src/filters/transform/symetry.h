@@ -75,7 +75,7 @@ private:  //Refactor methods
 
   virtual PClip Refactor(Flip const& parent) const;
 
-  virtual PClip Refactor(Symetry const& parent) const { return GetChild(); }
+  virtual PClip Refactor(Symetry const& /*parent*/) const { return GetChild(); }
 
 
 public:  //factory method

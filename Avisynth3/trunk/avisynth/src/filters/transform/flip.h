@@ -61,7 +61,7 @@ public:  //clip general interface
 
 private:  //Refactor<Symetry>
 
-  virtual PClip Refactor(Symetry const& parent) const { return OtherFlip(GetChild()); }
+  virtual PClip Refactor(Symetry const& /*parent*/) const { return OtherFlip(GetChild()); }
 
 
 public:  //Flip interface

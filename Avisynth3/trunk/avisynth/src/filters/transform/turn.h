@@ -69,7 +69,7 @@ private:  //Refactor methods
 
   virtual PClip Refactor(Flip const& parent) const;
 
-  virtual PClip Refactor(Symetry const& parent) const { return MirrorTurn(GetChild()); }
+  virtual PClip Refactor(Symetry const& /*parent*/) const { return MirrorTurn(GetChild()); }
 
 
 public:  //Turn interface

@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding = "Windows-1252"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.00"
+	Version="7.10"
 	Name="avisynth"
-	ProjectGUID="{512DDDEE-4842-442F-B528-947F209F7E2E}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -11,142 +10,6 @@
 			Name="Win32"/>
 	</Platforms>
 	<Configurations>
-		<Configuration
-			Name="Release|Win32"
-			OutputDirectory=".\Release"
-			IntermediateDirectory=".\Release"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2"
-			WholeProgramOptimization="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions="/Gs "
-				Optimization="4"
-				GlobalOptimizations="TRUE"
-				InlineFunctionExpansion="2"
-				EnableIntrinsicFunctions="TRUE"
-				FavorSizeOrSpeed="2"
-				OmitFramePointers="TRUE"
-				OptimizeForProcessor="2"
-				PreprocessorDefinitions="NDEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_DLL;_USRDLL;AVISYNTH_EXPORTS"
-				StringPooling="TRUE"
-				RuntimeLibrary="2"
-				StructMemberAlignment="4"
-				BufferSecurityCheck="FALSE"
-				EnableFunctionLevelLinking="FALSE"
-				UsePrecompiledHeader="0"
-				PrecompiledHeaderThrough=""
-				PrecompiledHeaderFile=".\Release/avisynth.pch"
-				AssemblerListingLocation=".\Release/"
-				ObjectFile=".\Release/"
-				ProgramDataBaseFileName=".\Release/"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="winmm.lib msacm32.lib quartz.lib ddraw.lib amstrmid.lib vfw32.lib version.lib"
-				OutputFile=".\Release/avisynth.dll"
-				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
-				ModuleDefinitionFile=".\avisynth.def"
-				ProgramDatabaseFile=".\Release/avisynth.pdb"
-				OptimizeReferences="2"
-				ResourceOnlyDLL="FALSE"
-				ImportLibrary=".\Release/avisynth.lib"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Release/avisynth.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				Description="Copying to windows"
-				CommandLine="copy Release\avisynth.dll $(SystemRoot)\system32"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
-		<Configuration
-			Name="Profile|Win32"
-			OutputDirectory=".\Profile"
-			IntermediateDirectory=".\Profile"
-			ConfigurationType="2"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
-			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions="/Gh "
-				InlineFunctionExpansion="2"
-				OptimizeForProcessor="2"
-				PreprocessorDefinitions="NDEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_DLL;_USRDLL;AVISYNTH_EXPORTS"
-				StringPooling="TRUE"
-				RuntimeLibrary="2"
-				StructMemberAlignment="4"
-				BufferSecurityCheck="FALSE"
-				EnableFunctionLevelLinking="TRUE"
-				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\Profile/avisynth.pch"
-				AssemblerListingLocation=".\Profile/"
-				ObjectFile=".\Profile/"
-				ProgramDataBaseFileName=".\Profile/"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="3"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="penter.lib msvcrt.lib winmm.lib msacm32.lib quartz.lib ddraw.lib amstrmid.lib vfw32.lib version.lib"
-				OutputFile=".\Profile/avisynth.dll"
-				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
-				IgnoreAllDefaultLibraries="TRUE"
-				ModuleDefinitionFile=".\avisynth.def"
-				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Profile/avisynth.pdb"
-				ImportLibrary=".\Profile/avisynth.lib"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Profile/avisynth.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				Description="Copying to windows"
-				CommandLine="copy Profile\avisynth.dll $(SystemRoot)\system32"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
@@ -159,16 +22,17 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				OptimizeForProcessor="2"
-				PreprocessorDefinitions="_DEBUG;DEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_DLL;_USRDLL;AVISYNTH_EXPORTS"
+				PreprocessorDefinitions="_DEBUG;DEBUG;_STLP_DEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_DLL;_USRDLL;AVISYNTH_EXPORTS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				StructMemberAlignment="4"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Debug/avisynth.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				BrowseInformation="1"
+				BrowseInformationFile=".\Debug/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"/>
@@ -176,24 +40,26 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="winmm.lib msacm32.lib quartz.lib ddraw.lib amstrmid.lib vfw32.lib version.lib"
-				OutputFile="$(SystemRoot)\system32\avisynth.dll"
+				AdditionalDependencies="msacm32.lib quartz.lib ddraw.lib amstrmid.lib vfw32.lib version.lib winmm.lib"
+				OutputFile=".\Debug/avisynth.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\avisynth.def"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/avisynth.pdb"
-				ImportLibrary=".\Debug/avisynth.lib"/>
+				ImportLibrary=".\Debug/avisynth.lib"
+				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/avisynth.tlb"/>
+				TypeLibraryName=".\Debug/avisynth.tlb"
+				HeaderFileName=""/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				CommandLine="copy Debug\avisynth.dll &quot;$(SystemRoot)&quot;\system32"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -205,292 +71,777 @@
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
 				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory=".\Release"
+			IntermediateDirectory=".\Release"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="/Gs "
+				Optimization="0"
+				GlobalOptimizations="TRUE"
+				InlineFunctionExpansion="2"
+				FavorSizeOrSpeed="1"
+				OptimizeForProcessor="2"
+				PreprocessorDefinitions="NDEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_DLL;_USRDLL;AVISYNTH_EXPORTS"
+				StringPooling="TRUE"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="TRUE"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderFile=".\Release/avisynth.pch"
+				AssemblerListingLocation=".\Release/"
+				ObjectFile=".\Release/"
+				ProgramDataBaseFileName=".\Release/"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="2"/>
+			<Tool
+				Name="VCCustomBuildTool"
+				CommandLine="release\upx -9 release\avisynth.dll
+copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
+"
+				Outputs="$(SystemRoot)\system32\avisynth.dll"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="msacm32.lib quartz.lib ddraw.lib amstrmid.lib vfw32.lib version.lib winmm.lib"
+				OutputFile=".\Release/avisynth.dll"
+				LinkIncremental="1"
+				SuppressStartupBanner="TRUE"
+				ModuleDefinitionFile=".\avisynth.def"
+				ProgramDatabaseFile=".\Release/avisynth.pdb"
+				ImportLibrary=".\Release/avisynth.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/avisynth.tlb"
+				HeaderFileName=""/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Profile|Win32"
+			OutputDirectory=".\Profile"
+			IntermediateDirectory=".\Profile"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="/Gh "
+				Optimization="2"
+				InlineFunctionExpansion="2"
+				OptimizeForProcessor="2"
+				PreprocessorDefinitions="NDEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_DLL;_USRDLL;AVISYNTH_EXPORTS"
+				StringPooling="TRUE"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="TRUE"
+				RuntimeTypeInfo="TRUE"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderFile=".\Profile/avisynth.pch"
+				AssemblerListingLocation=".\Profile/"
+				ObjectFile=".\Profile/"
+				ProgramDataBaseFileName=".\Profile/"
+				BrowseInformation="1"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="3"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="penter.lib msvcrt.lib msacm32.lib quartz.lib ddraw.lib amstrmid.lib vfw32.lib version.lib winmm.lib"
+				OutputFile=".\Profile/avisynth.dll"
+				LinkIncremental="1"
+				SuppressStartupBanner="TRUE"
+				IgnoreAllDefaultLibraries="TRUE"
+				ModuleDefinitionFile=".\avisynth.def"
+				GenerateDebugInformation="TRUE"
+				ProgramDatabaseFile=".\Profile/avisynth.pdb"
+				ImportLibrary=".\Profile/avisynth.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Profile/avisynth.tlb"
+				HeaderFileName=""/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="Copying to windows"
+				CommandLine="copy Profile\avisynth.dll &quot;$(SystemRoot)&quot;\system32"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 	</Configurations>
+	<References>
+	</References>
 	<Files>
 		<Filter
-			Name="VirtualDub files"
+			Name="Core"
 			Filter="">
 			<File
-				RelativePath=".\AVIIndex.cpp">
+				RelativePath="avisynth.rc">
 			</File>
 			<File
-				RelativePath=".\AVIIndex.h">
+				RelativePath=".\src\core\blitter.h">
 			</File>
 			<File
-				RelativePath=".\AVIReadHandler.cpp">
+				RelativePath=".\src\core\block.h">
 			</File>
 			<File
-				RelativePath=".\AVIReadHandler.h">
+				RelativePath=".\src\core\bufferwindow.cpp">
 			</File>
 			<File
-				RelativePath="AudioSource.cpp">
+				RelativePath=".\src\core\bufferwindow.h">
 			</File>
 			<File
-				RelativePath="AudioSource.h">
+				RelativePath=".\src\core\cache.h">
 			</File>
 			<File
-				RelativePath="DubSource.cpp">
+				RelativePath=".\src\core\clip.h">
 			</File>
 			<File
-				RelativePath="DubSource.h">
+				RelativePath=".\src\core\colorspace.h">
 			</File>
 			<File
-				RelativePath=".\Error.h">
+				RelativePath=".\src\core\cow_shared_ptr.h">
 			</File>
 			<File
-				RelativePath=".\FastReadStream.cpp">
+				RelativePath=".\src\core\dimension.h">
 			</File>
 			<File
-				RelativePath=".\FastReadStream.h">
+				RelativePath=".\src\core\exception.h">
 			</File>
 			<File
-				RelativePath=".\File64.cpp">
+				RelativePath=".\src\core\frametype.h">
 			</File>
 			<File
-				RelativePath=".\File64.h">
+				RelativePath=".\src\core\ownedblock.h">
 			</File>
 			<File
-				RelativePath=".\Fixes.h">
+				RelativePath=".\src\core\plane.h">
 			</File>
 			<File
-				RelativePath="VD_Audio.cpp">
+				RelativePath=".\src\core\property.h">
 			</File>
 			<File
-				RelativePath="VD_Audio.h">
+				RelativePath=".\src\core\runtime_environment.h">
 			</File>
 			<File
-				RelativePath="VD_misc.cpp">
+				RelativePath=".\src\core\sampletype.h">
 			</File>
 			<File
-				RelativePath="VD_misc.h">
+				RelativePath=".\src\core\saturate.h">
 			</File>
 			<File
-				RelativePath=".\cpuaccel.cpp">
+				RelativePath=".\src\core\smart_ptr_fwd.h">
 			</File>
 			<File
-				RelativePath=".\list.cpp">
+				RelativePath=".\src\core\vecteur.h">
 			</File>
 			<File
-				RelativePath=".\list.h">
-			</File>
-		</Filter>
-		<Filter
-			Name="Avisynth core"
-			Filter="">
-			<File
-				RelativePath=".\avisynth.cpp">
+				RelativePath=".\src\core\videoframe.h">
 			</File>
 			<File
-				RelativePath=".\avisynth.def">
+				RelativePath=".\src\core\videoinfo.h">
 			</File>
 			<File
-				RelativePath=".\avisynth.h">
+				RelativePath=".\src\core\window_ptr.h">
 			</File>
-			<File
-				RelativePath=".\avisynth.rc">
-			</File>
-			<File
-				RelativePath="clip_info.h">
-			</File>
-			<File
-				RelativePath=".\internal.h">
-			</File>
-			<File
-				RelativePath=".\main.cpp">
-			</File>
-			<File
-				RelativePath=".\plugins.cpp">
-			</File>
-			<File
-				RelativePath=".\source.cpp">
-			</File>
-		</Filter>
 			<Filter
-				Name="Original"
+				Name="Block"
 				Filter="">
 				<File
-					RelativePath=".\audio.cpp">
+					RelativePath=".\src\core\block\align.h">
 				</File>
 				<File
-					RelativePath=".\audio.h">
+					RelativePath=".\src\core\block\base.h">
 				</File>
 				<File
-					RelativePath=".\combine.cpp">
+					RelativePath=".\src\core\block\block.cpp">
 				</File>
 				<File
-					RelativePath=".\combine.h">
+					RelativePath=".\src\core\block\deleter.cpp">
 				</File>
 				<File
-					RelativePath=".\convert.cpp">
+					RelativePath=".\src\core\block\deleter.h">
 				</File>
 				<File
-					RelativePath=".\convert.h">
+					RelativePath=".\src\core\block\owneddeleter.h">
 				</File>
 				<File
-					RelativePath=".\convert_a.asm">
+					RelativePath=".\src\core\block\recycler.cpp">
+				</File>
+				<File
+					RelativePath=".\src\core\block\recycler.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Cache"
+				Filter="">
+				<File
+					RelativePath=".\src\core\cache\base.h">
+				</File>
+				<File
+					RelativePath=".\src\core\cache\cachelogic.cpp">
+				</File>
+				<File
+					RelativePath=".\src\core\cache\cachelogic.h">
+				</File>
+				<File
+					RelativePath=".\src\core\cache\concrete.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="ColorSpace"
+				Filter="">
+				<File
+					RelativePath=".\src\core\colorspace\colorspace.cpp">
+				</File>
+				<File
+					RelativePath=".\src\core\colorspace\interleaved.h">
+				</File>
+				<File
+					RelativePath=".\src\core\colorspace\planar_yuv.h">
+				</File>
+				<File
+					RelativePath=".\src\core\colorspace\rgb.h">
+				</File>
+				<File
+					RelativePath=".\src\core\colorspace\yuy2.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Environment"
+				Filter="">
+				<File
+					RelativePath=".\src\core\environment\base.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+					</FileConfiguration>
 					<FileConfiguration
 						Name="Release|Win32">
 						<Tool
-							Name="VCCustomBuildTool"
-							Description="Assembling $(InputPath)..."
-							CommandLine="ml.exe -c -coff -Cx -Fo$(IntDir)\$(InputName).obj $(InputName).asm
-"
-							Outputs="$(IntDir)\$(InputName).obj"/>
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Profile|Win32">
 						<Tool
-							Name="VCCustomBuildTool"
-							Description="Assembling $(InputPath)..."
-							CommandLine="ml.exe -c -coff -Cx -Fo$(IntDir)\$(InputName).obj $(InputName).asm
-"
-							Outputs="$(IntDir)\$(InputName).obj"/>
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)2.obj"/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\src\core\environment\base.h">
+				</File>
+				<File
+					RelativePath=".\src\core\environment\concrete.cpp">
 					<FileConfiguration
 						Name="Debug|Win32">
 						<Tool
-							Name="VCCustomBuildTool"
-							Description="Assembling $(InputPath)..."
-							CommandLine="ml.exe -c -coff -Cx -Zi -Fo$(IntDir)\$(InputName).obj $(InputName).asm
-"
-							Outputs="$(IntDir)\$(InputName).obj"/>
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\edit.cpp">
+					RelativePath=".\src\core\environment\concrete.h">
 				</File>
 				<File
-					RelativePath=".\edit.h">
-				</File>
-				<File
-					RelativePath=".\field.cpp">
-				</File>
-				<File
-					RelativePath=".\field.h">
-				</File>
-				<File
-					RelativePath=".\focus.cpp">
-				</File>
-				<File
-					RelativePath=".\focus.h">
-				</File>
-				<File
-					RelativePath=".\fps.cpp">
-				</File>
-				<File
-					RelativePath=".\fps.h">
-				</File>
-				<File
-					RelativePath=".\histogram.cpp">
-				</File>
-				<File
-					RelativePath=".\histogram.h">
-				</File>
-				<File
-					RelativePath=".\levels.cpp">
-				</File>
-				<File
-					RelativePath=".\levels.h">
-				</File>
-				<File
-					RelativePath=".\misc.cpp">
-				</File>
-				<File
-					RelativePath=".\misc.h">
-				</File>
-				<File
-					RelativePath=".\resample.cpp">
-				</File>
-				<File
-					RelativePath=".\resample.h">
-				</File>
-				<File
-					RelativePath=".\resample_functions.cpp">
-				</File>
-				<File
-					RelativePath=".\resample_functions.h">
-				</File>
-				<File
-					RelativePath=".\resample_old.cpp.txt">
-				</File>
-				<File
-					RelativePath=".\resize.cpp">
-				</File>
-				<File
-					RelativePath=".\resize.h">
-				</File>
-				<File
-					RelativePath=".\text-overlay.cpp">
-				</File>
-				<File
-					RelativePath=".\text-overlay.h">
-				</File>
-				<File
-					RelativePath=".\transform.cpp">
-				</File>
-				<File
-					RelativePath=".\transform.h">
+					RelativePath=".\src\core\environment\runtime_environment.cpp">
 				</File>
 			</Filter>
 			<Filter
-				Name="New"
+				Name="Timing"
 				Filter="">
 				<File
-					RelativePath=".\convolution.cpp">
+					RelativePath=".\src\core\timing\chrono.h">
 				</File>
 				<File
-					RelativePath=".\convolution.h">
+					RelativePath=".\src\core\timing\switchingtimer.h">
 				</File>
 				<File
-					RelativePath=".\layer.cpp">
+					RelativePath=".\src\core\timing\threadclock.cpp">
 				</File>
 				<File
-					RelativePath=".\layer.h">
+					RelativePath=".\src\core\timing\threadclock.h">
 				</File>
 				<File
-					RelativePath=".\merge.cpp">
+					RelativePath=".\src\core\timing\timer.h">
 				</File>
 				<File
-					RelativePath=".\merge.h">
+					RelativePath=".\src\core\timing\timerstack.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="VideoFrame"
+				Filter="">
+				<File
+					RelativePath=".\src\core\videoframe\base.cpp">
+				</File>
+				<File
+					RelativePath=".\src\core\videoframe\base.h">
+				</File>
+				<File
+					RelativePath=".\src\core\videoframe\interleaved.cpp">
+				</File>
+				<File
+					RelativePath=".\src\core\videoframe\interleaved.h">
+				</File>
+				<File
+					RelativePath=".\src\core\videoframe\planar_yuv.cpp">
+				</File>
+				<File
+					RelativePath=".\src\core\videoframe\planar_yuv.h">
+				</File>
+				<File
+					RelativePath=".\src\core\videoframe\rgb.h">
+				</File>
+				<File
+					RelativePath=".\src\core\videoframe\videoframe.cpp">
+				</File>
+				<File
+					RelativePath=".\src\core\videoframe\yuy2.cpp">
+				</File>
+				<File
+					RelativePath=".\src\core\videoframe\yuy2.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="VideoInfo"
+				Filter="">
+				<File
+					RelativePath=".\src\core\videoinfo\concrete.h">
+				</File>
+				<File
+					RelativePath=".\src\core\videoinfo\videoinfo.cpp">
+				</File>
+			</Filter>
+			<Filter
+				Name="Blitter"
+				Filter="">
+				<File
+					RelativePath=".\src\core\blitter\blitter.cpp">
+				</File>
+				<File
+					RelativePath=".\src\core\blitter\memcopy.cpp">
+				</File>
+				<File
+					RelativePath=".\src\core\blitter\memcopy.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="BufferWindow"
+				Filter="">
+				<File
+					RelativePath=".\src\core\bufferwindow\blender.cpp">
+				</File>
+				<File
+					RelativePath=".\src\core\bufferwindow\blender.h">
+				</File>
+				<File
+					RelativePath=".\src\core\bufferwindow\horizontalflipper.h">
+				</File>
+				<File
+					RelativePath=".\src\core\bufferwindow\leftturner.h">
+				</File>
+				<File
+					RelativePath=".\src\core\bufferwindow\rightturner.h">
+				</File>
+				<File
+					RelativePath=".\src\core\bufferwindow\verticalflipper.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Exception"
+				Filter="">
+				<File
+					RelativePath=".\src\core\exception\baddimension.h">
 				</File>
 			</Filter>
 		</Filter>
 		<Filter
-			Name="Script"
+			Name="Filters"
+			Filter="">
+			<Filter
+				Name="Audio"
+				Filter="">
+				<File
+					RelativePath=".\src\filters\audio\audiodub.cpp">
+				</File>
+				<File
+					RelativePath=".\src\filters\audio\audiodub.h">
+				</File>
+				<File
+					RelativePath=".\src\filters\audio\killaudio.cpp">
+				</File>
+				<File
+					RelativePath=".\src\filters\audio\killaudio.h">
+				</File>
+				<File
+					RelativePath=".\src\filters\audio\killvideo.cpp">
+				</File>
+				<File
+					RelativePath=".\src\filters\audio\killvideo.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Edit"
+				Filter="">
+			</Filter>
+			<Filter
+				Name="Levels"
+				Filter="">
+				<File
+					RelativePath=".\src\filters\levels\tweak.cpp">
+				</File>
+				<File
+					RelativePath=".\src\filters\levels\tweak.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Source"
+				Filter="">
+				<File
+					RelativePath=".\src\filters\source\messageclip.h">
+				</File>
+				<File
+					RelativePath=".\src\filters\source\staticimage.cpp">
+				</File>
+				<File
+					RelativePath=".\src\filters\source\staticimage.h">
+				</File>
+				<File
+					RelativePath=".\src\filters\source\voidclip.cpp">
+				</File>
+				<File
+					RelativePath=".\src\filters\source\voidclip.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Transform"
+				Filter="">
+				<File
+					RelativePath=".\src\filters\transform\flip.cpp">
+				</File>
+				<File
+					RelativePath=".\src\filters\transform\flip.h">
+				</File>
+				<File
+					RelativePath=".\src\filters\transform\symetry.cpp">
+				</File>
+				<File
+					RelativePath=".\src\filters\transform\symetry.h">
+				</File>
+				<File
+					RelativePath=".\src\filters\transform\turn.cpp">
+				</File>
+				<File
+					RelativePath=".\src\filters\transform\turn.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Resize"
+				Filter="">
+				<File
+					RelativePath=".\src\filters\resize\filter.h">
+				</File>
+				<File
+					RelativePath=".\src\filters\resize\resize.h">
+				</File>
+				<File
+					RelativePath=".\src\filters\resize\resize_horizontal.h">
+				</File>
+				<File
+					RelativePath=".\src\filters\resize\subrange.h">
+				</File>
+				<Filter
+					Name="Pattern"
+					Filter="">
+					<File
+						RelativePath=".\src\filters\resize\pattern\base.h">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\pattern\Interleaved.h">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\pattern\maker.cpp">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\pattern\maker.h">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\pattern\packer.h">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\pattern\simple.cpp">
+					</File>
+					<File
+						RelativePath=".\src\filters\resize\pattern\simple.h">
+					</File>
+				</Filter>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Clip"
 			Filter="">
 			<File
-				RelativePath=".\cache.cpp">
+				RelativePath=".\src\clip\caching.h">
 			</File>
 			<File
-				RelativePath=".\cache.h">
+				RelativePath=".\src\clip\folded.h">
 			</File>
 			<File
-				RelativePath=".\expression.cpp">
+				RelativePath=".\src\clip\nochild.h">
 			</File>
 			<File
-				RelativePath=".\expression.h">
+				RelativePath=".\src\clip\onechild.h">
 			</File>
 			<File
-				RelativePath=".\script.cpp">
+				RelativePath=".\src\clip\refactorable.h">
 			</File>
 			<File
-				RelativePath=".\script.h">
+				RelativePath=".\src\clip\twochilds.h">
+			</File>
+			<Filter
+				Name="OneChild"
+				Filter="">
+				<File
+					RelativePath=".\src\clip\onechild\audioprocess.h">
+				</File>
+				<File
+					RelativePath=".\src\clip\onechild\cachingpipeline.h">
+				</File>
+				<File
+					RelativePath=".\src\clip\onechild\concrete.h">
+				</File>
+				<File
+					RelativePath=".\src\clip\onechild\foldedsimplifiable.h">
+				</File>
+				<File
+					RelativePath=".\src\clip\onechild\pipeline.h">
+				</File>
+				<File
+					RelativePath=".\src\clip\onechild\simplifiable.h">
+				</File>
+				<File
+					RelativePath=".\src\clip\onechild\videoprocess.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="TwoChilds"
+				Filter="">
+				<File
+					RelativePath=".\src\clip\twochilds\concrete.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Caching"
+				Filter="">
+				<File
+					RelativePath=".\src\clip\caching\concrete.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Folded"
+				Filter="">
+				<File
+					RelativePath=".\src\clip\folded\make.h">
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="VFW"
+			Filter="">
+			<File
+				RelativePath=".\src\vfw\avifile.cpp">
 			</File>
 			<File
-				RelativePath=".\scriptparser.cpp">
+				RelativePath=".\src\vfw\avifile.h">
 			</File>
 			<File
-				RelativePath=".\scriptparser.h">
+				RelativePath=".\src\vfw\avifilefactory.cpp">
 			</File>
 			<File
-				RelativePath=".\tokenizer.cpp">
+				RelativePath=".\src\vfw\avifilefactory.h">
 			</File>
 			<File
-				RelativePath=".\tokenizer.h">
+				RelativePath=".\src\vfw\avistream.cpp">
+			</File>
+			<File
+				RelativePath=".\src\vfw\avistream.h">
+			</File>
+			<Filter
+				Name="Avistream"
+				Filter="">
+				<File
+					RelativePath=".\src\vfw\avistream\audio.cpp">
+				</File>
+				<File
+					RelativePath=".\src\vfw\avistream\audio.h">
+				</File>
+				<File
+					RelativePath=".\src\vfw\avistream\interleaved.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\src\vfw\avistream\interleaved.h">
+				</File>
+				<File
+					RelativePath=".\src\vfw\avistream\video.cpp">
+				</File>
+				<File
+					RelativePath=".\src\vfw\avistream\video.h">
+				</File>
+				<File
+					RelativePath=".\src\vfw\avistream\yv12.cpp">
+				</File>
+				<File
+					RelativePath=".\src\vfw\avistream\yv12.h">
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="COM"
+			Filter="">
+			<File
+				RelativePath=".\src\com\base.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Profile|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\src\com\base.h">
 			</File>
 		</Filter>
+		<Filter
+			Name="Text"
+			Filter="">
+			<File
+				RelativePath=".\src\text\antialiaser.h">
+			</File>
+			<File
+				RelativePath=".\src\text\font.cpp">
+			</File>
+			<File
+				RelativePath=".\src\text\font.h">
+			</File>
+		</Filter>
+		<File
+			RelativePath="distrib\AviSynth.ico">
+		</File>
+		<File
+			RelativePath=".\src\folder.h">
+		</File>
+		<File
+			RelativePath=".\src\main.cpp">
+		</File>
+		<File
+			RelativePath=".\src\main.h">
+		</File>
+		<File
+			RelativePath=".\src\weakexpired.h">
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

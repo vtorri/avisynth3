@@ -68,11 +68,11 @@ public:  //reset methods
 
   void reset(int size, bool recycle)
   { 
-    OwnedBlock( GetEnvironment(), size, recycle ).swap(*this); 
+    OwnedBlock tmp(GetEnvironment(), size, recycle);
+    swap(tmp); 
   }
 
 };//OwnedBlock
-
 
 
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,10 @@
 #include "avsvalue.h"
 #include "../core/forward.h"  //for PEnvironment
 
-//stl includes
+//stl include
 #include <vector>
+
+//assert include
 #include <assert.h>
 
 
@@ -81,7 +83,7 @@ public:  //stack behavior
 
 public:  //access to globals
 
-  AVSValue& global(int index) { return globals_[index]; }
+  AVSValue& global(int index) { globas_.reserve(index + 1); return globals_[index]; }
 
 
 public:  //stack management

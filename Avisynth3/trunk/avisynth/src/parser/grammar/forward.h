@@ -35,6 +35,7 @@ namespace avs { namespace parser { namespace grammar {
 
 
 //typedefs
+typedef boost::tuples::tuple<ElementalOperation, char> TypedOp;
 typedef boost::tuples::tuple<VarTable, function::Table> GlobalContext;
 typedef boost::tuples::tuple<VarTable, int, boost::optional<int> > LocalContext;
 
@@ -45,7 +46,7 @@ namespace value {
 //////////////////////////////////////////////////////////////////////////////////////
 //  value::ElementalOpProxy
 //
-//  wrapper around ElementlOperation
+//  wrapper around ElementalOperation
 //  necessary to prevent conflicts between Phoenix and ElementOperation::operator()
 //
 typedef boost::tuples::tuple<ElementalOperation> ElementalOpProxy;   
@@ -61,6 +62,17 @@ typedef boost::tuples::tuple<ElementalOperation> ElementalOpProxy;
 //  3rd arg : flag reporting if the expr was a top level assignment
 //  
 typedef boost::tuples::tuple<ElementalCode, char, bool> Expression;  
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//  value::Literal
+//
+//  return value of the Literal gramar
+//
+//  1st arg : operation to generate the literal
+//  2nd arg : type of the literal
+//
+typedef TypedOp Literal;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

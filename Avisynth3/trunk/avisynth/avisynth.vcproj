@@ -342,7 +342,7 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				RelativePath=".\src\com\base.h">
 			</File>
 			<File
-				RelativePath=".\src\com\deleler.h">
+				RelativePath=".\src\com\deleter.h">
 			</File>
 		</Filter>
 		<Filter
@@ -1093,10 +1093,10 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 						RelativePath=".\src\filters\source\avi\framedecompressor.h">
 					</File>
 					<File
-						RelativePath=".\src\filters\source\avi\icframedecompressor.cpp">
+						RelativePath=".\src\filters\source\avi\vfwframedecompressor.cpp">
 					</File>
 					<File
-						RelativePath=".\src\filters\source\avi\icframedecompressor.h">
+						RelativePath=".\src\filters\source\avi\vfwframedecompressor.h">
 					</File>
 				</Filter>
 			</Filter>
@@ -1592,6 +1592,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			<File
 				RelativePath=".\src\vfw\bitmapinfoheader.h">
 			</File>
+			<File
+				RelativePath=".\src\vfw\hic.cpp">
+			</File>
+			<File
+				RelativePath=".\src\vfw\hic.h">
+			</File>
 			<Filter
 				Name="Avistream"
 				Filter="">
@@ -1642,6 +1648,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 		<Filter
 			Name="FreeType"
 			Filter="">
+			<File
+				RelativePath=".\src\freetype\face.cpp">
+			</File>
 			<File
 				RelativePath=".\src\freetype\face.h">
 			</File>

@@ -64,7 +64,7 @@ public:  //IAVIStream
 
 protected:  //AviStream implementation
 
-  virtual void FillAviStreamInfo(AVISTREAMINFOW& asi);
+  virtual void FillAviStreamInfo(AviStreamInfo * asi);
   virtual void Read(void* lpBuffer, int lStart, int lSamples);
 
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 
 //avisynth includes
 #include "audio.h"
+#include "../avistreaminfo.h"
 #include "../../core/clip.h"
 #include "../../core/exception.h"
 #include "../../core/videoinfo.h"
@@ -100,22 +101,10 @@ STDMETHODIMP Audio::Read(LONG lStart, LONG lSamples, LPVOID lpBuffer, LONG cbBuf
 }
 
 
-void Audio::FillAviStreamInfo(AVISTREAMINFOW& asi)
+void Audio::FillAviStreamInfo(AviStreamInfo * asi)
 { 
-  CPVideoInfo vi = GetVideoInfo();
-
-  int bps = vi->BytesPerAudioSample();
-
-  asi.fccType       = streamtypeAUDIO;
-  asi.dwQuality     = DWORD(-1);     
-  asi.fccHandler    = 0;
-  asi.dwScale       = bps;
-  asi.dwRate        = vi->GetSampleRate() * bps;
-  asi.dwLength      = (DWORD)vi->GetSampleCount();
-  asi.dwSampleSize  = bps;
-      
-  wcscpy(asi.szName, L"Avisynth audio #1");  
-
+  //creates an audio AviStreamInfo in the passed buffer
+  new (asi) AviStreamInfo(*GetVideoInfo(), false);
 }
 
 

@@ -24,12 +24,10 @@
 #ifndef __AVS_FILTERS_AVIFILESOURCE_H__
 #define __AVS_FILTERS_AVIFILESOURCE_H__
 
-//avisynth include
-#include "avisource.h"
-
-
-struct IAVIFile;
-struct IAVIStream;
+//avisynth includes
+#include "avifile/rawaudio.h"
+#include "avifile/rawvideo.h"
+#include "../../clip/caching/concrete.h"
 
 
 namespace avs { namespace filters {
@@ -39,25 +37,14 @@ namespace avs { namespace filters {
 ///////////////////////////////////////////////////////////////////////////////////////////
 //  AviFileSource
 //
-//  AviSource subclass opening avis using vfw
 //
-class AviFileSource : public AviSource
+//
+class AviFileSource : public source::avifile::RawAudio
+                    , public source::avifile::RawVideo
+                    , public clip::caching::Concrete
 {
 
-  typedef boost::shared_ptr<IAVIFile> PAVIFile;
-  typedef boost::shared_ptr<IAVIStream> PAVIStream;
-
-  struct Initializer
-  {
-    Initializer();
-    ~Initializer(); 
-  };
-
-
-  Initializer initializer_;           //must be 1st, so destroyed after avifile and avistreams
-
   PAVIFile aviFile_;
-  PAVIStream video_;
   CPVideoInfo vi_;
 
 
@@ -72,20 +59,11 @@ public:  //clip general interface
 
   virtual CPVideoInfo GetVideoInfo() const { return vi_; }
 
-  virtual BYTE * GetAudio(BYTE * buffer, __int64 start, int count) const;
 
+public:  //implementation helpers
 
-private:  //AviSource private interface
-
-  virtual int PreviousKeyFrame(int n) const;
-
-  virtual long ReadVideo(int n, BYTE * buffer, long bufferSize) const;
-
-
-private:  //implementation helpers
-
-  //get stream of asked type from an avifile, returns NULL if don't exist
-  static IAVIStream * GetStream(PAVIFile const& aviFile, unsigned long fccType);
+  //get stream of asked type from an avifile, returns empty if don't exist
+  static PAVIStream GetStream(PAVIFile const& aviFile, unsigned long fccType);
 
   //wraps result from IAVIStream::ReadFormat into a shared_ptr
   static boost::shared_ptr<void> ReadFormat(PAVIStream const& aviStream);

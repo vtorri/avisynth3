@@ -40,90 +40,36 @@
 namespace avs { namespace filters {
 
 
-AviFileSource::Initializer::Initializer() { AVIFileInit(); }
-AviFileSource::Initializer::~Initializer() { AVIFileExit(); }
-
 
 AviFileSource::AviFileSource(std::string const& fileName, PEnvironment const& env)
-  : AviSource( env )
+  : clip::caching::Concrete( env )
 {
   IAVIFile * paf = NULL;
   if ( AVIFileOpen(&paf, fileName.c_str(), OF_READ | OF_SHARE_DENY_WRITE, 0) != AVIERR_OK )     //if failure to open
     throw exception::BrokenFile(fileName);                       //exception
   aviFile_.reset(paf, com::Deleter<IAVIFile>());                 //wrap value in smart pointer
 
-  video_.reset( GetStream(aviFile_, streamtypeVIDEO), com::Deleter<IAVIStream>() );
-
-  //fetchs bitmapinfoheader from the video stream
-  vfw::PBitmapInfoHeader bih = boost::static_pointer_cast<vfw::BitmapInfoHeader>(ReadFormat(video_));
-  PColorSpace space;  
-
-  //use it to create and set a frame decompressor, now it contains output format
-  SetFrameDecompressor(avisource::VFWFrameDecompressor::Create(*this, bih, space));
-
-  vfw::AviStreamInfo asi;
-  HRESULT  result = video_->Info(&asi, sizeof(vfw::AviStreamInfo));
-  assert( result == S_OK );
-
   PVideoInfo vi = VideoInfo::Create();                           //creates an empty videoinfo
-  vi->AddVideo(space, bih->GetDimension(), 0);                   //starts filling its video
-  asi.SetLengthsTo(*vi);                                         //complete its video
 
-  vi_ = vi;                                                      //save it as this'
+  InitAudio( GetStream(aviFile_, streamtypeAUDIO), *vi);
+  InitVideo( GetStream(aviFile_, streamtypeVIDEO), *vi);
+
+  vi_ = vi;                                                      //save it as this' 
+  
 }
 
 
-BYTE * AviFileSource::GetAudio(BYTE * buffer, long long start, int count) const
+
+
+
+AviFileSource::PAVIStream AviFileSource::GetStream(PAVIFile const& aviFile, unsigned long fccType)
 {
-  throw exception::NoAudio();
-}
-
-
-int AviFileSource::PreviousKeyFrame(int n) const
-{
-  return video_->FindSample(n, FIND_KEY | FIND_PREV);
-}
-
-
-long AviFileSource::ReadVideo(int n, BYTE * buffer, long bufferSize) const
-{
-  long size = 0;
-
-  if ( video_->Read(n, 1, buffer, bufferSize, &size, NULL) != AVIERR_OK )
-    throw exception::Generic("Cannot read from source file");
-
-  return size;
-}
-
-/*
-std::pair<OwnedBlock, long> AviFileSource::ReadVideo(int n) const
-{
-  long size = 0;
-  video_->Read(n, 1, NULL, 0, &size, NULL);  //get needed size for the block
-
-  OwnedBlock block(GetEnvironment(), size + BufferWindow::Guard * 2, true);
-
-  if ( size != 0 )
-  {
-    HRESULT hResult = video_->Read(n, 1, block.get() + BufferWindow::Guard, size, NULL, NULL);
-
-    if ( hResult != AVIERR_OK )
-      throw exception::Generic("Cannot read from source file");
-  }
-
-  return std::make_pair(block, size);
-}*/
-
-
-IAVIStream * AviFileSource::GetStream(PAVIFile const& aviFile, unsigned long fccType)
-{
-  IAVIStream * result = NULL;
-
+  IAVIStream * stream = NULL;
   //handles AVIERR_MEMORY error case, AVIERR_NODATA is naturally handled by returning NULL in that case
-  if ( aviFile->GetStream(&result, fccType, 0) == AVIERR_MEMORY )
+  if ( aviFile->GetStream(&stream, fccType, 0) == AVIERR_MEMORY )
     throw std::bad_alloc(); 
 
-  return result;
+  return PAVIStream( stream, com::Deleter<IAVIStream>() );
 }
 
 

@@ -25,7 +25,7 @@
 #define __AVS_PARSER_ADAPTOR_TRAITS_H__
 
 
-namespace avs { namespace parser { namespace adaptor { namespace detail
+namespace avs { namespace parser { namespace adaptor { namespace detail {
 
 
 

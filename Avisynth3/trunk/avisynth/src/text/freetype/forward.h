@@ -33,7 +33,8 @@ namespace avs {
 
 //declarations
 template <typename T> class box;
-template <typename T> class vecteur;
+template <typename T> struct vecteur;
+template <typename T> class dimension;
 template <int fractionPart> class fixed_point;  
 
   
@@ -50,6 +51,7 @@ class MonoBitmap;
 typedef fixed_point<6> FP6;
 typedef box<FP6> BoxFP6;
 typedef vecteur<FP6> VecteurFP6;
+typedef dimension<FP6> DimensionFP6;
 typedef boost::shared_ptr<Face> PFace;
 typedef boost::shared_ptr<Outline> POutline;
 

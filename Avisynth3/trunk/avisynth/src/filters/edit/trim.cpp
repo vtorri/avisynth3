@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,7 @@ Trim::Trim(PClip const& child, int begin, int end)
     vi->CheckHasFrame(end - 1);       //check validity of end
   }
 
-  //now efectively Trim the videoinfo
+  //now effectively Trim the videoinfo
   vi->SetFrameCount(end - begin);     //framecount updated (check end >= begin too)
 
   if ( vi->HasAudio() )               //if has audio

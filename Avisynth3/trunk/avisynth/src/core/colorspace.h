@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@
 #include "plane.h"
 #include "forward.h"
 #include "frametype.h"
+#include "../define.h"             //for AVS_NOVTABLE
 #include "geometry/vecteur.h"
 #include "geometry/dimension.h"
 
@@ -44,7 +45,7 @@ namespace avs {
 //
 //  polymorphic class representing a video color space
 //
-class ColorSpace : public boost::enable_shared_from_this<ColorSpace const>
+class AVS_NOVTABLE ColorSpace : public boost::enable_shared_from_this<ColorSpace const>
 {
 
 public:
@@ -118,7 +119,9 @@ public:  //ColorSpace interface
     return result;
   }
 
-  //method to create a frame of the given colorspace
+
+public:  //blank frame creation method
+
   virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const = 0;
 
 
@@ -167,7 +170,7 @@ public:  //small helper for 4cc
     return c0 <<24 | c1 << 16 | c2 << 8 | c3; 
   }
 
-};//ColorSpace
+};
 
 
 

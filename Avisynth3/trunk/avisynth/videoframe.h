@@ -29,8 +29,9 @@
 #include "frametype.h"
 #include "smart_ref.h"
 
-//stl include
-#include <vector>
+
+
+namespace avs {
 
 
 //class declarations
@@ -41,14 +42,13 @@ class VideoFrame;                                     //defined here
 class ColorSpace;
 class PropertyKey;
 class BufferWindow;
-class FrameVideoProperties;
+class RuntimeEnvironment;
+
 
 //typedefs
 typedef smart_ref<const Property> CPProperty;
-typedef std::vector<CPProperty> PropertyVector;
 typedef smart_ref<const VideoFrame> CPVideoFrame;     //const VideoFrame *
-typedef smart_ref<const FrameVideoProperties> CPFrameVidProps;
-
+typedef smart_ref<RuntimeEnvironment> PEnvironment;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -59,47 +59,46 @@ typedef smart_ref<const FrameVideoProperties> CPFrameVidProps;
 class VideoFrame
 {
 
-  CPFrameVidProps vidProps_;
-  PropertyVector propVector;
-
 
 public:  //structors
 
-  //normal constructor
-  VideoFrame(CPFrameVidProps vidProps)
-    : vidProps_( vidProps ) { }
-  
-  //copy constructor
-  VideoFrame(const VideoFrame& other)
-    : vidProps_( other.vidProps_ )
-    , propVector( other.propVector )  { }
+  VideoFrame() { }
 
   virtual ~VideoFrame() { }
 
 
-public:  //clone method (expected by smart_ptrs for PVideoFrame/CPVideoFrame conversions)
+public:  //clone methods 
 
+  //clone expected by smart_ptrs for PVideoFrame/CPVideoFrame conversions
   virtual VideoFrame * clone() const = 0; 
 
-
-public:  //plane access (see BufferWindow)
-
-  virtual const BufferWindow& operator[](Plane plane) const = 0;
-  virtual BufferWindow& operator[](Plane plane) = 0;
+  //creates a frame of same characteristics, but containing unitialized data
+  virtual VideoFrame * BlankClone() const = 0;
 
 
-public:  //general info (about the whole frame)
+public:  //general frame info
   
-  const ColorSpace& GetColorSpace() const;
-  const Dimension& GetDimension() const;
+  virtual ColorSpace& GetColorSpace() const = 0;
 
-  FrameType GetFrameType() const;
+  virtual const Dimension& GetDimension() const = 0;
+  virtual FrameType GetFrameType() const = 0;
 
   bool IsField() const { return GetFrameType() < PROGRESSIVE; }
   bool IsFrame() const { return GetFrameType() >= PROGRESSIVE; }
 
 
   void SetFrameType(FrameType type);
+
+
+public:  //fetch environment method
+
+  virtual PEnvironment GetEnvironment() const = 0;
+
+
+public:  //plane access (see BufferWindow)
+
+  virtual const BufferWindow& operator[](Plane plane) const = 0;
+  virtual BufferWindow& operator[](Plane plane) = 0;
 
 
 public:  //toolbox methods
@@ -141,6 +140,6 @@ public:  //property system
 
 
 
-
+}; //namespace avs
 
 #endif  //__AVS_VIDEOFRAME_H__

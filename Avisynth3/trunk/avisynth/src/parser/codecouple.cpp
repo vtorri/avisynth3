@@ -84,4 +84,19 @@ CodeCouple& CodeCouple::operator+=(CodeCouple const& code)
 }
 
 
+CodeCouple::operator StatementCode() const
+{
+  StatementCode result;
+
+  if ( ! before_.empty() )
+    result += functor::ElementalToStatement(before_);
+
+  result += statCode_;
+
+  if ( ! after_.empty() )
+    result += functor::ElementalToStatement(after_);
+
+  return result;
+}
+
 } } //namespace avs::parser

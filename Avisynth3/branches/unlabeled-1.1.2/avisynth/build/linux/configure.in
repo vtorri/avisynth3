@@ -189,31 +189,6 @@ else
    ARCHITECTURE="GENERIC"
 fi
 
-dnl
-dnl Testing address bus length
-dnl
-BUS=""
-
-AC_CHECK_SIZEOF([int *])
-case "$ac_cv_sizeof_int_p" in
-     4)
-	BUS="32BIT"
-	;;
-     8)
-	BUS="64BIT"
-	;;
-     *)
-	AC_MSG_ERROR([XviD supports only 32/64 bit architectures])
-	;;
-esac
-
-dnl
-dnl Testing endianness
-dnl
-dnl ENDIANNESS=""
-
-dnl AC_C_BIGENDIAN(ENDIANNESS="BIG_ENDIAN", ENDIANNESS="LITTLE_ENDIAN")
-
 dnl ==========================================================================
 dnl
 dnl Check for OS specific variables
@@ -447,7 +422,7 @@ dnl ==========================================================================
 dnl Check arguments
 dnl ==========================================================================
 
-dnl Set the name of the STLport library
+dnl Set the name of the STLPort and Boost libraries
 case "$target_os" in
      *bsd* | linux* | irix* | solaris* )
         STLPORT_LIB_NAME="stlport_gcc"
@@ -479,7 +454,7 @@ dnl Check STLport library
   LDFLAGS="${LDFLAGS} -L$with_stl_path/lib/"
   AC_LANG([C++])
   AC_CHECK_HEADER(
-    [assert.h],
+    [stl_user_config.h],
     [AC_CHECK_LIB(
       [$STLPORT_LIB_NAME],
       [main],
@@ -526,14 +501,20 @@ dnl
 dnl ==========================================================================
 
 AC_CHECK_HEADERS(
-  [assert.h malloc.h math.h],
+  [assert.h malloc.h],
   [],
   [AC_MSG_ERROR(Missing header file)])
 
 case "$target_os" in 
+  *bsd*|linux*|beos|irix*|solaris*)
+    AC_CHECK_HEADERS(
+      [pthread.h],
+      [],
+      [AC_MSG_ERROR(Missing header file)])
+    ;;
   [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
     AC_CHECK_HEADERS(
-      [initguid.h, windows.h vfw.h],
+      [initguid.h objbase.h windows.h vfw.h],
       [],
       [AC_MSG_ERROR(Missing header file)])
     AC_CHECK_HEADERS(
@@ -652,8 +633,6 @@ dnl ==========================================================================
 
 AC_SUBST(FEATURES)
 AC_SUBST(ARCHITECTURE)
-AC_SUBST(BUS)
-dnl AC_SUBST(ENDIANNESS)
 AC_SUBST(SHARED_EXTENSION)
 AC_SUBST(STATIC_EXTENSION)
 AC_SUBST(OBJECT_EXTENSION)

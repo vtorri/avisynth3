@@ -21,58 +21,25 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_PARSER_GRAMMAR_VARTABLE_H__
-#define __AVS_PARSER_GRAMMAR_VARTABLE_H__
-
-//boost include
-#include <boost/tuple/tuple.hpp>     //for tuple
-#include <boost/spirit/symbols.hpp>  //for symbols
-
-namespace spirit = boost::spirit;
+//avisynth include
+#include "vartable.h"
 
 
 namespace avs { namespace parser { namespace grammar {
 
 
-//typedef
-typedef boost::tuples::tuple<int, char> TypedIndex;   //associate an index to a type 
 
-
-
-////////////////////////////////////////////////////////////////////////////////
-//  VarTable
-//
-//  symbols table mapping var names to their type and position in the stack
-//
-class VarTable : public spirit::symbols<TypedIndex>
+int VarTable::DefineVar(std::string const& name, char type)
 {
+  TypedIndex value(size_, type);   //value we want to set into the symbols table
 
-  int size_;       //NB: not equivalent to the number of symbols defined        
+  if ( TypedIndex * index = spirit::find(*this, name.c_str()) )   //if already defined
+    *index = value;                                               //we override value
+  else add(name.c_str(), value);                                  //else we add it
 
+  return size_++;                  //return number of variables defined (counting redefinitions)
+}
 
-public:  //structors
-
-  VarTable()
-    : size_( 0 ) { }
-
-  VarTable(VarTable const& other)
-    : spirit::symbols<TypedIndex>( other )
-    , size_( other.size_ ) { }
-
-  //generated destructor is fine
-
-
-public:  //VarTable interface
-
-  //define var of given name to given type, and return previous var count
-  int DefineVar(std::string const& name, char type);
-
-  //return numbers of var defined (redefinitions count)
-  int size() const { return size_; }
-
-};
 
 
 } } } //namespace avs::parser::grammar
-
-#endif //__AVS_PARSER_GRAMMAR_VARTABLE_H__

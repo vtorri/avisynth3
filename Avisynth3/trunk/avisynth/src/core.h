@@ -25,11 +25,11 @@
 #define __AVS_CORE_H__
 
 //avisynth includes
-#include "avs/clip.h"
-#include "avs/blitter.h"
-#include "avs/videoinfo.h"
-#include "avs/colorspace.h"
-#include "avs/videoframe.h"
-#include "avs/runtime_environment.h"
+#include "core/clip.h"
+#include "core/blitter.h"
+#include "core/videoinfo.h"
+#include "core/colorspace.h"
+#include "core/videoframe.h"
+#include "core/runtime_environment.h"
 
 #endif //__AVS_CORE_H__

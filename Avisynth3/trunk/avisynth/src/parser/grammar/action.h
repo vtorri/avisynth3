@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,9 @@
 #ifndef __AVS_PARSER_GRAMMAR_ACTION_H__
 #define __AVS_PARSER_GRAMMAR_ACTION_H__
 
-//avisynth include
-#include "../forward.h"
+//avisynth includes
+#include "forward.h"
+#include "../codecouple.h"
 
 
 namespace avs { namespace parser { namespace grammar {
@@ -33,19 +34,14 @@ namespace avs { namespace parser { namespace grammar {
 struct Action
 {
 
-  //get appropriate version of the operator[]
-  static ElementalOperation const& GetSubscriptOperation(char type, bool firstArgOnly);
+  static void CreateVarStatement(CodeCouple& code, LocalContext& localCtxt, value::Expression const& expr, VarTable& table, std::string const& name);
 
-  //get operation for operator== or operator!=, or throw if types don't allow comparison 
-  static ElementalOperation const& GetEqualityOperation(char& leftType, char rightType, bool isEqual);
+  static void ExprStatement(CodeCouple& code, LocalContext& localCtxt, value::Expression const& expr);
 
 
 private:
 
-  static int TypeToIndex(char type);
-
-  static ElementalOperation const equal_op[5];
-  static ElementalOperation const differ_op[5];
+  static void CleanOldLast(CodeCouple& code, bool stacking, int& stackSize);
 
 };
 

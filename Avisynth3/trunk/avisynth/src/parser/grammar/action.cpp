@@ -22,76 +22,78 @@
 
 //avisynth includes
 #include "action.h"
-#include "../vmcode.h"
-#include "../functor/adaptor.h"
-#include "../../core/Exception/generic.h"
+#include "../functor/var.h"
+#include "../functor/popper.h"
+#include "../functor/swapper.h"
+#include "../functor/popassigner.h"
 
 
 namespace avs { namespace parser { namespace grammar {
 
 
+using namespace functor;
 
-ElementalOperation const& Action::GetSubscriptOperation(char type, bool firstArgOnly)
+
+void Action::CreateVarStatement(CodeCouple& code, LocalContext& localCtxt, value::Expression const& expr, VarTable& table, std::string const& name)
 {
 
-  switch( type )
-  {
-  case 's':
+  code += expr.get<0>();                              //accumulate expr generation code
 
-  default: throw exception::Generic("Illegal use of operator[]");
+  int index = table.DefineVar(name, expr.get<1>());   //defines the var in the given VarTable
+
+  if ( &table != &localCtxt.get<0>() )                //if a global var (table is not the local var Table)
+  {
+    code += popassigner<GlobalVar>( index );          //assign global var and pop value
+    --localCtxt.get<1>();                             //update stack size
+  }
+
+  if ( !! localCtxt.get<2>() )                        //if was a last before
+  {
+    localCtxt.get<2>() = boost::detail::none_t();     //no last now
+
+    CleanOldLast( code, &table == &localCtxt.get<0>(), localCtxt.get<1>() );
   }
 
 }
 
 
-ElementalOperation const& Action::GetEqualityOperation(char& leftType, char rightType, bool isEqual)
+void Action::ExprStatement(CodeCouple& code, LocalContext& localCtxt, value::Expression const& expr)
 {
-  if ( leftType != rightType )
-    throw exception::Generic("Cannot compare expression of different types");
-  if ( leftType == 'v' )
-    throw exception::Generic("Cannot do comparison on void");
 
-  char type = leftType;
-  leftType = 'b';                                                //set result type to bool
+  bool oldLast = !! localCtxt.get<2>();           //mark if an old last has to be taken care of
+  bool stacking = true;                           //expect to stack something
 
-  return (isEqual ? equal_op : differ_op)[ TypeToIndex(type) ];  //returns comparison op
-}
+  code += expr.get<0>();                          //accumulate expr generation code
 
-
-int Action::TypeToIndex(char type)
-{
-  switch(type)
+  if ( expr.get<1>() == 'c' && ! expr.get<2>() )  //if a non-assignment clip expr
+    localCtxt.get<2>() = localCtxt.get<0>().size();   //define a new last
+  else 
   {
-  case 'b': return 0;
-  case 'c': return 1;
-  case 'f': return 2;
-  case 'i': return 3;
-  case 's': return 4;
-  default: throw exception::Generic("Illegal type encountered");
+    localCtxt.get<2>() = boost::detail::none_t(); //no last now
+
+    if ( expr.get<1>() != 'v' )                   //if expr actually stacked something
+    {
+      code += functor::popper<1>();               //get rid of it
+      --localCtxt.get<1>();                       //update stack size
+    }
+
+    stacking = false;                             //report that finally nothing was stacked
   }
+
+  if ( oldLast )
+    CleanOldLast(code, stacking, localCtxt.get<1>());
+
 }
 
 
-template <typename T> inline bool equals(T left, T right) { return left == right; }
-template <typename T> inline bool differs(T left, T right) { return left != right; }
+void Action::CleanOldLast(CodeCouple& code, bool stacking, int& stackSize)
+{
+  if ( stacking )                     //if something was stacked
+    code += functor::Swapper();       //make last top of stack
 
-
-ElementalOperation const Action::equal_op[5] = 
-    { functor::adapt(&equals<bool>)
-    , functor::adapt(&equals<PClip const&>)
-    , functor::adapt(&equals<double>)
-    , functor::adapt(&equals<int>)
-    , functor::adapt(&equals<std::string const&>) 
-    }; 
-
-ElementalOperation const Action::differ_op[5] = 
-    { functor::adapt(&differs<bool>)
-    , functor::adapt(&differs<PClip const&>)
-    , functor::adapt(&differs<double>)
-    , functor::adapt(&differs<int>)
-    , functor::adapt(&differs<std::string const&>) 
-    }; 
-
+  code += functor::popper<1>();       //pop it
+  --stackSize;                        //update stack size
+}
 
 
 } } } //namespace avs::parser::grammar

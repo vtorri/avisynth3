@@ -26,6 +26,7 @@
 
 //avisynth includes
 #include "name.h"
+#include "action.h"
 #include "expression.h"
 #include "../optype.h"
 #include "../lazy/get.h"
@@ -42,7 +43,6 @@ namespace avs { namespace parser { namespace grammar {
 namespace value { 
   
 typedef boost::tuples::tuple<std::string const&, bool&> TRecurseInfo;
-typedef boost::tuples::tuple<bool, boost::optional<int> > StackingStatement;
 
 }
 
@@ -89,16 +89,12 @@ struct InnerStatement : spirit::closure
 
 struct CreateVar : spirit::closure
     < CreateVar
-    , bool
     , boost::reference_wrapper<VarTable>
     , std::string
-    , int
     >
 {
-  member1 globalVar;
-  member2 varTable;
-  member3 name;
-  member4 index;
+  member1 table;
+  member2 name;
 };
 
 
@@ -140,19 +136,11 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
           ;
 
       statement
-          =   (   stackingStatement( value::StackingStatement(true) )
+          =   (   expression( value::Expression(), statement.localCtxt, self.globalCtxt )
                   [
-                    if_( third(statement.localCtxt) )  //if last was defined
-                    [
-                      if_( first(arg1) )               //if we actually added to the stack
-                      [
-                        statement.value += construct_<functor::Swapper>()   //swap so last is at top
-                      ],
-                      statement.value += construct_<functor::popper<1> >(), //pop last
-                      --second(statement.localCtxt)                         //and update stack size
-                    ],
-                    third(statement.localCtxt) = second(arg1)               //update definition of last
+                    bind(&Action::ExprStatement)(statement.value, statement.localCtxt, arg1)                        
                   ]
+              |   createVar( ref(first(statement.localCtxt)) )  //pass local VarTable
               |   ifStatement
               |   returnStatement
               )
@@ -161,32 +149,10 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
               )
           ;
 
-      stackingStatement
-          =   expression( value::Expression(), statement.localCtxt, self.globalCtxt )
-              [
-                statement.value += first(arg1),                    //accumulate code
-                if_( second(arg1) == val('c') && ! third(arg1) )   //if type clip and not a top level =
-                [                                                  //we define a last
-                  second(stackingStatement.value) = bind(&VarTable::size)(first(statement.localCtxt))
-                ]
-                .else_
-                [
-                  if_( second(arg1) != val('v') )                  //if expr is not type void
-                  [
-                    statement.value += construct_<popper<1> >(),   //we pop it
-                    --second(statement.localCtxt)                  //and update stack size
-                  ],
-                  first(stackingStatement.value) = val(false)      //report we stack nothing
-                ]
-              ]
-          |   createVar( false, ref(first(statement.localCtxt)) )  //pass local VarTable
-          ;
-
       createVar
           =   (   spirit::str_p("global")
                   [
-                    createVar.globalVar = val(true),                    //report global var
-                    createVar.varTable = ref(first(self.globalCtxt))    //and set global VarTable as the table to use
+                    createVar.table = ref(first(self.globalCtxt))    //and set global VarTable as the table to use
                   ]
               |   !   spirit::str_p("local")     //optional local keyword
               )
@@ -197,13 +163,8 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
           >>  '='
           >>  expression( value::Expression(), statement.localCtxt, self.globalCtxt )
               [
-                statement.value += first(arg1),     //accumulate creation code, then define var
-                createVar.index = bind(&VarTable::DefineVar)( get(createVar.varTable), createVar.name, second(arg1) ), 
-                if_( createVar.globalVar )          //if global var
-                [                                   //add appropriate assigning code
-                  statement.value += construct_<popassigner<GlobalVar> >( createVar.index ),
-                  first(stackingStatement.value) = val(false)     //report we leave nothing on stack
-                ]
+                bind(&Action::CreateVarStatement)
+                    (statement.value, statement.localCtxt, arg1, createVar.table, createVar.name)
               ]
           ;
 
@@ -270,7 +231,7 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
           =   '('
           >> !(   expression( value::Expression(), statement.localCtxt, self.globalCtxt )
                   [
-                    //check the type is the one given by prototype
+                    //check the type is the one expected by prototype of outer function
                     bind(&Check::TypeIsExpected)(second(arg1), first(get(self.termRecInfo))[argList.value]),
                     statement.value += first(arg1),
                     ++argList.value
@@ -288,7 +249,6 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
 
     spirit::rule<ScannerT> top;
     spirit::rule<ScannerT, closure::InnerStatement::context_t> statement;
-    spirit::rule<ScannerT, closure::Value<value::StackingStatement>::context_t> stackingStatement;
     spirit::rule<ScannerT, closure::CreateVar::context_t> createVar;
     spirit::rule<ScannerT, closure::Value<StatementCode>::context_t> ifStatement;
     spirit::rule<ScannerT, closure::StatementBlock::context_t> block;

@@ -63,7 +63,7 @@ Dimension Font::GetTextBoundingBox(std::string const& text)
 
     glyph = font_.GetGlyph(glyphIndex);
 
-    box += glyph.GetControlBox() + pen;
+    box |= glyph.GetControlBox() + pen;
     pen += glyph.GetAdvance();
     prevIndex = glyphIndex;
   }

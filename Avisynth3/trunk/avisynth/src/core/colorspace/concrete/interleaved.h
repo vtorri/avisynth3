@@ -40,7 +40,7 @@ namespace avs { namespace cspace { namespace concrete {
 //
 //
 template <long bpp_, long bps_, typename VFrame> 
-class interleaved : public Interleaved
+class AVS_NOVTABLE interleaved : public Interleaved
 {
 
 public:  //declarations and typedefs

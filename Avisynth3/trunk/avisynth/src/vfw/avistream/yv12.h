@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -27,18 +27,26 @@
 //avisynth include
 #include "video.h"
 
+//windows include
+#include <mmsystem.h>  //for MAKEFOURCC
+
 
 namespace avs { namespace vfw { namespace avistream {
 
 
 
+/////////////////////////////////////////////////////////////////////////////////
+//  avistream::YV12
+//
+//  YV12 specific AviStream subclass
+//
 class YV12 : public Video
 {
 
 public:  //constructor
 
   YV12(AviFile& parent)
-    : Video( parent, '21VY' ) { }
+    : Video( parent, MAKEFOURCC('Y','V','1','2') ) { }
 
 
 protected:  //Video implementation

@@ -236,7 +236,7 @@ AviStream * AviFile::CreateStream(DWORD fccType, int lParam)
         {
         case ColorSpace::I_RGB24: return new avistream::Interleaved(*this, BI_RGB, 3);
         case ColorSpace::I_RGB32: return new avistream::Interleaved(*this, BI_RGB, 4);
-        case ColorSpace::I_YUY2: return new avistream::Interleaved(*this, '2YUY', 2);
+        case ColorSpace::I_YUY2: return new avistream::Interleaved(*this, MAKEFOURCC('Y','U','Y','2'), 2);
         case ColorSpace::I_YV12: return new avistream::YV12(*this);
         }
       return NULL;

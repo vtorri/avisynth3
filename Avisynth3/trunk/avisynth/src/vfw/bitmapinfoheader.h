@@ -47,8 +47,6 @@ class BitmapInfoHeader : public BITMAPINFOHEADER
 
 public:  //structors
 
-  BitmapInfoHeader();
-
   BitmapInfoHeader(VideoInfo const& vi);
 
   //generated copy constructor and destructor are fine

@@ -171,6 +171,9 @@ public:  //various check methods (failure means proper exception)
   //same as calling the 4 above, ie checks everything match but frame count
   virtual void CheckVideoMatch(VideoInfo const& other) const { }
 
+  virtual void CheckWidthMatch(VideoInfo const& other) const { }
+  virtual void CheckHeightMatch(VideoInfo const& other) const { }
+
   virtual void CheckFrameCountMatch(VideoInfo const& other) const { }
 
 

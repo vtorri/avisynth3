@@ -59,7 +59,7 @@ protected:  //structors
   //generated destructor is fine
 
 
-public:  //assignment
+protected:  //assignment
 
   ByteMap& operator=(ByteMap const& other)
   {
@@ -86,9 +86,6 @@ protected:  //write access
 
 };
 
-
-//global scope swap
-void swap(ByteMap& left, ByteMap& right) { left.swap(right); }
 
 
 } //namespace avs 

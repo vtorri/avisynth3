@@ -250,7 +250,7 @@ AviStream * AviFile::GetStream(DWORD fccType, long lParam)
         default: return NULL;
         }
     case 1:
-      if ( vi_->HasAudio() && ( fccType == 0 || fccType == streamtypeAUDIO ) )
+      if ( vi_->HasAudio() && ( fccType == streamtypeAUDIO || (fccType == 0 && lParam == 0) ) )
         return new avistream::Audio(*this);
     }
   }

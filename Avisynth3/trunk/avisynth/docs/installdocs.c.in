@@ -39,12 +39,25 @@ Unzip it in C:/Msys/1.0/mingw/
 - w32api-3.1.tar.gz\n\n
 Unzip it in C:/Msys/1.0/mingw/
 
-- setting PATH variables\n\n
-Add to the 'path variables' the folders C:/Msys/1.0/bin and  C:/Msys/1.0/mingw/bin\n\n
-For W2K for example : go to the desktop, right click on 'My Computer' -> Properties -> Advanced tab -> Environment Variables -> select the Variable 'path' -> edit -> add the two folders above:\n\n
+- setting the system file
+In the directory C:/Msys/1.0/etc/, create a file named fstab, which
+contains the following line:
 @code
-***;C:/Msys/1.0/bin;C:/Msys/1.0/mingw/bin
-@endcode\n
+c:\Algo\msys\1.0\mingw /mingw
+@endcode
+
+- setting the location of installed programs
+All the programs that don't rely explicitely on mingw will be
+installed in /usr/local/ (that is in C:/Msys/1.0/local/). So, to tell
+mingw that programs are in this directory, you need to edit the file
+C:/Msys/1.0/etc/profile. Add these lines:
+@code
+#export CFLAGS, LDFLAGS and LD_LIBRARY_PATH
+export CFLAGS="-I/usr/local/include"
+export LDFLAGS="-L/usr/local/lib"
+export LD_LIBRARY_PATH="/usr/local/lib"
+@endcode
+just before the last line (which should be cd "$HOME")
 
 - Finally, check whether Msys and MinGW are installed correctly:\n\n
 W2K: go to the desktop, double click on 'MSYS'. The MINGW32 terminal (or shell) will pop up, and you will see something like this\n\n
@@ -55,12 +68,11 @@ $
 Try the following (the commands are <a href="http://www.oreillynet.com/linux/cmd/">linux commands</a>):\n\n
 @code
 Wilbert@WD ~
-$ cd /usr/mingw/bin
-$ ./g++
+$ g++
 @endcode\n
 if you installed everything correctly, you should get\n\n
 @code
-$ ./g++
+$ g++
 g++.exe: no input files
 @endcode\n
 To compile AviSynth v3 using the configuration file which is located in ../avisynth/build/linux (it is modified so that avs 3.0 can be compiled with g++ under windows), but we need to compile STLport, Boost and Freetype first, which is described in the following sections.
@@ -95,7 +107,7 @@ Free headers and libraries for the Win32 API.
 
 Get the sources from their <a href=http://sourceforge.net/projects/avisynth2/>website</a>.
 
-Open a MINGW32 terminal (CVS is already included in MinGW) and use the following command
+Open a MSYS terminal (CVS is already included in MinGW) and use the following command
 
 @code
 $ cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/avisynth2 co -r avisynth_3_0 avisynth
@@ -109,9 +121,8 @@ STLport is a multiplatform ANSI C++ Standard Library implementation. In order to
 
 - Get <a href="http://www.stlport.org/download.html">STLPort-4.6.2.tar.gz</a> and unzip it somewhere. 
 
-- Copy the ../STLport-4.6.2/stlport folder to C:/Msys/1.0/mingw/include/stlport and copy the ../STLport-4.6.2/stlport/stl folder to C:/Msys/1.0/mingw/include/stlport.
-
-- Edit the file common-macros.mak which is located here: ../STLport-4.6.2/src, and change line 46: replace INSTALLDIR=/usr/local by INSTALLDIR=/usr/mingw
+- Copy the ../STLport-4.6.2/stlport folder to
+C:/Msys/1.0/local/include/stlport.
 
 - Compile the make file gcc-mingw32.mak (in ../STLport-4.6.2/src):\n\n
 Go to the terminal again, and type\n\n
@@ -130,24 +141,21 @@ Now, it should have created the following libraries in ../STLport-4.6.2/lib :\n\
  - libstlport_mingw32_static.a (the static-release library, this one will be used when compiling avs3)
  - libstlport_mingw32*.a (debug libraries)
 
-- Copy libstlport_mingw32_static.a (located in ../STLport-4.6.2/lib) to C:/Msys/1.0/usr/mingw/lib (if it isn't already there).
+- Copy libstlport_mingw32_static.a (located in ../STLport-4.6.2/lib) to C:/Msys/1.0/usr/local/lib (if it isn't already there).
 
 
 @subsection boost 1.5 Installing Boost
 
 Boost is a bunch of useful libraries (here it is used for the parser, threads and pointers). BJam (or BoostJam) is a make replacement that makes building simple things simple and building complicated things manageable.
 
-- Get <a href="http://prdownloads.sourceforge.net/boost">boost_1_31_0.tar.gz</a> and unzip it somewhere.
+- Get <a href="http://prdownloads.sourceforge.net/boost">boost_1_32_0.tar.gz</a> and unzip it somewhere.
 
-- Get <a href="http://prdownloads.sourceforge.net/boost">boost-jam-3.1.10-1-ntx86.zip</a> and unzip it to C:/Msys/1.0/mingw/bin.
+- Get <a href="http://prdownloads.sourceforge.net/boost">boost-jam-3.1.10-1-ntx86.zip</a> and unzip it to C:/Msys/1.0/local/bin.
 
-- Open a terminal again, go to ../boost_1_31_0 and type\n\n
+- Open a terminal again, go to ../boost_1_32_0 and type\n\n
 @code
-$ bjam "-sTOOLS=mingw" --prefix=/usr/mingw install
+$ bjam "-sTOOLS=mingw" --prefix=/usr/local install
 @endcode\n
-The libraries are created in: ../boost_1_31_0/bin/boost/libs.
-
-- Make sure that you copy boost_thread-mgw-mt-1_31.dll to the windows system folder.
 
 @subsection freetype 1.6 Installing Freetype
 
@@ -157,7 +165,7 @@ Get <a href="http://prdownloads.sourceforge.net/freetype">freetype-2.1.9.tar.gz<
 and type
 
 @code
-$ ./configure --prefix=/usr/mingw
+$ ./configure --prefix=/usr/local
 $ make
 $ make install
 @endcode
@@ -167,20 +175,18 @@ to compile and install it.
 
 @subsection cb 1.7 Installing needed circular_buffer source files
 
-Get <a href="http://cvs.sourceforge.net/viewcvs.py/avisynth2/avisynth/build/?only_with_tag=avisynth_3_0">circular_buffer_v3.6.zip</a> (you can also find it in the avisynth/build folder when downloading the sources of AviSynth) and unzip it in the following way:
-
-- circular_buffer.hpp and circular_buffer_fwd.hpp should be copied to\n\n
-C:/Msys/1.0/mingw/include/boost-1_31/boost
-
-- adaptor.hpp, base.hpp, debug.hpp and details.hpp should be copied to\n\n
-C:/Msys/1.0/mingw/include/boost-1_31/boost/circular_buffer
+Get <a
+href="http://cvs.sourceforge.net/viewcvs.py/avisynth2/avisynth/build/?only_with_tag=avisynth_3_0">circular_buffer_v3.6.zip</a>
+(you can also find it in the avisynth/build folder when downloading
+the sources of AviSynth) and unzip it in a folder. Copy the boost
+folder to C:/Msys/1.0/local/include/boost-1_32/
 
 
 @subsection nasm 1.8 Installing Nasm
 
 Nasm or 'the Netwide ASseMbler' is used for optimization of some of the AviSynth code.
 
-Get <a href="http://sourceforge.net/project/showfiles.php?group_id=6208">nasm-0.98.36-win32.zip</a> and unzip it somewhere. Put nasmw.exe in C:/Msys/1.0/mingw/bin, and rename it to nasm.exe (see also <a href="http://nasm.sourceforge.net/doc/html/nasmdoc1.html">here</a>).
+Get <a href="http://sourceforge.net/project/showfiles.php?group_id=6208">nasm-0.98.36-win32.zip</a> and unzip it somewhere. Put nasmw.exe in C:/Msys/1.0/local/bin, and rename it to nasm.exe (see also <a href="http://nasm.sourceforge.net/doc/html/nasmdoc1.html">here</a>).
 
 @subsection build 1.10 Building AviSynth v3
 
@@ -197,7 +203,7 @@ $ ./bootstrap.sh
 The configure file is created, and finally AviSynth can be build:
 
 @code
-$ ./configure --with-stl-path=/usr/mingw/ --with-boost-path=/usr/mingw
+$ ./configure --with-stl-path=/usr/local/ --with-boost-path=/usr/local
 $ make
 $ make install
 @endcode
@@ -396,7 +402,7 @@ The ffmpeg folder with its sources will be copied to it (note "co" means "check 
 Go to the ffmpeg folder and type
 
 @code
-$ ./configure --enable-memalign-hack --enable-gpl --prefix=/usr/mingw --enable-shared
+$ ./configure --enable-memalign-hack --enable-gpl --prefix=/usr/local --enable-shared
 @endcode
 
 It will produce 2 dlls that are needed, avcodec.dll and avformat.dll.
@@ -410,75 +416,13 @@ $ make
 and 
 
 @code
-$ make install
+$ make installlibs
 @endcode
-
-The dlls and ffmpeg.exe will be installed in C:/Program Files/ffmpeg (for some reason the --prefix directive is ignored). Both dlls should be put in the Windows system folder or, if you set up correctly your PATH previously, in C:/Msys/1.0/mingw/bin.
-
-When you did ./configure, you got the following libs:
-
-../ffmpeg/libavcodec/avcodec.lib\n
-../ffmpeg/libavformat/avformat.lib
-
-copy them to C:/Msys/1.0/mingw/lib.
-
-Copy the 'C:/Program Files/ffmpeg/include/ffmpeg' folder to the include folder of mingw 'C:/Msys/1.0/mingw/include'. (so, 'C:/Msys/1.0/mingw/include/ffmpeg' will be created)
-
-
-@subsection ffmpeg2 3.3 FFsource temporary
-
-<b>The following is temporary till FFsource is turned into a plugin:</b>
-
-You need to include the following files to the avs project:
-
-in ../avisynth/src/filters/source
-ffmpegsource.cpp
-ffmpegsource.h
-
-in ../avisynth/src/functions
-source.cpp
-source.h
-
-If you haven't done so, you should do the following first:
-
-@code
-$ ./bootstrap.sh
-$ ./configure --with-stl-path=/usr/mingw/include/stlport --with-boost-path=/usr/mingw/include/boost-1_31
-@endcode
-
-Edit platform.inc (in ../avisynth/build/linux) and go down to Compiler part. Change the lines
-
-@verbatim
-CXX=g++\n
-SPECIFIC_CFLAGS=-Os -mno-cygwin\n
-FREETYPE_CFLAGS=-I/usr/mingw/include/freetype2 -I/usr/mingw/include\n
-CXXFLAGS=-Wall -fstrength-reduce -finline-functions -freduce-all-givs -ffast-math -ansi  -I/usr/mingw/include/stlport  -I/usr/mingw/include/boost-1_31
-@endverbatim
-
-into
-
-@verbatim
-CXX=g++\n
-SPECIFIC_CFLAGS=-Os -mno-cygwin\n
-FREETYPE_CFLAGS=-I/usr/mingw/include/freetype2 -I/usr/mingw/include\n
-CXXFLAGS=-Wall -fstrength-reduce -finline-functions -freduce-all-givs -ffast-math  -I/usr/mingw/include/stlport  -I/usr/mingw/include/boost-1_31  -I/usr/mingw/include/ffmpeg
-@endverbatim
-
-(you are basically removing -ansi option)
-Edit sources.inc (in ../avisynth/build/linux), and add the following line
-
-<i>filters/source/ffmpegsource.cpp </i>
-
-to the list from SRC_GENERIC.
 
 In C:/Msys/1.0/mingw/include/, edit initguid.h: replace <i>const</i> by <i>static const</i>.
 
-Finally, build AviSynth
-
-@code
-$ make
-$ make install
-@endcode
+To build Avisynth 3.0 with FFMPEG support, the same steps as above
+could be used. FMPEG is automatically detected.
 
 
 @section AVS-Linux 4. Building AviSynth v3 for GNU/Linux x86 (using g++)
@@ -737,7 +681,6 @@ AVI Import filter error: (unknown) (80040154)
 in a messagebox. This error is due to missing dlls, usually ffmpeg's ones (avcodec.dll and avformat.dll). So, copy them to your windows system folder.
 
 @todo
-\li Installation of FFMPEG on mingw
 \li Talk about ACM with mingw.
 \li Installation of nasm on linux.
 

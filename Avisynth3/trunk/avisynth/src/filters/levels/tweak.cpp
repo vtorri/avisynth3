@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -69,9 +69,9 @@ PClip Tweak::clone(PClip const& child) const
   {
   case ColorSpace::I_YUY2: return tweak::YUY2::Create(child, *this);
   case ColorSpace::I_YV12: return tweak::YV12::Create(child, *this);
-  }
 
-  throw exception::UnsupportedColorSpace(space);
+  default: throw exception::UnsupportedColorSpace(space);
+  } 
 }
 
 
@@ -83,9 +83,9 @@ PClip Tweak::Create(PClip const& child, double hue, double sat, double bright, d
   {
   case ColorSpace::I_YUY2: return tweak::YUY2::Create(child, hue, sat, bright, cont);
   case ColorSpace::I_YV12: return tweak::YV12::Create(child, hue, sat, bright, cont);
-  }
 
-  throw exception::UnsupportedColorSpace(space);
+  default: throw exception::UnsupportedColorSpace(space);
+  } 
 }
 
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -84,8 +84,8 @@ public:  //plane access
     case PLANAR_Y: return GetY();
     case PLANAR_U: return GetU();
     case PLANAR_V: return GetV();
-    }
-    throw exception::NoSuchPlane(GetColorSpace(), plane);
+    
+    }   
   }
 
   virtual BufferWindow const& operator[](Plane plane) const
@@ -95,8 +95,9 @@ public:  //plane access
     case PLANAR_Y: return GetConstY();
     case PLANAR_U: return GetConstU();
     case PLANAR_V: return GetConstV();
+
+    default: throw exception::NoSuchPlane(GetColorSpace(), plane);
     }
-    throw exception::NoSuchPlane(GetColorSpace(), plane);
   }
 
   BufferWindow& GetY() { ClearStaticProperties(); return y_; }

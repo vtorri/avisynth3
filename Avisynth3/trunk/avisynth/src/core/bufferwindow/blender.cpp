@@ -28,7 +28,7 @@
 namespace avs { namespace bw {
 
 
-blender<1>::blender<1>(float factor)
+Blender<1>::Blender<1>(float factor)
 {
   int weight = int( factor * 32767.0f );        //that is the weight of the blendFrom window
 
@@ -44,7 +44,7 @@ blender<1>::blender<1>(float factor)
 
 
 
-void blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom) const
+void Blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom) const
 {
 
   if ( blendIn == blendFrom || noBlend_ )

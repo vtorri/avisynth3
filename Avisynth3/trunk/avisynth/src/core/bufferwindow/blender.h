@@ -33,23 +33,23 @@ namespace avs { namespace bw {
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-//  blender<bps>
+//  Blender<bps>
 //
 //  functor to  blend one BufferWindow into another
 //
 //  since there are no default implementation, this one declares nothing
 //  see the two specialisations below
 //
-template <int bps> class blender { };
+template <int bps> class Blender { };
 
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-//  blender<1>
+//  Blender<1>
 //
 //  Do the blending considering the data from each buffer is one byte per sample
 //
-template <> class blender<1>
+template <> class Blender<1>
 {
 
   __int64 weight64_;
@@ -59,7 +59,7 @@ template <> class blender<1>
 
 public:  //structors
 
-  blender<1>(float factor);
+  Blender<1>(float factor);
 
   //generated copy constructor and destructor are fine
 
@@ -72,18 +72,18 @@ public:
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-//  blender<2>
+//  Blender<2>
 //
 //  Do the blending considering the data from each buffer is two bytes per sample
 //
 //  TODO: code me
 //
-template <> class blender<2>
+template <> class Blender<2>
 {
 
 public:  //structors
 
-  blender<2>(float factor) { }
+  Blender<2>(float factor) { }
 
   //generated copy constructor and destructor are fine
 

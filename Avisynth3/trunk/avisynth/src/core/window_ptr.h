@@ -108,7 +108,8 @@ struct window_ptr
   int skipPadValue() const { return pitch * 2 - width; }
 
 
-  //special
+  //using Vecteur
+  Data * at(Vecteur const& vect) const { return at(vect.x, vect.y); }
   window_ptr<Data>& operator+=(Vecteur const& vect) { to(vect.x, vect.y); return *this; }
   
 };

@@ -27,9 +27,9 @@
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="2"
-				PreprocessorDefinitions="_DEBUG;DEBUG;_STLP_DEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_DLL;_USRDLL;AVISYNTH_EXPORTS;_INTEL_ASM"
+				PreprocessorDefinitions="_DEBUG;DEBUG;_STLP_DEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_DLL;_USRDLL;AVISYNTH_EXPORTS;_INTEL_ASM;BOOST_LIB_DIAGNOSTIC"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				DisableLanguageExtensions="FALSE"
 				ForceConformanceInForLoopScope="TRUE"
 				RuntimeTypeInfo="TRUE"
@@ -55,7 +55,7 @@
 				OutputFile=".\Debug/avisynth.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				IgnoreDefaultLibraryNames="MSVCRT"
+				IgnoreDefaultLibraryNames="LIBCMTD"
 				ModuleDefinitionFile=".\avisynth.def"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/avisynth.pdb"
@@ -110,9 +110,9 @@
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="2"
-				PreprocessorDefinitions="NDEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_DLL;_USRDLL;AVISYNTH_EXPORTS;_INTEL_ASM"
+				PreprocessorDefinitions="NDEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_USRDLL;AVISYNTH_EXPORTS;_INTEL_ASM;_STLP_USE_STATIC_LIB"
 				StringPooling="TRUE"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Release/avisynth.pch"
@@ -122,7 +122,8 @@
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="2"
-				CallingConvention="2"/>
+				CallingConvention="2"
+				DisableSpecificWarnings="4275"/>
 			<Tool
 				Name="VCCustomBuildTool"
 				CommandLine="release\upx -9 release\avisynth.dll
@@ -135,6 +136,7 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				OutputFile=".\Release/avisynth.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
+				IgnoreDefaultLibraryNames=""
 				ModuleDefinitionFile=".\avisynth.def"
 				ProgramDatabaseFile=".\Release/avisynth.pdb"
 				OptimizeReferences="2"
@@ -1296,6 +1298,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 						RelativePath="..\..\..\src\filters\source\video\framedecompressor.h">
 					</File>
 					<File
+						RelativePath="..\..\..\src\filters\source\video\icmframedecompressor.cpp">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\source\video\icmframedecompressor.h">
+					</File>
+					<File
 						RelativePath="..\..\..\src\filters\source\video\rawvideo.cpp">
 					</File>
 					<File
@@ -1303,30 +1311,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					</File>
 					<File
 						RelativePath="..\..\..\src\filters\source\video\trivialframedecompressor.h">
-					</File>
-					<File
-						RelativePath="..\..\..\src\filters\source\video\vfwframedecompressor.cpp">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Profile|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\..\src\filters\source\video\vfwframedecompressor.h">
 					</File>
 				</Filter>
 			</Filter>
@@ -1503,11 +1487,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			</File>
 			<File
 				RelativePath="..\..\..\src\parser\parser.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\src\parser\parser.h">

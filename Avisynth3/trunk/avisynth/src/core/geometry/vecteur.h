@@ -44,24 +44,31 @@ namespace avs {
 //
 //
 template <typename T>
-struct vecteur
+class vecteur
     : boost::addable<vecteur<T>                          //defines vecteur + vecteur
     , boost::subtractable<vecteur<T>                     //defines vecteur - vecteur
     , boost::right_shiftable<vecteur<T>, dimension<T> >  //defines vecteur >> dimension (inclusion)
       > >
 {
 
+public:  //members
+
   T x, y;   
 
-  //constructors
+public:  //structors
+
   vecteur() : x( 0 ), y( 0 ) { }
-  vecteur(T _x, T _y) : x( _x ), y( _y ) { }
-  vecteur(vecteur<T> const& other) : x( other.x ), y( other.y ) { }
+  vecteur(T x_, T y_) : x( x_ ), y( y_ ) { }
   
+  template <typename U>
+  explicit vecteur(vecteur<U> const& other) : x( other.x ), y( other.y ) { }
+
+  //construction from a dimension
   vecteur(dimension<T> const& dim)  : x( dim.GetWidth() ), y( dim.GetHeight() ) { }
 
   
-  //assignment
+public:  //assignment
+
   vecteur& operator=(vecteur<T> const& other)
   { 
     x = other.x; 
@@ -77,7 +84,14 @@ struct vecteur
   }
 
   
-  //classic vector operators
+public:  //comparison operators
+
+  bool operator==(vecteur<T> const& other) const { return x == other.x && y == other.y; }
+  bool operator!=(vecteur<T> const& other) const { return x != other.x || y != other.y; }
+
+
+public:  //classic vector operators
+
   vecteur operator-() const { return vecteur<T>(-x, -y); }
   vecteur& operator+=(vecteur<T> const& other) { x += other.x; y += other.y; return *this; }
   vecteur& operator-=(vecteur<T> const& other) { x -= other.x; y -= other.y; return *this; }
@@ -85,12 +99,9 @@ struct vecteur
   template <typename U> vecteur& operator*=(U scalar) { x *= scalar; y *= scalar; return *this; }
   template <typename U> vecteur& operator/=(U scalar) { x /= scalar; y /= scalar; return *this; }
 
-  //comparison operators
-  bool operator==(vecteur<T> const& other) const { return x == other.x && y == other.y; }
-  bool operator!=(vecteur<T> const& other) const { return x != other.x || y != other.y; }
 
+public:  //operators with special effect
 
-  //operators with special effect
   //'inclusion' operator : change self so it is included into the box defined by dim
   vecteur& operator >>=(dimension<T> const& dim)
   {

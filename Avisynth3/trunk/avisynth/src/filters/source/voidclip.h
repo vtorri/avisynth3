@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,9 @@
 //avisynth includes
 #include "../../clip/folded.h"
 #include "../../clip/nochild.h"
+#include "../../clip/noaudio.h"
+#include "../../clip/novideo.h"
+#include "../../core/videoinfo.h"
 
 
 namespace avs { namespace filters {
@@ -39,6 +42,8 @@ namespace avs { namespace filters {
 //  clip who has no video and no audio
 //
 class VoidClip : public clip::NoChild                    //has no child
+               , public clip::NoAudio                    //has no audio
+               , public clip::NoVideo                    //has no video
                , public clip::Folded<WeakPEnvironment>   //folded on the environment
 {
 
@@ -56,10 +61,7 @@ public:  //structors
 public:  //Clip general interface
 
   virtual PEnvironment const& GetEnvironment() const { return env_; }
-  virtual CPVideoInfo GetVideoInfo() const;
-
-  virtual CPVideoFrame GetFrame(int n) const;
-  virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const;
+  virtual CPVideoInfo GetVideoInfo() const { return VideoInfo::Create(); }
 
 
 private:  //GetKey method

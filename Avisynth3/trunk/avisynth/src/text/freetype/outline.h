@@ -58,7 +58,7 @@ public:  //assignment
 
   Outline& operator=(Outline const& other)
   {
-    swap(Outline(other));
+    Outline(other).swap(*this);
     return *this;
   }
 
@@ -74,7 +74,7 @@ public:  //Outline interface
 
   BoxFP6 GetControlBox() const;
 
-  void Draw(Bitmap const& bitmap) const;
+  void Split(rasterizer::OutlineSplitter& splitter, VecteurFP6 const& pen) const;
 
 };
 

@@ -24,7 +24,7 @@
 //avisynth includes
 #include "outline.h"
 #include "library.h"
-#include "monobitmap.h"
+#include "../rasterizer/outlinesplitter.h"
 
 //assert include
 #include <assert.h>
@@ -68,14 +68,44 @@ BoxFP6 Outline::GetControlBox() const
 }
 
 
-
-void Outline::Draw(Bitmap const& bitmap) const
+void Outline::Split(rasterizer::OutlineSplitter& splitter, VecteurFP6 const& pen_) const
 {
-  FT_Error error = FT_Outline_Get_Bitmap(Library::instance, const_cast<Outline *>(this), const_cast<Bitmap *>(&bitmap));
+  typedef rasterizer::VecteurFP3 VecteurFP3;
+  VecteurFP3 const& pen = reinterpret_cast<VecteurFP3 const&>(pen_);
 
-  assert( error == 0 );
+  VecteurFP3 const * ptIt = reinterpret_cast<VecteurFP3 *>(points);
+  char * tagPtIt = tags;
+  short * contourEndIt = contours;
+
+  for ( int i = n_contours; i-- > 0; )      //loop over the outline contours
+  {
+    //past the end end position for the list of points of the current contour
+    VecteurFP3 const * ptItEnd = reinterpret_cast<VecteurFP3 *>(points) + *contourEndIt + 1;
+
+    splitter.StartContour(pen + *ptIt++);
+    ++tagPtIt;
+
+    while ( ptIt < ptItEnd )
+    {
+      VecteurFP3 const& pt1 = *ptIt++;
+      if ( (*tagPtIt++ & 1) == 0 )            //if not a control point
+        splitter.LineTo( pt1 );               //just a line
+      else
+      {
+        VecteurFP3 const& pt2 = *ptIt++;      //take a second pt
+        if ( (*tagPtIt++ & 1) == 0 )          //if not a control point
+          splitter.BezierCurveTo(pt2, pt1);   //2nr order Bezier
+        else
+        {
+          splitter.BezierCurveTo( *ptIt++, pt2, pt1 );   //3rd order Bezier
+          ++tagPtIt;
+        }
+      }
+    }
+
+    splitter.CloseContour();
+  }
 }
-
 
 
 } } } //namespace avs::text::freetype

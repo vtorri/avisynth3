@@ -21,6 +21,8 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
 //avisynth includes
 #include "avifilesource.h"
 #include "../../com/deleter.h"
@@ -86,3 +88,5 @@ PClip AviFileSource::Create(std::string const& fileName, PEnvironment const& env
 
 
 } } //namespace avs::filters
+
+#endif //_WIN32

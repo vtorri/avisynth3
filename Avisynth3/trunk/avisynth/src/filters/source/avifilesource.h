@@ -20,6 +20,7 @@
 // combined work based on Avisynth.  Thus, the terms and conditions of the GNU
 // General Public License cover the whole combination.
 
+#ifdef _WIN32
 
 #ifndef __AVS_FILTERS_AVIFILESOURCE_H__
 #define __AVS_FILTERS_AVIFILESOURCE_H__
@@ -85,3 +86,5 @@ public:  //factory method and functor
 } } //namespace avs::filters
 
 #endif //__AVS_FILTERS_AVIFILESOURCE_H__
+
+#endif //_WIN32

@@ -37,27 +37,155 @@
 #include "pclip.h"
 
 
-CPVideoFrame Cache::GetCachedFrame(int n, Clip& client, Clip& source)
+
+CPVideoFrame fetch(int n) { return CPVideoFrame(); }
+CPVideoFrame store(int n, CPVideoFrame frame) { return frame; }
+
+
+CPVideoFrame CacheEverything::fetch(int n)
 {
-  CPVideoFrame result;
-  //first operation : we search all frame caches for frame n
-  for(CacheVector::iterator i = cache.begin(); i != cache.end(); ++i )    
-  {
-    CPVideoFrame result = (*i)->fetch(n);
-    if ( result )       //if found  (not NULL)
-      return result;    //return it
-  }
-  //second operation : we check that client is a registered client
-  //search its entry in the client map
-  ClientToCacheMap::iterator it = clientMap.find(&client);       
-  //if found : use it, else create register client (which creates the entry)
-  FrameCache * targetCache = (it != clientMap.end()) ? it->second :
-                                                       RegisterClient(client);
-  //use the source to make the frame, store it in cache and return it
-  return targetCache->store(n, source.MakeFrame(n) );
+  CacheMap::iterator it = cache.find(n);                    //search entry with key n
+  return it != cache.end() ? it->second : CPVideoFrame();   //if found return it, else empty CPVideoFrame
+}
+
+CPVideoFrame CacheEverything::store(int n, CPVideoFrame frame)
+{
+  return cache[n] = frame;
+}
+
+bool CacheEverything::drop(int n)
+{
+  return cache.erase(n) != 0;    //try erasing frame n, which returns erase count...
 }
 
 
+CPVideoFrame RangeCache::store(int n, CPVideoFrame frame)
+{
+  if ( cache.size() >= size )                                 //we must drop a frame from cache
+  {  
+    if ( cache.upper_bound(n - (size>>1)) != cache.begin() )  //are there frames to drop in small n ?
+      cache.erase(cache.begin());                             //drop from beginning
+    else cache.erase(--cache.end());                        //drop from end
+  }
+  return cache[n] = frame;
+};
+
+
+CPVideoFrame QueueCache::fetch(int n)
+{
+  for(CacheDeque::iterator it = cache.begin(); it != cache.end(); ++it )    
+    if ( it->first == n )               //if found
+    {
+      rotate(it, it + 1, cache.end());  //put the found frame at end of vector
+      return cache.back().second;       //and return it
+    }
+  return CPVideoFrame();                //case when not found
+}
+
+CPVideoFrame QueueCache::store(int n, CPVideoFrame frame)
+{
+  if ( cache.size() >= size )            //if size reached
+    cache.pop_front();                   //erase the oldest (at deque front)
+  cache.push_back(make_pair(n, frame));  //store at back
+  return frame;
+}
+
+bool QueueCache::drop(int n)
+{
+  for(CacheDeque::iterator it = cache.begin(); it != cache.end(); ++it )  
+    if ( it->first == n )    //if found
+    {
+      cache.erase(it);       //erase it
+      return true;           //return true (has an effect)
+    }
+  return false;              //not found case (no effect)
+}
+
+
+
+
+
+CPVideoFrame Cache::GetCachedFrame(int n, Clip& client, Clip& source)
+{
+
+  //first operation : we search all frame caches for frame n
+  CPVideoFrame result = sharedCache->fetch(n);   //try shared cache
+  ClipToCacheMap::iterator it = clientMap.begin();
+  do
+  {
+    if ( result )                                //if found (non empty CPVideoFrame)
+    {
+      //search n in frameAges deque, it should be there since frame is found
+      IntDeque::iterator i = find(frameAges.begin(), frameAges.end(), n);
+      rotate(i, i + 1, frameAges.end());         //make n the most recent frame (move at back)
+      return result; 
+    }
+    if ( it == clientMap.end() )                 //if no more in clientMap to test
+      break;                                     //exit the while
+    else result = it++->second->fetch(n);        //else try it and move on to next one
+  } 
+  while ( true );                                //always loop (the break exits the loop)
+    
+  //if we are here, the frame is not cached
+  frameAges.push_back(n);                        //we add n as the latest frame
+
+  FrameCache * targetCache;
+  //second operation : we search if client is known from self
+  //if found in sharing clients
+  if ( find(sharingClients.begin(), sharingClients.end(), &client) != sharingClients.end() ) 
+    targetCache = sharedCache;                              //we use sharedCache
+  else
+  {                                                                       
+    it = clientMap.find(&client);                           //search its entry in the client map
+    targetCache = it != clientMap.end() ? it->second :      //use the associated cache if found
+                           RegisterClient(client, source);  //else create one by registering client
+  }
+
+  return targetCache->store(n, source.MakeFrame(n));        //ask source for frame n, store and return it
+}
+
+
+void Cache::DropOldest()
+{
+  if ( frameAges.empty() )           //if empty
+    return;                          //nothing to do
+
+  int n = frameAges.front();         //get the number of the frame to drop
+  frameAges.pop_front();             //remove it from frameAges
+  
+  if ( sharedCache.drop(n) )         //if succeed to remove in sharedCache
+    return;                          //end
+  //now search in clientMap
+  for(ClipToCacheMap::iterator it = clientMap.begin(); it != clientMap.end(); ++it )  
+    if ( it->second->drop(n) )       //as soon as dropped
+      return;                        //end
+}
+
+
+
+FrameCache * Cache::RegisterClient(Clip& client, Clip& source)
+{
+  Clip::CachePolicy policy = client.GetWantedCachePolicy(source);      //request client caching policy
+  switch(policy.first)
+  {
+    case Clip::CACHE_ALL:
+    case Clip::CACHE_NOTHING:
+      //if not in shared cache all mode and it is requested or 2nd client wanting CACHE_NONE
+      if ( ! sharedCacheAll && (policy.first == Clip::CACHE_ALL || ! sharingClients.empty()) ) 
+      {
+        sharedCacheAll = true;                                   //we switch to cache all mode
+        sharedCache = new CacheEverything();       
+      }
+      sharingClients.push_back(&client);                         //add client to sharingClients
+      return sharedCache;                                        //return sharedCache
+
+    case Clip::CACHE_RANGE:
+      return clientMap[&client] = new RangeCache(policy.second); //store and return new range cache      
+
+    case Clip::CACHE_LAST:
+      return clientMap[&client] = new QueueCache(policy.second); //store and return new queue cache   
+  }
+}
 
 
 

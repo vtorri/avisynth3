@@ -35,55 +35,60 @@
 #ifndef __Cache_H__
 #define __Cache_H__
 
-#include "videoframe.h"
+#include "refcounted.h"
 #include <vector>
+#include <deque>
 #include <map>
-#include <utility>
+#include <utility>       //for pair
 using namespace std;
 
-/********************************************************************
-********************************************************************/
+#pragma warning(disable:4786)   //disable identifier was truncated to 255 chars....
 
 
-//polymorphic frame cache for use by the Cache Filter
+class VideoFrame;
+typedef smart_ptr_to_cst<VideoFrame> CPVideoFrame;
+
+
+//polymorphic frame cache for use by the Cache class
+//default implemention is the for the cache nothing case
 class FrameCache {
 
 public:
   FrameCache() { }
-  virtual ~FrameCache() { }
+  virtual ~FrameCache() { }                                //virtual destructor
 
-  virtual CPVideoFrame fetch(int n) = 0;
-  virtual CPVideoFrame store(int n, CPVideoFrame frame) = 0;
-
+  virtual CPVideoFrame fetch(int n);                       //get frame n, return empty CPVideoFrame when not found
+  virtual CPVideoFrame store(int n, CPVideoFrame frame);   //store frame n and return it
+  virtual bool drop(int n) { return false; }               //drop frame n, return true if has effect
 };  
 
-//frame cache who keeps frames within a fixed range
-//frames out of range are likely to be uncached
-class RangeCache : public FrameCache {
 
+class CacheEverything : public FrameCache {
+
+protected:
   typedef map<int, CPVideoFrame> CacheMap;
 
   CacheMap cache;
-  unsigned size;
+
+public:
+  CacheEverything() { }
+
+  virtual CPVideoFrame fetch(int n);
+  virtual CPVideoFrame store(int n, CPVideoFrame frame);
+  virtual bool drop(int n);
+
+};
+
+//frame cache who keeps frames within a fixed range
+//frames out of range are likely to be uncached
+class RangeCache : public CacheEverything {
+
+  unsigned size;   //max number of frames cached
 
 public:
   RangeCache(unsigned _size) : size(_size) { }
   
-  virtual CPVideoFrame fetch(int n)
-  {
-    CacheMap::iterator it = cache.find(n);
-    return it == cache.end() ? CPVideoFrame() : it->second;
-  }
-
-  virtual CPVideoFrame store(int n, CPVideoFrame frame)
-  {
-    if ( cache.size() >= size )
-    { //remove eveything out of range
-      cache.erase(cache.lower_bound(n + size), cache.end());
-      cache.erase(cache.begin(), cache.upper_bound(n - size));
-    }
-    return cache[n] = frame;
-  }
+  virtual CPVideoFrame store(int n, CPVideoFrame frame);
 };
 
 //frame cache who keeps the last used frames
@@ -91,56 +96,63 @@ public:
 class QueueCache : public FrameCache {
 
   typedef pair<int, CPVideoFrame> CachedVideoFrame;
-  typedef vector<CachedVideoFrame> CacheVector;
+  typedef deque<CachedVideoFrame> CacheDeque;
 
-  CacheVector cache;
+  CacheDeque cache;
   unsigned size;
 
 public:
   QueueCache(unsigned _size) : size(_size) { }
 
-  virtual CPVideoFrame fetch(int n)
-  {
-    for(CacheVector::iterator it = cache.begin(); it != cache.end(); ++it )    
-      if ( it->first == n )
-      {
-        rotate(it, it + 1, cache.end());  //put the found frame at end of vector
-        return cache.back().second;       //and return it
-      }
-    return CPVideoFrame();                //case when not found
-  }
-
-  virtual CPVideoFrame store(int n, CPVideoFrame frame)
-  {
-    if ( cache.size() >= size )
-      cache.erase(cache.begin());  //erase the oldest (at vector front)
-    cache.push_back(make_pair(n, frame));
-    return frame;
-  }
+  virtual CPVideoFrame fetch(int n);
+  virtual CPVideoFrame store(int n, CPVideoFrame frame);
+  virtual bool drop(int n);
+  
 };  
+
+
+
 
 class Clip;
 
 //helper class to implement caches on clips
 class Cache {
 
-  typedef vector<FrameCache *> CacheVector;
-  typedef map<Clip *, FrameCache *> ClientToCacheMap;
+  typedef deque<int> IntDeque;
+  typedef vector<Clip *> ClipVector;
+  typedef map<Clip *, FrameCache *> ClipToCacheMap;
 
-  CacheVector cache;
-  ClientToCacheMap clientMap;
+  IntDeque frameAges;              //used by this::drop to determine which frames are the oldest 
 
-  FrameCache * RegisterClient(Clip& client);
+  ClipToCacheMap clientMap;        //associates a client clip to its (non-shared) framecache  
+
+  FrameCache * sharedCache;        //cache used to by all sharing clients
+  ClipVector sharingClients;       //vector of sharing clients
+  bool sharedCacheAll;             //set when a client request CACHE_ALL, or more than one CACHE_NONE
+
+  static FrameCache cacheNothing;  //the unique cache nothing frame cache needed 
 
 public:
-  Cache() { }
+  Cache() : sharedCache(&cacheNothing), sharedCacheAll(false) { }
+
+  ~Cache()
+  { 
+    for(ClipToCacheMap::iterator it = clientMap.begin(); it != clientMap.end(); ++it)
+      delete it->second;        //deletes all frame caches in the client map
+    if ( sharedCacheAll )       //if in standard shared mode
+      delete sharedCache;       //delete the shared cache
+  }
 
   //search the frame in the cache(s),
   //eventually request source if not found and update itself as needed
   CPVideoFrame GetCachedFrame(int n, Clip& client, Clip& source);
 
+  //drop the oldest frame
+  void DropOldest();
 
-  ~Cache() { for(CacheVector::iterator it = cache.begin(); it != cache.end(); ++it) delete *it; }
+private:
+  //register an unknown client into self and return the frame cache associated
+  FrameCache * RegisterClient(Clip& client, Clip& source);
 };
 
 

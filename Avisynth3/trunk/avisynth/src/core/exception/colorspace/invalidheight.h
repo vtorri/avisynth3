@@ -25,8 +25,8 @@
 #define __AVS_EXCEPTION_COLORSPACE_INVALIDHEIGHT_H__
 
 //avisynth includes
-#include "../exception.h"
-#include "../colorspace.h"
+#include "../../exception.h"
+#include "../../colorspace.h"
 
 //boost include
 #include <boost/format.hpp>

@@ -241,7 +241,7 @@ AviStream * AviFile::CreateStream(DWORD fccType, int lParam)
     {
     case 0: 
       if ( fccType == 0 || fccType == streamtypeVIDEO )
-        switch( vi_->GetColorSpace().id() )
+        switch( vi_->GetColorSpace()->id() )
         {
         case ColorSpace::I_RGB24:
         case ColorSpace::I_RGB32: 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Piere - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -21,53 +21,28 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_EXCEPTION_NOSUCHPLANE_H__
-#define __AVS_EXCEPTION_NOSUCHPLANE_H__
-
-//avisynth includes
-#include "../plane.h"
-#include "../exception.h"
-#include "../colorspace.h"
-
-//boost include
-#include <boost/format.hpp>
+//avisynth include
+#include "map.h"
 
 
-namespace avs { namespace exception {
+namespace avs {
 
 
 
-//////////////////////////////////////////////////////////////////////////////////
-//  NoSuchPlane
-//
-//  report that the given ColorSpace doesn't have the plane
-//
-class NoSuchPlane : public Exception
+PColorSpace ColorSpace::rgb24() { return cspace::impl::Map::instance.rgb24(); }
+PColorSpace ColorSpace::rgb32() { return cspace::impl::Map::instance.rgb32(); }
+PColorSpace ColorSpace::rgb45() { return cspace::impl::Map::instance.rgb45(); }
+PColorSpace ColorSpace::yuy2() { return cspace::impl::Map::instance.yuy2(); }
+PColorSpace ColorSpace::yv12() { return cspace::impl::Map::instance.yv12(); }
+PColorSpace ColorSpace::yv24() { return cspace::impl::Map::instance.yv24(); }
+PColorSpace ColorSpace::yv45() { return cspace::impl::Map::instance.yv45(); }
+
+
+PColorSpace ColorSpace::FromString(std::string const& name)
 {
-
-  Plane plane_;
-  PColorSpace space_;
-
-
-public:  //structors
-
-  NoSuchPlane(PColorSpace const& space, Plane plane)
-    : plane_( plane )
-    , space_( space ) { }
-
-  //generated copy constructor and destructor are fine
+  return cspace::impl::Map::instance[name];
+}
 
 
-public:  //diagnotic message
+} //namespace avs
 
-  virtual std::string msg() const
-  {
-    return str( boost::format("%s doesn't have plane %s") % space_->GetName() % NameOf(plane_) );
-  }
-
-};
-
-
-} } //namespace avs::exception
-
-#endif //__AVS_EXCEPTION_NOSUCHPLANE_H__

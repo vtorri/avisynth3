@@ -52,22 +52,22 @@ class PlanarYUV : public Base
 public:  //structors
 
   //normal constructor
-  PlanarYUV(ColorSpace& space, Dimension const& dim, FrameType type, PEnvironment const& env)
+  PlanarYUV(PColorSpace const& space, Dimension const& dim, FrameType type, PEnvironment const& env)
     : Base( space, dim, type )
-    , y_( space.ToPlaneDim(dim, PLANAR_Y), env )
-    , u_( space.ToPlaneDim(dim, PLANAR_U), env )
-    , v_( space.ToPlaneDim(dim, PLANAR_V), env ) { }
+    , y_( space->ToPlaneDim(dim, PLANAR_Y), env )
+    , u_( space->ToPlaneDim(dim, PLANAR_U), env )
+    , v_( space->ToPlaneDim(dim, PLANAR_V), env ) { }
 
   //constructs using given buffers
-  PlanarYUV(ColorSpace& space, Dimension const& dim, FrameType type, BufferWindow const& y, BufferWindow const& u, BufferWindow const& v)
+  PlanarYUV(PColorSpace const& space, Dimension const& dim, FrameType type, BufferWindow const& y, BufferWindow const& u, BufferWindow const& v)
     : Base( space, dim, type )
     , y_( y )
     , u_( u )
     , v_( v )
   {
-    assert( y.GetDimension() == space.ToPlaneDim(dim, PLANAR_Y) );
-    assert( u.GetDimension() == space.ToPlaneDim(dim, PLANAR_U) );
-    assert( v.GetDimension() == space.ToPlaneDim(dim, PLANAR_V) );
+    assert( y.GetDimension() == space->ToPlaneDim(dim, PLANAR_Y) );
+    assert( u.GetDimension() == space->ToPlaneDim(dim, PLANAR_U) );
+    assert( v.GetDimension() == space->ToPlaneDim(dim, PLANAR_V) );
     assert( y.GetEnvironment() == u.GetEnvironment() && y.GetEnvironment() == v.GetEnvironment() );
   }
 
@@ -145,7 +145,7 @@ public:  //clone method
 
 public:  //general frame info
 
-  virtual ColorSpace& GetColorSpace() const { return ColorSpace::yv12(); }
+  virtual PColorSpace GetColorSpace() const { return ColorSpace::yv12(); }
 
 
 };
@@ -180,7 +180,7 @@ public:  //clone method
 
 public:  //general frame info
 
-  virtual ColorSpace& GetColorSpace() const { return ColorSpace::yv24(); }
+  virtual PColorSpace GetColorSpace() const { return ColorSpace::yv24(); }
 
 };
 
@@ -214,7 +214,7 @@ public:  //clone method
 
 public:  //general frame info
 
-  virtual ColorSpace& GetColorSpace() const { return ColorSpace::yv45(); }
+  virtual PColorSpace GetColorSpace() const { return ColorSpace::yv45(); }
 
 };
 

@@ -66,18 +66,18 @@ CPVideoFrame Stack::MakeFrame(int n) const
 
   PEnvironment const& env = GetEnvironment();
   Blitter const& blit = env->GetBlitter();
-  ColorSpace& space = left->GetColorSpace();
+  PColorSpace space = left->GetColorSpace();
 
   PVideoFrame result = env->CreateFrame(*vi_, left->GetType());
   Vecteur shift = GetShiftVecteur();
 
   for ( Plane p = Plane(0); p < int(PlaneCount); p = Plane(p + 1) )
-    if ( space.HasPlane(p) )
+    if ( space->HasPlane(p) )
     {
       WindowPtr dst = result->WriteTo(p);
 
       blit( left->ReadFrom(p), dst.ptr, dst.pitch );
-      blit( right->ReadFrom(p), dst.at(space.ToPlaneVect(shift, p)), dst.pitch );
+      blit( right->ReadFrom(p), dst.at(space->ToPlaneVect(shift, p)), dst.pitch );
     }
 
   return result;

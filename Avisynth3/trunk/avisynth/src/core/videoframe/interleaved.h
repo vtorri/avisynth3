@@ -54,16 +54,16 @@ class Interleaved : public Base
 public:  //structors
 
   //normal constructor
-  Interleaved(ColorSpace& space, Dimension const& dim, FrameType type, PEnvironment const& env)
+  Interleaved(PColorSpace const& space, Dimension const& dim, FrameType type, PEnvironment const& env)
     : Base( space, dim, type )
-    , main_( space.ToPlaneDim(dim, NOT_PLANAR), env ) { }
+    , main_( space->ToPlaneDim(dim, NOT_PLANAR), env ) { }
 
   //constructs using the given buffer
-  Interleaved(ColorSpace& space, Dimension const& dim, FrameType type, BufferWindow const& main)
+  Interleaved(PColorSpace const& space, Dimension const& dim, FrameType type, BufferWindow const& main)
     : Base( space, dim, type )
     , main_( main )
   {
-    assert( main.GetDimension() == space.ToPlaneDim(dim, NOT_PLANAR) );   //check the given buffer fits
+    assert( main.GetDimension() == space->ToPlaneDim(dim, NOT_PLANAR) );   //check the given buffer fits
   }
 
   //generated copy constructor and destructor are fine

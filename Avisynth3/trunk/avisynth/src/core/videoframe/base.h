@@ -63,7 +63,7 @@ private:  //members
 public: //structors
 
   //normal constructor
-  Base(ColorSpace& space, Dimension const& dim, FrameType type);
+  Base(PColorSpace const& space, Dimension const& dim, FrameType type);
 
   //generated copy constructor and destructor are fine
 

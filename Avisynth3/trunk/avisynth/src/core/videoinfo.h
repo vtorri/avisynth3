@@ -70,7 +70,7 @@ public:  //video methods
 
   virtual bool HasVideo() const = 0;
 
-  virtual ColorSpace& GetColorSpace() const = 0;
+  virtual PColorSpace const& GetColorSpace() const = 0;
   virtual Dimension const& GetDimension() const = 0;
   virtual int GetFrameCount() const = 0;
   virtual Fraction const& GetFPS() const = 0;
@@ -85,7 +85,7 @@ public:  //video methods
 
   //write access
 
-  virtual void SetColorSpace(ColorSpace& space) = 0;
+  virtual void SetColorSpace(PColorSpace const& space) = 0;
   virtual void SetDimension(Dimension const& dim) = 0;
   virtual void SetFrameCount(int frameCount) = 0;
   virtual void SetFPS(Fraction const& fps) = 0;
@@ -105,7 +105,7 @@ public:  //video methods
   virtual bool IsPlanar() const;
   virtual bool IsInterLeaved() const;
 
-  virtual bool IsColorSpace(ColorSpace& space);
+  virtual bool IsColorSpace(PColorSpace const& space);
   
   virtual bool IsRGB24() const;
   virtual bool IsRGB32() const;
@@ -117,7 +117,7 @@ public:  //video methods
 
 
   //virtual void AddVideo();
-  virtual void AddVideo(ColorSpace& space, Dimension const& dim, int frameCount, Fraction const& fps = 25, bool frameClip = true) = 0;
+  virtual void AddVideo(PColorSpace const& space, Dimension const& dim, int frameCount, Fraction const& fps = 25, bool frameClip = true) = 0;
 
   virtual void KillVideo() = 0;
 

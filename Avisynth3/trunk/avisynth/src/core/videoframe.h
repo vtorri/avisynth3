@@ -61,7 +61,7 @@ public:  //general frame info
   
   //queries
   virtual FrameType GetType() const = 0;
-  virtual ColorSpace& GetColorSpace() const = 0;
+  virtual PColorSpace GetColorSpace() const = 0;
   virtual Dimension const& GetDimension() const = 0;
 
   //helper

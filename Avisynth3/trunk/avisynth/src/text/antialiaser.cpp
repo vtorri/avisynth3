@@ -50,7 +50,7 @@ void Antialiaser::Apply(VideoFrame& frame, int textColor, int haloColor)
   if ( dirty_ )
     UpdateAlpha();
 
-  switch( frame.GetColorSpace().id() )
+  switch( frame.GetColorSpace()->id() )
   {
   case ColorSpace::I_RGB24: ApplyRGB24( frame, textColor, haloColor ); break;
   case ColorSpace::I_RGB32: ApplyRGB32( frame, textColor, haloColor ); break;

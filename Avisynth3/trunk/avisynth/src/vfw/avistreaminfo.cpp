@@ -40,11 +40,11 @@ AviStreamInfo::AviStreamInfo(VideoInfo const& vi, bool video)
 
   if ( video )
   {
-    int bmpSize = vi.GetColorSpace().GetBitmapSize(vi.GetDimension());
+    int bmpSize = vi.GetColorSpace()->GetBitmapSize(vi.GetDimension());
 
     fccType        = streamtypeVIDEO;
     dwQuality      = DWORD(-1);     
-    fccHandler     = vi.GetColorSpace().GetFourCC();
+    fccHandler     = vi.GetColorSpace()->GetFourCC();
     dwScale        = vi.GetFPSDenominator();    
     dwRate         = vi.GetFPSNumerator();
     dwLength       = vi.GetFrameCount();

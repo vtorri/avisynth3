@@ -93,7 +93,7 @@ public:  //various Create or access methods
 
   virtual PVideoInfo CreateVideoInfo() const;
 
-  virtual PVideoFrame CreateFrame(ColorSpace& space, Dimension const& dim, FrameType type);
+  virtual PVideoFrame CreateFrame(PColorSpace const& space, Dimension const& dim, FrameType type);
   //fetch infos from VideoInfo to call the above
   virtual PVideoFrame CreateFrame(VideoInfo const& vi, FrameType type);
 

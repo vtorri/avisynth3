@@ -45,14 +45,14 @@ class Concrete : public VideoInfo
   struct VideoProperties
   {
 
-    ColorSpace * space_;
+    PColorSpace space_;
     Dimension dim_;
     int frameCount_;
     Fraction fps_;
     bool frameClip_;
 
-    VideoProperties(ColorSpace& space, Dimension const& dim, int frameCount, Fraction const fps, bool frameClip)
-      : space_( &space )
+    VideoProperties(PColorSpace const& space, Dimension const& dim, int frameCount, Fraction const fps, bool frameClip)
+      : space_( space )
       , dim_( dim )
       , frameCount_( frameCount )
       , fps_( fps )
@@ -91,14 +91,14 @@ public:  //structors
 
 public:  //clone method
 
-  virtual CPVideoInfo clone() const { return CPVideoInfo( (VideoInfo *)new Concrete(*this) ); }
+  virtual CPVideoInfo clone() const { return CPVideoInfo( static_cast<VideoInfo *>(new Concrete(*this)) ); }
 
 
 public:  //video methods
 
   virtual bool HasVideo() const { return video_; }
 
-  virtual ColorSpace& GetColorSpace() const { CheckHasVideo(); return *video_->space_; }
+  virtual PColorSpace const& GetColorSpace() const { CheckHasVideo(); return video_->space_; }
   virtual Dimension const& GetDimension() const { CheckHasVideo(); return video_->dim_; }
   virtual int GetFrameCount() const { CheckHasVideo(); return video_->frameCount_; }
   virtual Fraction const& GetFPS() const { CheckHasVideo(); return video_->fps_; }
@@ -106,16 +106,16 @@ public:  //video methods
 
   //write access
 
-  virtual void SetColorSpace(ColorSpace& space) { CheckHasVideo(); space.CheckDim(video_->dim_); video_->space_ = &space; }
+  virtual void SetColorSpace(PColorSpace const& space) { CheckHasVideo(); space->CheckDim(video_->dim_); video_->space_ = space; }
   virtual void SetDimension(Dimension const& dim) { CheckHasVideo(); video_->space_->CheckDim(dim); video_->dim_ = dim; }
   virtual void SetFrameCount(int frameCount) { CheckHasVideo(); video_->frameCount_ = CheckFrameCount(frameCount); }
   virtual void SetFPS(Fraction const& fps) { CheckHasVideo(); video_->fps_ = fps; }
   virtual void SetIsFrameClip(bool frameClip) { CheckHasVideo(); video_->frameClip_ = frameClip; }
 
 
-  virtual void AddVideo(ColorSpace& space, Dimension const& dim, int frameCount, Fraction const& fps = 25, bool frameClip = true)
+  virtual void AddVideo(PColorSpace const& space, Dimension const& dim, int frameCount, Fraction const& fps = 25, bool frameClip = true)
   {
-    space.CheckDim(dim);
+    space->CheckDim(dim);
     video_ = VideoProperties(space, dim, CheckFrameCount(frameCount), fps, frameClip);
   }
 

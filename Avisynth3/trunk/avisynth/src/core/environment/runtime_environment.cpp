@@ -46,15 +46,15 @@ PVideoInfo RuntimeEnvironment::CreateVideoInfo() const
 }
 
 
-PVideoFrame RuntimeEnvironment::CreateFrame(ColorSpace& space, Dimension const& dim, FrameType type)
+PVideoFrame RuntimeEnvironment::CreateFrame(PColorSpace const& space, Dimension const& dim, FrameType type)
 {
-  return space.CreateFrame( shared_from_this(), dim, type );
+  return space->CreateFrame( shared_from_this(), dim, type );
 }
 
 
 PVideoFrame RuntimeEnvironment::CreateFrame(VideoInfo const& vi, FrameType type)
 {
-  return vi.GetColorSpace().CreateFrame( shared_from_this(), vi.GetDimension(), type );
+  return vi.GetColorSpace()->CreateFrame( shared_from_this(), vi.GetDimension(), type );
 }
 
 

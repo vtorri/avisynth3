@@ -47,20 +47,20 @@ void VideoInfo::SetHeight(int height) { SetDimension( Dimension(GetWidth(), heig
 
 
 
-bool VideoInfo::IsRGB() const { return GetColorSpace().IsRGB(); }
-bool VideoInfo::IsYUV() const { return GetColorSpace().IsYUV(); }
-bool VideoInfo::IsPlanar() const { return GetColorSpace().IsPlanar(); }
-bool VideoInfo::IsInterLeaved() const { return GetColorSpace().IsInterleaved(); }
+bool VideoInfo::IsRGB() const { return GetColorSpace()->IsRGB(); }
+bool VideoInfo::IsYUV() const { return GetColorSpace()->IsYUV(); }
+bool VideoInfo::IsPlanar() const { return GetColorSpace()->IsPlanar(); }
+bool VideoInfo::IsInterLeaved() const { return GetColorSpace()->IsInterleaved(); }
 
-bool VideoInfo::IsColorSpace(ColorSpace& space) { return GetColorSpace() == space; }
+bool VideoInfo::IsColorSpace(PColorSpace const& space) { return *GetColorSpace() == *space; }
   
-bool VideoInfo::IsRGB24() const { return GetColorSpace().IsRGB24(); }
-bool VideoInfo::IsRGB32() const { return GetColorSpace().IsRGB32(); }
-bool VideoInfo::IsRGB45() const { return GetColorSpace().IsRGB45(); }
-bool VideoInfo::IsYUY2() const { return GetColorSpace().IsYUY2(); }
-bool VideoInfo::IsYV12() const { return GetColorSpace().IsYV12(); }
-bool VideoInfo::IsYV24() const { return GetColorSpace().IsYV24(); }
-bool VideoInfo::IsYV45() const { return GetColorSpace().IsYV45(); }
+bool VideoInfo::IsRGB24() const { return GetColorSpace()->IsRGB24(); }
+bool VideoInfo::IsRGB32() const { return GetColorSpace()->IsRGB32(); }
+bool VideoInfo::IsRGB45() const { return GetColorSpace()->IsRGB45(); }
+bool VideoInfo::IsYUY2() const { return GetColorSpace()->IsYUY2(); }
+bool VideoInfo::IsYV12() const { return GetColorSpace()->IsYV12(); }
+bool VideoInfo::IsYV24() const { return GetColorSpace()->IsYV24(); }
+bool VideoInfo::IsYV45() const { return GetColorSpace()->IsYV45(); }
 
 
 
@@ -107,7 +107,7 @@ void VideoInfo::CheckHasFrame(int n) const
 
 void VideoInfo::CheckColorSpaceMatch(VideoInfo const& other) const
 {
-  if ( GetColorSpace() != other.GetColorSpace() )
+  if ( *GetColorSpace() != *other.GetColorSpace() )
     throw exception::collision::ColorSpace( GetColorSpace(), other.GetColorSpace() );
 }
 

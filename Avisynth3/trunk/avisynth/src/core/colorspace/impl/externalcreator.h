@@ -21,57 +21,45 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_VFW_BITMAPINFOHEADER_H__
-#define __AVS_VFW_BITMAPINFOHEADER_H__
+#ifndef __AVS_COLORSPACE_IMPL_EXTERNALCREATOR_H__
+#define __AVS_COLORSPACE_IMPL_EXTERNALCREATOR_H__
 
-//avisynth includes
-#include "../core/forward.h"
-#include "../core/geometry/dimension.h"
+//avisynth include
+#include "../../forward.h"             //for PColorSpace, WeakPColorSpace
+#include "../../../linker/forward.h"   //for PExternalPlugin, WeakPExternalPlugin
 
-//windows includes
-#include <windows.h>
-#include <wingdi.h>
-
-
-namespace avs { namespace vfw {
+//boost include
+#include <boost/weak_ptr.hpp>
 
 
+namespace avs { namespace cspace { namespace impl {
 
-/////////////////////////////////////////////////////////////////////////////////
-//  BitmapInfoHeader
-//
-//  a more friendly replacement for VFW BITMAPINFOHEADER
-//
-class BitmapInfoHeader : public BITMAPINFOHEADER
+
+
+class ExternalCreator
 {
+
+  mutable WeakPColorSpace value_;         //cached value
+
+  std::string name_;                      //name of the colorspace
+  linker::WeakPExternalPlugin plugin_;    //source plugin
+
 
 public:  //structors
 
-  BitmapInfoHeader(VideoInfo const& vi);
+  ExternalCreator(std::string const& name, linker::PExternalPlugin const& plugin)
+    : plugin_( plugin ) { }
 
   //generated copy constructor and destructor are fine
 
 
-public:  //read access
+public:  //interface
 
-  //returns 'NULL' if it doesn't map to an avs color space
-  PColorSpace GetColorSpace() const;
-  Dimension GetDimension() const { return Dimension(biWidth, biHeight); }
-
-
-public:  //write access
-
-  void SetColorSpace(PColorSpace const& space);
-  void SetDimension(Dimension const& dim);
-
-
-public:
-
-  bool operator==(BitmapInfoHeader const& other) const;
+  PColorSpace operator()() const { return PColorSpace(); }  //dummy implementation
 
 };
 
 
-} } //namespace avs::vfw
+} } } //namespace avs::cspace::impl
 
-#endif //__AVS_VFW_BITMAPINFOHEADER_H__
+#endif //__AVS_COLORSPACE_IMPL_EXTERNALCREATOR_H__

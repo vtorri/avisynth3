@@ -44,15 +44,15 @@ namespace avs { namespace exception { namespace cspace {
 class InvalidHeight : public Exception
 {
 
-  ColorSpace const * space_;
+  PColorSpace space_;
   int height_;
   bool interlaced_;
 
 
 public:  //structors
 
-  InvalidHeight(ColorSpace const& space, int height, int /*modulo*/, bool interlaced)
-    : space_( &space ) 
+  InvalidHeight(PColorSpace const& space, int height, int /*modulo*/, bool interlaced)
+    : space_( space ) 
     , height_( height )
     , interlaced_( interlaced ) { }
 

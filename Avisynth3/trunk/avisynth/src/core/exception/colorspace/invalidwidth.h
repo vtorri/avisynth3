@@ -44,14 +44,14 @@ namespace avs { namespace exception { namespace cspace {
 class InvalidWidth : public Exception
 {
 
-  ColorSpace const * space_;
+  PColorSpace space_;
   int width_;
 
 
 public:  //structors
 
-  InvalidWidth(ColorSpace const& space, int width, int /*modulo*/)
-    : space_( &space ) 
+  InvalidWidth(PColorSpace const& space, int width, int /*modulo*/)
+    : space_( space ) 
     , width_( width ) { }
 
   //generated copy constructor and destructor are fine

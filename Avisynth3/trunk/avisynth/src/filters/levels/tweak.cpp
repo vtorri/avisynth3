@@ -63,9 +63,9 @@ Tweak::Tweak(PClip const& child, Tweak const& other)
 
 PClip Tweak::clone(PClip const& child) const
 {
-  ColorSpace& space = child->GetVideoInfo()->GetColorSpace();
+  PColorSpace space = child->GetVideoInfo()->GetColorSpace();
 
-  switch( space.id() )
+  switch( space->id() )
   {
   case ColorSpace::I_YUY2: return tweak::YUY2::Create(child, *this);
   case ColorSpace::I_YV12: return tweak::YV12::Create(child, *this);
@@ -77,9 +77,9 @@ PClip Tweak::clone(PClip const& child) const
 
 PClip Tweak::Create(PClip const& child, double hue, double sat, double bright, double cont)
 {
-  ColorSpace& space = child->GetVideoInfo()->GetColorSpace();
+  PColorSpace space = child->GetVideoInfo()->GetColorSpace();
 
-  switch( space.id() )
+  switch( space->id() )
   {
   case ColorSpace::I_YUY2: return tweak::YUY2::Create(child, hue, sat, bright, cont);
   case ColorSpace::I_YV12: return tweak::YV12::Create(child, hue, sat, bright, cont);

@@ -44,32 +44,32 @@ BitmapInfoHeader::BitmapInfoHeader(VideoInfo const& vi)
 }
 
 
-ColorSpace * BitmapInfoHeader::GetColorSpace() const
+PColorSpace BitmapInfoHeader::GetColorSpace() const
 {
   switch( biCompression )
   {
   case BI_RGB:
     switch( biBitCount )
     {
-    case 24: return &ColorSpace::rgb24();
-    case 32: return &ColorSpace::rgb32();
+    case 24: return ColorSpace::rgb24();
+    case 32: return ColorSpace::rgb32();
 
-    default: return NULL;
+    default: return PColorSpace();
     }
 
-  case '2YUY': return &ColorSpace::yuy2();
-  case '21VY': return &ColorSpace::yv12();
+  case '2YUY': return ColorSpace::yuy2();
+  case '21VY': return ColorSpace::yv12();
 
-  default: return NULL;
+  default: return PColorSpace();
   }
 }
 
 
-void BitmapInfoHeader::SetColorSpace(ColorSpace& space)
+void BitmapInfoHeader::SetColorSpace(PColorSpace const& space)
 {
-  biBitCount    = space.GetBitsPerPixel();
-  biCompression = space.GetFourCC();
-  biSizeImage   = space.GetBitmapSize(GetDimension());
+  biBitCount    = space->GetBitsPerPixel();
+  biCompression = space->GetFourCC();
+  biSizeImage   = space->GetBitmapSize(GetDimension());
 }
 
 
@@ -78,8 +78,8 @@ void BitmapInfoHeader::SetDimension(Dimension const& dim)
   biWidth       = dim.GetWidth();
   biHeight      = dim.GetHeight();
 
-  ColorSpace * space = GetColorSpace();
-  if ( space != NULL )
+  PColorSpace space = GetColorSpace();
+  if ( ! space )
     biSizeImage = space->GetBitmapSize(dim);
 }
 

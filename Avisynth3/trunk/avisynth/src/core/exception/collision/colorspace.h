@@ -42,7 +42,7 @@ class ColorSpace : public Exception
 
 public:  //structors
 
-  ColorSpace(avs::ColorSpace& left, avs::ColorSpace& right) { }
+  ColorSpace(PColorSpace const& left, PColorSpace const& right) { }
 
   //generated destructor and copy constructor are fine
 

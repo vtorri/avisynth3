@@ -21,52 +21,48 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_VIDEOFRAME_YUY2_H__
-#define __AVS_VIDEOFRAME_YUY2_H__
+#ifndef __AVS_COLORSPACE_IMPL_YUY2_H__
+#define __AVS_COLORSPACE_IMPL_YUY2_H__
 
-//avisynth includes
+//avisynh includes
 #include "interleaved.h"
-#include "../colorspace.h"
+#include "../../videoframe/yuy2.h"
+#include "../../exception/colorspace/invalidwidth.h"
 
 
-namespace avs { namespace vframe {
+namespace avs { namespace cspace { namespace impl {
 
 
 
-////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
 //  YUY2
 //
-//  YUY2 specific VideoFrame subclass
+//  YUY2 ColorSpace subclass
 //
-class YUY2 : public Interleaved
+class YUY2 : public interleaved<2, 1, vframe::YUY2>
 {
-           
-public:  //structors
 
-  //normal constructor
-  YUY2(Dimension const& dim, FrameType type, PEnvironment env)
-    : Interleaved( ColorSpace::yuy2(), dim, type, env ) { }
+public:  //ColorSpace interface
 
-  //constructs using the given buffer
-  YUY2(Dimension const& dim, FrameType type, BufferWindow const& main)
-    : Interleaved( ColorSpace::yuy2(), dim, type, main ) { }
+  virtual ID id() const { return I_YUY2; }
+  virtual char const * GetName() const { return "YUY2"; }
+  virtual unsigned long GetFourCC() const { return MakeFourCC('Y', 'U', 'Y', '2'); }
 
-  //generated copy constructor and destructor are fine
+  virtual bool HasProperty(Property prop) const
+  { 
+    return prop == P_YUV || prop == P_INTERLEAVED || prop == P_DEPTH8;
+  }
 
-
-public:  //clone method
-
-  virtual CPVideoFrame clone() const { return CPVideoFrame( static_cast<VideoFrame *>(new YUY2(*this)) ); }
-
-
-public:  //general frame info
-
-  virtual PColorSpace GetColorSpace() const { return ColorSpace::yuy2(); }
+  virtual void Check(int x, int y, bool interlaced = false) const 
+  {
+    InterleavedType::Check(x, y, interlaced);
+    if ( x & 1 )                                                        //if x is not even
+      throw exception::cspace::InvalidWidth(shared_from_this(), x, 2);  //exception
+  }
 
 };
 
 
+} } } //namespace avs::cspace:::impl
 
-} } //namespace avs::vframe
-
-#endif //__AVS_VIDEOFRAME_YUY2_H__
+#endif //__AVS_COLORSPACE_IMPL_YUY2_H__

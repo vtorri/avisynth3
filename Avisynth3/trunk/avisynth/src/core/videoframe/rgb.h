@@ -61,7 +61,7 @@ public:  //clone method
 
 public:  //general frame info
 
-  virtual ColorSpace& GetColorSpace() const { return ColorSpace::rgb24(); }
+  virtual PColorSpace GetColorSpace() const { return ColorSpace::rgb24(); }
 
 
 };
@@ -96,7 +96,7 @@ public:  //clone method
 
 public:  //general frame info
 
-  virtual ColorSpace& GetColorSpace() const { return ColorSpace::rgb32(); }
+  virtual PColorSpace GetColorSpace() const { return ColorSpace::rgb32(); }
 
 };
 
@@ -130,7 +130,7 @@ public:  //clone method
 
 public:  //general frame info
 
-  virtual ColorSpace& GetColorSpace() const { return ColorSpace::rgb45(); }
+  virtual PColorSpace GetColorSpace() const { return ColorSpace::rgb45(); }
 
 };
 

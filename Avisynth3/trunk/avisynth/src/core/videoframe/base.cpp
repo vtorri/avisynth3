@@ -33,17 +33,17 @@
 namespace avs { namespace vframe {
 
 
-Base::Base(ColorSpace& space, Dimension const& dim, FrameType type)
+Base::Base(PColorSpace const& space, Dimension const& dim, FrameType type)
   : dim_( dim )
   , type_( type )
 {
-  space.CheckDim(dim, MaybeInterlaced(type));
+  space->CheckDim(dim, MaybeInterlaced(type));
 }
 
 
 void Base::SetType(FrameType type)
 {
-  GetColorSpace().CheckDim(dim_, MaybeInterlaced(type));
+  GetColorSpace()->CheckDim(dim_, MaybeInterlaced(type));
   ClearStaticProperties();
   type_ = type;
 }

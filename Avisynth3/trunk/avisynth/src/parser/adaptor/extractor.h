@@ -114,17 +114,17 @@ struct extractor<PEnvironment const&>
 
 
 ////////////////////////////////////////////////////////////////////////////////
-//  extractor<ColorSpace const&>
+//  extractor<PColorSpace const&>
 //
 //  ColorSpace extractor, takes a string and converts it into a ColorSpace
 //
 template <>
-struct extractor<ColorSpace&>
+struct extractor<PColorSpace const&>
 {
 
   enum { consume = 1 };
 
-  ColorSpace& operator()(VMState& state, int pos) const
+  PColorSpace operator()(VMState& state, int pos) const
   {
     return ColorSpace::FromString( boost::get<std::string>(state.peek(pos)) );
   }

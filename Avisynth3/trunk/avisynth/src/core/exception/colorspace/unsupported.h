@@ -44,13 +44,13 @@ namespace avs { namespace exception { namespace cspace {
 class Unsupported : public Exception
 {
 
-  ColorSpace const * space_;
+  PColorSpace space_;
 
 
 public:  //structors
 
-  Unsupported(ColorSpace const& space)
-    : space_( &space ) { }
+  Unsupported(PColorSpace const& space)
+    : space_( space ) { }
 
   //generated copy constructor and destructor are fine
 

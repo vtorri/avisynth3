@@ -31,6 +31,9 @@
 #include "geometry/vecteur.h"
 #include "geometry/dimension.h"
 
+//boost include
+#include <boost/enable_shared_from_this.hpp>
+
 
 namespace avs {
 
@@ -41,7 +44,7 @@ namespace avs {
 //
 //  polymorphic class representing a video color space
 //
-class ColorSpace
+class ColorSpace : public boost::enable_shared_from_this<ColorSpace const>
 {
 
 public:
@@ -49,6 +52,7 @@ public:
   //ColorSpace ids, used to switch on color spaces
   enum ID
   {
+    I_EXTERNAL,       //reports an external colorspace (defined by a plugin)
     I_RGB24,
     I_RGB32,
     I_RGB45,
@@ -61,12 +65,12 @@ public:
   //ColorSpace properties
   enum Property
   {
-    RGB,
-    YUV,
-    INTERLEAVED,
-    PLANAR,
-    DEPTH8,
-    DEPTH15
+    P_RGB,
+    P_YUV,
+    P_INTERLEAVED,
+    P_PLANAR,
+    P_DEPTH8,
+    P_DEPTH15
   };
 
 
@@ -87,19 +91,31 @@ public:  //ColorSpace interface
   virtual bool HasProperty(Property prop) const = 0;
   virtual bool HasPlane(Plane plane) const = 0;
 
-  virtual void Check(int x, int y, bool interlaced = false) const;
+  virtual void Check(int x, int y, bool interlaced = false) const = 0;
 
-  virtual void CheckDim(Dimension const& dim, bool interlaced = false) const;
-  virtual void CheckVect(Vecteur const& vect, bool interlaced = false) const;
+  //convenience versions of Check
+  void CheckDim(Dimension const& dim, bool interlaced = false) const { Check(dim.GetWidth(), dim.GetHeight(), interlaced); }
+  void CheckVect(Vecteur const& vect, bool interlaced = false) const { Check(vect.x, vect.y, interlaced); }
 
 
   //method to convert frame coords into to plane coords
   //unlike the above, it does not check validity, but just perform the operation   
   virtual void ToPlane(int& x, int& y, Plane plane) const = 0;
+ 
+  //convenience versions of ToPlane
+  Dimension ToPlaneDim(Dimension const& dim, Plane plane) const
+  {
+    int x = dim.GetWidth(), y = dim.GetHeight();
+    ToPlane(x, y, plane);
+    return Dimension(x, y);
+  }
   
-  virtual Dimension ToPlaneDim(Dimension const& dim, Plane plane) const;
-  virtual Vecteur ToPlaneVect(Vecteur const& vect, Plane plane) const;
-
+  Vecteur ToPlaneVect(Vecteur const& vect, Plane plane) const
+  {
+    Vecteur result(vect);
+    ToPlane(result.x, result.y, plane);
+    return result;
+  }
 
   //method to create a frame of the given colorspace
   virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const = 0;
@@ -107,8 +123,8 @@ public:  //ColorSpace interface
 
 public:  //comparison operators
 
-  bool operator== (ColorSpace const& other) const { return this == &other; }
-  bool operator!= (ColorSpace const& other) const { return this != &other; }
+  virtual bool operator== (ColorSpace const& other) const { return this == &other; }
+  virtual bool operator!= (ColorSpace const& other) const { return this != &other; }
 
 
 public:  //helper queries
@@ -122,25 +138,25 @@ public:  //helper queries
   bool IsYV24() const { return id() == I_YV24; }
   bool IsYV45() const { return id() == I_YV45; }
 
-  bool IsRGB() const { return HasProperty(RGB); }
-  bool IsYUV() const { return HasProperty(YUV); }
-  bool IsInterleaved() const { return HasProperty(INTERLEAVED); }
-  bool IsPlanar() const { return HasProperty(PLANAR); }
-  bool IsDepth8() const { return HasProperty(DEPTH8); }
-  bool IsDepth15() const { return HasProperty(DEPTH15); }
+  bool IsRGB() const { return HasProperty(P_RGB); }
+  bool IsYUV() const { return HasProperty(P_YUV); }
+  bool IsInterleaved() const { return HasProperty(P_INTERLEAVED); }
+  bool IsPlanar() const { return HasProperty(P_PLANAR); }
+  bool IsDepth8() const { return HasProperty(P_DEPTH8); }
+  bool IsDepth15() const { return HasProperty(P_DEPTH15); }
 
 
 public:  //factory methods
 
-  static ColorSpace & rgb24();
-  static ColorSpace & rgb32();
-  static ColorSpace & rgb45();
-  static ColorSpace & yuy2();
-  static ColorSpace & yv12();
-  static ColorSpace & yv24();
-  static ColorSpace & yv45();
+  static PColorSpace rgb24();
+  static PColorSpace rgb32();
+  static PColorSpace rgb45();
+  static PColorSpace yuy2();
+  static PColorSpace yv12();
+  static PColorSpace yv24();
+  static PColorSpace yv45();
 
-  static ColorSpace & FromString(std::string const& name);
+  static PColorSpace FromString(std::string const& name);
 
 
 public:  //small helper for 4cc
@@ -154,42 +170,6 @@ public:  //small helper for 4cc
 
 
 
-namespace cspace {
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-//  cspace::Interleaved
-//
-//  ColorSpace sub interface for interleaved color spaces
-//
-class Interleaved : public ColorSpace
-{
-
-public:  //Interleaved interface
-
-  //create a frame using a given buffer
-  virtual PVideoFrame CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& main) const = 0;
-
-};
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-//  cspace::PlanarYUV
-//
-//  ColorSpace sub interface for YUV planar color spaces
-//
-class PlanarYUV : public ColorSpace
-{
-
-public:  //PlanarYUV interface
-
-  //create a frame using the given buffers
-  virtual PVideoFrame CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& y , BufferWindow const& u, BufferWindow const& v) const = 0;
-
-};
-
-
-} } //namespace avs::cspace
+ } //namespace avs::cspace
 
 #endif //__AVS_COLORSPACE_H__

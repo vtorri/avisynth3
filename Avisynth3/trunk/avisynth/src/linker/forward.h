@@ -31,15 +31,18 @@
 namespace avs { namespace linker {
 
 
-
 //declarations
 class Plugin;
 class Function;
+namespace external { class Plugin; }
 
-//typedefs
+//ptr typedefs
 typedef boost::shared_ptr<Plugin const> PPlugin;
 typedef boost::shared_ptr<Function const> PFunction;
+typedef boost::shared_ptr<external::Plugin const> PExternalPlugin;
 
+//weak ptr typedef
+typedef boost::weak_ptr<external::Plugin const> WeakPExternalPlugin;
 
 
 } } //namespace avs::linker

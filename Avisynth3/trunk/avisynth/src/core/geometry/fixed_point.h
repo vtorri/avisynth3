@@ -46,7 +46,7 @@ class fixed_point
 
 public:  //structors
 
-  explicit fixed_point(BaseType value)
+  fixed_point(BaseType value)
     : value_( value ) { }
 
   //generated copy constructor and destructor are fine
@@ -63,6 +63,12 @@ public:  //comparison operators
 
   bool operator==(FixedPointType const& other) const { return value_ == other.value_; }
   bool operator!=(FixedPointType const& other) const { return value_ != other.value_; }
+
+  bool operator<(FixedPointType const& other) const { return value_ < other.value_; }
+  bool operator>(FixedPointType const& other) const { return value_ > other.value_; }
+
+  bool operator<=(FixedPointType const& other) const { return value_ <= other.value_; }
+  bool operator>=(FixedPointType const& other) const { return value_ >= other.value_; }
 
 
 public:  //operators

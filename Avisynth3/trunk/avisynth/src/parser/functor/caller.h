@@ -47,8 +47,9 @@ struct rem_ref
 };
 
 
-template <typename Function, int arity>
+template <typename Function, int arity = boost::function_traits<Function>::arity>
 struct caller_impl { };
+
 
 template <typename Function>
 struct caller_impl<Function, 0>
@@ -107,7 +108,7 @@ struct caller
   typename boost::function_traits<Function>::result_type
   operator()(VMState& state) const
   {
-    return detail::caller_impl<Function, boost::function_traits<Function>::arity>()(state, function_);
+    return detail::caller_impl<Function>()(state, function_);
   }
 
 };

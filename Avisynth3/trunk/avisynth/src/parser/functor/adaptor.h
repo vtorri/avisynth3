@@ -39,7 +39,7 @@ namespace avs { namespace parser { namespace functor {
 namespace detail {
 
 
-template <typename Function, typename Result>
+template <typename Function, typename Result = typename boost::function_traits<Function>::result_type>
 struct adaptor_impl
 {
 
@@ -80,11 +80,11 @@ struct adaptor_impl<Function, void>
 
 
 template <typename Function>
-struct adaptor : public detail::adaptor_impl<Function, typename boost::function_traits<Function>::result_type>
+struct adaptor : public detail::adaptor_impl<Function>
 {
   
   adaptor(Function * function)
-    : detail::adaptor_impl<Function, typename boost::function_traits<Function>::result_type>( function ) { }
+    : detail::adaptor_impl<Function>( function ) { }
 
 };
 

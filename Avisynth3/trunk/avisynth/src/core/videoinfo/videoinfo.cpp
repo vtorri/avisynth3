@@ -75,6 +75,14 @@ int VideoInfo::AudioSamplesFromFrames(int frames) const
   return frames * GetSampleRate() * GetFPSDenominator() / GetFPSNumerator();
 }
 
+BYTE * VideoInfo::GetBlankNoise(BYTE * buffer, int count) const
+{
+  if ( count <= 0 )      //handles special case, count < 0 (allowed)
+    return buffer;       //do nothing      
+
+  //NB: dummy implementation     TODO: implement me !!!!!!
+  return buffer + BytesPerAudioSample() * count;
+}
 
 
 void VideoInfo::CheckHasVideo() const

@@ -25,6 +25,9 @@
 #include "waveformatex.h"
 #include "../core/videoinfo.h"
 
+//windows include
+#include "Mmreg.h"
+
 
 namespace avs { namespace vfw {
 
@@ -44,6 +47,11 @@ WaveFormatEx::WaveFormatEx(VideoInfo const& vi)
 
 bool WaveFormatEx::IsVBR() const 
 { 
+  //mp3 vbr hackishly use non-1 block align 
+  if ( wFormatTag == WAVE_FORMAT_MPEGLAYER3 )
+    return nBlockAlign != 1;
+
+  //other cases rely on wBitsPerSample (hoping it's correclty set)
   return wBitsPerSample == 0; 
 }
 

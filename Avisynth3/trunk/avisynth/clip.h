@@ -25,20 +25,20 @@
 #define __AVS_CLIP_H__
 
 
-//avisytnh includes
+//avisytnh include
 #include "smart_ref.h"
 
-//boost includes
-#include <boost/tuple/tuple.hpp>  //for tuples
+
+namespace avs {
 
 
 //class declarations
 class Clip;
 class VideoInfo;
 class VideoFrame;
-class CachingClip;
 class RuntimeEnvironment;
-
+namespace filters { class CachingClip; }
+using filters::CachingClip;     //importing CachingClip into namespace avs
 
 //typedefs
 typedef unsigned char BYTE;
@@ -57,20 +57,6 @@ typedef smart_ref<RuntimeEnvironment> PEnvironment;
 class Clip
 {
 
-public:  //enums and typedefs
-
-  enum CacheMethod
-  {
-    CACHE_ALL,
-    CACHE_NOTHING,
-    CACHE_RANGE,
-    CACHE_LAST
-  };
-
-  typedef boost::tuples::tuple<CacheMethod, unsigned> CachePolicy;
-  typedef boost::tuples::tuple<const CachingClip *, CacheMethod, unsigned> CacheRequest;
-
-
 public:  //structors
 
   Clip() { }
@@ -86,17 +72,11 @@ public:  //clip general interface
  
   //get the frame n
   //undefined behavior if frame n don't exist
-  virtual CPVideoFrame GetFrame(int n, const CachingClip& client) const = 0;
+  virtual CPVideoFrame GetFrame(int n, CachingClip const& client) const = 0;
 
   //fill the passed buffer with audio samples
   //out of bounds values are allowed, the excess is filled with blank noise
-  virtual void GetAudio(BYTE * buf, __int64 start, __int64 count) const = 0;  
-
-
-public:  //cache hints methods
-
-  virtual void Dispatch(const CacheRequest& request) const = 0;
-  virtual void Withdraw(const CacheRequest& request) const = 0;
+  virtual void GetAudio(BYTE * buffer, __int64 start, int count) const = 0;  
 
 
 public:
@@ -112,17 +92,22 @@ public:
   virtual PClip Simplify(PClip self) const { return self; }
 
 
+  //provides correct call to the above method
+  static inline PClip SimplifyClip(PClip clip) { return clip->Simplify(clip); }
+
+
 protected:  //implementation helpers
 
   //fill a buffer with blank noise (of the appropriate sample-type/channels)
-  void FillWithBlank(BYTE * buf, __int64 count) const;
+  void FillWithBlank(BYTE * buffer, int count) const;
 
   void ThrowNoSuchFrameException(int n) const;
+  void ThrowNoAudioException() const;
 
 };
 
 
 
-
+} //namespace avs
 
 #endif //#ifndef __AVS_CLIP_H__

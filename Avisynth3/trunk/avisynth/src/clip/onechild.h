@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -37,8 +37,14 @@ namespace avs { namespace clip {
 //
 //  clip subinterface for clip with one child
 //
-class OneChild : public virtual Clip
+class NOVTABLE OneChild : public virtual Clip
 {
+
+public:  //FinalSimplify 
+
+  //a new default implementation
+  virtual PClip FinalSimplify() const { FinalSimplifyChild(); return shared_from_this(); }
+
 
 public:  //access to child
 
@@ -48,6 +54,11 @@ public:  //access to child
 public:  //child changing clone method
 
   virtual PClip clone(PClip const& child) const = 0;
+
+
+protected:  //helper for FinalSimplify
+
+  virtual void FinalSimplifyChild() const = 0;
 
 };
 

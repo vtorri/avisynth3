@@ -21,40 +21,51 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_EDITFILTER_H__
-#define __AVS_EDITFILTER_H__
+#ifndef __AVS_FILTERS_EDITFILTER_H__
+#define __AVS_FILTERS_EDITFILTER_H__
+
 
 //avisynth includes
 #include "childclip.h"
-#include "videoinfoclip.h"
+#include "../videoinfo.h"
 
 
-#pragma warning ( push )           //push warning state
-#pragma warning (disable : 4250)   //get rid of MI dominance decisions
+namespace avs { namespace filters {
 
 
 
-////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 // EditFilter
 //
 // instanciable null filter forwarding to child, without a cache
 // but with a modified videoinfo
 //
-class EditFilter : public ChildClip, public VideoInfoClip
+class EditFilter : public ChildClip
 {
+
+  VideoInfo vi;
+
 
 public:  //constructor
 
-  EditFilter(PClip child) : ChildClip( child ) { }
+  EditFilter(PClip child)
+    : ChildClip( child )
+    , vi( GetChild()->GetVideoInfo() ) { }    
 
 
 public:  //clip general interface
 
-  virtual const VideoInfo& GetVideoInfo() const { return VideoInfoClip::GetVideoInfo(); }
+  virtual const VideoInfo& GetVideoInfo() const { return vi; }
+
+
+protected:  //access
+
+  VideoInfo& GetVideoInfo() { return vi; }
 
 };
 
 
-#pragma warning ( pop )             //pop warning state
 
-#endif //__AVS_EDITFILTER_H__
+}; }; //namespace avs::filters
+
+#endif //__AVS_FILTERS_EDITFILTER_H__

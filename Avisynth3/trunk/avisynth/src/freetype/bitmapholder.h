@@ -24,8 +24,9 @@
 #ifndef __AVS_FREETYPE_BITMAPHOLDER_H__
 #define __AVS_FREETYPE_BITMAPHOLDER_H__
 
-//avisynth include
+//avisynth includes
 #include "../core/block/holder.h"  
+#include "../core/block/holder/standard.h"
 
 //boost include
 #include <boost/shared_ptr.hpp>
@@ -56,6 +57,8 @@ public:  //Holder interface
 
   virtual int size() const;
   virtual BYTE * get() const;
+
+  virtual Holder * spawn(int size) const { return new block::holder::Standard(size, false); }
 
 };
 

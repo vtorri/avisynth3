@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -32,14 +32,10 @@ namespace avs { namespace linker { namespace core {
 
 
 
-FunctionList Plugin::GetFunctionList() const
+void Plugin::FillFunctionList(FunctionList& addTo) const
 {
-  FunctionList result;
-
   for( CoreFunctionList::const_iterator it = list_.begin(); it != list_.end(); ++it )
-    result.push_back( PFunction(*it, std::identity<void *>()) );
-
-  return result;
+    addTo.push_back( PFunction(*it, std::identity<void *>()) );
 }
 
 

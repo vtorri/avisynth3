@@ -57,7 +57,7 @@ public:  //plugin interface
 
   virtual char const * GetName() const { return "Core"; }
 
-  virtual FunctionList GetFunctionList() const;
+  virtual void FillFunctionList(FunctionList& addTo) const;
 
 
 private:  //register method for core functions

@@ -39,6 +39,11 @@ typedef std::vector<PFunction> FunctionList;
 
 
 
+////////////////////////////////////////////////////////////////////////////////////
+//  Plugin
+//
+//  interface for plugins
+//
 class Plugin
 {
 
@@ -51,9 +56,11 @@ public:  //structors
 
 public:  //Plugin interface
 
+  //fetch plugin name
   virtual char const * GetName() const = 0;
 
-  virtual FunctionList GetFunctionList() const = 0;
+  //append list of owned functions to the given function vector
+  virtual void FillFunctionList(FunctionList& addTo) const = 0;
 
 };
 

@@ -209,7 +209,8 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
           >>  expression( value::Expression(), statement.localCtxt, self.globalCtxt )
               [
                 bind(&Check::TypeIsExpected)(second(arg1), val('b')),
-                statement.value += first(arg1)
+                statement.value += first(arg1),
+                --second(statement.localCtxt)                          //report that the if consumes the bool value
               ]
           >>  ')'
           >>  block( CodeCouple(), unwrap(statement.localCtxt) )

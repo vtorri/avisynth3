@@ -93,7 +93,7 @@ void VideoInfo::CheckHasVideo() const
 
 void VideoInfo::CheckHasAudio() const
 {
-  if ( ! HasVideo() )
+  if ( ! HasAudio() )
     throw exception::NoAudio();
 }
 

@@ -81,16 +81,16 @@ public:  //Key inner class
     virtual bool operator==(Key const& other) const { return &other == this; }    
     virtual unsigned hash() const { return unsigned(this); }
 
-    virtual bool IsStatic() const = 0;
-
   };//Property::Key
 
   typedef boost::shared_ptr<Key const> PKey;
 
-public:  //GetKey method
+
+public:  //Property interface
 
   virtual PKey GetKey() const  = 0;
 
+  virtual bool IsStatic() const = 0;
 
 };//Property
 

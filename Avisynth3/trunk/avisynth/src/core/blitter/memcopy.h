@@ -32,6 +32,11 @@ namespace avs { namespace blitter {
 
 
 
+/////////////////////////////////////////////////////////////////////////////////////
+//  blitter::MemCopy
+//
+//  implementation of the Blitter interface using memcopy
+//
 class MemCopy : public Blitter
 {
 
@@ -42,7 +47,7 @@ public:
 
 public:  //instance
 
-  static MemCopy instance;
+  static MemCopy const instance;
 
 };
 

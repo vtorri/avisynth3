@@ -25,8 +25,8 @@
 #include "memcopy.h"
 
 
-
 namespace avs { namespace blitter {
+
 
 
 void MemCopy::operator ()(BYTE const * srcp, int srcPitch, BYTE * dstp, int dstPitch, Dimension const& dim) const
@@ -40,7 +40,7 @@ void MemCopy::operator ()(BYTE const * srcp, int srcPitch, BYTE * dstp, int dstP
 
 
 
-MemCopy MemCopy::instance;
+MemCopy const MemCopy::instance = MemCopy();
 
 
 } } //namespace avs::blitter

@@ -47,16 +47,14 @@ class ScriptFunction : public linker::Function
                      , public boost::enable_shared_from_this<ScriptFunction>
 {
 
-  bool defined_;                   //set when self has been properly defined
   FunctionId const id_;
-  mutable ElementalOperation op_;  //underlying operation
+  ElementalOperation op_;  //underlying operation
 
 
 public:  //structors
 
   ScriptFunction(FunctionId const& id)
-    : defined_( false )
-    , id_( id ) { }
+    : id_( id ) { }
 
   //generated destructor is fine
 
@@ -68,7 +66,7 @@ public:  //Function interface
   virtual char const * GetPrototype() const;
   virtual linker::PPlugin GetMotherPlugin() const;
 
-  virtual parser::ElementalOperation const& GetOperation() const;
+  virtual void AppendOperation(TypedCode& appendTo) const;
 
 
 private:
@@ -77,7 +75,7 @@ private:
   void Define(StatementCode const& code);
 
   friend class Table;                            //so it can call the above
-  friend struct functor::function::ForwardCall;  //so it can access op_ and defined_;
+  friend struct functor::function::ForwardCall;  //so it can access op_
 
 };
 

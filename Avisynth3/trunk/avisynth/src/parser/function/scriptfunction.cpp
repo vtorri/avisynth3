@@ -36,13 +36,13 @@ char const * ScriptFunction::GetPrototype() const { return id_.get<2>().c_str();
 linker::PPlugin ScriptFunction::GetMotherPlugin() const { return linker::PPlugin(); }
 
 
-parser::ElementalOperation const& ScriptFunction::GetOperation() const
+void ScriptFunction::AppendOperation(parser::TypedCode& appendTo) const
 { 
-  if ( op_.empty() )   //if op_ is not defined, we define it as a forward call to self
-    op_ = functor::function::ForwardCall(shared_from_this());
-  //NB: beware it makes self circularly referencing itself = self is leaked if not defined later
+  if ( op_.empty() )   //if op_ is not defined, we code a forward call to self
+    appendTo.get<0>() += functor::function::ForwardCall(shared_from_this());
+  else appendTo.get<0>() += op_;       //else op_ itself
 
-  return op_; 
+  appendTo.get<1>() = id_.get<0>();    //update type
 }
 
 
@@ -50,12 +50,11 @@ void ScriptFunction::Define(StatementCode const& code)
 {
   int arity = id_.get<2>().size();
 
-  if ( GetReturnType() == 'v' )
+/*  if ( GetReturnType() == 'v' )
     op_ = functor::function::Call<true>(arity, code);
-  else 
+  else */
     op_ = functor::function::Call<>(arity, code);
 
-  defined_ = true;
 }
 
 

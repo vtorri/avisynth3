@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -69,7 +69,7 @@ private:  //sole instance
 
   static core::Plugin instance;
 
-  friend core::Function;
+  friend class core::Function;
 
 
 public:  //Get instance method

@@ -26,7 +26,8 @@
 
 
 //stl include
-#include <string>  //needed or invalid_argument won't work
+#include <string>      //needed or invalid_argument won't work
+#include <stdexcept>   //for invalid_argument
 
 
 namespace avs {
@@ -62,7 +63,7 @@ public:
 class Dimension
 {
 
-  int x, y;
+  int x_, y_;
 
   static int CheckSign(int val)
   {
@@ -73,44 +74,44 @@ class Dimension
 
 public:  //constructors
 
-  Dimension() : x( 0 ), y( 0 ){ }
-  Dimension(int _x, int _y) : x( CheckSign(_x) ), y( CheckSign(_y) ) { }
-  Dimension(Dimension const& other) : x( other.x), y( other.y ) { }
+  Dimension() : x_( 0 ), y_( 0 ){ }
+  Dimension(int x, int y) : x_( CheckSign(x) ), y_( CheckSign(y) ) { }
+  Dimension(Dimension const& other) : x_( other.x_ ), y_( other.y_ ) { }
   
   explicit Dimension(Vecteur const& vect);
 
 
 public:  //assignment
 
-  Dimension& operator=(Dimension const& other) { x = other.x; y = other.y; return *this; }
+  Dimension& operator=(Dimension const& other) { x_ = other.x_; y_ = other.y_; return *this; }
 
-  void swap(Dimension& other) { std::swap(x, other.x); std::swap(y, other.y); }
+  void swap(Dimension& other) { std::swap(x_, other.x_); std::swap(y_, other.y_); }
 
 
 public:  //access
 
-  int GetWidth() const { return x; }
-  int GetHeight() const { return y; }
+  int GetWidth() const { return x_; }
+  int GetHeight() const { return y_; }
 
-  void SetWidth(int width) { x = CheckSign(width); }
-  void SetHeight(int height) { y = CheckSign(height); }
+  void SetWidth(int width) { x_ = CheckSign(width); }
+  void SetHeight(int height) { y_ = CheckSign(height); }
 
 
 public:  //operators
 
   Dimension& operator+=(Dimension const& other)
   {
-    x += other.x;
-    y += other.y;
+    x_ += other.x_;
+    y_ += other.y_;
     return *this;
   }
 
   Dimension& operator+=(const Vecteur vect);
 
-  bool operator==(Dimension const& other) const { return x == other.x && y == other.y; }
-  bool operator!=(Dimension const& other) const { return x != other.x || y != other.y; }
+  bool operator==(Dimension const& other) const { return x_ == other.x_ && y_ == other.y_; }
+  bool operator!=(Dimension const& other) const { return x_ != other.x_ || y_ != other.y_; }
   
-  bool empty() const { return x == 0 || y == 0; }
+  bool empty() const { return x_ == 0 || y_ == 0; }
 
 };//Dimension
 

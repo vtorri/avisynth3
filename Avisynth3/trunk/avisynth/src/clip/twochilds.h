@@ -48,8 +48,8 @@ public:  //FinalSimplify
 
 public:  //read access to childs
 
-  virtual PClip const& GetLeftChild() const = 0;
-  virtual PClip const& GetRightChild() const = 0;
+  virtual PClip GetLeftChild() const = 0;
+  virtual PClip GetRightChild() const = 0;
 
 
 public:  //childs changing clone

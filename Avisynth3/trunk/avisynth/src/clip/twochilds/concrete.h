@@ -55,8 +55,8 @@ public:  //structors
 
 public:  //read access
 
-  virtual PClip const& GetLeftChild() const { return left_; }
-  virtual PClip const& GetRightChild() const { return right_; }
+  virtual PClip GetLeftChild() const { return left_; }
+  virtual PClip GetRightChild() const { return right_; }
 
 
 protected:  //write access

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -29,10 +29,6 @@
 #include "../../clip/nochild.h"
 
 
-#pragma warning ( push )           //push warning state
-#pragma warning (disable : 4250)   //get rid of MI dominance decisions
-
-
 namespace avs { namespace filters {
 
 
@@ -42,8 +38,8 @@ namespace avs { namespace filters {
 //
 //  clip who has no video and no audio
 //
-class VoidClip : public clip::NoChild
-               , public clip::Folded<WeakPEnvironment>
+class VoidClip : public clip::NoChild                    //has no child
+               , public clip::Folded<WeakPEnvironment>   //folded on the environment
 {
 
   PEnvironment env_;
@@ -54,6 +50,8 @@ public:  //constructor
   VoidClip(PEnvironment const& env)
     : env_( env ) { }
 
+  //generated destructor is fine
+
 
 public:  //Clip general interface
 
@@ -61,7 +59,7 @@ public:  //Clip general interface
   virtual CPVideoInfo GetVideoInfo() const;
 
   virtual CPVideoFrame GetFrame(int n) const;
-  virtual void GetAudio(void * buf, __int64 start, int count) const;
+  virtual void GetAudio(void * buf, int64 start, int count) const;
 
 
 private:  //GetKey method
@@ -71,13 +69,11 @@ private:  //GetKey method
 
 public:  //factory method
 
-  static PClip Create(PEnvironment const& env) { return PClip( (Clip *)new VoidClip(env) ); }
+  static PClip Create(PEnvironment const& env) { return PClip( static_cast<Clip *>(new VoidClip(env)) ); }
 
 };
 
 
 } } //namespace avs::filters
-
-#pragma warning ( pop )
 
 #endif //__AVS_FILTERS_VOIDCLIP_H__

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,6 @@
 #ifndef __AVS_COW_SHARED_PTR_H__
 #define __AVS_COW_SHARED_PTR_H__
 
-
 //boost include
 #include <boost/shared_ptr.hpp>  //for shared_ptr
 
@@ -33,7 +32,13 @@ namespace avs {
 
 
 
-
+////////////////////////////////////////////////////////////////////////////////
+//  cow_shared_ptr<T>
+//
+//  like shared_ptr but with copy on write semantic
+//  ie it guarantees you are the sole owner of the pointed object, at time of use,
+//  by implicitly cloning it if it is shared
+//
 template <class T> class cow_shared_ptr : public boost::shared_ptr<T const>
 {
 

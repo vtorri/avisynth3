@@ -571,6 +571,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath=".\src\core\exception\nosuchframe.h">
 				</File>
 				<File
+					RelativePath=".\src\core\exception\nosuchplane.h">
+				</File>
+				<File
 					RelativePath=".\src\core\exception\novideo.h">
 				</File>
 				<File
@@ -989,7 +992,16 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				RelativePath=".\src\parser\avsvalue.h">
 			</File>
 			<File
+				RelativePath=".\src\parser\codecouple.cpp">
+			</File>
+			<File
+				RelativePath=".\src\parser\codecouple.h">
+			</File>
+			<File
 				RelativePath=".\src\parser\failure.h">
+			</File>
+			<File
+				RelativePath=".\src\parser\forward.h">
 			</File>
 			<File
 				RelativePath=".\src\parser\functionpool.cpp">
@@ -1004,6 +1016,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				RelativePath=".\src\parser\functiontable.h">
 			</File>
 			<File
+				RelativePath=".\src\parser\optype.h">
+			</File>
+			<File
 				RelativePath=".\src\parser\parser.cpp">
 			</File>
 			<File
@@ -1011,6 +1026,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			</File>
 			<File
 				RelativePath=".\src\parser\scopeenforcer.h">
+			</File>
+			<File
+				RelativePath=".\src\parser\scriptfunction.h">
+			</File>
+			<File
+				RelativePath=".\src\parser\vmcode.cpp">
 			</File>
 			<File
 				RelativePath=".\src\parser\vmcode.h">
@@ -1024,6 +1045,18 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			<Filter
 				Name="Grammar"
 				Filter="">
+				<File
+					RelativePath=".\src\parser\grammar\action.cpp">
+				</File>
+				<File
+					RelativePath=".\src\parser\grammar\action.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\grammar\check.cpp">
+				</File>
+				<File
+					RelativePath=".\src\parser\grammar\check.h">
+				</File>
 				<File
 					RelativePath=".\src\parser\grammar\expression.cpp">
 				</File>
@@ -1047,6 +1080,15 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 				<File
 					RelativePath=".\src\parser\grammar\statement.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\grammar\types.cpp">
+				</File>
+				<File
+					RelativePath=".\src\parser\grammar\types.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\grammar\vartable.cpp">
 				</File>
 				<File
 					RelativePath=".\src\parser\grammar\vartable.h">
@@ -1082,9 +1124,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				Name="Lazy"
 				Filter="">
 				<File
-					RelativePath=".\src\parser\lazy\add_symbol.h">
-				</File>
-				<File
 					RelativePath=".\src\parser\lazy\tuple.h">
 				</File>
 				<File
@@ -1104,7 +1143,19 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath=".\src\parser\functor\caller.h">
 				</File>
 				<File
+					RelativePath=".\src\parser\functor\elemtostatement.h">
+				</File>
+				<File
 					RelativePath=".\src\parser\functor\extractor.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\functor\functioncall.cpp">
+				</File>
+				<File
+					RelativePath=".\src\parser\functor\functioncall.h">
+				</File>
+				<File
+					RelativePath=".\src\parser\functor\if.cpp">
 				</File>
 				<File
 					RelativePath=".\src\parser\functor\if.h">
@@ -1126,6 +1177,13 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 				<File
 					RelativePath=".\src\parser\functor\while.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Exception"
+				Filter="">
+				<File
+					RelativePath=".\src\parser\exception\badreturntype.h">
 				</File>
 			</Filter>
 		</Filter>

@@ -21,65 +21,49 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_LINKER_PLUGIN_CORE_H__
-#define __AVS_LINKER_PLUGIN_CORE_H__
+#ifndef __AVS_LINKER_CORE_FUNCTION_H__
+#define __AVS_LINKER_CORE_FUNCTION_H__
 
 //avisynth include
-#include "../plugin.h"
-#include "../function/core.h"
+#include "../function.h"
+#include "../../parser/vmcode.h"
 
 
-namespace avs { namespace linker { namespace plugin {
+namespace avs { namespace linker { namespace core {
 
 
 
-///////////////////////////////////////////////////////////////////////////////
-//  plugin::Core
-//
-//  plugin representing all avisynth internals
-//
-class Core : public Plugin
+class Function : public linker::Function
 {
 
-  typedef std::vector<function::Core *> CoreFunctionList;
+  char const returnType_;
+  char const * const name_;
+  char const * const prototype_;
+  parser::StackOperation stackOp_;
 
-  CoreFunctionList list_;
 
+public:  //structors
 
-private:  //structors
-
-  Core() { }
+  Function(char returnType, char const * name, char const * prototype, parser::StackOperation const& stackOp);
 
   //generated destructor is fine
 
 
-public:  //plugin interface
+public:  //Function interface
 
-  virtual std::string GetName() const { return "Core"; }
+  virtual char GetReturnType() const { return returnType_; }
+  virtual char const * GetName() const { return name_; }
+  virtual char const * GetPrototype() const { return prototype_; }
 
-  virtual FunctionList GetFunctionList() const;
+  virtual PPlugin GetMotherPlugin() const;
 
-
-private:  //register method for core functions
-
-  void Register(function::Core * funct) { list_.push_back( funct ); }
-
-
-private:  //sole instance
-
-  static Core instance;
-
-  friend function::Core;
-
-
-public:  //Get instance method
-
-  static PPlugin Get();
+  virtual void AppendOperation(parser::VMCode& code) const { code += stackOp_; }
 
 };
 
 
 
-} } } //namespace avs::linker::plugin
 
-#endif //__AVS_LINKER_PLUGIN_CORE_H__
+} } } //namespace avs::linker::core
+
+#endif //__AVS_LINKER_CORE_FUNCTION_H__

@@ -21,32 +21,65 @@
 // General Public License cover the whole combination.
 
 
+#ifndef __AVS_LINKER_CORE_PLUGIN_H__
+#define __AVS_LINKER_CORE_PLUGIN_H__
+
 //avisynth include
-#include "core.h"
-
-//stl include
-#include <functional>   //for identity
+#include "function.h"
+#include "../plugin.h"
 
 
-namespace avs { namespace linker { namespace plugin {
+namespace avs { namespace linker { namespace core {
 
 
 
-FunctionList Core::GetFunctionList() const
+///////////////////////////////////////////////////////////////////////////////
+//  core::Plugin
+//
+//  plugin representing all avisynth internals
+//
+class Plugin : public linker::Plugin
 {
-  FunctionList result;
 
-  for( CoreFunctionList::const_iterator it = list_.begin(); it != list_.end(); ++it )
-    result.push_back( PFunction(*it, std::identity<void *>()) );
+  typedef std::vector<core::Function *> CoreFunctionList;
 
-  return result;
-}
+  CoreFunctionList list_;
 
 
-Core Core::instance;
+private:  //structors
+
+  Plugin() { }
+
+  //generated destructor is fine
 
 
-PPlugin Core::Get() { return PPlugin( &instance, std::identity<void *>() ); }
+public:  //plugin interface
+
+  virtual char const * GetName() const { return "Core"; }
+
+  virtual FunctionList GetFunctionList() const;
 
 
-} } } //namespace avs::linker::plugin
+private:  //register method for core functions
+
+  void Register(core::Function * funct) { list_.push_back( funct ); }
+
+
+private:  //sole instance
+
+  static core::Plugin instance;
+
+  friend core::Function;
+
+
+public:  //Get instance method
+
+  static PPlugin Get();
+
+};
+
+
+
+} } } //namespace avs::linker::core
+
+#endif //__AVS_LINKER_CORE_PLUGIN_H__

@@ -21,35 +21,32 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_LINKER_FUNCTION_CORE_H__
-#define __AVS_LINKER_FUNCTION_CORE_H__
-
 //avisynth include
-#include "../function.h"
+#include "plugin.h"
+
+//stl include
+#include <functional>   //for identity
 
 
-namespace avs { namespace linker { namespace function {
+namespace avs { namespace linker { namespace core {
 
 
 
-class Core : public Function
+FunctionList Plugin::GetFunctionList() const
 {
+  FunctionList result;
 
-public:
+  for( CoreFunctionList::const_iterator it = list_.begin(); it != list_.end(); ++it )
+    result.push_back( PFunction(*it, std::identity<void *>()) );
 
-  Core();
-
-  //generated destructor is fine
-
-
-public:  //Function interface
-
-  virtual PPlugin GetMotherPlugin() const;
-
-};
+  return result;
+}
 
 
+core::Plugin Plugin::instance;
 
-} } } //namespace avs::linker::function
 
-#endif //__AVS_LINKER_FUNCTION_CORE_H__
+PPlugin Plugin::Get() { return PPlugin( &instance, std::identity<void *>() ); }
+
+
+} } } //namespace avs::linker::core

@@ -22,24 +22,29 @@
 
 
 //avisynth include
-#include "core.h"
-#include "../plugin/core.h"
+#include "plugin.h"
+#include "function.h"
+#include "../../parser/vmcode.h"
 
 
-namespace avs { namespace linker { namespace function {
+namespace avs { namespace linker { namespace core {
 
 
-Core::Core()
+Function::Function(char returnType, char const * name, char const * prototype, parser::StackOperation const& stackOp)
+  : returnType_( returnType )
+  , name_( name )
+  , prototype_( prototype )
+  , stackOp_( stackOp )
 {
-  plugin::Core::instance.Register( this );
+  Plugin::instance.Register( this );
 }
 
 
-PPlugin Core::GetMotherPlugin() const
+PPlugin Function::GetMotherPlugin() const
 {
-  return plugin::Core::Get();
+  return Plugin::Get();
 }
 
 
 
-} } } //namespace avs::linker::function
+} } } //namespace avs::linker::core

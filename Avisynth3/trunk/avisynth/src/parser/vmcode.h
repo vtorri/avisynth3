@@ -89,7 +89,7 @@ public:
 };
 
 
-typedef std::pair<VMCode, char> TypedCode;
+typedef boost::tuples::tuple<VMCode, char> TypedCode;
 
 
 } } //namespace avs::parser

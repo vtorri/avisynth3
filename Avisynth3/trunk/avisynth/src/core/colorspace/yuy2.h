@@ -50,6 +50,7 @@ public:  //ColorSpace interface
 
   virtual ID id() const { return I_YUY2; }
   virtual char const * GetName() const { return "YUY2"; }
+  virtual unsigned long GetFourCC() const { return '2YUY'; }
 
   virtual bool HasProperty(Property prop) const
   { 

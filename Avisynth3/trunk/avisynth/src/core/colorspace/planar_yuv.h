@@ -79,6 +79,12 @@ public:  //ColorSpace interface
 
   virtual ID id() const { return I_YV12; }
   virtual char const * GetName() const { return "YV12"; }
+  virtual unsigned long GetFourCC() const { return '21VY'; }
+
+  virtual int GetBitmapSize(Dimension const& dim) const
+  {
+    return 3 * RoundUp<4>(dim.GetWidth()) * dim.GetHeight() / 2;
+  }
 
   virtual bool HasProperty(Property prop) const
   {
@@ -135,6 +141,13 @@ public:  //ColorSpace interface
 
   virtual ID id() const { return I_YV24; }
   virtual char const * GetName() const { return "YV24"; }
+  virtual unsigned long GetFourCC() const { throw exception::UnsupportedColorSpace(*this); }
+
+  virtual int GetBitmapSize(Dimension const& dim) const
+  {
+    return 3 * RoundUp<4>(dim.GetWidth()) * dim.GetHeight();
+  }
+
 
   virtual bool HasProperty(Property prop) const
   {
@@ -173,6 +186,12 @@ public:  //ColorSpace interface
 
   virtual ID id() const { return I_YV45; }
   virtual char const * GetName() const { return "YV45"; }
+  virtual unsigned long GetFourCC() const { throw exception::UnsupportedColorSpace(*this); }
+
+  virtual int GetBitmapSize(Dimension const& dim) const
+  {
+    return 3 * RoundUp<4>(dim.GetWidth() * 2) * dim.GetHeight();
+  }
 
   virtual bool HasProperty(Property prop) const
   {

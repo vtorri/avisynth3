@@ -51,13 +51,18 @@ public:  //declarations and typedefs
 
 public:  //ColorSpace interface
 
+  virtual int GetBitmapSize(Dimension const& dim) const
+  {
+    return RoundUp<4>( dim.GetWidth() * bpp ) * dim.GetHeight();
+  }
+
   virtual bool HasPlane(Plane plane) const { return plane == NOT_PLANAR; }
 
   virtual void ToPlane(int& x, int& /*y*/, Plane plane) const
   {
     if ( plane != NOT_PLANAR )
       throw exception::NoSuchPlane(*this, plane);
-    x *= bpp_;
+    x *= bpp;
   }
 
   virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const

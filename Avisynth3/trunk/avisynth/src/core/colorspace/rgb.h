@@ -27,6 +27,7 @@
 //avisynth include
 #include "interleaved.h"
 #include "../videoframe/rgb.h"
+#include "../exception/unsupportedcolorspace.h"
 
 
 namespace avs { namespace cspace {
@@ -50,6 +51,7 @@ public:  //ColorSpace interface
 
   virtual ID id() const { return I_RGB24; }
   virtual char const * GetName() const { return "RGB24"; }
+  virtual unsigned long GetFourCC() const { return 0; }    //ie BI_RGB, but I dont to include win headers here for now
 
   virtual bool HasProperty(Property prop) const
   {
@@ -82,6 +84,7 @@ public:  //ColorSpace interface
 
   virtual ID id() const { return I_RGB32; }
   virtual char const * GetName() const { return "RGB32"; }
+  virtual unsigned long GetFourCC() const { return 0; }    //ie BI_RGB, but I dont to include win headers here for now
 
   virtual bool HasProperty(Property prop) const
   {
@@ -114,6 +117,7 @@ public:  //ColorSpace interface
 
   virtual ID id() const { return I_RGB45; }
   virtual char const * GetName() const { return "RGB45"; }
+  virtual unsigned long GetFourCC() const { throw exception::UnsupportedColorSpace(*this); }
 
   virtual bool HasProperty(Property prop) const
   {

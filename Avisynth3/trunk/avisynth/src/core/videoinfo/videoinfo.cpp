@@ -64,12 +64,6 @@ bool VideoInfo::IsYV45() const { return GetColorSpace().IsYV45(); }
 
 
 
-int VideoInfo::BitsPerPixel() const
-{
-  static int bpp[] = { 24, 32, 64, 16, 12, 24, 48 };
-  return bpp[ GetColorSpace().id() ];
-}
-
 int VideoInfo::BytesPerChannelSample() const
 {
   static int bpcs[] = { 1, 2, 3, 4, sizeof(float) };

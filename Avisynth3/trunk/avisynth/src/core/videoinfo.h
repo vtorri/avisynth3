@@ -150,8 +150,6 @@ public:  //audio methods
 
 public:  
 
-  virtual int BitsPerPixel() const;
-
   int BytesPerAudioSample() const { return BytesPerChannelSample() * GetChannelCount(); }
   virtual int BytesPerChannelSample() const;
 
@@ -170,7 +168,7 @@ public:  //various check methods (failure means proper exception)
   virtual void CheckFPSMatch(VideoInfo const& other) const { }
   virtual void CheckFrameFlagMatch(VideoInfo const& other) const { }
 
-  //same as calling the 4 above, ie checks everything but frame count
+  //same as calling the 4 above, ie checks everything match but frame count
   virtual void CheckVideoMatch(VideoInfo const& other) const { }
 
   virtual void CheckFrameCountMatch(VideoInfo const& other) const { }

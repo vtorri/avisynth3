@@ -32,9 +32,6 @@
 #include "../functor/if.h"
 #include "../functor/popper.h"
 #include "../functor/swapper.h"
-#include "../lazy/throw.h"
-#include "../lazy/add_symbol.h"
-#include "../exception/badreturntype.h"
 
 
 namespace avs { namespace parser { namespace grammar {
@@ -138,7 +135,6 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
       using namespace lazy;
       using namespace functor;
       using namespace phoenix;
-      using namespace exception::parser;
 
       top
           =   statement( CodeCouple(), self.localTable, self.last )
@@ -218,6 +214,7 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
           >>  '('
           >>  expression( value::Expression(), statement.localTable, unwrap(statement.last), self.globalTable, self.functionTable )
               [
+                bind(&Check::TypeIsExpected)(second(arg1), val('b')),
                 statement.value += first(arg1)
               ]
           >>  ')'
@@ -254,10 +251,7 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
           =   spirit::str_p("return")
           >>  expression( value::Expression(), statement.localTable, unwrap(statement.last), self.globalTable, self.functionTable )
               [
-                if_( second(arg1) != self.returnTypeExpected )
-                [
-                  throw_( construct_<BadReturnType>( self.returnTypeExpected ) )
-                ],
+                bind(&Check::ReturnTypeIsExpected)(second(arg1), self.returnTypeExpected),
                 statement.value += first(arg1),
                 statement.value -= construct_<literal<OpType> >(RETURN)
               ]

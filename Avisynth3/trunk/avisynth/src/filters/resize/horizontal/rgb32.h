@@ -28,6 +28,10 @@
 #include "rgb.h"
 
 
+#pragma warning ( push )           //push warning state
+#pragma warning (disable : 4250)   //get rid of MI dominance decisions
+
+
 namespace avs { namespace filters { namespace resize { namespace horizontal {
 
 
@@ -42,7 +46,7 @@ class RGB32 : public RGB
 
 public:  //structors
 
-  RGB24(PClip const& child, PFilter const& filter, int width, SubRange const& subrange)
+  RGB32(PClip const& child, PFilter const& filter, int width, SubRange const& subrange)
     : RGB( child, filter, width, subrange ) { }
 
   //generated destructor is fine
@@ -57,5 +61,7 @@ private:  //Resize method
 
 
 } } } } //namespace avs::filters::resize::horizontal
+
+#pragma warning ( pop )
 
 #endif //__AVS_FILTERS_RESIZE_HORIZONTAL_RGB32_H__

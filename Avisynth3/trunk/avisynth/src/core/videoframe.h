@@ -28,6 +28,7 @@
 #include "plane.h"
 #include "forward.h"
 #include "frametype.h"
+#include "../define.h"             //for AVS_NOVTABLE
 #include "window_ptr.h"
 
 //boost include
@@ -46,7 +47,7 @@ namespace avs {
 //
 //  abstract base class of the VideoFrame hierarchy
 //
-class VideoFrame
+class AVS_NOVTABLE VideoFrame
 {
 
 public:  //structors

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -78,8 +78,8 @@ protected:  //implementations helpers
   CPVideoFrame GetLeftFrame(int n) const { return left_->GetFrame(n); }
   CPVideoFrame GetRightFrame(int n) const { return right_->GetFrame(n); }
 
-  void GetLeftAudio(void * buffer, int64 start, int count) const { return left_->GetAudio(buffer, start, count); }
-  void GetRightAudio(void * buffer, int64 start, int count) const { return right_->GetAudio(buffer, start, count); }
+  void GetLeftAudio(void * buffer, long long start, int count) const { return left_->GetAudio(buffer, start, count); }
+  void GetRightAudio(void * buffer, long long start, int count) const { return right_->GetAudio(buffer, start, count); }
 
 };
 

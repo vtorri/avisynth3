@@ -51,9 +51,10 @@ ElementalOperation const& Action::GetEqualityOperation(char& leftType, char righ
   if ( leftType == 'v' )
     throw exception::Generic("Cannot do comparison on void");
 
-  leftType = 'b';                                                    //set final type to bool
-  
-  return (isEqual ? equal_op : differ_op)[ TypeToIndex(leftType) ];  //returns comparison op
+  char type = leftType;
+  leftType = 'b'                                                 //set result type to bool
+
+  return (isEqual ? equal_op : differ_op)[ TypeToIndex(type) ];  //returns comparison op
 }
 
 

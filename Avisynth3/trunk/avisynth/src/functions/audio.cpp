@@ -35,8 +35,8 @@ using parser::adapt;
 using linker::core::Function;
 
   
-Function Audio::killAudio( 'c', "KillAudio", "c", adapt( &filters::KillAudio::Create ) );
-Function Audio::killVideo( 'c', "KillVideo", "c", adapt( &filters::KillVideo::Create ) );
+Function Audio::killAudio( 'c', "KillAudio", "c", adapt( filters::KillAudio::Creator() ) );
+Function Audio::killVideo( 'c', "KillVideo", "c", adapt( filters::KillVideo::Creator() ) );
 
 
 } } //namespace avs::functions

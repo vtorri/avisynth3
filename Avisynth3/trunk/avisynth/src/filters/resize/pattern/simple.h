@@ -24,10 +24,9 @@
 #ifndef __AVS_FILTERS_RESIZE_PATTERN_SIMPLE_H__
 #define __AVS_FILTERS_RESIZE_PATTERN_SIMPLE_H__
 
-//avisynth include
+//avisynth includes
 #include "base.h"
-#include "../filter.h"
-#include "../subrange.h"
+#include "../forward.h"
 
 
 namespace avs { namespace filters { namespace resize { namespace pattern {

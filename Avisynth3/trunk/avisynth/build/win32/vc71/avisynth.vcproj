@@ -27,9 +27,9 @@
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="2"
-				PreprocessorDefinitions="_DEBUG;DEBUG;_STLP_DEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_DLL;_USRDLL;AVISYNTH_EXPORTS;_INTEL_ASM;BOOST_LIB_DIAGNOSTIC"
+				PreprocessorDefinitions="_DEBUG;DEBUG;_STLP_DEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_USRDLL;AVISYNTH_EXPORTS;_INTEL_ASM"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				DisableLanguageExtensions="FALSE"
 				ForceConformanceInForLoopScope="TRUE"
 				RuntimeTypeInfo="TRUE"
@@ -51,11 +51,11 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="msacm32.lib quartz.lib ddraw.lib amstrmid.lib vfw32.lib version.lib winmm.lib freetype219.lib"
+				AdditionalDependencies="msacm32.lib quartz.lib ddraw.lib amstrmid.lib vfw32.lib version.lib winmm.lib"
 				OutputFile=".\Debug/avisynth.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				IgnoreDefaultLibraryNames="LIBCMTD"
+				IgnoreDefaultLibraryNames=""
 				ModuleDefinitionFile=".\avisynth.def"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/avisynth.pdb"
@@ -248,6 +248,85 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			<Tool
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
+		<Configuration
+			Name="Release static|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="/Gs "
+				Optimization="3"
+				GlobalOptimizations="TRUE"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="TRUE"
+				FavorSizeOrSpeed="1"
+				OptimizeForProcessor="2"
+				PreprocessorDefinitions="NDEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_USRDLL;AVISYNTH_EXPORTS;_INTEL_ASM;_STLP_USE_STATIC_LIB"
+				StringPooling="TRUE"
+				RuntimeLibrary="0"
+				RuntimeTypeInfo="TRUE"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderFile=".\Release/avisynth.pch"
+				AssemblerListingLocation=".\Release static/"
+				ObjectFile=".\Release static/"
+				ProgramDataBaseFileName=".\Release static/"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="2"
+				CallingConvention="2"
+				DisableSpecificWarnings="4275"/>
+			<Tool
+				Name="VCCustomBuildTool"
+				CommandLine="release\upx -9 release\avisynth.dll
+copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
+"
+				Outputs="$(SystemRoot)\system32\avisynth.dll"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="msacm32.lib quartz.lib ddraw.lib amstrmid.lib vfw32.lib version.lib winmm.lib freetype219_static.lib"
+				OutputFile=".\Release static/avisynth.dll"
+				LinkIncremental="1"
+				SuppressStartupBanner="TRUE"
+				IgnoreDefaultLibraryNames=""
+				ModuleDefinitionFile=".\avisynth.def"
+				ProgramDatabaseFile=".\Release static/avisynth.pdb"
+				OptimizeReferences="2"
+				OptimizeForWindows98="1"
+				ImportLibrary=".\Release static/avisynth.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/avisynth.tlb"
+				HeaderFileName=""/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
 	</Configurations>
 	<References>
 	</References>
@@ -352,6 +431,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Profile|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release static|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="$(IntDir)/$(InputName)2.obj"/>
@@ -745,6 +830,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Profile|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release static|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
@@ -1156,6 +1247,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 								Name="VCCLCompilerTool"
 								ObjectFile="$(IntDir)/$(InputName)3.obj"/>
 						</FileConfiguration>
+						<FileConfiguration
+							Name="Release static|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)3.obj"/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\..\src\filters\source\avifile\base.h">
@@ -1180,6 +1277,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 								Name="VCCLCompilerTool"
 								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
 						</FileConfiguration>
+						<FileConfiguration
+							Name="Release static|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\..\src\filters\source\avifile\rawaudio.h">
@@ -1200,6 +1303,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 						</FileConfiguration>
 						<FileConfiguration
 							Name="Profile|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release static|Win32">
 							<Tool
 								Name="VCCLCompilerTool"
 								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
@@ -1232,12 +1341,24 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 								Name="VCCLCompilerTool"
 								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
 						</FileConfiguration>
+						<FileConfiguration
+							Name="Release static|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\..\src\filters\source\audio\acmaudiodecompressor.h">
 					</File>
 					<File
 						RelativePath="..\..\..\src\filters\source\audio\audiodecompressor.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\source\audio\cbracmaudiodecompressor.cpp">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\source\audio\cbracmaudiodecompressor.h">
 					</File>
 					<File
 						RelativePath="..\..\..\src\filters\source\audio\rawaudio.cpp">
@@ -1265,9 +1386,21 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 								Name="VCCLCompilerTool"
 								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
 						</FileConfiguration>
+						<FileConfiguration
+							Name="Release static|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\..\src\filters\source\audio\trivialaudiodecompressor.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\source\audio\vbracmaudiodecompressor.cpp">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\source\audio\vbracmaudiodecompressor.h">
 					</File>
 				</Filter>
 				<Filter
@@ -1289,6 +1422,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 						</FileConfiguration>
 						<FileConfiguration
 							Name="Profile|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release static|Win32">
 							<Tool
 								Name="VCCLCompilerTool"
 								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
@@ -1368,6 +1507,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Profile|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release static|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
@@ -1454,6 +1599,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Profile|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release static|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
@@ -1733,6 +1884,16 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				<File
 					RelativePath="..\..\..\src\text\antialiaser\bitrenderer.h">
 				</File>
+				<File
+					RelativePath="..\..\..\src\text\antialiaser\gdirenderer.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="GDI"
+				Filter="">
+				<File
+					RelativePath="..\..\..\src\text\gdi\renderer.h">
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -1825,6 +1986,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 							Name="VCCLCompilerTool"
 							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Release static|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\src\vfw\avistream\audio.h">
@@ -1861,6 +2028,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 							Name="VCCLCompilerTool"
 							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Release static|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\src\vfw\avistream\yv12.h">
@@ -1874,19 +2047,10 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				RelativePath="..\..\..\src\freetype\bitmapglyph.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\freetype\face.cpp">
-			</File>
-			<File
 				RelativePath="..\..\..\src\freetype\face.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\freetype\glyph.cpp">
-			</File>
-			<File
 				RelativePath="..\..\..\src\freetype\glyph.h">
-			</File>
-			<File
-				RelativePath="..\..\..\src\freetype\library.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\freetype\library.h">
@@ -1919,6 +2083,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 		</File>
 		<File
 			RelativePath="..\..\..\src\main.h">
+		</File>
+		<File
+			RelativePath="..\..\..\src\user_config.h">
 		</File>
 	</Files>
 	<Globals>

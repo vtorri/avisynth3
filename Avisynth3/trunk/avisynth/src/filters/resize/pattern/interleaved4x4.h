@@ -21,8 +21,8 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_FILTERS_RESIZE_PATTERN_INTERLEAVED2X2_H__
-#define __AVS_FILTERS_RESIZE_PATTERN_INTERLEAVED2X2_H__
+#ifndef __AVS_FILTERS_RESIZE_PATTERN_INTERLEAVED4X4_H__
+#define __AVS_FILTERS_RESIZE_PATTERN_INTERLEAVED4X4_H__
 
 //avisynth includes
 #include "base.h"
@@ -33,7 +33,7 @@ namespace avs { namespace filters { namespace resize { namespace pattern {
 
 
 //template declaration so I can make the specialisation below
-  template <int pixelCount, int coeffCount> class interleaved : public Base { };
+template <int pixelCount, int coeffCount> class interleaved;
 
 
 
@@ -51,4 +51,4 @@ public:  //structors
 
 } } } } //namespace avs::filters::resize::pattern
 
-#endif //__AVS_FILTERS_RESIZE_PATTERN_INTERLEAVED2X2_H__
+#endif //__AVS_FILTERS_RESIZE_PATTERN_INTERLEAVED4X4_H__

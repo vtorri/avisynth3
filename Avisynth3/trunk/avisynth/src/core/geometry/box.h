@@ -40,10 +40,12 @@ namespace avs {
 //  Box
 //
 //
+//
 class Box
-     : boost::addable<Box             //defines Box + Box
+     : boost::andable<Box             //defines Box & Box   (intersection)
+     , boost::orable<Box              //defines Box | Box   (union)
      , boost::addable2<Box, Vecteur>  //defines Box + Vecteur
-     >
+     > >
 {
 
   Vecteur pos_;
@@ -74,19 +76,28 @@ public:  //read access
 
 public:  //operators
 
-  Box& operator+=(Vecteur const& vect)
+  Box& operator&=(Box const& other)
   {
-    pos_ += vect;
+    Vecteur position = max(pos_, other.pos_);                                     //get top left corner of the box
+    dim_ = Dimension( min(pos_ + dim_, other.pos_ + other.dim_) - position );     //calculate bottom right
+    pos_ = position;                                                              //update pos_
     return *this;
   }
 
-  Box& operator+=(Box const& other)
+  Box& operator|=(Box const& other)
   {
     Vecteur position = min(pos_, other.pos_);                                     //get top left corner of the box
     dim_ = Dimension( max(pos_ + dim_, other.pos_ + other.dim_) - position );     //calculate bottom right
     pos_ = position;                                                              //update pos_
     return *this;
   }
+
+  Box& operator+=(Vecteur const& vect)
+  {
+    pos_ += vect;
+    return *this;
+  }
+
 
   bool operator==(Box const& other) const { return dim_ == other.dim_ && pos_ == other.pos_; }
   bool operator!=(Box const& other) const { return dim_ != other.dim_ || pos_ != other.pos_; }

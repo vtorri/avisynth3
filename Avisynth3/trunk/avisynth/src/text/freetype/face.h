@@ -24,17 +24,17 @@
 #ifndef __AVS_TEXT_FREETYPE_FACE_H__
 #define __AVS_TEXT_FREETYPE_FACE_H__
 
-//avisynth include
+//avisynth includes
 #include "forward.h"
-#include "../../core/geometry/box.h"
+#include "../../core/geometry/vecteur.h"
 #include "../../core/geometry/fixed_point.h"
+
+//boost include
+#include <boost/shared_ptr.hpp>                //so PFace is defined
 
 //freetype includes
 #include <ft2build.h>
 #include FT_FREETYPE_H
-
-//declaration
-typedef struct FT_FaceRec_ FT_FaceRec_;
 
 
 namespace avs { namespace text { namespace freetype {

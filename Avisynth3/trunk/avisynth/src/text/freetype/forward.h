@@ -24,13 +24,9 @@
 #ifndef __AVS_TEXT_FREETYPE_FORWARD_H__
 #define __AVS_TEXT_FREETYPE_FORWARD_H__
 
-//boost include
-#include <boost/shared_ptr.hpp>
 
-
-//freetype declaration
-struct FT_Bitmap_;
-typedef struct FT_Bitmap_ FT_Bitmap;
+//declaration of shared_ptr
+namespace boost { template <typename T> class shared_ptr; }
 
 
 namespace avs { 
@@ -45,8 +41,9 @@ template <int fractionPart> class fixed_point;
   
 namespace text { 
   
-  
-namespace rasterizer { class OutlineSplitter; }  
+
+//another one
+namespace rasterizer { class OutlineSplitter; }
   
 
 namespace freetype {
@@ -55,14 +52,12 @@ namespace freetype {
 //more declarations
 class Face;
 class Outline;
-class MonoBitmap;
 class TextWalker;
 
 
 //typedefs
 typedef fixed_point<6> FP6;
 typedef box<FP6> BoxFP6;
-typedef FT_Bitmap Bitmap;
 typedef vecteur<FP6> VecteurFP6;
 typedef dimension<FP6> DimensionFP6;
 typedef boost::shared_ptr<Face> PFace;

@@ -28,10 +28,11 @@
 #include "forward.h"
 
 //boost include
+#include <boost/shared_ptr.hpp>     //so PFace is defined
 #include <boost/noncopyable.hpp>
 
 
-//declarations
+//freetype declarations
 struct FT_GlyphSlotRec_;
 typedef FT_GlyphSlotRec_ * FT_GlyphSlot;
 

@@ -29,6 +29,9 @@
 #include "../../core/geometry/box.h"
 #include "../../core/geometry/fixed_point.h"
 
+//boost include
+#include <boost/shared_ptr.hpp>
+
 
 namespace avs { namespace text { namespace freetype {
 

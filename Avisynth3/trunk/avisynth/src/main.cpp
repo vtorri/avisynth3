@@ -33,7 +33,7 @@
 
 //methods required of a COM dll
 
-BOOL APIENTRY DllMain(HANDLE hModule, ULONG ulReason, LPVOID lpReserved) 
+BOOL APIENTRY DllMain(HANDLE /*hModule*/, ULONG ulReason, LPVOID /*lpReserved*/) 
 {
 	switch(ulReason) 
   {

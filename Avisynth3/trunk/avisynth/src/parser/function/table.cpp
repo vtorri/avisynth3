@@ -36,13 +36,6 @@ namespace avs { namespace parser { namespace function {
 
 
 
-Table::~Table()
-{
-  StatementCode dummy;
-
-  for( UndefScriptFunctionMap::iterator it = undefsMap_.begin(); it != undefsMap_.end(); ++it )
-    it->second->Define(dummy);
-}
 
 void Table::AddPlugin(linker::PPlugin const& plugin)
 {

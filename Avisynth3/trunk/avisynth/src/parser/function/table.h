@@ -43,19 +43,17 @@ namespace avs { namespace parser { namespace function {
 
 
 
+////////////////////////////////////////////////////////////////////////////////////////
+//  function::Table
+//
+//  symbols table mapping function names to the pool of functions of that name
+//
 class Table : public spirit::symbols<Pool>
 {
 
   typedef std::map<FunctionId, boost::shared_ptr<ScriptFunction> > UndefScriptFunctionMap;
 
   UndefScriptFunctionMap undefsMap_;
-
-
-public:  //structors
-
-  Table() { }
-
-  ~Table();
 
 
 public:

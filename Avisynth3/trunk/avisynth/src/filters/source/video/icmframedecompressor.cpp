@@ -82,7 +82,7 @@ OwnedBlock ICMFrameDecompressor::operator()(bool keyframe, bool preroll, OwnedBl
 FrameDecompressor * ICMFrameDecompressor::Create(RawVideo const& src, vfw::PBitmapInfoHeader const& bih, PColorSpace& output)
 {
   return (output = bih->GetColorSpace()) ? static_cast<FrameDecompressor *>(new TrivialFrameDecompressor(src))
-                                         : new VFWFrameDecompressor(src, bih, output);
+                                         : new ICMFrameDecompressor(src, bih, output);
 }
 
 

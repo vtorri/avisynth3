@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -56,6 +56,9 @@ void YUY2::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
   {
     int x = dst.width;
     BYTE * dstp = dst.ptr;
+
+
+#ifdef _INTEL_ASM
 
     __asm
     {
@@ -195,9 +198,15 @@ void YUY2::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
       jnz         xloop
     }
 
+#else
+#error "resize horizontal YUY2: missing code path"
+#endif _INTEL_ASM
+
   }//for
 
+#ifdef _INTEL_ASM
   __asm { emms }
+#endif
 
 }
 

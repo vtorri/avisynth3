@@ -21,89 +21,108 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __CLIP_H__
-#define __CLIP_H__
+#ifndef __AVS_CLIP_H__
+#define __AVS_CLIP_H__
 
-
-#pragma warning( disable : 4290 )  //get rid of C++ exception ... ignored warning
-
-//stl includes
-#include <string>      //std exceptions need that to be used
-#include <utility>     //for pair
-using namespace std;
 
 //avisytnh includes
-#include "refcounted.h" 
+#include "smart_ref.h"
+
+//boost includes
+#include <boost/tuple/tuple.hpp>  //for tuples
+
 
 //class declarations
 class Clip;
-class Cache;
 class VideoInfo;
 class VideoFrame;
-class ScriptEnvironment;
+class CachingClip;
+class RuntimeEnvironment;
+
 
 //typedefs
 typedef unsigned char BYTE;
-typedef smart_ref<Clip> PClip;
-typedef smart_ref<ScriptEnvironment> PEnvironment;
-typedef smart_ptr_to_cst<VideoFrame> CPVideoFrame;
+typedef smart_ref<const Clip> PClip;
+typedef smart_ref<const VideoFrame> CPVideoFrame;
+typedef smart_ref<RuntimeEnvironment> PEnvironment;
 
 
 
 
-/********************************************************************************************
- * Clip                                                                                     *
- ********************************************************************************************
-  Base class for all filters.
-*/
+///////////////////////////////////////////////////////////////////////////////
+// Clip
+//
+// base class for all filters
+//
+class Clip
+{
 
+public:  //enums and typedefs
 
-
-class Clip : public RefCounted {
-
-public:
-  Clip() { }
-  
-  //get owning environment
-  virtual PEnvironment GetEnvironment() = 0;
-  //get info about the clip
-  virtual const VideoInfo& GetVideoInfo() = 0;
- 
-  //get the frame n for the passed client
-  //try cache (if there is any) and forward to MakeFrame if not cached
-  //frame n MUST exist (unexpected behavior otherwise)
-  virtual CPVideoFrame GetFrame(int n, Clip& client) = 0;
-
-  //request to fill the passed buffer with audio samples
-  //out of bounds values are allowed, the excess is filled with blank noise
-  virtual void GetAudio(BYTE * buf, __int64 start, __int64 count) = 0;  
-
-protected:
-  //process the frame n (without cache consideration)
-  //default implementation: throw a logic_error exception
-  //filters using cache should redefine it, others should never call it
-  virtual CPVideoFrame MakeFrame(int n) { throw std::logic_error("Illegal MakeFrame Call"); }
-
-  friend class Cache; //so it can use the above
-
-
-  //another helper function, fill a buffer with blank noise (of the appropriate sample-type/channels)
-  void FillWithBlank(BYTE * buf, __int64 count);
-
-  //cache related code
-  enum CacheMethod {
+  enum CacheMethod
+  {
     CACHE_ALL,
     CACHE_NOTHING,
     CACHE_RANGE,
     CACHE_LAST
   };
-  typedef pair<CacheMethod, unsigned> CachePolicy; 
 
-  virtual CachePolicy GetWantedCachePolicy() { return make_pair(CACHE_NOTHING, 0); }
+  typedef boost::tuples::tuple<CacheMethod, unsigned> CachePolicy;
+  typedef boost::tuples::tuple<const CachingClip *, CacheMethod, unsigned> CacheRequest;
+
+
+public:  //structors
+
+  Clip() { }
+  virtual ~Clip() { }   //virtual destructor
+
+
+public:  //clip general interface
+  
+  //get owning environment
+  virtual PEnvironment GetEnvironment() const = 0;
+  //get info about the clip
+  virtual const VideoInfo& GetVideoInfo() const = 0;
+ 
+  //get the frame n
+  //undefined behavior if frame n don't exist
+  virtual CPVideoFrame GetFrame(int n, const CachingClip& client) const = 0;
+
+  //fill the passed buffer with audio samples
+  //out of bounds values are allowed, the excess is filled with blank noise
+  virtual void GetAudio(BYTE * buf, __int64 start, __int64 count) const = 0;  
+
+
+public:  //cache hints methods
+
+  virtual void Dispatch(const CacheRequest& request) const = 0;
+  virtual void Withdraw(const CacheRequest& request) const = 0;
+
+
+public:
+
+  //filter chain simplication method
+  //attempts to refactor self and its childs (if there is any)
+  //into a more compact filter chain
+  //a default version is provided (with no refactoring)
+  //
+  //NB: this method must be called like this:
+  //    PClip clip = ...
+  //    PClip simplified = clip->Simplify(clip);
+  virtual PClip Simplify(PClip self) const { return self; }
+
+
+protected:  //implementation helpers
+
+  //fill a buffer with blank noise (of the appropriate sample-type/channels)
+  void FillWithBlank(BYTE * buf, __int64 count) const;
+
+  void ThrowNoSuchFrameException(int n) const;
+
 };
 
 
 
 
 
-#endif //#ifndef __CLIP_H__
+#endif //#ifndef __AVS_CLIP_H__

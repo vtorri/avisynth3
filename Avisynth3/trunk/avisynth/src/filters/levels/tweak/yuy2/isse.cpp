@@ -26,8 +26,11 @@
 #include "../../../../core/videoframe.h"
 #include "../../../../core/cow_shared_ptr.h"
 
-
 namespace avs { namespace filters { namespace tweak { namespace yuy2 {
+
+
+//equivalent nasm code of the inline asm below
+extern "C" void tweak_yuy2_isse_nasm(BYTE * ptr, int x, int y, int modulo, int64 hue64, int64 satcont64, int64 bright64);
 
 
 
@@ -36,34 +39,32 @@ CPVideoFrame ISSE::MakeFrame(CPVideoFrame const& source) const
 
   PVideoFrame frame = source;
   WindowPtr wp = frame->WriteTo(NOT_PLANAR);
+  
+  int64 hue64 = (int64(Cos)<<48) + (int64(-Sin)<<32) + (int64(Sin)<<16) + int64(Cos);
+  int64 satcont64 = (int64(Sat)<<48) + (int64(Cont)<<32) + (int64(Sat)<<16) + int64(Cont);
+  int64 bright64 = (int64(Bright_p16)<<32) + int64(Bright_p16);
 
-  	
+
+#if defined(_INTEL_ASM) && ! defined(_FORCE_NASM)
+
   static int64 const norm = 0x0080000000800000LL;
 
   int y = wp.height;
-  int x = wp.width >> 2;   //2 pixels (4 bytes) per x loop
-
+  int x = wp.width >> 2;          //2 pixels (4 bytes) per x loop
+  
   int modulo = wp.padValue();
 
- 	int64 hue64 = (int64(Cos)<<48) + (int64(-Sin)<<32) + (int64(Sin)<<16) + int64(Cos);
-	int64 satcont64 = (int64(Sat)<<48) + (int64(Cont)<<32) + (int64(Sat)<<16) + int64(Cont);
-	int64 bright64 = (int64(Bright_p16)<<32) + int64(Bright_p16);
+  __asm
+  {
+    pxor		   mm0, mm0
+    movq		   mm1, norm			    // 128 0 128 0
+    movq		   mm2, hue64     		// Cos -Sin Sin Cos (fix12)
+    movq		   mm3, satcont64 		// Sat Cont Sat Cont (fix9)
+    movq		   mm4, mm1
+    paddw		   mm4, bright64  		// 128 Bright_p16 128 Bright_p16
 
-
-#ifdef _INTEL_ASM
-
-	 __asm
-   {
-
-  	pxor		   mm0, mm0
-	 	movq		   mm1, norm				  // 128 0 128 0
-	  movq		   mm2, hue64     		// Cos -Sin Sin Cos (fix12)
-  	movq		   mm3, satcont64 		// Sat Cont Sat Cont (fix9)
-	 	movq		   mm4, mm1
-	  paddw		   mm4, bright64  		// 128 Bright_p16 128 Bright_p16
-
-  	mov			   esi, wp.ptr    		
-	 	mov			   edx, y         		// height
+    mov			   esi, wp.ptr    		
+    mov			   edx, y         		// height
   
   y_loop:
 	
@@ -71,10 +72,10 @@ CPVideoFrame ISSE::MakeFrame(CPVideoFrame const& source) const
 
   x_loop:
 	
-    movd		   mm7, [esi]   			// 0000VYUY
-	  punpcklbw	 mm7, mm0
- 		psubw		   mm7, mm1				    //  V Y U Y
-  	pshufw		 mm6, mm7, 0xDD			//  V U V U
+    movd		   mm7, [esi]   		  // 0000VYUY
+    punpcklbw	 mm7, mm0
+    psubw		   mm7, mm1	          //  V Y U Y
+    pshufw		 mm6, mm7, 0xDD		  //  V U V U
 	  pmaddwd		 mm6, mm2				    // V*Cos-U*Sin V*Sin+U*Cos (fix12)
 	  psrad		   mm6, 12					  // ? V' ? U'
  		movq		   mm5, mm7
@@ -99,8 +100,11 @@ CPVideoFrame ISSE::MakeFrame(CPVideoFrame const& source) const
  	}
 
 #else
-#error "Tweak YUY2 ISSE : missing code path"
-#endif //_INTEL_ASM
+
+//use nasm code
+tweak_yuy2_isse_nasm(wp.ptr, wp.width>>2, wp.height, wp.padValue(), hue64, satcont64, bright64);
+
+#endif //defined(_INTEL_ASM) && ! defined(_FORCE_NASM)
 
   return frame;
 }

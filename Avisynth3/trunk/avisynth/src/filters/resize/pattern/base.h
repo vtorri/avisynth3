@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -74,7 +74,7 @@ protected:  //assignment
 public:  //access
 
   //gets pattern data
-  int const * get() const { return (int const *)pattern_.get(); }
+  int const * get() const { return reinterpret_cast<int *>(pattern_.get()); }
 
   //always return the coeffs count per pixel, not the number of loops expected    
   int count() const { return count_; }
@@ -84,7 +84,7 @@ protected:  //at the disposition of subclasses constructor
 
   void init(int count, int size) { count_ = count; pattern_.reset(size << 2, false); }
 
-  int * get() { return (int *)pattern_.get(); }
+  int * get() { return reinterpret_cast<int *>(pattern_.get()); }
 
 };
 

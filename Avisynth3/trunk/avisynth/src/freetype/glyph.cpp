@@ -23,6 +23,7 @@
 
 //avisynth includes
 #include "glyph.h"
+#include "bitmapholder.h"
 //#include "../core/exception/generic.h"
 
 //assert include
@@ -54,6 +55,39 @@ Box Glyph::GetControlBox() const
   FT_Glyph_Get_CBox(glyph_.get(), ft_glyph_bbox_pixels, &box);
 
   return Box( Vecteur(box.xMin, box.yMin), Vecteur(box.xMax, box.yMax) );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+//  BitmapGlyphRecDeleter
+// 
+//  shared_ptr custom deleter for freetype FT_BitmapGlyphRec_ objects
+//
+struct BitmapGlyphRecDeleter
+{
+  void operator()(FT_BitmapGlyphRec_ * ptr) const
+  {
+    FT_Done_Glyph( reinterpret_cast<FT_GlyphRec_ *>(ptr) );
+  }
+};
+
+
+PositionedBitmap Glyph::GetBitmap() const
+{
+  FT_GlyphRec_ * glyph = glyph_.get();
+
+  FT_Error error = FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, NULL, 0);
+  assert( error == 0 );
+
+  boost::shared_ptr<FT_BitmapGlyphRec_> bitmapGlyph
+      ( reinterpret_cast<FT_BitmapGlyphRec_ *>(glyph), BitmapGlyphRecDeleter() );
+
+  Dimension dim(bitmapGlyph->bitmap.width, bitmapGlyph->bitmap.rows);
+  block_<1> buffer( new BitmapHolder(bitmapGlyph) );
+  
+  return std::make_pair( Bitmap(dim, buffer, 0, bitmapGlyph->bitmap.pitch)
+                       , Vecteur(-bitmapGlyph->left, -bitmapGlyph->top)
+                       );
 }
 
 /*  // Basic API

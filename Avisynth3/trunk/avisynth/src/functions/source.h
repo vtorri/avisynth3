@@ -40,6 +40,7 @@ namespace avs { namespace functions {
 struct Source
 {
 
+  static linker::core::Function aviFileSource;
   static linker::core::Function colorBars;
 
 

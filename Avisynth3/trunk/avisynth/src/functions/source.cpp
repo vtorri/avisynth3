@@ -26,6 +26,7 @@
 #include "../parser/adapt.h"
 #include "../linker/core/plugin.h"
 #include "../filters/source/colorbars.h"
+#include "../filters/source/avifilesource.h"
 
 
 namespace avs { namespace functions {
@@ -35,13 +36,15 @@ using parser::adapt;
 using linker::core::Function;
 
 
-
+Function Source::aviFileSource( 'c', "AviFileSource", "s", adapt( filters::AviFileSource::Creator() ) );
 Function Source::colorBars( 'c', "ColorBars", "ii", adapt( &filters::ColorBars::Create ) );
 
 
 void Source::RegisterAll(linker::core::Plugin& core)
 {
+  core.Register(&aviFileSource);
   core.Register(&colorBars);
 }
+
 
 } } //namespace avs::functions

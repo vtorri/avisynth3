@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ namespace avs { namespace timing {
 struct ThreadClock
 {
 
-  __int64 operator()() const;
+  int64 operator()() const;
 
 };
 

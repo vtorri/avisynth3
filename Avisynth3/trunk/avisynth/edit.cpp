@@ -82,28 +82,6 @@ Trim::Trim(int _firstframe, int _lastframe, PClip _child) : GenericVideoFilter(_
 }
 
 
-PVideoFrame Trim::GetFrame(int n, IScriptEnvironment* env) 
-{ 
-  return child->GetFrame(n+firstframe, env); 
-}
-
-
-void __stdcall Trim::GetAudio(void* buf, __int64 start, __int64 count, IScriptEnvironment* env) 
-{
-  child->GetAudio(buf, start+audio_offset, count, env);
-}
-
-
-bool Trim::GetParity(int n) 
-{ 
-  return child->GetParity(n+firstframe); 
-}
-
-
-AVSValue __cdecl Trim::Create(AVSValue args, void*, IScriptEnvironment* env) 
-{
-  return new Trim(args[1].AsInt(), args[2].AsInt(), args[0].AsClip());
-}
 
 
 
@@ -112,30 +90,6 @@ AVSValue __cdecl Trim::Create(AVSValue args, void*, IScriptEnvironment* env)
 
 
 
-/*******************************
- *******   Freeze Frame   ******
- *******************************/
-
-FreezeFrame::FreezeFrame(int _first, int _last, int _source, PClip _child)
- : GenericVideoFilter(_child), first(_first), last(_last), source(_source) {}
-
-
-PVideoFrame FreezeFrame::GetFrame(int n, IScriptEnvironment* env) 
-{
-  return child->GetFrame((n >= first && n <= last) ? source : n, env);
-}
-
-
-bool FreezeFrame::GetParity(int n) 
-{
-  return child->GetParity((n >= first && n <= last) ? source : n);
-}
-
-
-AVSValue __cdecl FreezeFrame::Create(AVSValue args, void*, IScriptEnvironment* env)
-{
-  return new FreezeFrame(args[1].AsInt(), args[2].AsInt(), args[3].AsInt(), args[0].AsClip());
-}
 
 
 
@@ -143,61 +97,8 @@ AVSValue __cdecl FreezeFrame::Create(AVSValue args, void*, IScriptEnvironment* e
 
 
 
-/******************************
- *******   Delete Frame  ******
- ******************************/
-
-AVSValue __cdecl DeleteFrame::Create(AVSValue args, void*, IScriptEnvironment* env) 
-{
-  return new DeleteFrame(args[1].AsInt(), args[0].AsClip());
-}
 
 
-DeleteFrame::DeleteFrame(int _frame, PClip _child)
- : GenericVideoFilter(_child), frame(_frame) { --vi.num_frames; }
-
-
-PVideoFrame DeleteFrame::GetFrame(int n, IScriptEnvironment* env) 
-{
-  return child->GetFrame(n + (n>=frame), env);
-}
-
-
-bool DeleteFrame::GetParity(int n) 
-{ 
-  return child->GetParity(n + (n>=frame)); 
-}
-
-
-
-
-
-
-
-/*********************************
- *******   Duplicate Frame  ******
- *********************************/
-
-DuplicateFrame::DuplicateFrame(int _frame, PClip _child)
- : GenericVideoFilter(_child), frame(_frame) { ++vi.num_frames; }
-
-
-PVideoFrame DuplicateFrame::GetFrame(int n, IScriptEnvironment* env) 
-{
-  return child->GetFrame(n - (n>frame), env);
-}
-
-
-bool DuplicateFrame::GetParity(int n) 
-{ 
-  return child->GetParity(n - (n>frame)); 
-}
-
-
-AVSValue __cdecl DuplicateFrame::Create(AVSValue args, void*, IScriptEnvironment* env) 
-{
-  return new DuplicateFrame(args[1].AsInt(), args[0].AsClip());
-}
 
 
 

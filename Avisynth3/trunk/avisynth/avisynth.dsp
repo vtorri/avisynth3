@@ -561,5 +561,97 @@ SOURCE=.\tokenizer.h
 
 SOURCE=.\distrib\AviSynth.ico
 # End Source File
+# Begin Source File
+
+SOURCE=.\avsfunction.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\avsvalue.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\bufferwindow.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\colorspace.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\colorspace.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\environment.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\environment.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\linker.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\linker.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pclip.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\plugin.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\plugin.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\property.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\property.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\prototype.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\refcounted.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\toto.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\videoframe.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\videoframebuffer.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\videoinfo.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\videoinfo.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\videoproperty.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\videoproperty.h
+# End Source File
 # End Target
 # End Project

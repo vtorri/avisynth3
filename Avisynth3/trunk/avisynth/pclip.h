@@ -149,31 +149,40 @@ public:
 
 
 /********************************************************************************************
- * IClip and PClip                                                                          *
+ * Clip and PClip                                                                           *
  ********************************************************************************************
   Base class for all filters.
 */
 
-class IClip : public RefCounted {
+class Clip : public RefCounted {
 
 public:
 
-  enum CachePolicy {
+
+  Clip() { }
+  virtual ~Clip() { }
+  
+  virtual const VideoInfo& GetVideoInfo() = 0;
+  virtual void GetAudio(void* buf, __int64 start, __int64 count) = 0;  // start and count are in samples
+ 
+  //get the frame n for the passed client
+  //try cache (if there is any) and forward to MakeFrame if not cached
+  virtual CPVideoFrame GetFrame(int n, Clip& client) = 0;
+
+protected:
+  //process the frame n (without cache consideration)
+  virtual CPVideoFrame MakeFrame(int n) = 0;
+
+
+  enum CacheMethod {
+    STANDARD_CACHE,
     CACHE_NOTHING,
     CACHE_RANGE,
     CACHE_LAST
   };
+  typedef pair<CacheMethod, int> CachePolicy; 
 
-  IClip() { }
-
-  virtual int __stdcall GetVersion() { return AVISYNTH_INTERFACE_VERSION; }
-  
-  virtual CPVideoFrame __stdcall GetFrame(int n) = 0;
-  virtual bool __stdcall GetParity(int n) = 0;  // return field parity if field_based, else parity of first field in frame
-  virtual void __stdcall GetAudio(void* buf, __int64 start, __int64 count) = 0;  // start and count are in samples
-  virtual void __stdcall SetCacheHints(CachePolicy policy, int size) { }  // We do not pass cache requests upwards, only to the next filter.
-  virtual const VideoInfo& __stdcall GetVideoInfo() = 0;
-
+  virtual CachePolicy GetWantedCachePolicy(Clip& server) { return make_pair(STANDARD_CACHE, 0); }
 };
 
 typedef smart_ptr<IClip> PClip;  // smart pointer to IClip
@@ -181,8 +190,7 @@ typedef smart_ptr<IClip> PClip;  // smart pointer to IClip
 
 
 // instanciable null filter that forwards all requests to child
-// use for filter who don't change VideoInfo
-class StableVideoFilter : public IClip {
+class ChildClip : public Clip {
 
 protected:
   PClip child;
@@ -190,28 +198,45 @@ protected:
   //protected constructor
   StableVideoFilter(PClip _child) : child(_child) { }
 
+  CPVideoFrame GetChildFrame(int n) { return child->GetFrame(n, *this); }
+
 public:
-  CPVideoFrame __stdcall GetFrame(int n) { return child->GetFrame(n); }
-  void __stdcall GetAudio(void* buf, __int64 start, __int64 count) { child->GetAudio(buf, start, count); }
-  const VideoInfo& __stdcall GetVideoInfo() { return child->GetVideoInfo(); }
-  bool __stdcall GetParity(int n) { return child->GetParity(n); }
+  virtual const VideoInfo& GetVideoInfo() { return child->GetVideoInfo(); }
+  virtual void  GetAudio(void* buf, __int64 start, __int64 count) { child->GetAudio(buf, start, count); }
+
+  virtual CPVideoFrame  GetFrame(int n, Clip& client) { return GetChildFrame(n); }
+
+protected:
+  virtual CPVideoFrame MakeFrame(int n) { return GetChildFrame(n); }
 };
 
 
-// instance null filter
-// use when VideoInfo is changed
-class GenericVideoFilter : public StableVideoFilter {
+//instanciable null filter forwarding to child, without a cache
+//but with a modified videoinfo
+//subclass from this for filters who just perform frames reordering
+class EditFilter : public ChildClip {
+
+  const VideoInfo vi;
 
 protected:
-  VideoInfo vi;
+  EditFilter(PClip child, const VideoInfo& _vi) : ChildClip(child), vi(_vi) { }
 
-  //protected constructor
-  GenericVideoFilter(PClip _child, const VideoInfo& _vi) : StableVideoFilter(_child), vi(_vi) { }
-
-    
 public:
-  const VideoInfo& __stdcall GetVideoInfo() { return vi; }
+  virtual const VideoInfo& GetVideoInfo() { return vi; }
 
+};
+
+// instanciable null filter with a cache
+class GenericVideoFilter : public StableVideoFilter {
+
+  Cache cache;
+  
+protected:
+  //protected constructor
+  GenericVideoFilter(PClip _child) : ChildClip(_child) { }
+
+public:
+  virtual CPVideoFrame GetFrame(int n, Clip& client) { return cache.GetCachedFrame(n, client, *this); }  
 };
 
 

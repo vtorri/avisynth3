@@ -41,82 +41,78 @@
 /********************************************************************
 ********************************************************************/
 
-class Trim : public GenericVideoFilter 
+
 /**
   * Class to select a range of frames from a longer clip
  **/
-{
+class Trim : public EditFilter {
+
+  const int firstFrame;
+  const __int64 audio_offset;
+
 public:
-  Trim(int _firstframe, int _lastframe, PClip _child);
-  PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
-  void __stdcall GetAudio(void* buf, __int64 start, __int64 count, IScriptEnvironment* env);
-  bool __stdcall GetParity(int n);
+  Trim(PClip  child, int _firstFrame, int frameCount) : ChildClip(child, child->GetVideoInfo().Trim(frameCount)),
+    firstFrame(_firstFrame), audio_offset(vi.AudioSamplesFromFrames(firstframe)) { }
+     
+  virtual CPVideoFrame GetFrame(int n, CLip& client) { return child->GetFrame(n + firstframe, client); }
+  virtual void GetAudio(void* buf, __int64 start, __int64 count) { child->GetAudio( buf, start + audio_offset, + count); }
 
-  static AVSValue __cdecl Create(AVSValue args, void*, IScriptEnvironment* env);  
-
-private:
-  int firstframe;
-  __int64 audio_offset;
 };
 
 
-
-
-class FreezeFrame : public GenericVideoFilter 
 /**
   * Class to display a single frame for the duration of several
  **/
-{
-public:
-  FreezeFrame(int _first, int _last, int _source, PClip _child);
-  PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
-  bool __stdcall GetParity(int n);
+class FreezeFrame : public ChildClip {
 
-  static AVSValue __cdecl Create(AVSValue args, void*, IScriptEnvironment* env); 
-
-private:
   const int first, last, source;
+
+public:
+  FreezeFrame(PClip _child, int _first, int _last, int _source)
+    : ChildClip(child), first(_first), last(_last), source(_source) { }
+
+  virtual CPVideoFrame GetFrame(int n, Clip& client) { return child->GetFrame((n >= first && n <= last) ? source : n, client); }
+
 };
 
 
 
-
-class DeleteFrame : public GenericVideoFilter 
 /**
   * Class to delete a frame
  **/
-{  
-public:
-  DeleteFrame(int _frame, PClip _child);
-  PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
-  bool __stdcall GetParity(int n);
+class DeleteFrame : public EditFilter {
 
-  static AVSValue __cdecl Create(AVSValue args, void*, IScriptEnvironment* env);
-
-private:
   const int frame;
+
+public:
+  DeleteFrame(PClip child, int _frame)
+    : ChildClip(_child, _child->GetVideoInfo().DecreaseFrameCount()), frame(_frame) { }
+
+  virtual CPVideoFrame GetFrame(int n, Clip& client) { return child->GetFrame( n < frame ? n : n + 1, client); }
+
 };
 
 
 
-
-class DuplicateFrame : public GenericVideoFilter 
 /**
   * Class to duplicate a frame
  **/
-{  
-public:
-  DuplicateFrame(int _frame, PClip _child);
-  PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
-  bool __stdcall GetParity(int n);
+class DuplicateFrame : public GenericVideoFilter {
 
-  static AVSValue __cdecl Create(AVSValue args, void*, IScriptEnvironment* env);
-
-private:
   const int frame;
+
+public:
+  DuplicateFrame(PClip child, int _frame)
+    : ChildClip(_child, _child->GetVideoInfo().IncreaseFrameCount()), frame(_frame) { }
+
+  virtual CPVideoFrame GetFrame(int n, Clip& client) { return child->GetFrame( n > frame ? n - 1: n, client); }
 };
 
 
+
+
+
+class Splice : public 
 
 
 class Splice : public GenericVideoFilter 

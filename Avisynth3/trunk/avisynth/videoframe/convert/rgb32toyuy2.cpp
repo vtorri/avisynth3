@@ -22,163 +22,163 @@
 
 
 //avisynth includes
-#include "yuy2videoframe.h"
-#include "rgb32videoframe.h"
-#include "../../colorspace/yuy2.h"
+#include "../vframe_yuy2.h"
+#include "../vframe_rgb32.h"
+#include "../../colorspace.h"
 
 
 namespace avs {
 
 
-YUY2VideoFrame::YUY2VideoFrame(const RGB32VideoFrame& other)
-: InterleavedVideoFrame( CS::YUY2::instance(), other )
+VideoFrame::YUY2::YUY2(RGB32 const& source)
+  : Interleaved( ColorSpace::yuy2(), source )
 {
 
-  CWindowPtr src = other.GetMain().GetReadPtr();
+  CWindowPtr src = source.GetMain().GetReadPtr();
   WindowPtr dst = GetMain().GetWritePtr();
 
-  const Dimension dim = GetDimension();
-
-  src.to(0, dim.Getheight() - 1);           //rgb is upside down
+  src.to(0, src.height - 1);           //rgb is upside down
 
 
-	/*****************************	
-	 * MMX code by Klaus Post
-	 * - Notes on MMX:
-	 * Fractions are one bit less than integer code,
-	 *  but otherwise the algorithm is the same, except
-	 *  r_y and b_y are calculated at the same time.
-	 * Order of executin has been changed much for better pairing possibilities.
-	 * It is important that the 64bit values are 8 byte-aligned
-	 *  otherwise it will give a huge penalty when accessing them.
-   * Instructions pair rather ok, instructions from the top is merged
-	 *  into last part, to avoid dependency stalls.
-	 *  (paired instrucions are indented by a space)
-	 *****************************/
+	/////////////////////////////////////////////////////////////////////////////////////////
+	// MMX code by Klaus Post
+	// - Notes on MMX:
+	// Fractions are one bit less than integer code,
+	//  but otherwise the algorithm is the same, except
+	//  r_y and b_y are calculated at the same time.
+	// Order of executin has been changed much for better pairing possibilities.
+	// It is important that the 64bit values are 8 byte-aligned
+	//  otherwise it will give a huge penalty when accessing them.
+  // Instructions pair rather ok, instructions from the top is merged
+	//  into last part, to avoid dependency stalls.
+	//  (paired instrucions are indented by a space)
+	//
+  // Modifications by David Pierre :
+  //   - removed entry test, 3.0 guarantees there are pixels to work on
+  //   - process 4 pixels per xloop (we may make extra work if width != 0 mod4)
+  //   - almost perfect pairing now (just a couple artificial pair to lessen mem access) 
 
-
-//void ConvertToYUY2::mmx_ConvertRGB32toYUY2(unsigned int *src,unsigned int *dst,int src_pitch, int dst_pitch,int w, int h) {
-
-  __declspec(align(8)) static const __int64 rgb_mask    = 0x00ffffff00ffffff;
-	__declspec(align(8)) static const __int64 fraction    = 0x0000000000084000;    //= 0x108000/2 = 0x84000
-	__declspec(align(8)) static const __int64 add_32      = 0x0000000000000020;    //= 32 shifted 15 up
-	__declspec(align(8)) static const __int64 rb_mask     = 0x0000ffff0000ffff;    //=Mask for unpacked R and B
-  __declspec(align(8)) static const __int64 y1y2_mult   = 0x0000000000004A85;
-	__declspec(align(8)) static const __int64 fpix_add    = 0x0080800000808000;
-	__declspec(align(8)) static const __int64 fpix_mul    = 0x00000282000001fb;
-	__declspec(align(8)) static const __int64 chroma_mask = 0x00000000ff00ff00;
-	__declspec(align(8)) static const __int64 low32_mask  = 0x00000000ffffffff;
+	__declspec(align(8)) static __int64 const yRounder  = 0x0008400000084000; // 16.5<<16=0x108000  /2 = 0x84000
+	__declspec(align(8)) static __int64 const yyMult    = 0x4A854A854A854A85; // int(255.0 / 219.0 * 32768 + 0.5) = 0x4A85
+	__declspec(align(8)) static __int64 const yyMult32  = 0x000950A0000950A0; // 32*int(255.0 / 219.0 * 32768 + 0.5) = 0x950A0
+	__declspec(align(8)) static __int64 const uvRounder = 0x0080800000808000; // 128.5<<16=0x808000
+	// int(1 / 2.018 * 1024 + 0.5) = 0x01FB
+  // int(1 / 1.596 * 1024 + 0.5) = 0x0282
+  __declspec(align(8)) static __int64 const uvMult    = 0x00000282000001FB;
   
-  //  const int cyb = int(0.114*219/255*32768+0.5);
-  //  const int cyg = int(0.587*219/255*32768+0.5);
-  //  const int cyr = int(0.299*219/255*32768+0.5);
-  //	__declspec(align(8)) const __int64 cybgr_64 = (__int64)cyb|(((__int64)cyg)<<16)|(((__int64)cyr)<<32);
-	__declspec(align(8)) const __int64 cybgr_64 = 0x000020DE40870c88;
-
-	int lwidth_bytes = dim.GetWidth()<<2;    // Width in bytes
+  // cyb = int(0.114 * 219 / 255 * 32768 + 0.5) = 0x0c88
+  // cyg = int(0.587 * 219 / 255 * 32768 + 0.5) = 0x4087
+  // cyr = int(0.299 * 219 / 255 * 32768 + 0.5) = 0x20DE
+	__declspec(align(8)) static __int64 const cybgr     = 0x000020DE40870c88;
 
 
-#define SRC eax
-#define DST edi
-#define RGBOFFSET ecx
-#define YUVOFFSET edx
+  int y = src.height;                 //y loop counter
+  int xcount = (dst.width + 4) / 8;   //we do 4 pixels per xloop
 
-	for ( int y = dim.GetHeight(); y-- > 0; src.to(0, -1), dst.to(0, 1) )
+  int src_pad = -16*xcount - src.pitch;   //back to start then next line (neg coz rgb upside down)
+  int dst_pad = dst.pitch - 8 * xcount;   //back to start then next line
+
+	__asm 
   {
-	__asm {
-		mov SRC,src.ptr
-		mov DST,dst.ptr
-		mov RGBOFFSET,0
-		mov YUVOFFSET,0
-		cmp       RGBOFFSET,[lwidth_bytes]
-		jge       outloop		; Jump out of loop if true (width==0?? - somebody brave should remove this test)
-		movq mm3,[rgb_mask]
-		movq mm0,[SRC+RGBOFFSET]		; mm0= XXR2 G2B2 XXR1 G1B1
-		pand mm0,mm3								; mm0= 00R2 G2B2 00R1 G1B1
-		punpcklbw mm1,mm0						; mm1= 0000 R100 G100 B100
-		movq mm4,[cybgr_64]
-		align 16
-re_enter:
-		punpckhbw mm2,mm0				; mm2= 0000 R200 G200 B200
-		 movq mm3,[fraction]
-		psrlw mm1,8							; mm1= 0000 00R1 00G1 00B1
-	  psrlw mm2,8							; mm2= 0000 00R2 00G2 00B2 
-		 movq mm6,mm1						; mm6= 0000 00R1 00G1 00B1 (shifter unit stall)
-		pmaddwd mm1,mm4						; mm1= v2v2 v2v2 v1v1 v1v1   y1 //(cyb*rgb[0] + cyg*rgb[1] + cyr*rgb[2] + 0x108000)
-		 movq mm7,mm2						; mm7= 0000 00R2 00G2 00B2		 
-		  movq mm0,[rb_mask]
-		pmaddwd mm2,mm4						; mm1= w2w2 w2w2 w1w1 w1w1   y2 //(cyb*rgbnext[0] + cyg*rgbnext[1] + cyr*rgbnext[2] + 0x108000)
-		 paddd mm1,mm3						; Add rounding fraction
-		  paddw mm6,mm7					; mm6 = accumulated RGB values (for b_y and r_y) 
-		paddd mm2,mm3						; Add rounding fraction (lower dword only)
-		 movq mm4,mm1
-		movq mm5,mm2
-		pand mm1,[low32_mask]
-		 psrlq mm4,32
-		pand mm6,mm0						; Clear out accumulated G-value mm6= 0000 RRRR 0000 BBBB
-		pand mm2,[low32_mask]
-		 psrlq mm5,32
-		paddd mm1,mm4				    ;mm1 Contains final y1 value (shifted 15 up)
-		 psllq mm6, 14					; Shift up accumulated R and B values (<<15 in C)
-		paddd mm2,mm5					  ;mm2 Contains final y2 value (shifted 15 up)
-		 psrlq mm1,15
-		movq mm3,mm1
-		 psrlq mm2,15
-		movq mm4,[add_32]
-		 paddd mm3,mm2					;mm3 = y1+y2
-		movq mm5,[y1y2_mult]
-		 psubd mm3,mm4					; mm3 = y1+y2-32 		mm0,mm4,mm5,mm7 free
-    movq mm0,[fpix_add]			; Constant that should be added to final UV pixel
-	   pmaddwd mm3,mm5				; mm3=scaled_y (latency 2 cycles)
-      movq mm4,[fpix_mul]		; Constant that should be multiplied to final UV pixel	  
-		  psllq mm2,16					; mm2 Y2 shifted up (to clear fraction) mm2 ready
-		punpckldq mm3,mm3						; Move scaled_y to upper dword mm3=SCAL ED_Y SCAL ED_Y 
-		psubd mm6,mm3								; mm6 = b_y and r_y (stall)
-		psrld mm6,9									; Shift down b_y and r_y (>>10 in C-code) 
-		 por mm1,mm2								; mm1 = 0000 0000 00Y2 00Y1
-		pmaddwd mm6,mm4							; Mult b_y and r_y 
-		 pxor mm2,mm2
-		 movq mm7,[chroma_mask]
-		paddd mm6, mm0							; Add 0x800000 to r_y and b_y 
-		 add RGBOFFSET,8
-		psrld mm6,9									; Move down, so fraction is only 7 bits
-		 cmp       RGBOFFSET,[lwidth_bytes]
-		jge       outloop						; Jump out of loop if true
-		packssdw mm6,mm2						; mm6 = 0000 0000 VVVV UUUU (7 bits fraction) (values above 0xff are saturated)
-		 movq mm3,[rgb_mask]				;														[From top (to get better pairing)]
-		psllq mm6,1									; Move up, so fraction is 8 bit
-		 movq mm0,[SRC+RGBOFFSET]		; mm0= XXR2 G2B2 XXR1 G1B1	[From top (to get better pairing)]
-		pand mm6,mm7					; Clear out fractions
-		 pand mm0,mm3								; mm0= 00R2 G2B2 00R1 G1B1  [From top (to get better pairing)]
-		por mm6,mm1									; Or luma and chroma together			
-		 movq mm4,[cybgr_64]        ;                           [From top (to get better pairing)]
-		movd [DST+YUVOFFSET],mm6		; Store final pixel						
-		 punpcklbw mm1,mm0					; mm1= 0000 R100 G100 B100
-		add YUVOFFSET,4			// Two pixels (packed)
-		jmp re_enter
-outloop:
-		// Do store without loading next pixel
-		packssdw mm6,mm2			; mm6 = 0000 0000 VVVV UUUU (7 bits fraction) (values above 0xff are saturated)
-		psllq mm6,1						; Move up, so fraction is 8 bit
-		pand mm6,mm7					; Clear out fractions
-		por mm1,mm6						; Or luma and chroma together
-		movd [DST+YUVOFFSET],mm1	; Store final pixel
-		} // end asm
-	} // end for y
+	  mov         esi, src.ptr          //esi points to src
+		mov         edi, dst.ptr          //edi points to dst
+    
+    sub         edi, 8                //edi -= 8  later we add to edi before writing to
 
-#undef SRC
-#undef DST
-#undef RGBOFFSET
-#undef YUVOFFSET
- 
+    align 16
+
+  yloop:
+
+    mov         ecx, xcount           //x loop counter
+
+		movq        mm0, [esi]		        //mm0 = XXR1 G1B1 XXR0 G0B0
+     pxor       mm6, mm6              //mm6 = 0
+    movq        mm2, [esi + 8]        //mm2 = XXR3 G3B3 XXR2 G2B2
+	   punpckhbw  mm1, mm0              //mm1 = XXXX R1XX G1XX B1XX
+    movq        mm7, cybgr            //mm7 = 0000  cyr  cyg  cyr
+     punpcklbw  mm0, mm6              //mm0 = 00XX 00R0 00G0 00B0
+    movq        mm4, mm0              //mm4 = 00XX 00R0 00G0 00B0
+     psrlw      mm1, 8                //mm1 = 00XX 00R1 00G1 00B1
+
+    align 16
+
+  xloop:
+
+    paddw       mm4, mm1              //mm4 = 0XXX R0+1 0XXX B0+1
+     punpckhbw  mm3, mm2              //mm3 = XXXX R3XX G3XX B3XX	
+    pmaddwd     mm0, mm7              //mm0 =  cyr*R0 cyg*G0+cyb*B0    
+		 punpcklbw  mm2, mm6              //mm2 = 00XX 00R2 00G2 00B2
+    pmaddwd     mm1, mm7              //mm1 =  cyr*R1 cyg*G1+cyb*B1
+     pslld      mm4, 14               //mm4 = R0+R1<<14 B0+B1<<14    XXX got killed  (was 15 in C)
+    movq        mm5, mm2              //mm5 = 00XX 00R2 00G2 00B2
+     psrlw      mm3, 8                //mm3 = 00XX 00R3 00G3 00B3
+    pmaddwd     mm2, mm7              //mm2 =  cyr*R2 cyg*G2+cyb*B2
+     paddw      mm5, mm3              //mm5 = 0XXX R2+3 0XXX B2+3
+    movq        mm6, mm0              //mm6 =  cyr*R0 cyg*G0+cyb*B0  no stall
+     pslld      mm5, 14               //mm5 = R2+R3<<14 B2+B3<<14    XXX got killed  (was 15 in C)
+    pmaddwd     mm3, mm7              //mm1 =  cyr*R3 cyg*G3+cyb*B3  
+     punpckldq  mm0, mm1              //mm0 = g*G1+b*B1 g*G0+b*B0
+    paddd       mm0, yRounder
+     punpckhdq  mm6, mm1              //mm6 =   cyr*R1   cyr*R0
+    paddd       mm0, mm6              //mm0 =   Y1<<15   Y0<<15
+     add        esi, 16               //esi += 16  next src pixels
+    movq        mm7, mm2              //mm7 =  cyr*R2 cyg*G2+cyb*B2  no stall
+     psrld      mm0, 15               //mm0 = 0000 00Y1 0000 00Y0
+    movq        mm1, mm0              //mm1 = 0000 00Y1 0000 00Y0
+     punpckldq  mm2, mm3              //mm2 = g*G3+b*B3 g*G2+b*B2
+    paddd       mm2, yRounder
+     packssdw   mm1, mm1              //mm1 = 00Y1 00Y0 00Y1 00Y0
+    pmaddwd     mm1, yyMult           //mm1 = 00 YYY01  00 YYY01    24 bits not zeros (max)
+     punpckhdq  mm7, mm3              //mm7 =   cyr*R3   cyr*R2 
+    paddd       mm4, yyMult32         //mm4 = 00 RRR01  00 BBB01    24 bits not zeros (max)
+     paddd      mm2, mm7              //mm2 =   Y3<<15   Y2<<15
+    paddd       mm5, yyMult32         //mm4 = 00 RRR23  00 BBB23    24 bits not zeros (max)
+     psrld      mm2, 15               //mm2 = 0000 00Y3 0000 00Y2
+    movq        mm3, mm2              //mm3 = 0000 00Y3 0000 00Y2
+     packssdw   mm0, mm2              //mm0 = 00Y3 00Y2 00Y1 00Y0
+    pmaddwd     mm3, yyMult           //mm3 = 00 YYY23  00 YYY23    24 bits not zeros (max)
+     psubd      mm4, mm1              //mm4 = ss 'r_y'  ss 'b_y'    ss is either 00 or FF (sign)
+    movq        mm1, uvMult           //mm1 = uvMult
+     psrad      mm4, 9                //mm4 = ssss sr_y ssss sb_y   1 sign bit got through
+    pmaddwd     mm4, mm1              // * uvMult
+     add        edi, 8                //edi += 8   next dst pixels
+    psubd       mm5, mm3              //mm5 = ss 'r_y'  ss 'b_y'    ss is either 00 or FF (sign)
+     dec        ecx                   //--ecx
+    movq        mm2, uvRounder        //mm2 = uvRounder
+     psrad      mm5, 9                //mm5 = ssss sr_y ssss sb_y   1 sign bit got through
+    pmaddwd     mm5, mm1              // * uvMult
+     paddd      mm4, mm2              //mm4 = VV01 XXXX UU01 XXXX
+    movq        mm3, mm0              //mm3 = 00Y3 00Y2 00Y1 00Y0
+     psrld      mm4, 16               //mm4 = 0000 VV01 0000 UU01
+    movq        mm0, [esi]            //mm0 = XXR1 G1B1 XXR0 G0B0 from top for better pairing
+     pxor       mm6, mm6              //mm6 = 0                   from top for better pairing
+    paddd       mm5, mm2              //mm5 = VV23 XXXX UU23 XXXX
+	   punpckhbw  mm1, mm0              //mm1 = XXXX R1XX G1XX B1XX from top for better pairing
+    movq        mm2, [esi + 8]        //mm2 = XXR3 G3B3 XXR2 G2B2 from top for better pairing
+     psrld      mm5, 16               //mm5 = 0000 VV23 0000 UU23
+    movq        mm7, cybgr            //mm7 = 0000  cyr  cyg  cyr from top for better pairing
+     packuswb   mm4, mm5              //mm4 = 00Vb 00Ub 00Va 00Ua
+    movq        mm5, mm4              //mm5 = 00Vb 00Ub 00Va 00Ua
+     punpcklbw  mm0, mm6              //mm0 = 00XX 00R0 00G0 00B0 from top for better pairing
+    movq        mm4, mm0              //mm4 = 00XX 00R0 00G0 00B0 from top for better pairing
+     psllw      mm5, 8                //mm5 = Vb00 Ub00 Va00 Ua00
+    por         mm5, mm3              //mm5 = VbY3 UbY2 VaY1 UaY0
+     psrlw      mm1, 8                //mm1 = 00XX 00R1 00G1 00B1 from top for better pairing
+    movq        [edi], mm5            //write to dst
+     jnz        xloop
+    
+    add        esi, src_pad           //move to next src line
+    add        edi, dst_pad           //move to next dst line
+
+    dec        y                      //--y
+    jnz        yloop
+
+    emms
+  }
 }
 
 
 
 
 
-
-
-
-
-}; //namespace avs
+} //namespace avs

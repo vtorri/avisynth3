@@ -34,6 +34,7 @@ namespace avs {
 
 //declarations
 class Clip;
+class Blitter;
 class Property;
 struct Vecteur;
 class Dimension;

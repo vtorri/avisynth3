@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -41,22 +41,27 @@ namespace avs {
 //
 //
 //
-class Box
-     : boost::andable<Box             //defines Box & Box   (intersection)
-     , boost::orable<Box              //defines Box | Box   (union)
-     , boost::addable2<Box, Vecteur>  //defines Box + Vecteur
+template <typename T>
+class box
+     : boost::andable<box<T>                 //defines Box & Box      (intersection)
+     , boost::orable<box<T>                  //defines Box | Box      (union)
+     , boost::addable2<box<T>, vecteur<T> >  //defines Box + Vecteur  (translation)
      > >
 {
 
-  Vecteur pos_;
-  Dimension dim_;
+  typedef box<T> BoxType;
+  typedef vecteur<T> VecteurType;
+  typedef dimension<T> DimensionType;
+
+  VecteurType pos_;
+  DimensionType dim_;
 
 
 public:  //structors
 
-  Box() { }
-  Box(Vecteur const& pos, Dimension const& dim) : pos_( pos ), dim_( dim ) { }
-  Box(Vecteur const& topLeft, Vecteur const& bottomRight) : pos_( topLeft ), dim_( bottomRight - topLeft ) { }
+  box() { }
+  box(VecteurType const& pos, DimensionType const& dim) : pos_( pos ), dim_( dim ) { }
+  box(VecteurType const& topLeft, VecteurType const& bottomRight) : pos_( topLeft ), dim_( bottomRight - topLeft ) { }
 
   //generated destructor and copy constructor are fine
 
@@ -65,48 +70,51 @@ public:  //assignment
 
   //generated operator= is fine
 
-  void swap(Box& other) { pos_.swap(other.pos_); dim_.swap(other.dim_); }
+  void swap(BoxType& other) { pos_.swap(other.pos_); dim_.swap(other.dim_); }
 
 
 public:  //read access
 
-  Vecteur const& GetPosition() const { return pos_; }
-  Dimension const& GetDimension() const { return dim_; }
+  VecteurType const& GetPosition() const { return pos_; }
+  DimensionType const& GetDimension() const { return dim_; }
+
+
+public:  //comparison operators
+
+  bool operator==(BoxType const& other) const { return dim_ == other.dim_ && pos_ == other.pos_; }
+  bool operator!=(BoxType const& other) const { return dim_ != other.dim_ || pos_ != other.pos_; }
 
 
 public:  //operators
 
-  Box& operator&=(Box const& other)
+  BoxType& operator&=(Box const& other)
   {
-    Vecteur position = max(pos_, other.pos_);                                     //get top left corner of the box
-    dim_ = Dimension( min(pos_ + dim_, other.pos_ + other.dim_) - position );     //calculate bottom right
-    pos_ = position;                                                              //update pos_
+    VecteurType position = pmax(pos_, other.pos_);                                  //get top left corner of the box
+    dim_ = DimensionType( pmin(pos_ + dim_, other.pos_ + other.dim_) - position );  //calculate bottom right
+    pos_ = position;                                                                //update pos_
     return *this;
   }
 
-  Box& operator|=(Box const& other)
+  BoxType& operator|=(Box const& other)
   {
-    Vecteur position = min(pos_, other.pos_);                                     //get top left corner of the box
-    dim_ = Dimension( max(pos_ + dim_, other.pos_ + other.dim_) - position );     //calculate bottom right
-    pos_ = position;                                                              //update pos_
+    VecteurType position = pmin(pos_, other.pos_);                                  //get top left corner of the box
+    dim_ = DimensionType( pmax(pos_ + dim_, other.pos_ + other.dim_) - position );  //calculate bottom right
+    pos_ = position;                                                                //update pos_
     return *this;
   }
 
-  Box& operator+=(Vecteur const& vect)
+  BoxType& operator+=(VecteurType const& vect)
   {
     pos_ += vect;
     return *this;
   }
 
-
-  bool operator==(Box const& other) const { return dim_ == other.dim_ && pos_ == other.pos_; }
-  bool operator!=(Box const& other) const { return dim_ != other.dim_ || pos_ != other.pos_; }
-
 };
 
 
 //global scope swap
-inline void swap(Box& left, Box& right) { left.swap(right); }
+template <typename T>
+inline void swap(box<T>& left, box<T>& right) { left.swap(right); }
 
 
 } //namespace avs

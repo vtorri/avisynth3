@@ -40,7 +40,7 @@ namespace avs { namespace filters { namespace tweak {
 class YV12 : public Tweak
 {
 
-public:  //constructors
+protected:  //constructors
 
   YV12(PClip child, double hue, double sat, double bright, double cont)
     : Tweak(child , hue, sat, bright, cont) { }
@@ -52,6 +52,19 @@ public:  //constructors
 protected:  //Pipeline interface
 
   virtual CPVideoFrame MakeFrame(CPVideoFrame const& source) const;
+
+
+public:  //factory methods
+
+  static PClip Create(PClip const& child, double hue, double sat, double bright, double cont) 
+  { 
+    return PClip( (Clip *)new YV12(child, hue, sat, bright, cont) ); 
+  }
+
+  static PClip Create(PClip const& child, Tweak const& other)
+  {
+    return PClip( (Clip *)new YV12(child, other) );
+  }
 
 };
 

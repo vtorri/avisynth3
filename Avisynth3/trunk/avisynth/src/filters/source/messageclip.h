@@ -36,7 +36,7 @@ namespace avs {
   
   
 //declaration
-namespace text { class Font; }
+namespace text { namespace freetype { class Font; } }
   
   
 
@@ -70,7 +70,7 @@ public:  //various clip factory methods
 
 private:  
 
-  static CPVideoFrame CreateFrame(std::string const& msg, text::Font const& font, Dimension const& dim, PColorSpace const& space, PEnvironment const& env);
+  static CPVideoFrame CreateFrame(std::string const& msg, text::freetype::Font const& font, Dimension const& dim, PColorSpace const& space, PEnvironment const& env);
 
   static CPVideoFrame CreateFrame(std::string const& msg, PEnvironment const& env);
 

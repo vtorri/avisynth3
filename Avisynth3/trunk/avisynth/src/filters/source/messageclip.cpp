@@ -23,11 +23,12 @@
 
 //avisynth includes
 #include "messageclip.h"
-#include "../../text/font.h"
-#include "../../text/antialiaser.h"
+#include "../../text/rasterizer.h"
 #include "../../core/videoinfo.h"
 #include "../../core/videoframe.h"
 #include "../../core/colorspace.h"
+#include "../../core/ownedblock.h"
+#include "../../core/bufferwindow.h"
 #include "../../core/geometry/vecteur.h"
 #include "../../core/runtime_environment.h"
 
@@ -42,17 +43,20 @@ MessageClip::MessageClip(std::string const& msg, PEnvironment const& env)
 
 
 MessageClip::MessageClip(std::string const& msg, CPVideoInfo const& vi, PEnvironment const& env)
-  : StaticImage( CreateFrame(msg, text::Font("Arial", 28, false, false), vi->GetDimension(), vi->GetColorSpace(), env), vi )
+  : StaticImage( CreateFrame(msg, text::freetype::Font("C:\\WINNT\\Fonts\\Arial.ttf", 28), vi->GetDimension(), vi->GetColorSpace(), env), vi )
   , msg_( msg ) { }
 
 
-CPVideoFrame MessageClip::CreateFrame(std::string const& msg, text::Font const& font, Dimension const& dim, PColorSpace const& space, PEnvironment const& env)
+CPVideoFrame MessageClip::CreateFrame(std::string const& msg, text::freetype::Font const& font, Dimension const& dim, PColorSpace const& space, PEnvironment const& env)
 {
   PVideoFrame result = env->CreateFrame(space, dim, PROGRESSIVE);
 
-  text::Antialiaser aliaser(dim, env, font);
-  aliaser.SetText(msg, Vecteur(dim.GetWidth() >> 1, 0), text::TOP_CENTER);
-  aliaser.Apply(*result, 0xF0F0F0, 0);
+  BufferWindow masks(dim.Multiply<2, 1>(), env);
+
+  text::Rasterizer rasterizer(font);
+  rasterizer(msg, masks.Write(), text::freetype::VecteurFP6(dim.GetWidth() >> 1, 0), text::TOP_CENTER);
+  rasterizer.ApplyTo(masks.Read(), 0xF0F0F0, 0, *result);
+
 
   return result;
 }
@@ -60,9 +64,14 @@ CPVideoFrame MessageClip::CreateFrame(std::string const& msg, text::Font const& 
 
 CPVideoFrame MessageClip::CreateFrame(std::string const& msg, PEnvironment const& env)
 {
-  text::Font font("Arial", 28, false, false);
+  using namespace text::freetype;
 
-  return CreateFrame(msg, font, font.GetTextBoundingBox(msg), ColorSpace::rgb32(), env);
+  Font font("C:\\WINNT\\Fonts\\Arial.ttf", 28);
+
+  DimensionFP6 dimFP6 = font.GetTextBoundingBox(msg).GetDimension();
+  Dimension dim( dimFP6.GetWidth().GetRoundedUp(), dimFP6.GetHeight().GetRoundedUp() );
+
+  return CreateFrame(msg, font, dim, ColorSpace::rgb32(), env);
 }
 
 

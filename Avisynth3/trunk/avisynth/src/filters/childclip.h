@@ -73,7 +73,7 @@ class ChildClip::Forward : public virtual ChildClip
 public:  //clip general interface
 
   virtual PEnvironment GetEnvironment() const { return GetChild()->GetEnvironment(); }
-  virtual VideoInfo const& GetVideoInfo() const { return GetChild()->GetVideoInfo(); }
+  virtual CPVideoInfo GetVideoInfo() const { return GetChild()->GetVideoInfo(); }
 
   virtual CPVideoFrame GetFrame(int n) const { return GetChild()->GetFrame(n); }
   virtual void GetAudio(void * buffer, __int64 start, int count) const { GetChild()->GetAudio(buffer, start, count); }
@@ -96,7 +96,7 @@ class ChildClip::Concrete : public virtual ChildClip
 public:  //constructor
 
   Concrete(PClip child)
-    : child_( child->Simplify(child) ) { }
+    : child_( SimplifyClip(child) ) { }
 
 
 public:  //access to child

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 #include "maker.h"
 #include "packer.h"
 #include "interleaved2x2.h"
-#include "../../../core/roundup.h"
+#include "../../../core/utility/round.h"
 
 
 namespace avs { namespace filters { namespace resize { namespace pattern {

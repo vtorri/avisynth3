@@ -25,7 +25,7 @@
 #include "maker.h"
 #include "packer.h"
 #include "interleaved2x4.h"
-#include "../../../core/roundup.h"
+#include "../../../core/utility/round.h"
 
 
 namespace avs { namespace filters { namespace resize { namespace pattern {

@@ -65,7 +65,7 @@ PClip StaticImage::CreateBlankClip(ColorSpace& space, Dimension const& dim, PEnv
 
 PClip StaticImage::CreateMessageClip(std::string const& msg, PEnvironment const& env)
 {
-  text::Font font("Arial", 16);
+  text::Font font("Arial", 28, false, false);
   Dimension dim = font.GetTextBoundingBox(msg).Shift<4, 4>();
 
   PVideoFrame frame = env->CreateFrame(ColorSpace::rgb32(), dim, PROGRESSIVE);

@@ -39,11 +39,14 @@ ToRGB24::ToRGB24(PClip const& child)
   
 PClip ToRGB24::Create(PClip const& child)
 {
-  ColorSpace& space = child->GetVideoInfo()->GetColorSpace();
+  PColorSpace space = child->GetVideoInfo()->GetColorSpace();
 
-  switch( space.id() )
+  switch( space->id() )
   {
+  case ColorSpace::I_EXTERNAL: return FromExternal(child, ColorSpace::rgb24());
+
   case ColorSpace::I_RGB32: return torgb24::FromRGB32::Create(child);
+
 
   default: throw exception::cspace::Unsupported(space);
   }

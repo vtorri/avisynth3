@@ -25,19 +25,20 @@
 #include "convert.h"
 #include "../../core/videoinfo.h"
 #include "../../core/videoframe.h"
+#include "../../core/colorspace/external.h"
 
 
 namespace avs { namespace filters {
 
 
 
-Convert::Convert(PClip const& child, ColorSpace& target)
+Convert::Convert(PClip const& child, PColorSpace const& target)
   : clip::onechild::Concrete( child )
   , clip::caching::Concrete( child->GetEnvironment() )
 {
   PVideoInfo vi = child->GetVideoInfo();   //start from child VideoInfo
   
-  vi->SetColorSpace( target );             //change colorspace (throw on incompatibilities
+  vi->SetColorSpace( target );             //change colorspace (throw on incompatibilities)
 
   vi_ = vi;                                //save it
 }
@@ -52,6 +53,14 @@ CPVideoFrame Convert::MakeFrame(CPVideoFrame const& source) const
   return target;
 }
 
+
+PClip Convert::FromExternal(PClip const& clip, PColorSpace const& target)
+{
+  boost::shared_ptr<cspace::External const> space 
+      = boost::dynamic_pointer_cast<cspace::External const>(clip->GetVideoInfo()->GetColorSpace());
+
+  return space->ConvertFrom(clip, target);
+}
 
 
 } } //namespace avs::filters

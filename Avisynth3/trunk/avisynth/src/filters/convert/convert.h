@@ -49,7 +49,7 @@ class Convert : public clip::onechild::CachingPipeline
 
 public:  //structors
 
-  Convert(PClip const& child, ColorSpace& target);
+  Convert(PClip const& child, PColorSpace const& target);
 
   //generated destructor is fine
 
@@ -67,6 +67,16 @@ protected:  //Pipeline interface
 private:  //Convert method
 
   virtual void ConvertFrame(VideoFrame const& source, VideoFrame& target) const = 0;
+
+
+protected:  //implementation helper
+
+  static PClip FromExternal(PClip const& clip, PColorSpace const& target);
+
+
+public:  //factory method
+
+  static PClip Create(PClip const& clip, PColorSpace const& target);
 
 };
 

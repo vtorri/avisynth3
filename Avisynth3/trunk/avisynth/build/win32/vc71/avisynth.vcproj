@@ -1089,6 +1089,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath="..\..\..\src\filters\source\colorbars.h">
 				</File>
 				<File
+					RelativePath="..\..\..\src\filters\source\messageclip.cpp">
+				</File>
+				<File
 					RelativePath="..\..\..\src\filters\source\messageclip.h">
 				</File>
 				<File
@@ -1212,6 +1215,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			</File>
 			<File
 				RelativePath="..\..\..\src\linker\plugin.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\linker\scriptcontext.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\linker\scriptcontext.h">

@@ -74,6 +74,7 @@ typedef cow_shared_ptr<VideoFrame> PVideoFrame;
 
 //weak_ptr typedefs
 typedef boost::weak_ptr<Clip const> WeakPClip;
+typedef boost::weak_ptr<ColorSpace const> WeakPColorSpace;
 typedef boost::weak_ptr<RuntimeEnvironment> WeakPEnvironment;
 
 

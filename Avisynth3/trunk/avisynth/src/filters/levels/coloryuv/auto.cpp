@@ -89,4 +89,5 @@ CPVideoFrame Auto::MakeFrame(PVideoFrame const& source) const
 }
 
 
+
 } } } //namespace avs::filters::coloryuv

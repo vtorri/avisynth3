@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -47,12 +47,14 @@ class VideoFrame;
 class RuntimeEnvironment;
 template <int align> class block_;
 template <int align> class owned_block;
+template <typename T> class box;
 template <typename T> struct vecteur;
 template <typename T> class dimension;
 template <int align, int guard = block::Align, class Buffer = owned_block<1> > class buffer_window;
 
 //typedefs
 typedef unsigned char BYTE;
+typedef box<long> Box;
 typedef vecteur<long> Vecteur;
 typedef dimension<long> Dimension;
 typedef block_<block::Align> Block;

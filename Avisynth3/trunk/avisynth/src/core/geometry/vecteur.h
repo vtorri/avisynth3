@@ -56,8 +56,9 @@ struct Vecteur
   
   Vecteur(Dimension const& dim)  : x( dim.GetWidth() ), y( dim.GetHeight() ) { }
 
-  //operators
+  //assignment
   Vecteur& operator=(Vecteur const& other) { x = other.x; y = other.y; return *this; }
+  void swap(Vecteur& other) { std::swap(x, other.x); std::swap(y, other.y); }
 
   //classic vector operators
   Vecteur operator-() const { return Vecteur(-x, -y); }
@@ -82,15 +83,12 @@ struct Vecteur
 };
 
 
-inline Vecteur min(Vecteur const& left, Vecteur const& right)
-{
-  return Vecteur( std::min(left.x, right.x), std::min(left.y, right.y) );
-}
+//global scope swap
+inline void swap(Vecteur& left, Vecteur& right) { left.swap(right); }
 
-inline Vecteur max(Vecteur const& left, Vecteur const& right)
-{
-  return Vecteur( std::max(left.x, right.x), std::max(left.y, right.y) );
-}
+//parallel min and max
+inline Vecteur min(Vecteur const& left, Vecteur const& right) { return Vecteur( std::min(left.x, right.x), std::min(left.y, right.y) ); }
+inline Vecteur max(Vecteur const& left, Vecteur const& right) { return Vecteur( std::max(left.x, right.x), std::max(left.y, right.y) ); }
 
 
 inline Dimension::Dimension(Vecteur const& vect) : x_( CheckSign(vect.x) ), y_( CheckSign(vect.y) ) { }

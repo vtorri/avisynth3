@@ -41,13 +41,16 @@
 
 #include "AVIReadHandler.h"
 
+#include <boost/scoped_ptr.hpp>  //smart ptr template for pointers autodestruction
+#include <boost/scoped_array.hpp>
+using namespace boost;
 
 class AVISource : public IClip {
   IAVIReadHandler *pfile;
-  IAVIReadStream *pvideo;
+  scoped_ptr<IAVIReadStream> pvideo;
   HIC hic;
   VideoInfo vi;
-  BYTE* srcbuffer;
+  scoped_array<BYTE> srcbuffer;
   int srcbuffer_size;
   BITMAPINFOHEADER* pbiSrc;
   BITMAPINFOHEADER biDst;
@@ -55,8 +58,8 @@ class AVISource : public IClip {
   bool dropped_frame;
   PVideoFrame last_frame;
   int last_frame_no;
-  AudioSource* aSrc;
-  AudioStreamSource* audioStreamSource;
+  scoped_ptr<AudioSource> aSrc;
+  scoped_ptr<AudioStreamSource> audioStreamSource;
   int audio_stream_pos;
 
   LRESULT DecompressBegin(LPBITMAPINFOHEADER lpbiSrc, LPBITMAPINFOHEADER lpbiDst);
@@ -109,20 +112,19 @@ LRESULT AVISource::DecompressFrame(int n, bool preroll, BYTE* buf) {
     return ICERR_OK;
   }
   long bytes_read = srcbuffer_size;
-  LRESULT err = pvideo->Read(n, 1, srcbuffer, srcbuffer_size, &bytes_read, NULL);
-  while (err == AVIERR_BUFFERTOOSMALL || (err == 0 && !srcbuffer)) {
-    delete[] srcbuffer;
+  LRESULT err = pvideo->Read(n, 1, srcbuffer.get(), srcbuffer_size, &bytes_read, NULL);
+  while (err == AVIERR_BUFFERTOOSMALL || (err == 0 && !srcbuffer.get())) {
     pvideo->Read(n, 1, 0, srcbuffer_size, &bytes_read, NULL);
-    srcbuffer = new BYTE[srcbuffer_size = bytes_read];
-    err = pvideo->Read(n, 1, srcbuffer, srcbuffer_size, &bytes_read, NULL);
+    srcbuffer.reset( new BYTE[srcbuffer_size = bytes_read] );
+    err = pvideo->Read(n, 1, srcbuffer.get(), srcbuffer_size, &bytes_read, NULL);
   }
   dropped_frame = !bytes_read;
   int flags = preroll ? ICDECOMPRESS_PREROLL : 0;
   flags |= dropped_frame ? ICDECOMPRESS_NULLFRAME : 0;
   flags |= !pvideo->IsKeyFrame(n) ? ICDECOMPRESS_NOTKEYFRAME : 0;
   pbiSrc->biSizeImage = bytes_read;
-  return !ex ? ICDecompress(hic, flags, pbiSrc, srcbuffer, &biDst, buf)
-    : ICDecompressEx(hic, flags, pbiSrc, srcbuffer, 0, 0, vi.width, vi.height, &biDst, buf, 0, 0, vi.width, vi.height);
+  return !ex ? ICDecompress(hic, flags, pbiSrc, srcbuffer.get(), &biDst, buf)
+    : ICDecompressEx(hic, flags, pbiSrc, srcbuffer.get(), 0, 0, vi.width, vi.height, &biDst, buf, 0, 0, vi.width, vi.height);
 }
 
 
@@ -215,14 +217,11 @@ void AVISource::LocateVideoCodec(IScriptEnvironment* env) {
 
 
 AVISource::AVISource(const char filename[], bool fAudio, const char pixel_type[], int mode, IScriptEnvironment* env) {
-  srcbuffer = 0; srcbuffer_size = 0;
+  srcbuffer_size = 0;
   memset(&vi, 0, sizeof(vi));
   ex = false;
   last_frame_no = -1;
   pbiSrc = 0;
-  aSrc = 0;
-  audioStreamSource = 0;
-  pvideo=0;
   pfile=0;
   
   AVIFileInit();
@@ -253,8 +252,8 @@ AVISource::AVISource(const char filename[], bool fAudio, const char pixel_type[]
   
   if (mode != 3) { // check for video stream
     hic = 0;
-    pvideo = pfile->GetStream(streamtypeVIDEO, 0);
-    if (pvideo) {
+    pvideo.reset( pfile->GetStream(streamtypeVIDEO, 0) );
+    if (pvideo.get()) {
       LocateVideoCodec(env);
       if (hic) {
         bool fYV12  = lstrcmpi(pixel_type, "YV12" ) == 0 || pixel_type[0] == 0;
@@ -322,12 +321,12 @@ AVISource::AVISource(const char filename[], bool fAudio, const char pixel_type[]
 
   // check for audio stream
   if (fAudio && pfile->GetStream(streamtypeAUDIO, 0)) {
-    aSrc = new AudioSourceAVI(pfile, true);
+    aSrc.reset( new AudioSourceAVI(pfile, true) );
     aSrc->init();
-    audioStreamSource = new AudioStreamSource(aSrc,
+    audioStreamSource.reset( new AudioStreamSource(aSrc.get(),
                                               aSrc->lSampleFirst, 
                                               aSrc->lSampleLast - aSrc->lSampleFirst,
-                                              true);
+                                              true) );
     WAVEFORMATEX* pwfx; 
     pwfx = audioStreamSource->GetFormat();
     vi.audio_samples_per_second = pwfx->nSamplesPerSec;
@@ -355,9 +354,6 @@ AVISource::AVISource(const char filename[], bool fAudio, const char pixel_type[]
         !ex ? ICDecompressEnd(hic) : ICDecompressExEnd(hic);
         ICClose(hic);
       }
-      if (pvideo) delete pvideo;
-      if (aSrc) delete aSrc;
-      if (audioStreamSource) delete audioStreamSource;
       if (pfile)
         pfile->Release();
       AVIFileExit();
@@ -376,9 +372,6 @@ AVISource::~AVISource() {
     !ex ? ICDecompressEnd(hic) : ICDecompressExEnd(hic);
     ICClose(hic);
   }
-  if (pvideo) delete pvideo;
-  if (aSrc) delete aSrc;
-  if (audioStreamSource) delete audioStreamSource;
   if (pfile)
     pfile->Release();
   AVIFileExit();
@@ -437,7 +430,7 @@ void AVISource::GetAudio(void* buf, __int64 start, __int64 count, IScriptEnviron
     start += vi.AudioSamplesFromBytes(bytes);
   }
 
-  if (audioStreamSource) {
+  if (audioStreamSource.get()) {
     if (start != audio_stream_pos)
         audioStreamSource->Seek(start);
     samples_read = audioStreamSource->Read(buf, count, &bytes_read);

@@ -39,9 +39,9 @@ namespace avs { namespace cache {
 class CacheLogic
 {
 
-  typedef std::pair<int, CPVideoFrame> CachedVideoFrame;
+  typedef std::pair<long, CPVideoFrame> CachedVideoFrame;
 
-  typedef boost::circular_buffer<int> RequestList;
+  typedef boost::circular_buffer<long> RequestList;
   typedef boost::circular_buffer<CachedVideoFrame> FrameList;
 
 
@@ -50,9 +50,9 @@ class CacheLogic
 
   float score_;                  //controls number of cached frames
   float inertia_;                //controls speed of cache adaptation
-  int minimum_;                  //minimum size of cache to start being effective
+  long minimum_;                 //minimum size of cache to start being effective
 
-  int count_;                    //number of GetCacheFrame calls
+  long count_;                   //number of GetCacheFrame calls
 
 
 public:  //structors
@@ -64,12 +64,12 @@ public:  //structors
 
 public:  //CacheLogic interface
 
-  CPVideoFrame GetCachedFrame(int n);
-  void StoreFrame(int n, CPVideoFrame const& frame) { frames_.push_back( std::make_pair(n, frame) ); }
+  CPVideoFrame GetCachedFrame(long n);
+  void StoreFrame(long n, CPVideoFrame const& frame) { frames_.push_back( std::make_pair(n, frame) ); }
 
   bool Drop();
 
-  int GetCount() { return count_; } 
+  long GetCount() { return count_; } 
   
 
 private:  //implementation

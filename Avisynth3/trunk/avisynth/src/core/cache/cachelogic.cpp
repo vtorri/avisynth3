@@ -45,7 +45,7 @@ CacheLogic::CacheLogic()
   , count_( 1 ) { }
 
 
-CPVideoFrame CacheLogic::GetCachedFrame(int n)
+CPVideoFrame CacheLogic::GetCachedFrame(long n)
 {
   ++count_;
 
@@ -64,7 +64,7 @@ CPVideoFrame CacheLogic::GetCachedFrame(int n)
   else
   {
     //that's the size the cache should have had for n to be cached
-    int depth = requests_.end() - rit;    
+    long depth = requests_.end() - rit;    
 
     if ( depth < minimum_ ) 
       minimum_ = depth;

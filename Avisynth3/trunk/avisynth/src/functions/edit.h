@@ -21,57 +21,30 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_FILTERS_STACK_VERTICAL_H__
-#define __AVS_FILTERS_STACK_VERTICAL_H__
+#ifndef __AVS_FUNCTIONS_EDIT_H__
+#define __AVS_FUNCTIONS_EDIT_H__
 
 //avisynth include
-#include "../stack.h"
+#include "../linker/core/function.h"
 
 
-namespace avs { namespace filters { namespace stack {
+namespace avs { namespace functions {
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////
-//  stack::Vertical
+/////////////////////////////////////////////////////////////////////////////
+//  Edit
 //
-//  filter to stack vertically two videos
+//  just meant at envelopping edit functions
 //
-class Vertical : public Stack
+struct Edit
 {
 
-protected:  //structors
-
-  Vertical(PClip const& upper, PClip const& lower);
-
-  //generated destructor is fine
-
-
-public:  //childs changing clone
-
-  virtual PClip clone(PClip const& upper, PClip const& lower) const { return Create(upper, lower); }
-
-
-private:  //Stack interface
-
-  virtual Vecteur GetShiftVecteur() const;
-
-
-public:  //factory method and functor
-
-  static PClip Create(PClip const& upper, PClip const& lower)
-  {
-    return PClip( static_cast<Clip *>(new Vertical(upper, lower)) ); 
-  }
-
-  struct Creator
-  {
-    PClip operator()(PClip const& left, PClip const& right) const { return Create(left, right); }
-  };
+  static linker::core::Function trim;
 
 };
 
 
-} } } //namespace avs::filters::stack
+} } //namespace avs::functions
 
-#endif //__AVS_FILTERS_STACK_VERTICAL_H__
+#endif //__AVS_FUNCTIONS_EDIT_H__

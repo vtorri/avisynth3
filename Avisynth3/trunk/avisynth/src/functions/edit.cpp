@@ -22,10 +22,9 @@
 
 
 //avisynth includes
-#include "combine.h"
+#include "edit.h"
 #include "../parser/adapt.h"
-#include "../filters/combine/stack/vertical.h"
-#include "../filters/combine/stack/horizontal.h"
+#include "../filters/edit/trim.h"
 
 
 namespace avs { namespace functions {
@@ -34,9 +33,8 @@ namespace avs { namespace functions {
 using parser::adapt;
 using linker::core::Function;
 
-
-Function Combine::stackVertical( 'c', "StackVertical", "cc", adapt( filters::stack::Vertical::Creator() ) );
-Function Combine::stackHorizontal( 'c', "StackHorizontal", "cc", adapt( filters::stack::Horizontal::Creator() ) );
+  
+Function Edit::trim( 'c', "Trim", "cii", adapt( filters::Trim::Creator() ) );
 
 
 } } //namespace avs::functions

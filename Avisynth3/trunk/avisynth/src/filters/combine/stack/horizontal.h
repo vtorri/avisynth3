@@ -39,7 +39,7 @@ namespace avs { namespace filters { namespace stack {
 class Horizontal : public Stack
 {
  
-public:  //structors
+protected:  //structors
 
   Horizontal(PClip const& left, PClip const& right);
 
@@ -56,12 +56,17 @@ private:  //Stack interface
   virtual Vecteur GetShiftVecteur() const;
 
 
-public:  //factory method 
+public:  //factory method and functor
 
   static PClip Create(PClip const& left, PClip const& right) 
   { 
     return PClip( static_cast<Clip *>(new Horizontal(left, right)) ); 
   }
+
+  struct Creator
+  {
+    PClip operator()(PClip const& left, PClip const& right) const { return Create(left, right); }
+  };
 
 };
 

@@ -26,7 +26,7 @@
 
 //avisynth includes
 #include "deleter.h"
-#include "../smart_ptr_fwd.h"
+#include "../forward.h"
 
 
 namespace avs { namespace block {

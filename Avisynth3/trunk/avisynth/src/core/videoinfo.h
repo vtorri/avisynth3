@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,8 @@
 #define __AVS_VIDEOINFO_H__
 
 //avisynth includes
+#include "forward.h"
 #include "sampletype.h"
-#include "smart_ptr_fwd.h"
 
 //boost includes
 #include <boost/rational.hpp>    //for rational
@@ -35,10 +35,7 @@
 namespace avs {
 
 
-//declarations and typedef
-class Dimension;                 //in dimension.h
-class ColorSpace;                //in colorspace.h
-
+//typedef
 typedef boost::rational<int> FPS;
 
 

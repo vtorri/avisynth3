@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 #define __AVS_CACHE_H__
 
 //avisynth include
-#include "smart_ptr_fwd.h"
+#include "forward.h"
 
 //boost includes
 #include <boost/utility.hpp>      //for noncopyable
@@ -74,4 +74,4 @@ public:  //Cache interface
 
 } //namespace avs
 
-#endif  // __AVS_CACHE_H__
+#endif  //__AVS_CACHE_H__

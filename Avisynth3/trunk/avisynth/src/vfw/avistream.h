@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 
 //avisynth include
 #include "../com/base.h"
-#include "../core/smart_ptr_fwd.h"
+#include "../core/forward.h"
 
 //stl include
 #include <string>

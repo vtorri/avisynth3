@@ -34,35 +34,61 @@ namespace avs { namespace block { namespace holder {
 
 
 
-class Standard : public Base
+///////////////////////////////////////////////////////////////////////////////////////////////
+//  holder::Standard
+//
+//  Holder implementation used by avisynth
+//
+class AVS_NOVTABLE Standard : public Base
 {
 
-  bool recycle_;
   BYTE * ptr_;
 
 
 public:  //structors
 
-  Standard(int size, bool recycle)
+  Standard(int size)
     : Base( size )
-    , recycle_( recycle )
     , ptr_( Recycler::instance.Acquire(size) ) { }
 
-  virtual ~Standard() { Recycler::instance.Return(ptr_, size(), recycle_); }
+  //generated destructor is fine, subclass destructor takes care of releasing the memory
 
 
 public:  //Holder interface
 
   virtual BYTE * get() const { return ptr_; }
-  virtual Holder * spawn(int size, bool recycle) const { return new Standard(size, recycle); }
+  virtual Holder * spawn(int size, bool recycle) const { return Create(size, recycle); }
 
   enum { Align = block::Align };
+
+
+public:  //factory method
+
+  static Standard * Create(int size, bool recycle);  
+
+
+private:  //concrete inner subclass
+
+  template <bool recycle> struct concrete;
 
 };
 
 
+template <bool recycle>
+struct Standard::concrete : public Standard
+{
+  concrete(int size) : Standard(size) { }
+  virtual ~concrete() { Recycler::instance.Return(get(), size(), recycle); }
+};
+
+
+Standard * Standard::Create(int size, bool recycle)
+{
+  return recycle ? static_cast<Standard *>(new concrete<true>(size)) 
+                 : static_cast<Standard *>(new concrete<false>(size));
+}
+
+
 } } } //namespace avs::block::holder
-
-
 
 #endif //__AVS_BLOCK_HOLDER_STANDARD_H__

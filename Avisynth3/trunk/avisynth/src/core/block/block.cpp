@@ -29,14 +29,14 @@ namespace avs {
 
 
 block_<block::Align>::block_(int size, bool recycle)
-  : BaseBlockType( new block::holder::Standard(size, recycle) ) { }
+: BaseBlockType( block::holder::Standard::Create(size, recycle) ) { }
 
 
 owned_block<block::Align>::owned_block(PEnvironment const& env, bool recycle)
-  : BaseBlockType( new block::holder::OwnedStandard(env, 0, recycle) ) { }
+  : BaseBlockType( block::holder::OwnedStandard::Create(env, 0, recycle) ) { }
 
 owned_block<block::Align>::owned_block(PEnvironment const& env, int size, bool recycle)
-  : BaseBlockType( new block::holder::OwnedStandard(env, size, recycle) ) { }
+  : BaseBlockType( block::holder::OwnedStandard::Create(env, size, recycle) ) { }
 
 
 

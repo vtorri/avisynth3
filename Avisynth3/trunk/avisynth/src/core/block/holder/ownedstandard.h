@@ -34,35 +34,61 @@ namespace avs { namespace block { namespace holder {
 
 
 
-class OwnedStandard : public OwnedBase
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//  holder::OwnedStandard
+//
+//  OwnedHolder implementation used by avisynth
+//
+class AVS_NOVTABLE OwnedStandard : public OwnedBase
 {
 
-  bool recycle_;
   BYTE * ptr_;
 
 
 public:  //structors
 
-  OwnedStandard(PEnvironment const& env, int size, bool recycle)
+  OwnedStandard(PEnvironment const& env, int size)
     : OwnedBase( env, size )
-    , recycle_( recycle )
     , ptr_( Recycler::instance.Acquire(size) ) { }
 
-  virtual ~OwnedStandard() { Recycler::instance.Return(ptr_, size(), recycle_); }
+  //generated destructor is fine, subclass destructor handles memory release
 
 
 public:  //Holder interface
 
   virtual BYTE * get() const { return ptr_; }
-  virtual OwnedHolder * spawn(int size, bool recycle) const { return new OwnedStandard(GetEnvironment(), size, recycle); }
+  virtual OwnedHolder * spawn(int size, bool recycle) const { return Create(GetEnvironment(), size, recycle); }
 
   enum { Align = block::Align };
+
+
+public:  //factory method
+
+  static OwnedStandard * Create(PEnvironment const& env, int size, bool recycle);
+
+
+private:  //concrete inner subclass
+
+  template <bool recycle> struct concrete;
 
 };
 
 
+template <bool recycle>
+struct OwnedStandard::concrete : public OwnedStandard
+{
+  concrete(PEnvironment const& env, int size) : OwnedStandard(env, size) { }
+  virtual ~concrete() { Recycler::instance.Return(get(), size(), recycle); }
+};
+
+
+OwnedStandard * OwnedStandard::Create(PEnvironment const& env, int size, bool recycle)
+{
+  return recycle ? static_cast<OwnedStandard *>(new concrete<true>(env, size))
+                 : static_cast<OwnedStandard *>(new concrete<false>(env, size));
+}
+
+
 } } } //namespace avs::block::holder
-
-
 
 #endif //__AVS_BLOCK_HOLDER_OWNEDSTANDARD_H__

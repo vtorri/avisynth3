@@ -23,8 +23,7 @@
 
 //avisynth include
 #include "parser.h"
-#include "vmcode.h"
-#include "grammar/statement.h"
+#include "grammar/script.h"
 #include "../core/runtime_environment.h"
 #include "../filters/source/staticimage.h"
 #include "../linker/core/plugin.h"
@@ -59,17 +58,18 @@ PClip Parser::operator ()(std::string const& src)
   VarTable localTable, globalTable;
   boost::optional<int> last;
 
-  Statement statement;
-  Expression expression;
+  Script script;
+  //Statement statement;
+  //Expression expression;
 
   parse(src.c_str(), 
-     *(   statement( CodeCouple(), boost::ref(localTable), boost::ref(last), boost::ref(globalTable), boost::ref(functionTable) )
+      script( CodeCouple(), boost::ref(localTable), boost::ref(last), boost::ref(globalTable), boost::ref(functionTable) )
+          //statement( CodeCouple(), boost::ref(localTable), boost::ref(last), boost::ref(globalTable), boost::ref(functionTable), 'c' )
           //expression( value::Expression(), boost::ref(varTable), last )
-          [            
-            var(code) += arg1
-          ]
-      |   spirit::eol_p
-      ), spirit::blank_p);
+      [            
+        var(code) += arg1
+      ]
+      , spirit::blank_p);
 
 
   VMState state(env, globalTable.size());  

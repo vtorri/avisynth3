@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -23,14 +23,12 @@
 
 //avisynth includes
 #include "expression.h"
-#include "../lazy/ref.h"
 #include "../lazy/tuple.h"
 #include "../action/get.h"
 #include "../action/check.h"
 #include "../functor/var.h"
 #include "../functor/pusher.h"
 #include "../functor/assigner.h"
-
 
 //spirit includes
 #include <boost/spirit/core.hpp>

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,40 +24,34 @@
 //avisynth includes
 #include "yuy2.h"
 #include "../../../core/videoframe.h"
-#include "../../../core/cow_shared_ptr.h"
+#include "../../../core/utility/saturate.h"
 
 
 namespace avs { namespace filters { namespace tweak {
 
 
 
-CPVideoFrame YUY2::MakeFrame(CPVideoFrame const& source) const
+CPVideoFrame YUY2::MakeFrame(PVideoFrame const& source) const
 {
-
-  PVideoFrame frame = source;
-  WindowPtr wp = frame->WriteTo(NOT_PLANAR);
-
+  WindowPtr wp = source->WriteTo(NOT_PLANAR);
     
-  for ( int y = wp.height; y-- > 0; wp.to(0, 1) )		
-  {
-    BYTE * ptr = wp.ptr;
-
-    for ( int x = wp.width >> 2; x-- > 0; ptr += 4 )			
+  for ( int y = wp.height; y-- > 0; wp.pad() )		
+    for ( int x = wp.width >> 2; x-- > 0; wp.to(4, 0) )			
     {				
       // brightness and contrast 
-	  	int	y1 = ptr[0] - 16;
-		  int y2 = ptr[2] - 16;
+	  	int	y1 = wp[0] - 16;
+		  int y2 = wp[2] - 16;
 				
       y1 = (Cont * y1) >> 9;
   		y2 = (Cont * y2) >> 9;
 			
-      ptr[0] = std::min(std::max(0, y1 + Bright_p16), 255);
-		  ptr[2] = std::min(std::max(0, y2 + Bright_p16), 255);
+      wp[0] = saturate<BYTE, 0, 255>(y1 + Bright_p16);
+		  wp[2] = saturate<BYTE, 0, 255>(y2 + Bright_p16);
 
 
  			// hue and saturation 
-  		int	u = ptr[1] - 128;
-	  	int	v = ptr[3] - 128;
+  		int	u = wp[1] - 128;
+	  	int	v = wp[3] - 128;
 
 		  int	ux = (+ u * Cos + v * Sin) >> 12;
  			int vx = (- u * Sin + v * Cos) >> 12;			
@@ -65,12 +59,11 @@ CPVideoFrame YUY2::MakeFrame(CPVideoFrame const& source) const
       u = ((ux * Sat) >> 9) + 128;
  			v = ((vx * Sat) >> 9) + 128;
 	  	
-      ptr[1] = std::min(std::max(0, u), 255);
-	  	ptr[3] = std::min(std::max(0, v), 255);
+      wp[1] = saturate<BYTE, 0, 255>(u);
+	  	wp[3] = saturate<BYTE, 0, 255>(v);
     }		
-  }
 
-  return frame;
+  return source;
 }
 
 

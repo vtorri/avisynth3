@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,47 +25,38 @@
 #include "yv12.h"
 #include "../../../core/videoframe.h"
 #include "../../../core/cow_shared_ptr.h"
+#include "../../../core/utility/saturate.h"
 
 
 namespace avs { namespace filters { namespace tweak {
 
 
 
-CPVideoFrame YV12::MakeFrame(CPVideoFrame const& source) const
+CPVideoFrame YV12::MakeFrame(PVideoFrame const& source) const
 {
 
-  PVideoFrame frame = source;
-
-  WindowPtr Y = frame->WriteTo(PLANAR_Y);
-  WindowPtr U = frame->WriteTo(PLANAR_U);
-  WindowPtr V = frame->WriteTo(PLANAR_V);
+  WindowPtr Y = source->WriteTo(PLANAR_Y);
+  WindowPtr U = source->WriteTo(PLANAR_U);
+  WindowPtr V = source->WriteTo(PLANAR_V);
 
 
-  for( int y = Y.height; y-- > 0; Y.to(0, 1) )
-  {
-    BYTE * ptr = Y.ptr;
-
-    for( int x = Y.width; x-- > 0; ++ptr )
+  for( int y = Y.height; y-- > 0; Y.pad() )
+    for( int x = Y.width; x-- > 0; ++Y.ptr )
     {
       // brightness and contrast 
-      int yy = *ptr - 16;
+      int yy = *Y.ptr - 16;
       yy = (Cont * yy) >> 9;
       yy += Bright_p16;
-      *ptr = std::min( std::max(15, yy), 235);
+      *Y.ptr = saturate<BYTE, 15, 235>(yy);
     }
-  }
 
 
-  for( int y = U.height; y-- > 0; U.to(0, 1), V.to(0, 1) )
-  {
-    BYTE * pu = U.ptr;
-    BYTE * pv = V.ptr;
-
-    for ( int x = U.width; x-- > 0; ++pu, ++pv )
+  for( int y = U.height; y-- > 0; U.pad(), V.pad() )
+    for ( int x = U.width; x-- > 0; ++U.ptr, ++V.ptr )
     {
       // hue and saturation 
-			int u = *pu - 128;
-			int	v = *pv - 128;
+			int u = *U.ptr - 128;
+			int	v = *V.ptr - 128;
 
 			int	ux = (+ u * Cos + v * Sin) >> 12;
       int vx = (- u * Sin + v * Cos) >> 12;
@@ -73,12 +64,11 @@ CPVideoFrame YV12::MakeFrame(CPVideoFrame const& source) const
 			u = ((ux * Sat) >> 9) + 128;
 			v = ((vx * Sat) >> 9) + 128;
 			
-      *pu = std::min( std::max(16, u), 240 );
-      *pv = std::min( std::max(16, v), 240 );				      
+      *U.ptr = saturate<BYTE, 16, 240>(u);
+      *V.ptr = saturate<BYTE, 16, 240>(v);				      
     }
-  }
 
-  return frame;
+  return source;
 }
 
 

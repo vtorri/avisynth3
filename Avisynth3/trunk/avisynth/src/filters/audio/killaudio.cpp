@@ -43,7 +43,7 @@ CPVideoInfo KillAudio::GetVideoInfo() const
 }
 
 
-void KillAudio::GetAudio(void * /*buf*/, long long /*start*/, int /*count*/) const
+BYTE * KillAudio::GetAudio(BYTE * /*buf*/, long long /*start*/, int /*count*/) const
 {
   throw exception::NoAudio();
 }

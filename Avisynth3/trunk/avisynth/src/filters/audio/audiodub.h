@@ -58,7 +58,7 @@ public:  //clip general interface
 
   virtual CPVideoFrame GetFrame(int n) const { return GetRightFrame(n); }
 
-  virtual void GetAudio(void * buffer, long long start, int count) const { GetLeftAudio(buffer, start, count); }
+  virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const { return GetLeftAudio(buffer, start, count); }
 
 
 public:  //Simplify method
@@ -69,7 +69,6 @@ public:  //Simplify method
 private:  //Refactor methods
 
   virtual PClip Refactor(KillAudio const& parent) const;
-
   virtual PClip Refactor(KillVideo const& parent) const;
 
 

@@ -121,7 +121,7 @@ void Audio::FillAviStreamInfo(AVISTREAMINFOW& asi)
 
 void Audio::Read(void* lpBuffer, int lStart, int lSamples)
 {
-  GetClip()->GetAudio(lpBuffer, lStart, lSamples);
+  GetClip()->GetAudio(static_cast<BYTE *>(lpBuffer), lStart, lSamples);
 }
 
 

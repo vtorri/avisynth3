@@ -65,7 +65,7 @@ protected:  //implementations helper
   CPVideoInfo GetChildVideoInfo() const { return child_->GetVideoInfo(); }
 
   CPVideoFrame GetChildFrame(int n) const { return child_->GetFrame(n); }
-  void GetChildAudio(void * buffer, long long start, int count) const { return child_->GetAudio(buffer, start, count); }
+  BYTE * GetChildAudio(BYTE * buffer, long long start, int count) const { return child_->GetAudio(buffer, start, count); }
 
 };
 

@@ -75,8 +75,8 @@ protected:  //implementations helpers
   CPVideoFrame GetLeftFrame(int n) const { return left_->GetFrame(n); }
   CPVideoFrame GetRightFrame(int n) const { return right_->GetFrame(n); }
 
-  void GetLeftAudio(void * buffer, long long start, int count) const { return left_->GetAudio(buffer, start, count); }
-  void GetRightAudio(void * buffer, long long start, int count) const { return right_->GetAudio(buffer, start, count); }
+  BYTE * GetLeftAudio(BYTE * buffer, long long start, int count) const { return left_->GetAudio(buffer, start, count); }
+  BYTE * GetRightAudio(BYTE * buffer, long long start, int count) const { return right_->GetAudio(buffer, start, count); }
 
 };
 

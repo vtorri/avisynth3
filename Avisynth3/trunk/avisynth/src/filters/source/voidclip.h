@@ -59,7 +59,7 @@ public:  //Clip general interface
   virtual CPVideoInfo GetVideoInfo() const;
 
   virtual CPVideoFrame GetFrame(int n) const;
-  virtual void GetAudio(void * buffer, long long start, int count) const;
+  virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const;
 
 
 private:  //GetKey method

@@ -66,9 +66,9 @@ public:  //clip general interface
   //undefined behavior if frame n don't exist
   virtual CPVideoFrame GetFrame(int n) const = 0;
 
-  //fill the passed buffer with audio samples
+  //fill the passed buffer with audio samples, and returns position after them
   //out of bounds values are allowed, the excess is filled with blank noise
-  virtual void GetAudio(void * buffer, long long start, int count) const = 0;  
+  virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const = 0;  
 
 
 public:  //filter chain simplication method

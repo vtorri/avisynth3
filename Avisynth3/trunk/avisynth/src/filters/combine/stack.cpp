@@ -53,7 +53,7 @@ Stack::Stack(PClip const& first, PClip const& second, Dimension const& expand)
 }
 
 
-void Stack::GetAudio(void * buffer, long long start, int count) const
+BYTE * Stack::GetAudio(BYTE * buffer, long long start, int count) const
 {
   throw exception::NoAudio();
 }

@@ -67,7 +67,7 @@ public:  //clip general interface
   virtual CPVideoInfo GetVideoInfo() const { return vi_; }
 
   virtual CPVideoFrame GetFrame(int n) const { return GetChildFrame(n + begin_); }
-  virtual void GetAudio(void * buffer, long long start, int count) const { GetChildAudio(buffer, start + audio_begin_, count); }
+  virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const { return GetChildAudio(buffer, start + audio_begin_, count); }
 
 
 public:  //child changing clone

@@ -54,13 +54,13 @@ struct window_ptr
 {
 
   Data * ptr;
-  int pitch;
-  int width;
-  int height;
+  long pitch;
+  long width;
+  long height;
 
 
   //structors
-  window_ptr(Data * _ptr, int _pitch, int _width, int _height)
+  window_ptr(Data * _ptr, long _pitch, long _width, long _height)
     : ptr( _ptr )
     , pitch( _pitch )
     , width( _width )
@@ -93,8 +93,8 @@ struct window_ptr
   void toTop() { to(0, 1 - height); }
   void toBottom() { to(0, height - 1); }
   //bpp = bytes per pixel
-  template <int bpp> void toRight() { to(width - bpp, 0); }
-  template <int bpp> void toLeft() { to(width - bpp, 0); }
+  template <long bpp> void toRight() { to(width - bpp, 0); }
+  template <long bpp> void toLeft() { to(width - bpp, 0); }
 
 
   //pad methods
@@ -102,9 +102,9 @@ struct window_ptr
   void negPad() { ptr += negPadValue(); }
   void skipPad() { ptr += skipPadValue(); }
 
-  int padValue() const { return pitch - width; }
-  int negPadValue() const { return -pitch -width; }
-  int skipPadValue() const { return pitch * 2 - width; }
+  long padValue() const { return pitch - width; }
+  long negPadValue() const { return -pitch -width; }
+  long skipPadValue() const { return pitch * 2 - width; }
 
 
   //using Vecteur

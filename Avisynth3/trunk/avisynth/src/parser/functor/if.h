@@ -25,6 +25,7 @@
 #define __AVS_PARSER_FUNCTOR_IF_H__
 
 //avisynth includes
+#include "../optype.h"
 #include "../vmcode.h"
 #include "../scopeenforcer.h"
 
@@ -49,8 +50,9 @@ struct IfThen
   IfThen(VMCode const& then)
     : then_( then ) { }
 
-  void operator()(VMState& state) const
+  OpType operator()(VMState& state) const
   {
+    OpType result = NORMAL;    
     bool cond = boost::get<bool>(state.top());
     state.pop();
 
@@ -58,8 +60,12 @@ struct IfThen
     {
       ScopeEnforcer enforcer(state);
 
-      then_(state);
+      result = then_(state);
+
+      enforcer.SetDismiss( IsReturning(result) );
     }
+
+    return result;
   }
 
 };
@@ -80,16 +86,18 @@ struct IfThenElse
     : then_( then )
     , else_( els ) { }
 
-  void operator()(VMState& state) const
+  OpType operator()(VMState& state) const
   {
     bool cond = boost::get<bool>(state.top());
     state.pop();
 
     ScopeEnforcer enforcer(state);
 
-    if ( cond )
-      then_(state);
-    else else_(state);
+    OpType result = cond ? then_(state) : else_(state);
+
+    enforcer.SetDismiss( IsReturning(result) );
+
+    return result;
   }
 
 };

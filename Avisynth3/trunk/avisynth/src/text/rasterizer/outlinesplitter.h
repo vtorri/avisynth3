@@ -40,10 +40,10 @@ class OutlineSplitter
 
 public:
 
-  void StartOutline(Vecteur const& pt);
+  void StartContour(VecteurFP3 const& pt) { spanMaker_.StartPolygon(pt); }
 
-  void CloseOutline() { spanMaker_.ClosePolygon(); }
-  bool IsOutlineClosed() const { return spanMaker_.IsPolygonClosed(); }
+  void CloseContour() { spanMaker_.ClosePolygon(); }
+  bool IsContourClosed() const { return spanMaker_.IsPolygonClosed(); }
 
   void LineTo(VecteurFP3 const& pt) { spanMaker_.LineTo(pt); }
   void BezierCurveTo(VecteurFP3 const& pt2, VecteurFP3 const& pt1);

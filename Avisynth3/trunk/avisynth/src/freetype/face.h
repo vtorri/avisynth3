@@ -24,6 +24,10 @@
 #ifndef __AVS_FREETYPE_FACE_H__
 #define __AVS_FREETYPE_FACE_H__
 
+//avisynth includes
+#include "../core/vecteur.h"
+#include "../core/dimension.h"
+
 //boost include
 #include <boost/shared_ptr.hpp>
 
@@ -42,7 +46,7 @@ namespace avs { namespace freetype {
 /////////////////////////////////////////////////////////////////////////////////
 //  freetype::Face
 //
-//  C++ wrapper around the FT_FACE handle
+//  C++ wrapper around the FT_Face handle
 //
 class Face
 {
@@ -52,7 +56,7 @@ class Face
 
 public:  //structors
     
-  Face(std::string const& fileName, int index);
+  Face(std::string const& fileName, int index = 0);
 
   //generated copy constructor and destructor are fine
 
@@ -66,8 +70,10 @@ public:  //Basic API
   void LoadGlyph(unsigned glyphIndex, int loadFlags);
     
   void LoadChar(unsigned charCode, int loadFlags);*/
+
+  bool HasKerning() const;
        
-//  Vecteur GetKerning(unsigned leftGlyph, unsigned rightGlyph, unsigned kerningMode);
+  Vecteur GetKerning(unsigned leftGlyph, unsigned rightGlyph) const;
 
   //std::string GetGlyphName(unsigned glyphIndex);
 

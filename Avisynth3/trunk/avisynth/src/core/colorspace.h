@@ -80,6 +80,7 @@ public:  //ColorSpace interface
   virtual ID id() const = 0;
   virtual char const * GetName() const = 0;
   virtual unsigned long GetFourCC() const = 0;
+  virtual int GetBitsPerPixel() const = 0;
   
   virtual int GetBitmapSize(Dimension const& dim) const = 0;  //NB: bitmaps are 4 bytes aligned
 

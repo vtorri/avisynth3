@@ -49,7 +49,7 @@ PClip Parser::operator ()(std::string const& src)
 
   PEnvironment env = RuntimeEnvironment::Create(10000000);
 
-  FunctionTable functionTable;
+  function::Table functionTable;
 
   functionTable.AddPlugin(linker::core::Plugin::Get());
 

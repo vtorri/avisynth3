@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 #ifndef __AVS_COM_BASE_H__
 #define __AVS_COM_BASE_H__
 
-//windows include
+//windows includes
 #include "initguid.h"
 #include "objbase.h"
 
@@ -36,7 +36,12 @@ namespace avs { namespace com {
 
 
 
-class Base : private boost::noncopyable
+//////////////////////////////////////////////////////////////////////////////
+//  com::Base
+//
+//  a base class for implementations of COM interfaces
+//
+class Base : public boost::noncopyable
 {
 
   static LONG objectCount_;

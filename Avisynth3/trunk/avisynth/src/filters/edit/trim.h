@@ -32,9 +32,9 @@
 
 namespace avs { namespace filters {
 
-//class declarations
-class KillAudio;
 
+//class declaration
+class KillAudio;
 
 
 
@@ -54,7 +54,7 @@ class Trim : public clip::onechild::Simplifiable<Trim>
   CPVideoInfo vi_;          //video info
 
     
-public:  //structors
+protected:  //structors
 
   Trim(PClip const& child, int begin, int end);
   
@@ -86,13 +86,18 @@ public:  //read access
   int GetEnd() const { return begin_ + GetVideoInfo()->GetFrameCount(); }
 
 
-public:  //factory method 
+public:  //factory method and functors
 
   static PClip Create(PClip const& child, int begin, int end) { return PClip( static_cast<Clip *>(new Trim(child, begin, end)) ); }
 
   struct Creator
   {
     PClip operator()(PClip const& child, int begin, int end) const { return Create(child, begin, end); }
+  };
+
+  struct OneArgCreator
+  {
+    PClip operator()(PClip const& child, int begin) const { return Create(child, begin, child->GetVideoInfo()->GetFrameCount()); }
   };
 
 };

@@ -40,7 +40,9 @@
 #define NOMINMAX          //prevents generation of min and max macros
 #endif //NOMINMAX
 #include <windows.h>
-#include <Mmreg.h>
+#ifndef __MINGW32__
+#include <Mmreg.h>        //mingw doesn't have/need this one
+#endif //__MINGW32__
 #include <Msacm.h>
 
 

@@ -38,9 +38,10 @@
 namespace spirit = boost::spirit;
 
 
-namespace avs { namespace parser { 
+namespace avs { namespace parser { namespace grammar {
   
   
+
 namespace closure {
 
 
@@ -52,9 +53,6 @@ template <class Type> struct Value : spirit::closure<Value, Type>
 
 } //namespace closure
  
-
-
-namespace grammar {
 
 
 

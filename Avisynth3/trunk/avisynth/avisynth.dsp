@@ -113,7 +113,7 @@ PostBuild_Cmds=copy Debug\avisynth.dll $(SystemRoot)\system32
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /G6 /MD /W3 /GX /O2 /Ob2 /I "c:\platsdk\include" /I "c:\platsdk\classes\base" /D "NDEBUG" /D "INC_OLE2" /D "STRICT" /D "WIN32" /D "_WIN32" /D "_MT" /D "_DLL" /D "_MBCS" /D "_USRDLL" /D "AVISYNTH_EXPORTS" /YX /FD /c
-# ADD CPP /nologo /G6 /MD /W3 /GX /Zi /O2 /Ob2 /D "NDEBUG" /D "INC_OLE2" /D "STRICT" /D "WIN32" /D "_WIN32" /D "_MT" /D "_DLL" /D "_MBCS" /D "_USRDLL" /D "AVISYNTH_EXPORTS" /YX /FD /Gh /c
+# ADD CPP /nologo /G6 /MD /W3 /GR /GX /Zi /O2 /Ob2 /D "NDEBUG" /D "INC_OLE2" /D "STRICT" /D "WIN32" /D "_WIN32" /D "_MT" /D "_DLL" /D "_MBCS" /D "_USRDLL" /D "AVISYNTH_EXPORTS" /FR /YX /FD /Gh /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -139,100 +139,12 @@ PostBuild_Cmds=copy Profile\avisynth.dll $(SystemRoot)\system32
 # Name "avisynth - Win32 Release"
 # Name "avisynth - Win32 Debug"
 # Name "avisynth - Win32 Profile"
-# Begin Group "VirtualDub files"
+# Begin Group "Avisynth Core"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\AudioSource.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\AudioSource.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\AVIIndex.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\AVIIndex.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\AVIReadHandler.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\AVIReadHandler.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\cpuaccel.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\DubSource.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\DubSource.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Error.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\File64.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\File64.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Fixes.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\list.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\list.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\VD_Audio.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\VD_Audio.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\VD_misc.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\VD_misc.h
-# End Source File
-# End Group
-# Begin Group "Avisynth core"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\avisynth.cpp
-# End Source File
 # Begin Source File
 
 SOURCE=.\avisynth.def
-# End Source File
-# Begin Source File
-
-SOURCE=.\avisynth.h
 # End Source File
 # Begin Source File
 
@@ -240,322 +152,176 @@ SOURCE=.\avisynth.rc
 # End Source File
 # Begin Source File
 
-SOURCE=.\cache.cpp
+SOURCE=.\src\core\blitter.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\cache.h
+SOURCE=.\src\core\block.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\clip_info.h
+SOURCE=.\src\core\block.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\internal.h
+SOURCE=.\src\core\block_base.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\main.cpp
+SOURCE=.\src\core\block_recycler.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\plugins.cpp
+SOURCE=.\src\core\block_recycler.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\source.cpp
+SOURCE=.\src\core\bufferwindow.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\bufferwindow.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\cache.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\cache_concrete.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\cache_concrete.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\clip.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\colorspace.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\cow_shared_ptr.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\cpu.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\dimension.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\ownedblock.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\ownedblock.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\plane.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\property.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\runtime_environment.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\runtime_environment.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\runtime_environment_concrete.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\sampletype.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\timer.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\vecteur.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\videoinfo.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\core\videoinfo.h
 # End Source File
 # End Group
 # Begin Group "Filters"
 
 # PROP Default_Filter ""
-# Begin Group "Original"
+# Begin Group "Audio"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\audio.cpp
+SOURCE=.\src\filters\audio\killaudio.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\audio.h
+SOURCE=.\src\filters\audio\killaudio.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\combine.cpp
+SOURCE=.\src\filters\audio\killvideo.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\combine.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\convert.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\convert.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\convert_a.asm
-
-!IF  "$(CFG)" == "avisynth - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build - Assembling $(InputPath)...
-IntDir=.\Release
-InputPath=.\convert_a.asm
-InputName=convert_a
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	ml.exe -c -coff -Cx -Fo$(IntDir)\$(InputName).obj $(InputName).asm
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "avisynth - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build - Assembling $(InputPath)...
-IntDir=.\Debug
-InputPath=.\convert_a.asm
-InputName=convert_a
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	ml.exe -c -coff -Cx -Zi -Fo$(IntDir)\$(InputName).obj $(InputName).asm
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "avisynth - Win32 Profile"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build - Assembling $(InputPath)...
-IntDir=.\Profile
-InputPath=.\convert_a.asm
-InputName=convert_a
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	ml.exe -c -coff -Cx -Fo$(IntDir)\$(InputName).obj $(InputName).asm
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\edit.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\edit.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\field.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\field.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\focus.cpp
-
-!IF  "$(CFG)" == "avisynth - Win32 Release"
-
-# ADD CPP /FAcs
-
-!ELSEIF  "$(CFG)" == "avisynth - Win32 Debug"
-
-!ELSEIF  "$(CFG)" == "avisynth - Win32 Profile"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\focus.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\fps.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\fps.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\histogram.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\histogram.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\levels.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\levels.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\misc.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\misc.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\resample.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\resample.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\resample_functions.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\resample_functions.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\resample_old.cpp.txt
-# End Source File
-# Begin Source File
-
-SOURCE=.\resize.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\resize.h
-# End Source File
-# Begin Source File
-
-SOURCE=".\text-overlay.cpp"
-
-!IF  "$(CFG)" == "avisynth - Win32 Release"
-
-# ADD CPP /FAcs
-
-!ELSEIF  "$(CFG)" == "avisynth - Win32 Debug"
-
-# ADD CPP /FAcs
-
-!ELSEIF  "$(CFG)" == "avisynth - Win32 Profile"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=".\text-overlay.h"
-# End Source File
-# Begin Source File
-
-SOURCE=.\transform.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\transform.h
+SOURCE=.\src\filters\audio\killvideo.h
 # End Source File
 # End Group
-# Begin Group "New"
+# Begin Group "Hierarchy"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\Color.cpp
+SOURCE=.\src\filters\cachingclip.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Color.h
+SOURCE=.\src\filters\childclip.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\convert_xvid.cpp
+SOURCE=.\src\filters\foldedclip.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\convert_xvid.h
+SOURCE=.\src\filters\foldedsimplifiable.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\convolution.cpp
+SOURCE=.\src\filters\refactorable.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\convolution.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\debug.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\debug.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\layer.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\layer.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\merge.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\merge.h
+SOURCE=.\src\filters\simplifiable.h
 # End Source File
 # End Group
-# End Group
-# Begin Group "Script"
+# Begin Group "Source"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\expression.cpp
+SOURCE=.\src\filters\source\voidclip.h
 # End Source File
-# Begin Source File
-
-SOURCE=.\expression.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\script.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\script.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\scriptparser.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\scriptparser.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\tokenizer.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\tokenizer.h
-# End Source File
+# End Group
 # End Group
 # Begin Source File
 
@@ -563,115 +329,7 @@ SOURCE=.\distrib\AviSynth.ico
 # End Source File
 # Begin Source File
 
-SOURCE=.\avsfunction.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\avsvalue.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\bitblit.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\bufferwindow.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\colorspace.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\colorspace.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\environment.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\environment.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\geometric.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\linker.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\linker.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pclip.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\plugin.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\plugin.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\property.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\property.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\prototype.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\refcounted.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\statement.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\toto.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\vartable.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\videoframe.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\videoframebuffer.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\videoinfo.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\videoinfo.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\videoproperties.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\videoproperty.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\videoproperty.h
+SOURCE=.\src\folder.h
 # End Source File
 # End Target
 # End Project

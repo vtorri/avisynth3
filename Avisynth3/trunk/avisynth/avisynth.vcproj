@@ -517,6 +517,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath=".\src\core\bufferwindow\rightturner.h">
 				</File>
 				<File
+					RelativePath=".\src\core\bufferwindow\verticalflipper.cpp">
+				</File>
+				<File
 					RelativePath=".\src\core\bufferwindow\verticalflipper.h">
 				</File>
 			</Filter>

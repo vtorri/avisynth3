@@ -21,6 +21,8 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
 #ifndef __AVS_FILTERS_SOURCE_ACMAUDIODECOMPRESSOR_H__
 #define __AVS_FILTERS_SOURCE_ACMAUDIODECOMPRESSOR_H__
 
@@ -35,7 +37,9 @@
 
 //windows includes
 #include <windows.h>
-#include <Mmreg.h>                  //must be included before Msacm.h
+#ifdef _MSC_VER
+#include <Mmreg.h>
+#endif //_MSC_VER
 #include <Msacm.h>
 
 
@@ -54,7 +58,7 @@ class ACMAudioDecompressor : public AudioDecompressor
 	mutable ACMSTREAMHEADER ash_;                 //struct used to pass data to acm
 
 	mutable long long current_;                   //current reading position in bytes
-  mutable long long nextToDecompress_;          //next stream position to decompress from
+  mutable long long nextBlock_;                 //next stream block to decompress from
 
   long blockAlign_;
   long samplesPerSec_;
@@ -97,3 +101,5 @@ public:  //factory method
 } } } //namespace avs::filters::source
 
 #endif //__AVS_FILTERS_SOURCE_ACMAUDIODECOMPRESSOR_H__
+
+#endif //_WIN32

@@ -21,6 +21,8 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
 //avisynth include
 #include "acmaudiodecompressor.h"
 #include "trivialaudiodecompressor.h"
@@ -39,7 +41,7 @@ namespace avs { namespace filters { namespace source {
 ACMAudioDecompressor::ACMAudioDecompressor(RawAudio const& src, vfw::PWaveFormatEx& wfe)
   : src_( src )
   , current_( 0 )
-  , nextToDecompress_( 0 )
+  , nextBlock_( 0 )
   , blockAlign_( wfe->nBlockAlign )
   , samplesPerSec_( wfe->nSamplesPerSec )
   , avgBytesPerSec_( wfe->nAvgBytesPerSec )
@@ -114,7 +116,7 @@ long ACMAudioDecompressor::operator()(BYTE *& buffer, long long start, long coun
     long long block = (start * avgBytesPerSec_) / (static_cast<long long>(blockAlign_) * samplesPerSec_);
     long long roundedStart = (block * blockAlign_ * samplesPerSec_) / avgBytesPerSec_;
 
-    nextToDecompress_ = block;                            //set rounded as new position
+    nextBlock_ = block;                                   //set rounded as new position
     current_ = roundedStart * bps;
 
     DecompressNext();                                     //decompress data there
@@ -132,7 +134,7 @@ long ACMAudioDecompressor::operator()(BYTE *& buffer, long long start, long coun
 void ACMAudioDecompressor::DecompressNext() const
 {
   long size = inputBufferSize - ash_.cbSrcLength;   //space available in input buffer
-  nextToDecompress_ += src_.ReadAudio(ash_.pbSrc + ash_.cbSrcLength, nextToDecompress_, size);
+  nextBlock_ += src_.ReadAudio(ash_.pbSrc + ash_.cbSrcLength, nextBlock_, size);
 
   ash_.cbSrcLength += size;                         //update size of input data
 
@@ -234,3 +236,5 @@ AudioDecompressor * ACMAudioDecompressor::Create(RawAudio const& src, vfw::PWave
 
 
 } } } //namespace avs::filters::source
+
+#endif //_WIN32

@@ -25,13 +25,12 @@
 #define __VIDEOFRAME_H__
 
 
-
+#include "property.h" 
 #include "videoinfo.h"
 #include "bufferwindow.h"
-#include "property.h" 
 
 
-//typedef smart_ptr<FrameVideoProperties> PFrameVidProps;
+//typedef smart_ref<FrameVideoProperties> PFrameVidProps;
 
 
 
@@ -79,8 +78,7 @@ class VideoFrame : public RefCounted {
   PropertySet propSet;
 
 public:
-  VideoFrame(const FrameVideoProperties& _vidProps)
-    : vidProps(const_cast<FrameVideoProperties &>(_vidProps)) { }
+  VideoFrame(PFrameVidProps _vidProps) : vidProps(_vidProps) { }
   //copy constructor
   VideoFrame(const VideoFrame& other) : vidProps(other.vidProps), propSet(other.propSet)  { }
 
@@ -161,9 +159,10 @@ public:
 
 protected:
   //plane fetch methods (must be consistent together)
+  //throw the invalid plane exception if plane don't exist
   //their existence allow to define many things at this level
-  virtual const BufferWindow& GetPlane(Plane plane) const throw(invalid_plane) = 0;
-  virtual BufferWindow& GetPlane(Plane pane) throw(invalid_plane) = 0;
+  virtual const BufferWindow& GetPlane(Plane plane) const = 0;   
+  virtual BufferWindow& GetPlane(Plane pane) = 0;
 
   //check that self and other use same colorspace
   //return this one for convenience (often u use it after those checks)
@@ -204,7 +203,7 @@ protected:
   }
 
 public:
-  InterleavedVideoFrame(const FrameVideoProperties& vidProps, ScriptEnvironment& env) : VideoFrame(vidProps), main(vidProps, NOT_PLANAR, env) { }
+  InterleavedVideoFrame(const FrameVideoProperties& vidProps, PEnvironment env) : VideoFrame(vidProps), main(vidProps, NOT_PLANAR, env) { }
   //copy constructor
   InterleavedVideoFrame(const InterleavedVideoFrame& other) : VideoFrame(other), main(other.main) { }
 
@@ -222,7 +221,7 @@ public:
 class RGBVideoFrame : public InterleavedVideoFrame {
 
   //normal constructor, private to avoid construction with illegal colorspace props (unchecked)
-  RGBVideoFrame(const FrameVideoProperties& vidProps, ScriptEnvironment& env) : InterleavedVideoFrame(vidProps, env) { }
+  RGBVideoFrame(const FrameVideoProperties& vidProps, PEnvironment env) : InterleavedVideoFrame(vidProps, env) { }
 
 public:
   //copy constructor
@@ -239,7 +238,7 @@ public:
 
 class YUY2VideoFrame : public InterleavedVideoFrame {
          
-  YUY2VideoFrame(const FrameVideoProperties& vidProps, ScriptEnvironment& env) : InterleavedVideoFrame(vidProps, env) { }
+  YUY2VideoFrame(const FrameVideoProperties& vidProps, PEnvironment env) : InterleavedVideoFrame(vidProps, env) { }
   
 public:
   //copy constructor
@@ -287,7 +286,7 @@ protected:
   }
 
   //normal constructor
-  PlanarVideoFrame(const FrameVideoProperties& vidProps, ScriptEnvironment& env)
+  PlanarVideoFrame(const FrameVideoProperties& vidProps, PEnvironment env)
     : VideoFrame(vidProps), y(vidProps, PLANAR_Y, env), u(vidProps, PLANAR_U, env), v(vidProps, PLANAR_V, env) { }
 
 public:

@@ -44,22 +44,21 @@ using namespace std;
 
 #pragma warning(disable:4786)   //disable identifier was truncated to 255 chars....
 
-
+class Clip;
 class VideoFrame;
 typedef smart_ptr_to_cst<VideoFrame> CPVideoFrame;
 
 
 //polymorphic frame cache for use by the Cache class
-//default implemention is the for the cache nothing case
 class FrameCache {
 
 public:
   FrameCache() { }
-  virtual ~FrameCache() { }                                //virtual destructor
+  virtual ~FrameCache() { }                                  //virtual destructor
 
-  virtual CPVideoFrame fetch(int n);                       //get frame n, return empty CPVideoFrame when not found
-  virtual CPVideoFrame store(int n, CPVideoFrame frame);   //store frame n and return it
-  virtual bool drop(int n) { return false; }               //drop frame n, return true if has effect
+  virtual CPVideoFrame fetch(int n) = 0;                     //get frame n, return empty CPVideoFrame when not found
+  virtual void store(int n, CPVideoFrame frame) = 0;         //store frame n
+  virtual bool drop(int n) = 0;                              //drop frame n, return true if has effect
 };  
 
 
@@ -74,7 +73,7 @@ public:
   CacheEverything() { }
 
   virtual CPVideoFrame fetch(int n);
-  virtual CPVideoFrame store(int n, CPVideoFrame frame);
+  virtual void store(int n, CPVideoFrame frame);
   virtual bool drop(int n);
 
 };
@@ -88,7 +87,7 @@ class RangeCache : public CacheEverything {
 public:
   RangeCache(unsigned _size) : size(_size) { }
   
-  virtual CPVideoFrame store(int n, CPVideoFrame frame);
+  virtual void store(int n, CPVideoFrame frame);
 };
 
 //frame cache who keeps the last used frames
@@ -105,7 +104,7 @@ public:
   QueueCache(unsigned _size) : size(_size) { }
 
   virtual CPVideoFrame fetch(int n);
-  virtual CPVideoFrame store(int n, CPVideoFrame frame);
+  virtual void store(int n, CPVideoFrame frame);
   virtual bool drop(int n);
   
 };  
@@ -113,7 +112,7 @@ public:
 
 
 
-class Clip;
+
 
 //helper class to implement caches on clips
 class Cache {
@@ -128,31 +127,38 @@ class Cache {
 
   FrameCache * sharedCache;        //cache used to by all sharing clients
   ClipVector sharingClients;       //vector of sharing clients
-  bool sharedCacheAll;             //set when a client request CACHE_ALL, or more than one CACHE_NONE
 
-  static FrameCache cacheNothing;  //the unique cache nothing frame cache needed 
+  void HasBeenDropped(int n);      //
 
 public:
-  Cache() : sharedCache(&cacheNothing), sharedCacheAll(false) { }
+  Cache() : sharedCache(NULL) { }
 
   ~Cache()
   { 
     for(ClipToCacheMap::iterator it = clientMap.begin(); it != clientMap.end(); ++it)
       delete it->second;        //deletes all frame caches in the client map
-    if ( sharedCacheAll )       //if in standard shared mode
+    if ( sharedCache )          //if in standard shared mode
       delete sharedCache;       //delete the shared cache
   }
 
+  //search frame n in the cache(s)
+  //return an empty CPVideoFrame if not found
+  CPVideoFrame GetCachedFrame(int n);
+
   //search the frame in the cache(s),
   //eventually request source if not found and update itself as needed
-  CPVideoFrame GetCachedFrame(int n, Clip& client, Clip& source);
+  CPVideoFrame GetFrame(int n, Clip& client, Clip& source);
+  
+  //store the frame as if requested by client
+  //should not be called if frame n is already cached
+  void StoreFrame(int n, Clip& client, CPVideoFrame frame);
 
   //drop the oldest frame
   void DropOldest();
 
 private:
   //register an unknown client into self and return the frame cache associated
-  FrameCache * RegisterClient(Clip& client, Clip& source);
+  FrameCache * RegisterClient(Clip& client);
 };
 
 

@@ -48,17 +48,18 @@ protected:
   static const IntToFloatCaster itf;
   static const IdentityCaster id;
 
-  const Caster * caster;
+  const Caster & caster;
 
 public:
-  CasterHolder() : caster(&id) { }
+  CasterHolder() : caster(id) { }
+  CasterHolder(const Caster& _caster) : caster(_caster) { }
   CasterHolder(const CasterHolder& other) : caster(other.caster) { }
 
-  AVSValue operator()(const AVSValue& arg) const { return (*caster)(arg); }
+  AVSValue operator()(const AVSValue& arg) const { return caster(arg); }
 
   DescriptionArgument operator()(const DescriptionArgument& arg) const ; //{ if ( IsIdentity() ) return arg; 
 
-  bool IsIdentity() const { return caster == &id; }
+  bool IsIdentity() const { return &caster == &id; }
 };
 
 //

@@ -24,102 +24,90 @@
 #ifndef __BUFFERWINDOW_H__
 #define __BUFFERWINDOW_H__
 
-#include "videoproperties.h"  //chich includes geometric.h, colorspace.h, refcounted.h
-#include "environment.h"
-#include <vector>
-#include <boost/shared_ptr.hpp>
+#include "videoproperties.h"  //which includes geometric.h, colorspace.h, refcounted.h
+#include "memorymanager.h"
 
 #define FRAME_ALIGN 16 
 
-typedef unsigned char BYTE;
-
-
-class MemoryBuffer {
-
-  struct MemoryPiece {
-
-    typedef vector<MemoryPiece> AllocationVector;
-    static AllocationVector recycle;
-
-    boost::shared_ptr<BYTE> data;
-    int size;
-
-    MemoryPiece() : size(0) { }
-    MemoryPiece(int _size, int& offset);
-  };
-
-
-  MemoryPiece buffer;
-  PEnvironment env;
-
-public:
-  MemoryBuffer(int size, int& offset, ScriptEnvironment& _env)
-    : buffer(size, offset), env(_env) { env->RegisterMemory(buffer.size); }
-
-  ~MemoryBuffer() { MemoryPiece::recycle.push_back(buffer); env->FreeMemory(buffer.size); }
-
-  int size() const { return buffer.size; }
-  BYTE * get() { return buffer.data.get(); }
-  const BYTE * get() const { return buffer.data.get(); }
-
-  ScriptEnvironment& GetEnvironment() const { return *env; }
-};
-
-
-
-
-
-//exception class for trying to write on shared buffers
-class shared_buffer : std::runtime_error {
-public:
-  shared_buffer() : std::runtime_error("Shared Buffer") { }
-};
-
+//class declarations
+class VideoFrameBuffer;
 class ForwardingBuffer;
 
+//typedefs
+typedef smart_ref<VideoFrameBuffer> PVideoFrameBuffer;
+
+
+//videoframebuffer base class
 class VideoFrameBuffer : public RefCounted {
 
-protected:
-  virtual BYTE * UnProtectedGetWritePtr() = 0;
-
-  friend class ForwardingBuffer;  //so it can use the above
-
 public:
+  virtual bool IsWriteAllowed() const { return ! IsShared(); }
+
   virtual const BYTE * GetReadPtr() const = 0;  
-  BYTE * GetWritePtr() throw(shared_buffer)
-  {
-    if ( IsShared() )
-      throw shared_buffer();
-    return UnProtectedGetWritePtr();
-  }
+  virtual BYTE * GetWritePtr() = 0;
+
 
   virtual int GetSize() const = 0;
   virtual int GetPitch() const = 0;
 
-  virtual ScriptEnvironment& GetEnvironment() const = 0;
+  virtual PEnvironment GetEnvironment() const = 0;
+  virtual void SetEnvironment(PEnvironment env) = 0;
+
+  //methods related to sharing frames between envs  
+  virtual bool IsEnvSharingEnabled() const { return false; }
+  virtual PVideoFrameBuffer ShareWith(PEnvironment env)    //return a buffer owned by env sharing the same data as self
+  { 
+    throw std::logic_error("Illegal SHareWith Call");      //default imp: error  env shring not enabled
+  }
 };
 
 
-typedef smart_ptr<VideoFrameBuffer> PVideoFrameBuffer;  
+//buffer who forwards all requests to a child of a templated video frame buffer type
+template <class Forward> class ForwardingBuffer : public VideoFrameBuffer {
+
+protected:
+  typedef smart_ref<Forward> PForwardToBuffer;
+
+  PForwardToBuffer forwardTo;
+
+public:
+  ForwardingBuffer(PForwardToBuffer _forwardTo) : forwardTo(_forwardTo) { }
+
+  virtual bool IsWriteAllowed() const { return ! IsShared() && ! forwardTo->IsWriteAllowed(); }
+
+  virtual const BYTE * GetReadPtr() const { return forwardTo->GetReadPtr(); }
+  virtual BYTE * GetWritePtr() const { return forwardTo->GetWritePtr(); }
+
+  virtual int GetSize() const { return forwardTo->GetSize(); }
+  virtual int GetPitch() const { return forwardTo->GetPitch(); }
+
+  virtual PEnvironment GetEnvironment() const { return forwardTo->GetEnvironment(); }
+  virtual void SetEnvironment(PEnvironment env) { forwardTo->SetEnvironment(env); }
+};
+
+
+
+
+
 
 
 //frame buffer who actually allocates the memory (not just forwarding)
 class MemoryFrameBuffer : public VideoFrameBuffer {
 
-  MemoryBuffer buffer;
-
-protected:
-  virtual BYTE * UnProtectedGetWritePtr() { return buffer.get(); }
+  OwnedMemoryPiece buffer;
 
 public:
-  MemoryFrameBuffer(int size, int& offset, ScriptEnvironment& env) : buffer(size, offset, env) { }
+  MemoryFrameBuffer(int size, int& offset, PEnvironment env)
+    : buffer(size + FRAME_ALIGN, env) { offset = (~int(buffer.get()) & ~FRAME_ALIGN) + 1; }
 
   virtual const BYTE * GetReadPtr() const { return buffer.get(); }
+  virtual BYTE * GetWritePtr() { return buffer.get(); }
 
   virtual int GetSize() const { return buffer.size(); }
   virtual int GetPitch() const { throw std::logic_error("Illegal GetPitch Call"); }
 
-  virtual ScriptEnvironment& GetEnvironment() const { return buffer.GetEnvironment(); }
+  virtual PEnvironment GetEnvironment() const { return buffer.GetEnvironment(); }
+  virtual void SetEnvironment(PEnvironment env) { buffer.SetEnvironment(env); }
 };
 
 
@@ -129,7 +117,7 @@ class PlaneFrameBuffer : public MemoryFrameBuffer {
   const int pitch;
 
 public:
-  PlaneFrameBuffer(int _pitch, int height, int& offset, ScriptEnvironment& env)
+  PlaneFrameBuffer(int _pitch, int height, int& offset, PEnvironment env)
     : MemoryFrameBuffer(_pitch * height, offset, env), pitch(_pitch) { }
 
   virtual int GetPitch() const { return pitch; }
@@ -137,81 +125,121 @@ public:
 
 
 
-class ForwardingBuffer : public VideoFrameBuffer {
-
-  int pitch;
-  PVideoFrameBuffer forwardTo;
-
-protected:
-  virtual BYTE * UnProtectedGetWritePtr() { return forwardTo->UnProtectedGetWritePtr(); }
-
-public:
-  ForwardingBuffer(int _pitch, VideoFrameBuffer& _forwardTo) : pitch(_pitch), forwardTo(_forwardTo) { }
-
-  virtual const BYTE * GetReadPtr() const { return forwardTo->GetReadPtr(); }
-
-  virtual int GetPitch() const { return pitch; }
-
-  virtual ScriptEnvironment& GetEnvironment() const { return forwardTo->GetEnvironment(); }
-};
 
 
-//used in combo with SolidFrameBuffer
-class PlaneForwardingBuffer : public ForwardingBuffer {
 
-  int offset, size;
+//used to make a buffer into a bigger memory block
+//this is needed coz vfw expect a single block when exporting planar images
+//after that we need to separate the block into a buffer for each plane
+class PlaneForwardingBuffer : public ForwardingBuffer<MemoryFrameBuffer> {
 
-  virtual BYTE * UnProtectedGetWritePtr() { return ForwardingBuffer::UnProtectedGetWritePtr() + offset; }
+  const int pitch, offset, size;
 
 public:
-  PlaneForwardingBuffer(int pitch, int _offset, int height, MemoryFrameBuffer& forwardTo)
-    : ForwardingBuffer(pitch, forwardTo), offset(_offset), size(pitch * height) { }
+  PlaneForwardingBuffer(PForwardToBuffer forwardTo, int _pitch, int _offset, int height)
+    : ForwardingBuffer(forwardTo), pitch(_pitch), offset(_offset), size(pitch * height) { }
+
+  virtual IsWriteAllowed() const { return VideoFrameBuffer::IsShared(); }   
 
   virtual const BYTE * GetReadPtr() const { return ForwardingBuffer::GetReadPtr() + offset; }
+  virtual BYTE * GetWritePtr() { return ForwardingBuffer::GetWritePtr() + offset; }
 
   virtual int GetSize() const { return size; }
+  virtual int GetPitch() const { return pitch; }
 };
 
 
 
+class EnvSharingBuffer : public ForwardingBuffer<VideoFrameBuffer> {
+
+  typedef vector<PEnvironment> EnvVector;
+
+  EnvVector sharingEnvs;
+
+public:
+  //forwardTo should not be shared
+  EnvSharingBuffer(PVideoFrameBuffer forwardTo)
+    : ForwardingBuffer<VideoFrameBuffer>(forwardTo) { _ASSERTE(! forwardTo->IsShared() ); }
+
+  void AddSharingEnv(PEnvironment env) { if ( env != GetEnvironment() ) sharingEnvs.push_back(env); }
+  void RemoveSharingEnv(PEnvironment env);
+};
 
 
+class ForwardToSharingBuffer : public ForwardingBuffer<EnvSharingBuffer> {
+
+  PEnvironment env;
+
+  ForwardToSharingBuffer(PForwardToBuffer forwardTo, PEnvironment _env)
+    : ForwardingBuffer<EnvSharingBuffer>(forwardTo), env(_env) { forwardTo->AddSharingEnv(env); }
+
+public:
+  //encapsulates vfb into a EnvSharingBuffer 
+  ForwardToSharingBuffer(PVideoFrameBuffer vfb)
+    : ForwardingBuffer<EnvSharingBuffer>( new EnvSharingBuffer(vfb) ), env(vfb->GetEnvironment()) { }
+
+  ~ForwardToSharingBuffer() { forwardTo->RemoveSharingEnv(env); }
+
+  //we are in the only case where env sharing is enabled
+  virtual bool IsEnvSharingEnabled() const { return true; }
+  virtual PVideoFrameBuffer ShareWith(PEnvironment _env) { return env == _env ? PVideoFrameBuffer(this, true) : new ForwardToSharingBuffer(forwardTo, env); }
+
+};
 
 
+class BufferWithOffset {   //anyone got a better name...
+
+  PVideoFrameBuffer vfb;
+  offset;
+
+  //this method expect align to be a power of 2 (FRAME_ALIGN is)
+  static int Align(int dim, int align = FRAME_ALIGN) { return ( dim + align - 1 ) & -align; }
+
+public:
+  //normal constructor
+  BufferWithOffset(const Dimension& dimension, PEnvironment env)
+    : vfb(new PlaneFrameBuffer(Align(dimension.GetWidth()), dimension.GetHeight(), offset, env) { }
+  //copy constructor
+  BufferWithOffset(const BufferWithOffset& other) : vfb(other.vfb), offset(other.offset) { }
+  //copy constructor with env sharing, other is expected
+  BufferWithOffset(BufferWithOffset& other, PEnvironment env);
+
+  int GetPitch() const { return vfb->GetPitch(); }
+
+  const BYTE * GetReadPtr() const { return vfb->GetReadPtr() + offset; }
+  BYTE * GetWritePtr() { return vfb->GetWritePtr() + offset; }
+
+  PEnvironment GetEnvironment() const { return vfb->GetEnvironment(); }
+
+  //ensure buffer is writable by copying data into a new frame buffer if current is shared
+  //return self for convenience reasons
+  BufferWithOffset& EnsureWritable(const Dimension& dimension);
+};
 
 //BufferWindow holds a window in a possibly shared VideoFrameBuffer
 //when asked for a write ptr, it will do a (intelligent) copy of the buffer if shared
 class BufferWindow {
 
-  Dimension dimension;
-  PVideoFrameBuffer vfb;
-  int offset;  
-
-  //this method expect align to be a power of 2 (FRAME_ALIGN is)
-  static int Align(int dim, int align = FRAME_ALIGN) { return ( dim + align - 1 ) & -align; }
-
-  static PlaneFrameBuffer * MakeFrameBuffer(const Dimension& dimension, int& offset, ScriptEnvironment& env) { return new PlaneFrameBuffer(Align(dimension.GetWidth()), dimension.GetHeight(), offset, env); }
+  Dimension dimension;               //dimension of the window
+  mutable BufferWithOffset buffer;   //buffer who holds the window
 
   static int Limit(int value, int max) { return value < 0 ? 0 : value > max ? max : value; }
 
 public:
-  BufferWindow(const FrameVideoProperties& fvp, Plane plane, ScriptEnvironment& env)
-    : dimension(fvp.GetPlaneDimension(plane)), vfb(MakeFrameBuffer(fvp.GetDimension(), offset, env)) { }
-  BufferWindow(const Dimension& _dimension, ScriptEnvironment& env)
-    : dimension(_dimension), vfb(MakeFrameBuffer(_dimension, offset, env)) { }
-  BufferWindow(const BufferWindow& other) : dimension(other.dimension), vfb(other.vfb), offset(other.offset) { }
+  //normal constructor
+  BufferWindow(const Dimension& _dimension, PEnvironment env)
+    : dimension(_dimension), buffer(dimension, env)  { }
+  //copy constructor
+  BufferWindow(const BufferWindow& other) : dimension(other.dimension), buffer(other.buffer) { }
+  //copy constructor with sharing to env
+  BufferWindow(const BufferWindow& other, PEnvironment env) : dimension(other.dimension), buffer(other.buffer.EnsureWritable(dimension), env) { }
 
 
   const Dimension& GetDimension() const { return dimension; }
-  int GetPitch() const { return vfb->GetPitch(); }
 
-  int GetWidth() const { return dimension.GetWidth(); }
-  int GetHeight() const { return dimension.GetHeight(); }
-  
-  const BYTE * GetReadPtr() const { return vfb->GetReadPtr() + offset; }
-  BYTE * GetWritePtr();  
+  const BYTE * GetReadPtr() const { return buffer.GetReadPtr(); }
+  BYTE * GetWritePtr() { return buffer.EnsureWritable(dimension).GetWritePtr(); }
 
-  ScriptEnvironment& GetEnvironment() const { return vfb->GetEnvironment(); }
 
   Vecteur LimitToWindow(const Vecteur& vect) const { return Vecteur(Limit(vect.GetX(), GetWidth()), Limit(vect.GetY(), GetHeight())); }
 

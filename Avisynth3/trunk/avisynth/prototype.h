@@ -20,14 +20,15 @@
 #ifndef __PROTOTYPE_H__
 #define __PROTOTYPE_H__
 
-
+//stl includes
 #include <vector>
 #include <string>
-#include <algorithm>
 using namespace std;
+//boost includes
+#include <boost/any.hpp>   //which includes type_info
 
-
-#include "avsvalue.h"
+typedef boost::any AVSValue;
+typedef vector<AVSValue> ArgVector;
 
 
 /**********************************************************************************************/
@@ -44,12 +45,13 @@ class LinkageArgument {
 
 public:
   LinkageArgument(const type_info& _type, const string& _name = "") : name(_name), type(_type) { }  
-  LinkageArgument(const AVSValue& val) : name(""), type(val.type()) { }
+  //this constructor exist to simplify conversion of an ArgVector to a LinkagePrototype
+  LinkageArgument(const AVSValue& value) : name(""), type(value.type()) { }
 
   const string& GetName() const { return name; }
   const type_info& Type() const { return type; }
 
-  bool unNamed() const { return name.empty(); }
+  bool unNamed() const { return name.empty(); }    //the name sucks
   bool operator==(const string& _name) const { return name == _name; }
 };
 
@@ -62,10 +64,8 @@ class DescriptionArgument : public LinkageArgument {
   static inline const string& CheckName(const string& name) { if (name.empty()) throw std::invalid_argument("the null chain is not a valid arg name"); }
 
 public:
-  DescriptionArgument(const string& name, const type_info& type, const AVSValue& _defaut = AVSValue())
-    : LinkageArgument(type, CheckName(name)), defaut(_defaut) { }
-  DescriptionArgument(const string& name, const AVSValue& _defaut)
-    : LinkageArgument(_defaut.type(), CheckName(name)), defaut(_defaut) { }
+  DescriptionArgument(const string& name, const type_info& type) : LinkageArgument(type, CheckName(name)), defaut(AVSValue()) { }
+  DescriptionArgument(const string& name, const AVSValue& _defaut)  : LinkageArgument(_defaut.type(), CheckName(name)), defaut(_defaut) { }
 
   const AVSValue& GetDefault() const { return defaut; }
   bool IsOptional() const { return ! defaut.empty(); }
@@ -82,11 +82,6 @@ public:
 
 class LinkagePrototype : public vector<LinkageArgument> {
 
-  struct IsNameEmpty : unary_function<LinkageArgument, bool>
-  {
-    bool operator()(const LinkageArgument& arg) const { return arg.GetName().empty(); }
-  };
-
 public:
   LinkagePrototype() { }
   LinkagePrototype(const LinkagePrototype& other) : vector<LinkageArgument>(other) { }
@@ -95,28 +90,32 @@ public:
   //just check that no empty named args follow named ones
   bool IsLegal() const
   {
-    const_iterator it = find_if(begin(), end(), compose1(logical_not<bool>(), IsNameEmpty()) );
-    return find_if(it, end(), IsNameEmpty()) != end();
+    const_iterator it = begin();
+    while( it != end() && it->unNamed() ) { ++it; }  //skip unNamed args part
+    if ( it == end() )
+      return true;             //if no more, it's legal
+    while( it != end() && ! it->unNamed() ) { ++it; }   //skip named args part
+    return it == end();        //if at end, legal, otherwise unNamed after and illegal
   }
 
 };
 
 class DescriptionPrototype : public vector<DescriptionArgument> {
 
-  struct IsNotOptional : unary_function<DescriptionArgument, bool>
-  {
-    bool operator()(const DescriptionArgument& arg) const { return ! arg.IsOptional(); }
-  };
-
 public:
   DescriptionPrototype() { }
   DescriptionPrototype(const DescriptionPrototype& other) : vector<DescriptionArgument>(other) { }
-  
+  DescriptionPrototype(const string& prototype);       //construction from a string
+
   //just check that no non-optional args follow optional ones
   bool IsLegal() const
   {
-    const_iterator it = find_if(begin(), end(), compose1(logical_not<bool>(), IsNotOptional()) );
-    return find_if(it, end(), IsNotOptional()) != end();
+    const_iterator it = begin();
+    while ( it != end() && ! it->IsOptional() ) { ++it; }   //skip non optional args part
+    if ( it == end() )
+      return true;                                          //if no more : legal
+    while( it != end() && it->IsOptional() ) { ++it; }      //skip optional ones
+    return it == end();                                     //we should be at end to be legal
   }
 
 };

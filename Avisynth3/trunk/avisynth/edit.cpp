@@ -1,4 +1,4 @@
-// Avisynth v2.5.  Copyright 2002 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -19,20 +19,51 @@
 // Linking Avisynth statically or dynamically with other modules is making a
 // combined work based on Avisynth.  Thus, the terms and conditions of the GNU
 // General Public License cover the whole combination.
-//
-// As a special exception, the copyright holders of Avisynth give you
-// permission to link Avisynth with independent modules that communicate with
-// Avisynth solely through the interfaces defined in avisynth.h, regardless of the license
-// terms of these independent modules, and to copy and distribute the
-// resulting combined work under terms of your choice, provided that
-// every copy of the combined work is accompanied by a complete copy of
-// the source code of Avisynth (the version of Avisynth used to produce the
-// combined work), being distributed under the terms of the GNU General
-// Public License plus this exception.  An independent module is a module
-// which is not derived from or based on Avisynth, such as 3rd-party filters,
-// import and export plugins, or graphical user interfaces.
 
 #include "edit.h"
+
+
+
+AVSValue TrimFunction::MakeTrim(PClip clip, int begin, int end)
+{
+  return end - begin == 0 ? new NullClip(clip) : new Trim(clip, begin, end);
+}
+
+
+VideoInfo Trim::TrimVideoInfo(const VideoInfo& vi, int begin, int end)
+{
+
+
+  VideoInfo result = vi;
+
+  //complete me
+
+  return result;
+}
+
+
+
+
+
+
+
+/******************************
+ *******   Trim Filter   ******
+ ******************************/
+
+Trim::Trim(int _firstframe, int _lastframe, PClip _child) : GenericVideoFilter(_child) 
+{
+  if (_lastframe == 0) _lastframe = vi.num_frames-1;
+  firstframe = min(max(_firstframe, 0), vi.num_frames-1);
+  int lastframe=_lastframe;
+  if (_lastframe<0)
+    lastframe = firstframe - _lastframe;
+  lastframe = min(max(lastframe, firstframe), vi.num_frames-1);
+  audio_offset = vi.AudioSamplesFromFrames(firstframe);
+  vi.num_frames = lastframe+1 - firstframe;
+  vi.num_audio_samples = vi.AudioSamplesFromFrames(lastframe+1) - audio_offset;
+}
+
 
 
 
@@ -64,22 +95,6 @@ AVSFunction Edit_filters[] = {
 
  
 
-/******************************
- *******   Trim Filter   ******
- ******************************/
-
-Trim::Trim(int _firstframe, int _lastframe, PClip _child) : GenericVideoFilter(_child) 
-{
-  if (_lastframe == 0) _lastframe = vi.num_frames-1;
-  firstframe = min(max(_firstframe, 0), vi.num_frames-1);
-  int lastframe=_lastframe;
-  if (_lastframe<0)
-    lastframe = firstframe - _lastframe;
-  lastframe = min(max(lastframe, firstframe), vi.num_frames-1);
-  audio_offset = vi.AudioSamplesFromFrames(firstframe);
-  vi.num_frames = lastframe+1 - firstframe;
-  vi.num_audio_samples = vi.AudioSamplesFromFrames(lastframe+1) - audio_offset;
-}
 
 
 

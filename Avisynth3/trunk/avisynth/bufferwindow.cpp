@@ -33,18 +33,7 @@
 
 
 
-MemoryBuffer::MemoryPiece::MemoryPiece(int _size, int& offset) : size(_size + FRAME_ALIGN)
-{
-  AllocationVector::iterator it = recycle.begin();
-  while( it != recycle.end() && it->size != size ) { ++it; }
-  if (it == recycle.end() )
-    data.reset( new BYTE[size] );
-  else {
-    data = it->data;
-    recycle.erase(it);
-  }
-  offset = ( -int(data.get()) ) & ( -FRAME_ALIGN );
-}
+
 
 
 /*
@@ -66,22 +55,29 @@ AlphaForwardingBuffer::AlphaForwardingBuffer(int row_size, int height)
 /**********************************************************************************************/
 
 
+BufferWithOffset::BufferWithOffset(BufferWithOffset& other, PEnvironment env)
+  : vfb(other.vfb), offset(other.offset)
+{
+  if ( env != GetEnvironment() )   //if same env, nothing more to do
+  { 
+    if (! other.vfb->IsEnvSharingEnabled() )
+      other.vfb = new ForwardToSharingBuffer(other.vfb);   //make sure sharing is enabled
+    vfb = other.vfb->ShareWith(env);                       //change vfb as a shared frame buffer
+  }
+}
 
-
-
-
-
-BYTE* BufferWindow::GetWritePtr()
-{ 
-  try { return vfb->GetWritePtr() + offset; }  
-  catch(shared_buffer&)
+void BufferWithOffset::EnsureWritable(const Dimension& dimension)
+{
+  if ( ! vfb->IsWriteAllowed() )
   {
-    BufferWindow temp(dimension, GetEnvironment()); //creates a buffer who can accomodates self
+    BufferWithOffset temp(dimension, GetEnvironment());
     Blitter::Blit(temp.GetWritePtr(), temp.GetPitch(), GetReadPtr(), GetPitch(), dimension);
     *this = temp;
   }
-  return vfb->GetWritePtr() + offset;  //shared_buffer can't occur  
-} 
+  return *this;
+}
+
+
 
 
 
@@ -106,7 +102,7 @@ void BufferWindow::SizeChange(const Vecteur& topLeft, const Vecteur& bottomRight
 {
   BufferWindow saved = *this;   //save actual position
   //updating parameters
-  dimension = dimension + bottomRight - topLeft;
+  dimension +=  bottomRight - topLeft;  
   offset += VecteurToOffset(topLeft);
   //three conditions where needed to reallocate the Buffer
   int pitch = GetPitch();
@@ -121,8 +117,8 @@ void BufferWindow::SizeChange(const Vecteur& topLeft, const Vecteur& bottomRight
 void BufferWindow::Blend(const BufferWindow& other, float factor)
 {  
   if (this != &other && factor > 0) //otherwise nothing to do
-    if (factor >= 1)  //full blend of other into self
-      *this = other;  //we replace this window by the other one
+    if (factor >= 1)                //full blend of other into self
+      *this = other;                //we replace this window by the other one
     else {
       //TODO: Code ME !!
     }

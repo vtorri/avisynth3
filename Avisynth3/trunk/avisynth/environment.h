@@ -21,63 +21,105 @@
 #define  __ENVIRONMENT_H__
 
 
-
-#include "prototype.h"  //includes linker.h, avsvalue.h...
-
-#include <utility>    //for pair
+//STL includes
 #include <map>
+#include <string>
+#include <vector>
+#include <utility>    //for pair
+using namespace std;
+
+//avisynth includes
+#include "refcounted.h"
+
+
+//some class declarations
+class Cache;
+class Plugin;
+class AVSValue;
+class AVSFunction;
+class MemoryPiece;
+class LinkagePrototype;
+class ScriptEnvironment;
+
 
 //some typedefs
-class Plugin;
-typedef smart_ptr<Plugin> PPlugin;
-class LinkedFunction;
-typedef smart_ptr<LinkedFunction> PAVSFunction;
+typedef smart_ref<Plugin> PPlugin;
+typedef vector<AVSValue> ArgVector;
+typedef smart_ref<AVSFunction> PAVSFunction;
+typedef pair<PAVSFunction, bool> LinkResult;  //pair to describe a full link result, the bool says if last is expected by the AVSFunction 
+typedef smart_ref<ScriptEnvironment> PEnvironment;
 
-//pair to describe a full link result, the bool says if last is expected by the AVSFunction 
-typedef pair<PAVSFunction, bool> LinkResult;  
 
-class MemoryBuffer;
 
 class ScriptEnvironment : public RefCounted {
 
+  /*
+   * Plugin stuff
+   */
   typedef vector<PPlugin> PluginVector;
 
-  PluginVector pluginVector;
+  PluginVector pluginVector;   //the vector of plugins
+
+public:
+  //load the plugin specified by pathName, exception if failure (which ?)  
+  void LoadPlugin(const string& pathName);  
+
+
+  /*
+   * Memory management stuff
+   */
+private:
+  int memMax;         //maximum set for memory usage
+  int mallocUsed;     //currently allocated by this::malloc
+  int totalMemUsed;   //total of memory used (counting the frame pipeline)
+
+  void FireMemoryOverMax();
+
+  void MemoryAllocated(int size) { totalMemUsed += size; if (totalMemUsed > memMax) FireMemoryOverMax(); }  
+  void MemoryFreed(int size)  { totalMemUsed -= size; }
+
+  friend class OwnedMemoryPiece;  //so it can use the two above
   
+  typedef map<void *, MemoryPiece *> AllocationMap;
 
-  int MemoryMax;
-  mutable int MemoryUsed;
+  AllocationMap allocMap;  //map who holds the memory blocks allocated by the below malloc
 
-  void RegisterMemory(int size) const;
-  void FreeMemory(int size) const;
+public:
+  //memory allocation/deallocation methods
+  //correctly update memory usage by the env
+  //usage is expected for frames-like size, (relatively) small size can skip it
+  void * malloc(int size);
+  void free(void * ptr);
 
-  friend class MemoryBuffer;  //so it can use the two above
+private:
+  typedef vector<Cache *> CacheVector;
+
+  CacheVector cacheVector;   //vector of all known Caches
+  //needed in order to request caches to release frames (and so memory)
+
+public:
+  //methods used by clips to register/unregister their caches
+  //generally you don't have to call them yourself
+  //subclassing the right clip class handles it for you
+  void RegisterCache(Cache * cache) { cacheVector.push_back(cache); }
+  void UnRegisterCache(Cache * cache) { cacheVector.erase( find(cacheVector.begin(), cacheVector.end(), cache), cacheVector.end() ); }
 
 public:
   ScriptEnvironment();
   ScriptEnvironment(const ScriptEnvironment& other);
 
+  virtual ~ScriptEnvironment();
 
-  void LoadPlugin(const string& pathName);
+  LinkResult Link(const string& functionName, const LinkagePrototype& link, bool ImplicitLastAllowed);
 
   AVSValue Invoke(const string& functionName, const ArgVector& args);
   AVSValue Parse(const string& script);
 
+
   static long __stdcall GetCPUFlags();
-
-
-  LinkResult Link(const string& name, const LinkagePrototype& link, bool ImplictLastAllowed);
-  //simple linkage, implicit last is not allowed here
-//  PAVSFunction SimpleLink(const string& name, const LinkagePrototype& link) { return Link(name, link, false).first; }
-
-
-  PAVSFunction Bind(PAVSFunction toBind, const ArgVector& bindedArgs);
-
-
 
 };
 
-typedef smart_ptr<ScriptEnvironment> PEnvironment;
 
 
 #endif   //#define  __ENVIRONMENT_H__

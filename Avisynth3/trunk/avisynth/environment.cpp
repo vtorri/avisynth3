@@ -23,11 +23,38 @@
 #include <algorithm>
 
 
+
+void * ScriptEnvironment::malloc(size_type size)
+{
+  APMemoryPiece apmp = new MemoryPiece(size);   //create memory block
+  void * result = apmp->get();         
+  allocMap[result] = apmp;            //store it in alloc map (AP ownership transferred into map)
+  MemoryUsedIncreased(apmp->size());  //increase memory usage (env may react)
+  return result;                      //return result
+}
+
+void ScriptEnvironment::free(void * ptr)
+{
+  AllocationMap::iterator it = allocMap.find(ptr);  //search for ptr
+  if ( it != allocMap.end() )                       //if found
+  {
+    MemoryUsedReleased( it->second()->size() );     //decrease memory usage
+    allocMap.erase(it);                             //release block
+  }
+}
+
+
+
 ScriptEnvironment::ScriptEnvironment()
 {
   pluginVector.push_back(&CorePlugin::core);  //register the core plugin as first env plugin
 }
 
+ScriptEnvironment::~ScriptEnvironment()
+{
+  for(AllocationMap::iterator it = allocMap.begin(); it != allocMap.end(); ++it)
+    delete it->second;
+}
 
 
 void ScriptEnvironment::LoadPlugin(const string& pathName)

@@ -104,8 +104,6 @@ public:
   //copy constructor
   VideoInfo(const VideoInfo& other) : vidProps(other.vidProps), audProps(other.audProps) { }
   
-  PEnvironment GetEnvironment() const { return env; }
-
   bool IsNullClip() const
   {
     return ( ! HasVideo() || GetFrameCount() == 0 )        //if has video no frames   

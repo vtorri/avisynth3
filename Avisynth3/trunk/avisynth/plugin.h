@@ -21,7 +21,6 @@
 #define __PLUGIN_H__
 
 
-#include "linker.h" 
 #include "avsfunction.h"
 
 
@@ -43,59 +42,10 @@ public:
 
 typedef vector<MatchResult> SearchResult;
 
-typedef vector<AVSFunction *> FunctionList;
-
-//base class for plugins
-class Plugin {
-
-  FunctionList list;
-
-protected:
-  //before adding to list, check that eventual overload is legal
-  void AddFunction(AVSFunction& funct) throw(std::invalid_argument);
-
-public:
-  Plugin() { }
-
-  virtual ~Plugin() { }
-
-  virtual void AddRef() const = 0;
-  virtual void Release() const = 0;
-
-  virtual const string& GetName() const = 0;
-
-  //returns the list of known functions
-  const FunctionList& GetFunctionList() const { return list; }
-  //return NULL when not found
-  //it supposes you cannot change return type when overloading (common requirement)
-  const type_info * ReturnTypeOf(const string& name) const; 
-  //search for function of given name and matching the given prototype
-  void FunctionSearch(SearchResult& result, const string& name, const LinkagePrototype& link);
-};
-
-typedef smart_ptr<Plugin> PPlugin;
 
 
 
-class CorePlugin : public Plugin {
 
-  //private contructor 
-  CorePlugin() { }
-
-  //method called by CoreFunction to register themselves
-  void RegisterFunction(CoreFunction& funct){ AddFunction(funct); }
-
-  friend class CoreFunction; //so it can call the above
-
-public:
-  virtual void AddRef() const { }
-  virtual void Release() const { }
-
-  virtual const string& GetName() const { static const string name = "Avisynth Core"; return name; }
-  
-  //the sole instance of the core
-  static CorePlugin core;   
-};
 
 
 
@@ -123,6 +73,30 @@ public:
   //so it may implement instances folding
   static PPlugin GetPlugin(const string& filename); 
 };
+
+
+
+
+class PluginFunction : public AVSFunction {
+
+  const type_info& type;
+  const DescriptionPrototype prototype;
+  NativePlugin& mother;
+
+public:
+  PluginFunction(const string& name, const type_info& _type, const DescriptionPrototype& _prototype, NativePlugin& _mother)
+    : AVSFunction(name), type(_type), prototype(_prototype), mother(_mother) { }
+  //copy constructor
+  PluginFunction(const PluginFunction& other) : AVSFunction(other.GetName()), type(other.type), prototype(other.prototype), mother(other.mother) { }
+
+  virtual const DescriptionPrototype& GetPrototype() const { return prototype; }
+  virtual const type_info& GetReturnType() const { return type; }
+
+  virtual PPlugin GetMotherPlugin() const; // { return mother; }
+  virtual FunctionType GetFunctionType() const { return PLUGIN; }
+};
+
+
 
 
 

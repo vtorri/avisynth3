@@ -44,6 +44,7 @@ public:
   const Vecteur& operator=(const Vecteur& other) { x = other.x; y = other.y; return *this; }
 
   Vecteur operator-() const { return Vecteur(-x, -y); }
+
 };
 
 
@@ -69,6 +70,7 @@ public:
   Dimension() { }
   Dimension(int width, int height) : Vecteur(CheckSign(width), CheckSign(height)) { }
   Dimension(const Dimension& other) : Vecteur(other) { }
+  explicit Dimension(const Vecteur& vect) : Vecteur(CheckSign(vect.GetX()), CheckSign(vect.GetY())) { }
 
   const Dimension& operator=(const Dimension& other) { x = other.x; y = other.y; return *this; }
 
@@ -81,15 +83,15 @@ public:
   bool operator==(const Dimension& other) const { return x == other.x && y == other.y; }
   bool empty() const { return x == 0 || y == 0; }
 
-  Dimension operator+(const Vecteur& vect) { return Dimension(x + vect.GetX(), y + vect.GetY()); }
-  Dimension operator-(const Vecteur& vect) { return Dimension(x - vect.GetX(), y - vect.GetY()); }
+  const Dimension& operator+=(const Vecteur& vect) { SetWidth(x + vect.GetX()); SetHeight(y + vect.GetY()); return *this; }
+  const Dimension& operator-=(const Vecteur& vect) { SetWidth(x - vect.GetX()); SetHeight(y - vect.GetY()); return *this; }
 
   Dimension operator+(const Dimension& other) { return Dimension(x + other.x, y + other.y); }
 };
 
 
 Vecteur operator+(const Vecteur& left, const Vecteur& right) { return Vecteur(left.GetX() + right.GetX(), left.GetY() + right.GetY()); }
-Dimension operator-(const Vecteur& left, const Vecteur& right) { return Dimension(left.GetX() - right.GetX(), left.GetY() - right.GetY()); }
+Vecteur operator-(const Vecteur& left, const Vecteur& right) { return Vecteur(left.GetX() - right.GetX(), left.GetY() - right.GetY()); }
 
 
 #endif //#define __GEOMETRIC_H__

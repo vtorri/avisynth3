@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2002 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -18,47 +18,39 @@
 
 
 #include "avsfunction.h"
-#include "plugin.h"
+#include "prototype.h"
 
 
 
-PPlugin PluginFunction::GetMotherPlugin() const { mother.AddRef(); return &mother; }
 
-CoreFunction::CoreFunction(const string& name) : AVSFunction(name) { CorePlugin::core.RegisterFunction(*this); }
-
-
-
-AVSValue LinkedFunction::Call(const ArgVector& args) throw(std::invalid_argument)
+AVSValue AVSFunction::Call(const ArgVector& args, VarTable& table, ScriptEnvironment& env)
 {
   const DescriptionPrototype& prototype = GetPrototype();
 
+  //if more args than in proto
   if ( args.size() > prototype.size() )
-    throw std::invalid_argument("too much arguments");
-
-  ArgVector::const_iterator a_it = args.begin();
-  DescriptionPrototype::const_iterator p_it = prototype.begin();
-  while ( a_it != args.end() )   //while there are args
-  {
-    if ( a_it++->type() != p_it++->Type() )           //if type mismatch
-      throw std::invalid_argument("type mismatch");   //exception
-  }      
+    throw std::invalid_argument(GetName() + ": too much arguments");  //exception
   
+  DescriptionPrototype::const_iterator p_it = prototype.begin();
+  for(ArgVector::const_iterator a_it = args.begin(); a_it != args.end(); )   //loop over args  
+    if ( a_it++->type() != p_it++->Type() )                                  //if type mismatch
+      throw std::invalid_argument(GetName() + ": type mismatch");            //exception        
+
+  //if more in proto and not optional  
   if ( p_it != prototype.end() && ! p_it->IsOptional() )
-    throw std::invalid_argument("not enough arguments");
+    throw std::invalid_argument(GetName() + ": not enough arguments");  //exception
 
-  ArgVector filledArgs = args;
-  while( p_it != prototype.end() )
-  {
-    filledArgs.push_back( p_it->GetDefault() );    //complete with default values
-  }
+  ArgVector filledArgs = args;             //vector to fill with defaults
+  while( p_it != prototype.end() )         //while there are some
+    filledArgs.push_back( p_it->GetDefault() );    //complete with default values  
 
-  return operator()(filledArgs, GetEnvironment());
+  return operator()(filledArgs, table, env);
 
 }
 
 
 
-
+/*
 
 AVSValue ReorderingCallBackFunction::operator()(const ArgVector& args, PEnvironment env) const
 {
@@ -75,3 +67,4 @@ AVSValue ReorderingCallBackFunction::operator()(const ArgVector& args, PEnvironm
   //directly call the operator () from the parent (avoid a redundant Call)
   return CallBackFunction::operator()(reorderedArgs, env);
 }
+*/

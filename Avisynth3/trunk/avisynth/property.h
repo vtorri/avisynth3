@@ -72,7 +72,7 @@ public:
         *it = prop;
         return;
       }
-    push_back(prop);  //case where we reach end without finiding it
+    push_back(prop);  //case where we reach end without finding it
   }
 
   void Remove(const PropertyKey& key)

@@ -1,4 +1,4 @@
-// Avisynth v2.5.  Copyright 2002 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -19,27 +19,48 @@
 // Linking Avisynth statically or dynamically with other modules is making a
 // combined work based on Avisynth.  Thus, the terms and conditions of the GNU
 // General Public License cover the whole combination.
-//
-// As a special exception, the copyright holders of Avisynth give you
-// permission to link Avisynth with independent modules that communicate with
-// Avisynth solely through the interfaces defined in avisynth.h, regardless of the license
-// terms of these independent modules, and to copy and distribute the
-// resulting combined work under terms of your choice, provided that
-// every copy of the combined work is accompanied by a complete copy of
-// the source code of Avisynth (the version of Avisynth used to produce the
-// combined work), being distributed under the terms of the GNU General
-// Public License plus this exception.  An independent module is a module
-// which is not derived from or based on Avisynth, such as 3rd-party filters,
-// import and export plugins, or graphical user interfaces.
+
 
 #ifndef __Edit_H__
 #define __Edit_H__
 
-#include "internal.h"
 
 
-/********************************************************************
-********************************************************************/
+/*********************************************************************************************/
+/******************************** TrimFunction and Trim **************************************/
+/*********************************************************************************************/
+
+
+class TrimFunction : public CoreFilter {
+
+  static TrimFunction instance;
+
+  TrimFunction() : CoreFilter("Trim", "clip c, int begin, int end") { }
+
+protected:
+  //protected constructor for the TrimFunctionNoEndArg subclass
+  TrimFunction(const string& prototype) : CoreFilter("Trim", prototype) { }
+
+  virtual AVSValue operator()(const ArgVector& args, VarTable& table, ScriptEnvironment& env) { return Trim::Create(any_cast<PClip>(args[0]), any_cast<int>(args[1]), any_cast<int>(args[2])); }
+};
+
+
+class TrimFunctionNoEndArg : public TrimFunction {
+
+  static TrimFunctionNoEndArg instance;
+
+  TrimFunctionNoEndArg() : TrimFunction("clip c, int begin") { }
+
+protected:
+  virtual AVSValue operator()(const ArgVector& args, VarTable& table, ScriptEnvironment& env)
+  {
+    PClip clip = any_cast<PClip>(args[0]);
+    return Trim::Create(clip, any_cast<int>(args[1]), clip->GetVideoInfo().GetFrameCount(); 
+  }
+};
+
+
+
 
 
 /**
@@ -47,17 +68,24 @@
  **/
 class Trim : public EditFilter {
 
-  const int begin;
+  const int begin;               //first frame of the trimmed clip in child
+  const int length;              //length of the trimmed clip
   const __int64 audio_offset;
 
+  //trim the videoinfo
+  //throws the exceptions if needed
+  static VideoInfo TrimVideoInfo(const VideoInfo& vi, int begin, int length);
+
 public:
-  //end is the out of bounds limit
-  Trim(PClip  child, int _begin, int end) : ChildClip(child, child->GetVideoInfo().Trim(_begin, end)),
-    begin(_begin), audio_offset(vi.AudioSamplesFromFrames(begin)) { }
+  //child is expected to have video, begin and end to be positive
+  Trim(PClip  child, int _begin, int _length) : EditFilter(child, TrimVideoInfo(child->GetVideoInfo(), _begin, _length)),
+    begin(_begin), length(_length) audio_offset(vi.AudioSamplesFromFrames(begin)) { }
      
-  virtual CPVideoFrame GetFrame(int n, CLip& client) { return child->GetFrame(n + begin, client); }
+  virtual CPVideoFrame GetFrame(int n, Clip& client) { return child->GetFrame(n + begin, client); }
   virtual void GetAudio(void* buf, __int64 start, __int64 count) { child->GetAudio( buf, start + audio_offset, + count); }
 
+  //no preconditions on arguments
+  static PClip Create(PClip child, int begin, int end);
 };
 
 

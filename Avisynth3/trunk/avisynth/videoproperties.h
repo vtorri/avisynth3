@@ -26,7 +26,7 @@
 
 
 #include "refcounted.h"
-#include "colorspace.h"  //which includes geometric.h
+#include "colorspace.h"        //which includes geometric.h
 #include "boost/rational.hpp"  //for rational
 
 typedef boost::rational<unsigned> Fraction;  //type used to hold fps
@@ -154,7 +154,7 @@ public:
   FrameVideoProperties * clone() const { return new FrameVideoProperties(*this); }
 };
 
-typedef smart_ptr<FrameVideoProperties> PFrameVidProps;
+typedef smart_ref<FrameVideoProperties> PFrameVidProps;
 
 
 

@@ -78,6 +78,10 @@ PClip Parser::operator ()(std::string const& src)
   StatementCode statCode = code;
   statCode(state); 
 
+  //if top stack value is a clip, we return it
+  if ( ! state.empty() && boost::get<PClip>(&state.top()) != NULL )
+    return boost::get<PClip>(state.top());
+
   //return boost::get<PClip>(state.top());
   std::stringstream stream;
 

@@ -81,8 +81,8 @@ private:  //Refactor methods
 
 public:  //read access
 
-  PClip const& GetVideoChild() const { return GetLeftChild(); }
-  PClip const& GetAudioChild() const { return GetRightChild(); }
+  PClip GetVideoChild() const { return GetLeftChild(); }
+  PClip GetAudioChild() const { return GetRightChild(); }
 
 
 public:  //factory method and functor

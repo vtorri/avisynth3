@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,8 @@
 
 //avisynth includes
 #include "block/base.h"
-#include "block/owneddeleter.h"
+#include "block/align.h"
+#include "block/deleter/ownedbase.h"
 
 
 namespace avs { 
@@ -34,47 +35,60 @@ namespace avs {
   
 
 ///////////////////////////////////////////////////////////////////////////////////////
-//  OwnedBlock
+//  owned_block<align>
 //
 //  provides same service than Block (from block.h)
 //  but the memory is considered owned by an environment
 //  which sees its memory usage updated accordingly
 //
-class OwnedBlock : public block::base<block::OwnedDeleter>
+template <int align>
+class owned_block : public block::base<block::deleter::OwnedBase, align>
 {
 
 public:  //structors
 
-  OwnedBlock(PEnvironment const& env);
+  owned_block(PEnvironment const& env);
 
   //normal constructor
-  OwnedBlock(PEnvironment const& env, int size, bool recycle);
+  owned_block(PEnvironment const& env, int size, bool recycle);
+
+  template <class Deleter>
+  explicit owned_block(Deleter const& deleter)
+    :  BaseBlockType( deleter ) { }
+
+  template <int alignOther>
+  explicit owned_block(owned_block<alignOther> const& other)
+    : BaseBlockType( other ) { }
 
   //generated copy constructor and destructor are fine
 
 
-public:  //read access
+public:  //assignment
 
-  PEnvironment const& GetEnvironment() const { return GetDeleter().GetEnvironment(); }
+  template <int alignOther>
+  owned_block<align>& operator=(owned_block<alignOther> const& other)
+  {
+    return static_cast<owned_block<align>&>( BaseBlockType::operator=(other) );
+  }
 
-
-public:  //comparisons operators
-
-  bool operator==(OwnedBlock const& other) const { return get() == other.get(); }
-  bool operator!=(OwnedBlock const& other) const { return get() != other.get(); }
+  //generated operator= is fine
+  //swap inherited from superclass
 
 
 public:  //reset methods
 
   void reset(int size, bool recycle)
   { 
-    OwnedBlock tmp(GetEnvironment(), size, recycle);
+    owned_block tmp(GetEnvironment(), size, recycle);
     swap(tmp); 
   }
 
-};//OwnedBlock
+};
 
 
+//only defined for avs nominal align
+template <> owned_block<block::Align>::owned_block(PEnvironment const& env);
+template <> owned_block<block::Align>::owned_block(PEnvironment const& env, int size, bool recycle);
 
 
 } //namespace avs

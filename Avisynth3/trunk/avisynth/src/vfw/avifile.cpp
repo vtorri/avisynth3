@@ -238,7 +238,7 @@ AviStream * AviFile::CreateStream(DWORD fccType, int lParam)
         case ColorSpace::I_RGB32: 
         case ColorSpace::I_YUY2: return new avistream::Interleaved(*this);
         case ColorSpace::I_YV12: return new avistream::YV12(*this);
-        default:
+        default: break;
         }
       return NULL;
     case 1:

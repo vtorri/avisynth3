@@ -104,7 +104,17 @@ public:
   AvisynthError(const string& _err_msg) : err_msg(_err_msg) { }
 };
 
+//exception class for internal errors
+class InternalError : public AvisynthError {
+public: 
+  InternalError(const string& _err_msg) : AvisynthError("Internal Error: " + _err_msg) { }
+};
 
+//exception class for errors in parsed scripts
+class ScriptError : public AvisynthError {
+public: 
+  ScriptError(const string& _err_msg) : AvisynthError("Script Error: " + _err_msg) { }
+};
 
 // The VideoInfo struct holds global information about a clip (i.e.
 // information that does not depend on the frame number).  The GetVideoInfo
@@ -791,97 +801,125 @@ class AVSValue {
 
   AVSType type;
   bool defined;
-  short array_size;  
-  union {
-    bool boolean;
-    int integer;
-    float floating_pt;
-    const char* str;
-    const AVSValue* array;
-    //__int64 longlong;
-  };
-  PClip clip;
 
-  /*enum { DataSize = max( sizeof(string), max(sizeof(PClip), sizeof(float)) ) }; //..sizeof(__int64)
+  void * data;
+  
+  void * buildValue() {
+    switch(type)
+    {      
+      case CLIP_T:   return new PClip();
+      case INT_T:    return new int;
+      case BOOL_T:   return new bool;
+      case FLOAT_T:  return new float;
+      case STRING_T: return new string();
+    }
+    return NULL;  
+  }
+  void build() { data = buildValue(); }
 
-  BYTE data[DataSize];
-
-  void destroy() { 
-    if (type == CLIP_T)
-      ((PClip*)data)->~PClip();
-    else
-      if (type == STRING_T)
-        ((string*)data)->~string();    
+  void destroy()
+  {
+    switch(type)
+    {
+      case CLIP_T:   delete (PClip *)data; break;
+      case INT_T:    delete (int *)data; break;
+      case BOOL_T:   delete (bool *)data; break;
+      case FLOAT_T:  delete (float *)data; break;
+      case STRING_T: delete (string *)data; break;
+    }
   }
 
-  void construct() {
-    if (type == CLIP_T)
-      new(data) PClip();
-    else
-      if (type == STRING_T)
-        new(data) string();    
-  }*/
-
   void Assign(const AVSValue& other) {
-    //destroy();
+    destroy();
     type = other.type;
-    //construct();
-    if (defined = other.defined) {
-      array_size = other.array_size;
-      floating_pt = other.floating_pt;
-  	  clip = other.clip;
-    }
+    build();
+    switch(type)
+    {
+      case CLIP_T:   *((PClip *)data) = *((PClip *)other.data); break;
+      case INT_T:    *((int *)data) = *((int *)other.data); break;
+      case BOOL_T:   *((bool *)data) = *((bool *)other.data); break;
+      case FLOAT_T:  *((float *)data) = *((float *)other.data); break;
+      case STRING_T: *((string *)data) = *((string *)other.data); break;
+    }    
+  }
+
+  //three methods repeatly used in operators
+  inline TypeCheck(AVSType expected) const {
+    if (expected != type)
+      throw InternalError("improper use of an AVSValue");
+  }
+  inline BeforeAffectCheck(AVSType expected)
+  {
+    TypeCheck(expected);
+    defined = true;
+  }
+  inline BeforeCastCheck(AVSType expected) const
+  {
+    TypeCheck(expected);
+    if (! defined)
+      throw AvisynthError("use of an AVSValue who was not initialised");
   }
 
 public:
 
   AVSValue() : defined(false), type(VOID_T) { }
-  //AVSValue(AVSType _type) : defined(false), type(_type) { }
-  AVSValue(IClip* c) : defined(true), type(CLIP_T), clip(c) { }
-  AVSValue(const PClip& c) : defined(true), type(CLIP_T), clip(c) { }
-  AVSValue(bool b) : defined(true), type(BOOL_T), boolean(b) { }
-  AVSValue(int i) : defined(true), type(INT_T), integer(i) { }
-  //AVSValue(__int64 l), defined(true), type(LONG_T), longlong(l) { }
-  AVSValue(float f) : defined(true), type(FLOAT_T), floating_pt(f) { }
-  AVSValue(double f) : defined(true), type(FLOAT_T), floating_pt(f) { }
-  AVSValue(const char* s) : defined(true), type(STRING_T), str(s) { }
-  AVSValue(const AVSValue* a, int size) : defined(true), type(ARRAY_T), array(a), array_size(size) { }
-  AVSValue(const AVSValue& other) { Assign(other); }
+  AVSValue(const AVSValue& other) : type(VOID_T) { Assign(other); }
 
-  ~AVSValue() { }
+  ~AVSValue() { destroy(); }
+
+  //constructor by type, used by the parser
+  AVSValue(AVSType _type) : defined(false), type(_type) { build(); }
+
+  AVSValue(PClip clip)      : defined(true), type(CLIP_T)   { build(); *((PClip *)data) = clip; }
+  AVSValue(int b)          : defined(true), type(BOOL_T)   { build(); *((int *)data) = b; }
+  AVSValue(bool i)           : defined(true), type(INT_T)    { build(); *((bool *)data) = i; }
+  AVSValue(float f)         : defined(true), type(FLOAT_T)  { build(); *((float *)data) = f; }
+  AVSValue(const string& s) : defined(true), type(STRING_T) { build(); *((string *)data) = s; }
+
+
   const AVSValue& operator=(const AVSValue& other) { Assign(other); return *this; }
 
   // Note that we transparently allow 'int' to be treated as 'float'.
-  // There are no int<->bool conversions, though.
+  // There are no int<->bool conversions, though..
 
-  bool Defined() const { return defined; }
-  bool IsClip() const { return type == CLIP_T; }
-  bool IsBool() const { return type == BOOL_T; }
-  bool IsInt() const { return type == INT_T; }
-//  bool IsLong() const { return (type == LONG_T || type == INT_T); }
-  bool IsFloat() const { return type == FLOAT_T || type == INT_T; }
-  bool IsString() const { return type == STRING_T; }
-  bool IsArray() const { return type == ARRAY_T; }
-
-  PClip AsClip() const { _ASSERTE(IsClip()); return IsClip()?clip:0; }
-  bool AsBool() const { _ASSERTE(IsBool()); return boolean; }
-  int AsInt() const { _ASSERTE(IsInt()); return integer; }   
-//  int AsLong() const { _ASSERTE(IsLong()); return longlong; } 
-  const char* AsString() const { _ASSERTE(IsString()); return IsString()?str:0; }
-  double AsFloat() const { _ASSERTE(IsFloat()); return IsInt()?integer:floating_pt; }
-
-  bool AsBool(bool def) const { _ASSERTE(IsBool()||!Defined()); return IsBool() ? boolean : def; }
-  int AsInt(int def) const { _ASSERTE(IsInt()||!Defined()); return IsInt() ? integer : def; }
-  double AsFloat(double def) const { _ASSERTE(IsFloat()||!Defined()); return IsInt() ? integer : type==FLOAT_T ? floating_pt : def; }
-  const char* AsString(const char* def) const { _ASSERTE(IsString()||!Defined()); return IsString() ? str : def; }
-
-  int ArraySize() const { _ASSERTE(IsArray()); return IsArray()?array_size:1; }
-  const AVSValue& operator[](int index) const {
-    _ASSERTE(IsArray() && index>=0 && index<array_size);
-    return (IsArray() && index>=0 && index<array_size) ? array[index] : *this;
+  const AVSValue& operator=(PClip value)  { BeforeAffectCheck(CLIP_T);   *((PClip *)data)  = value; return *this; }
+  const AVSValue& operator=(int value)    { 
+    if (type == FLOAT_T) 
+      return operator=( float(value) ); //allows float avsvalues to receive int values
+    BeforeAffectCheck(INT_T);    *((int *)data)    = value; return *this;
   }
+  const AVSValue& operator=(bool value)   { BeforeAffectCheck(BOOL_T);   *((bool *)data)   = value; return *this; }
+  const AVSValue& operator=(float value)  { BeforeAffectCheck(FLOAT_T);  *((float *)data)  = value; return *this; }
+  const AVSValue& operator=(string value) { BeforeAffectCheck(STRING_T); *((string *)data) = value; return *this; }
+
+  operator PClip() const  { BeforeCastCheck(CLIP_T); return *((PClip *)data); }
+  operator int()   const  { BeforeCastCheck(INT_T);  return *((int *)data); }
+  operator bool()  const  { BeforeCastCheck(BOOL_T); return *((bool *)data); }
+  operator float() const  { 
+    if (type == INT_T)
+      return operator int();  //alows int avsvalues to be treated as float
+    BeforeCastCheck(FLOAT_T); return *((float *)data);
+  }
+  operator string() const { BeforeCastCheck(STRING_T); return *((string *)data); }
+
+  //may come in handy in some overload resolution
+  operator double() const { return operator float(); }
+
+  //test if initialised
+  bool Defined() const { return defined; }
+  AVSType GetType() const { return type; }
+
+  bool Is(AVSType _type) const { return type == _type; }
+
+  bool IsClip()   const { return Is(CLIP_T); }
+  bool IsBool()   const { return Is(BOOL_T); }
+  bool IsInt()    const { return Is(INT_T); }
+  bool IsFloat()  const { return Is(FLOAT_T) || Is(INT_T); }
+  bool IsString() const { return Is(STRING_T); }
 
 };
+
+typedef vector<AVSValue> ArgVector;
 
 
 // instanciable null filter that forwards all requests to child

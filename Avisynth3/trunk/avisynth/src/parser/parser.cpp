@@ -55,15 +55,15 @@ PClip Parser::operator ()(std::string const& src)
   functionTable.AddPlugin(linker::core::Plugin::Get());
 
 
-  VMCode code;
-  VarTable varTable, globalVarTable;
+  CodeCouple code;
+  VarTable localTable, globalTable;
   boost::optional<int> last;
 
-  Statement statement(functionTable, globalVarTable);
-  Expression expression(functionTable, globalVarTable);
+  Statement statement;
+  Expression expression;
 
   parse(src.c_str(), 
-     *(   statement( VMCode(), boost::ref(varTable), boost::ref(last) )
+     *(   statement( CodeCouple(), boost::ref(localTable), boost::ref(last), boost::ref(globalTable), boost::ref(functionTable) )
           //expression( value::Expression(), boost::ref(varTable), last )
           [            
             var(code) += arg1
@@ -72,10 +72,11 @@ PClip Parser::operator ()(std::string const& src)
       ), spirit::blank_p);
 
 
-  VMState state(env, globalVarTable.size());  
+  VMState state(env, globalTable.size());  
   //state.push(1);
 
-  code(state); 
+  StatementCode statCode = code;
+  statCode(state); 
 
   //return boost::get<PClip>(state.top());
   std::stringstream stream;

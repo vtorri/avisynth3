@@ -35,6 +35,7 @@ namespace avs {
 //
 template <int Round> int RoundUp(int value);
 
+template <> inline int RoundUp<1>(int value) { return value; }
 template <> inline int RoundUp<2>(int value) { return (value + 1) & -2; }
 template <> inline int RoundUp<4>(int value) { return (value + 3) & -4; }
 template <> inline int RoundUp<8>(int value) { return (value + 7) & -8; }

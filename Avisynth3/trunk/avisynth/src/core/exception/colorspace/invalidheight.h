@@ -51,7 +51,7 @@ class InvalidHeight : public Exception
 
 public:  //structors
 
-  InvalidWidth(ColorSpace const& space, int height, int /*modulo*/, bool interlaced)
+  InvalidHeight(ColorSpace const& space, int height, int /*modulo*/, bool interlaced)
     : space_( &space ) 
     , height_( height )
     , interlaced_( interlaced ) { }

@@ -28,10 +28,6 @@
 #include "../folded.h"
 
 
-#pragma warning ( push )           //push warning state
-#pragma warning (disable : 4250)   //get rid of MI dominance decisions
-
-
 namespace avs { namespace clip { namespace folded {
 
 
@@ -48,9 +44,13 @@ class Make : public Folded<Key, Expired>
 
 public:  //structors
 
-  template <class T> 
+  template <typename T> 
   Make(T const& t)
     : SuperClass( t ) { }
+
+  template <typename T, typename U>
+  Make(T const& t, U const& u)
+    : SuperClass( t, u ) { }
 
   //generated destructor is fine
 
@@ -73,7 +73,5 @@ private:  //GetKey method
 
 
 } } } //namespace avs::clip::folded
-
-#pragma warning ( pop )
 
 #endif //__AVS_CLIP_FOLDED_MAKE_H__

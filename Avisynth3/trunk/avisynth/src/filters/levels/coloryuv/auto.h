@@ -25,11 +25,13 @@
 #define __AVS_FILTERS_COLORYUV_AUTO_H__
 
 //avisynth includes
+#include "mode.h"
 #include "levels.h"
 #include "../coloryuv.h"
 
 
 namespace avs { namespace filters { namespace coloryuv {
+
 
 
 

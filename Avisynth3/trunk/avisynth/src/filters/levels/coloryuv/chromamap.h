@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -33,6 +33,11 @@ namespace avs { namespace filters { namespace coloryuv {
 
 
 
+/////////////////////////////////////////////////////////////////////////////////////
+//  coloryuv::ChromaMap
+//
+//  look up table used by ColorYUV on the chroma
+//
 class ChromaMap : public ByteMap
 {
 
@@ -40,8 +45,7 @@ public:  //structors
 
   ChromaMap(Levels const& levels, int (* adjust)(int), bool coring);
 
-  ChromaMap(ChromaMap const& other)
-    : ByteMap( other ) { }
+  //generated copy constructor and destructor are fine
 
 
 public:  //assignement

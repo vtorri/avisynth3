@@ -21,35 +21,35 @@
 // General Public License cover the whole combination.
 
 
-//avisynth includes
-#include "chromamap.h"
-#include "../../../core/utility/saturate.h"
+#ifndef __AVS_FILTERS_RGBADJUST_SCALE_H__
+#define __AVS_FILTERS_RGBADJUST_SCALE_H__
 
-//stl include
-#include <cmath>           //for floor
-
-
-namespace avs { namespace filters { namespace coloryuv {
+//avisynth include
+#include "../../../utility/bytemap.h"
 
 
+namespace avs { namespace filters { namespace rgbadjust {
 
-ChromaMap::ChromaMap(Levels const& levels, int (* adjust)(int), bool coring)
+
+
+////////////////////////////////////////////////////////////////////////////////////
+//  Scale
+//
+//
+//
+class Scale : public ByteMap
 {
-  BYTE * ptr = data();
- 
-  for ( int i = 0; i < 256; ++i, ++ptr )
-  {
-    float value = static_cast<float>(adjust(i));
 
-    value += value * levels.gain / 256 + (value - 128) * levels.contrast / 256 + levels.brightness;
+public:  //structors
 
-    int val = static_cast<int>( std::floor(value + 0.5f) );
+  Scale(double s);
 
-    *ptr = coring ? saturate<BYTE, 16, 240>(val)
-                  : saturate<BYTE, 0, 255>(val);    
-  }
+  //generated copy constructor and destructor are fine
 
-}
+};
 
 
-} } } //namespace avs::filters::coloryuv
+
+} } } //namespace avs::filters::rgbadjust
+
+#endif //__AVS_FILTERS_RGBADJUST_SCALE_H__

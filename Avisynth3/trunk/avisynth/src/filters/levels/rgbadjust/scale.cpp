@@ -22,34 +22,23 @@
 
 
 //avisynth includes
-#include "chromamap.h"
+#include "scale.h"
 #include "../../../core/utility/saturate.h"
 
-//stl include
-#include <cmath>           //for floor
 
-
-namespace avs { namespace filters { namespace coloryuv {
+namespace avs { namespace filters { namespace rgbadjust {
 
 
 
-ChromaMap::ChromaMap(Levels const& levels, int (* adjust)(int), bool coring)
+Scale::Scale(double s)
 {
+  double x = 0.5;              //shouldn't it be s / 2 ?
   BYTE * ptr = data();
- 
-  for ( int i = 0; i < 256; ++i, ++ptr )
-  {
-    float value = static_cast<float>(adjust(i));
 
-    value += value * levels.gain / 256 + (value - 128) * levels.contrast / 256 + levels.brightness;
-
-    int val = static_cast<int>( std::floor(value + 0.5f) );
-
-    *ptr = coring ? saturate<BYTE, 16, 240>(val)
-                  : saturate<BYTE, 0, 255>(val);    
-  }
-
+  for( int i = 256; i-- > 0; ++ptr, x += s )
+    *ptr = saturate<BYTE, 0, 255>( static_cast<int>(x) );
 }
 
 
-} } } //namespace avs::filters::coloryuv
+
+} } } //namespace avs::filters::rgbadjust

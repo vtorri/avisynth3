@@ -21,10 +21,11 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_FILTERS_TWEAK_H__
-#define __AVS_FILTERS_TWEAK_H__
+#ifndef __AVS_FILTERS_RGBADJUST_H__
+#define __AVS_FILTERS_RGBADJUST_H__
 
 //avisynth includes
+#include "rgbadjust/scale.h"
 #include "../../clip/onechild/concrete.h"
 #include "../../clip/framemaker/concrete.h"
 #include "../../clip/onechild/framemakerpipeline.h"
@@ -34,31 +35,21 @@ namespace avs { namespace filters {
 
 
 
-/////////////////////////////////////////////////////////////////////////////
-//  Tweak
-//
-//
-//
-class Tweak : public clip::onechild::FrameMakerPipeline
-            , public clip::onechild::Concrete  
-            , public clip::framemaker::Concrete
+class RGBAdjust : public clip::onechild::FrameMakerPipeline
+                , public clip::onechild::Concrete  
+                , public clip::framemaker::Concrete
 {
 
-protected:  //members
-
-  int Sin, Cos;         // = (int) sin, cos  ( (hue * 3.1415926) / 180.0 ) * 4096
-  int Sat;              // = (int) sat * 512
-  int Bright_p16;       // = (int) bright + 16        
-  int Cont;             // = (int) cont * 512
+  rgbadjust::Scale r_, g_, b_, a_;
 
 
 public:  //structors
 
-  Tweak(PClip const& child, double hue, double sat, double bright, double cont);
+  RGBAdjust(PClip const& child, double r, double g, double, b, double a);
 
-  Tweak(PClip const& child, Tweak const& other);
+  RGBAdjust(PClip const& child, RGBAdjust const& other);
 
-  //generated destructor is fine
+  //gerenated destructor is fine
 
 
 public:  //Clip general interface
@@ -73,16 +64,25 @@ public:  //child changing clone
   virtual PClip clone(PClip const& child) const;
 
 
-public:  //factory method 
+protected:  //Pipeline interface
 
-  static PClip Create(PClip const& child, double hue, double sat, double bright, double cont);
+  virtual CPVideoFrame MakeFrame(PVideoFrame const& source) const;
+
+
+public:  //factory functor
+
+  struct Creator
+  {
+    PClip operator()(PClip const& child, double r, double g, double b, double a) const 
+    { 
+      return PClip( static_cast<Clip *>(new RGBAdjust(child, r, g, b, a)) );
+    }
+  };
 
 };
-
-  
 
 
 
 } } //namespace avs::filters
 
-#endif //__AVS_FILTERS_TWEAK_H__
+#endif //__AVS_FILTERS_RGBADJUST_H__

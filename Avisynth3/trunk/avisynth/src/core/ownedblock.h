@@ -45,8 +45,10 @@ class OwnedBlock : public block::base<block::OwnedDeleter>
 
 public:  //structors
 
+  OwnedBlock(PEnvironment const& env);
+
   //normal constructor
-  OwnedBlock(PEnvironment env, int size, bool recycle);
+  OwnedBlock(PEnvironment const& env, int size, bool recycle);
 
   //generated copy constructor and destructor are fine
 

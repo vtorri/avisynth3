@@ -45,7 +45,7 @@ GlyphSlot::GlyphSlot(PFace const& face)
 
 void GlyphSlot::LoadGlyph (unsigned int index)
 {
-  FT_Load_Glyph(face_.get(), index, FT_LOAD_RENDER | FT_LOAD_TARGET_MONO);
+  FT_Load_Glyph(face_.get(), index, FT_LOAD_DEFAULT);
 }
 
 

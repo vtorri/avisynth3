@@ -32,7 +32,7 @@ namespace avs { namespace parser { namespace grammar {
 KeyWords::KeyWords()
 {
   //NB: the add member overloads operator,
-  add, "if", "else", "function", "global", "last", "local";
+  add, "if", "else", "function", "global", "last", "local", "return", "self";
 }
       
 

@@ -28,13 +28,15 @@ nasm_prog="nasm"
 
 dnl Default CFLAGS -- Big impact on overall speed
 our_cxxflags_defaults="-Wall"
-our_cxxflags_defaults="$our_cxxflags_defaults -O2"
 our_cxxflags_defaults="$our_cxxflags_defaults -fstrength-reduce"
 our_cxxflags_defaults="$our_cxxflags_defaults -finline-functions"
 our_cxxflags_defaults="$our_cxxflags_defaults -freduce-all-givs"
 our_cxxflags_defaults="$our_cxxflags_defaults -ffast-math"
-our_cxxflags_defaults="$our_cxxflags_defaults -fomit-frame-pointer"
-our_cxxflags_defaults="$our_cxxflags_defaults -pthread"
+our_cxxflags_defaults="$our_cxxflags_defaults -ansi"
+
+dnl Default GEN_SOURCES for gen_source.sh
+dnl On Linux, Vfw files should be removed
+GEN_SOURCES=
 
 dnl ==========================================================================
 dnl Features - configure options
@@ -61,16 +63,34 @@ AC_ARG_ENABLE(assembly,
 dnl STL library check
 AC_ARG_WITH(stl-path,
 		AC_HELP_STRING([--with-stl-path=PATH],
-		[STL Library libs and headers]),
+		[STL Library headers]),
 		[with_stl_arg="yes"],
 		[with_stl_arg="no"])
 
 dnl BOOST library check
 AC_ARG_WITH(boost-path,
 		AC_HELP_STRING([--with-boost-path=PATH],
-		[BOOST Library libs and headers]),
+		[BOOST Library headers]),
 		[with_boost_arg="yes"],
 		[with_boost_arg="no"])
+
+dnl FREETYPE library check
+AC_ARG_WITH(freetype-path,
+		AC_HELP_STRING([--with-freetype-path=PATH],
+		[FREETYPE Library path]),
+		[with_freetype_arg="yes"],
+		[with_freetype_arg="no"])
+
+dnl Build as a module not a shared lib on darwin
+AC_ARG_ENABLE(macosx_module,
+		AC_HELP_STRING([--enable-macosx_module],
+				 [Build as a module on MacOS X]),
+		 [if test "$enable_macosx_module" = "yes" ; then
+		     macosx_module="yes"
+		  else 
+		     macosx_module="no"
+		  fi],
+		  [macosx_module="no"])
 
 dnl ==========================================================================
 dnl Default install prefix and checks build type
@@ -257,15 +277,16 @@ case "$target_os" in
 	AC_MSG_RESULT([ok])
 	STATIC_LIB="libavisynth.\$(STATIC_EXTENSION)"
 	SHARED_LIB="libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR).\$(API_MINOR)"
-	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR) -shared -lc -lm"
-	SPECIFIC_CFLAGS="-fPIC"
+	SPECIFIC_LDFLAGS="-pthread -Wl,-soname,libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR) -shared -lc -lm"
+	SPECIFIC_CFLAGS="-O2 -fPIC"
+	GEN_SOURCES="/com\\\\/d;/vfw\\\\/d;"
 	;;
      [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
 	AC_MSG_RESULT([ok])
-	STATIC_LIB="avisynth.\$(STATIC_EXTENSION)"
+	STATIC_LIB="libavisynth.\$(STATIC_EXTENSION)"
 	SHARED_LIB="avisynth.\$(SHARED_EXTENSION)"
-	SPECIFIC_LDFLAGS="-mno-cygwin -shared -Wl,--dll,--out-implib,\$@.a libavisynth.def"
-	SPECIFIC_CFLAGS="-mno-cygwin"
+	SPECIFIC_LDFLAGS="-lboost_thread-mgw-mt-1_31 -lwinmm -lavcodec -lavformat -lfreetype -lgdi32 -lvfw32 -lstlport_mingw32_static -luuid -lole32 -mno-cygwin -shared -Wl,--dll,--out-implib,\$@.a libavisynth.def"
+	SPECIFIC_CFLAGS="-Os -mno-cygwin"
 	;;
      darwin*|raphsody*)
 	STATIC_LIB="libavisynth.\$(STATIC_EXTENSION)"
@@ -280,6 +301,7 @@ case "$target_os" in
 	   SHARED_LIB="libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR)"
 	   SPECIFIC_LDFLAGS="-r -keep_private_externs -nostdlib && \$(CC) \$(LDFLAGS) \$(PRE_SHARED_LIB) -o libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR) -bundle -flat_namespace -undefined suppress"
 	fi
+	GEN_SOURCES="/vfw\\/d;"
 	;;
      beos)
 	AC_MSG_RESULT([ok])
@@ -427,7 +449,7 @@ dnl ==========================================================================
 dnl Check arguments
 dnl ==========================================================================
 
-if test "${with_stl_path+set}" = set && test $with_stl_path != no; then
+if test "${with_stl_path+set}" = set && test $with_stl_arg != no; then
   AC_MSG_CHECKING([for stl_config.h])
   saved_CXXFLAGS="$CXXFLAGS"
   CXXFLAGS="$CXXFLAGS -I$with_stl_path"
@@ -447,10 +469,10 @@ if test "${with_stl_path+set}" = set && test $with_stl_path != no; then
 fi
 dnl AM_CONDITIONAL(HAVE_STL_PATH, test x$have_stl_path = xyes)
 
-if test "${with_boost_path+set}" = set && test $with_boost_path != no; then
+if test "${with_boost_path+set}" = set && test $with_boost_arg != no; then
   AC_MSG_CHECKING([for config.hpp])
   saved_CXXFLAGS="$CXXFLAGS"
-  CXXFLAGS="$CXXFLAGS -I$with_boost_path/include"
+  CXXFLAGS="$CXXFLAGS -I$with_boost_path/"
   AC_TRY_COMPILE([
 #include <boost/config.hpp>
    ], 
@@ -458,13 +480,36 @@ if test "${with_boost_path+set}" = set && test $with_boost_path != no; then
    [AC_MSG_RESULT(yes)
     CXXFLAGS="$saved_CXXFLAGS"
     have_boost_path=yes
-    our_cxxflags_defaults="$our_cxxflags_defaults  -I$with_boost_path/include"
+    our_cxxflags_defaults="$our_cxxflags_defaults  -I$with_boost_path"
     ],
    [AC_MSG_ERROR(Boost Library not in this path)
     CXXFLAGS="$saved_CXXFLAGS"
     have_boost_path=no])
 fi
 dnl AM_CONDITIONAL(HAVE_BOOST_PATH, test x$have_boost_path = xyes)
+
+if test "${with_freetype_path+set}" = set && test $with_freetype_arg != no; then
+  AC_MSG_CHECKING([for freetype.h])
+  saved_CXXFLAGS="$CXXFLAGS"
+  CXXFLAGS="$CXXFLAGS -I$with_freetype_path/include/freetype2"
+  AC_TRY_COMPILE([
+#include <freetype/freetype.h>
+   ], 
+   [],
+   [AC_MSG_RESULT(yes)
+    CXXFLAGS="$saved_CXXFLAGS"
+    have_freetype_path=yes
+    our_cxxflags_defaults="$our_cxxflags_defaults  -I$with_freetype_path/include/freetype2"
+    LDFLAGS="$LDFLAGS  -L$with_freetype_path/lib -lfreetype"
+    ],
+   [AC_MSG_ERROR(Freetype Library not in this path)
+    CXXFLAGS="$saved_CXXFLAGS"
+    have_freetype_path=no])
+fi
+dnl AM_CONDITIONAL(HAVE_BFREETYPE, test x$have_freetype = xyes)
+
+
+
 
 dnl ==========================================================================
 dnl
@@ -493,6 +538,33 @@ AC_CHECK_HEADER([boost/config.hpp],
 		[AC_MSG_RESULT([OK])],
                 [AC_MSG_ERROR([Boost Library missing. Run configure --help])])
 fi
+
+if test "x$with_freetype_arg" = "xno"; then
+AC_MSG_CHECKING([for freetype.h])
+AC_CHECK_HEADER([freetype/freetype.h],
+                [AC_DEFINE([HAVE_FREETYPE])]
+		[AC_MSG_RESULT([OK])],
+                [AC_MSG_ERROR([Freetype Library missing. Run configure --help])])
+fi
+
+function vser
+{
+  v=$1
+  VSTART=`echo $v | awk -F_ '{printf("%s", $1);}'`
+  V1=`echo $VSTART | awk -F\. '{printf("%s", $1);}'`
+  V2=`echo $VSTART | awk -F\. '{printf("%s", $2);}'`
+  V3=`echo $VSTART | awk -F\. '{printf("%s", $3);}'`
+  V4="0"
+  VEND=`echo $v | awk -F_ '{printf("%s", $2);}'`
+  if test -n "$VEND"; then
+    V4=`echo $VEND | sed s/pre//`
+  fi
+  V3=$(( $V3 * 100  ));
+  V2=$(( $V2 * 10000  ));
+  V1=$(( $V1 * 1000000  ));
+  V=$(( $V4 + $V3 + $V2 + $V1 ));
+  echo $V
+}
 
 dnl ==========================================================================
 dnl
@@ -539,6 +611,7 @@ AC_SUBST(ASSEMBLY_EXTENSION)
 AC_SUBST(GENERIC_SOURCES)
 AC_SUBST(ASSEMBLY_SOURCES)
 AC_SUBST(CXX)
+AC_SUBST(LDFLAGS)
 AC_SUBST(CXXFLAGS)
 AC_SUBST(SPECIFIC_LDFLAGS)
 AC_SUBST(SPECIFIC_CFLAGS)
@@ -550,6 +623,7 @@ AC_SUBST(API_MINOR)
 AC_SUBST(STATIC_LIB)
 AC_SUBST(PRE_SHARED_LIB)
 AC_SUBST(SHARED_LIB)
+AC_SUBST(GEN_SOURCES)
 
 dnl ==========================================================================
 dnl
@@ -558,6 +632,7 @@ dnl
 dnl ==========================================================================
 
 AC_CONFIG_FILES([platform.inc])
+AC_CONFIG_FILES(gen_sources.sh, [chmod +x gen_sources.sh && ./gen_sources.sh])
 
 AC_OUTPUT
 

@@ -24,7 +24,7 @@
 #ifndef __AVS_LINKER_CORE_FUNCTION_H__
 #define __AVS_LINKER_CORE_FUNCTION_H__
 
-//avisynth include
+//avisynth includes
 #include "../function.h"
 #include "../../parser/vmcode.h"
 
@@ -33,18 +33,23 @@ namespace avs { namespace linker { namespace core {
 
 
 
+//////////////////////////////////////////////////////////////////////////////////
+//  core::Function
+//
+//  function from the core plugin
+//
 class Function : public linker::Function
 {
 
   char const returnType_;
   char const * const name_;
   char const * const prototype_;
-  parser::StackOperation stackOp_;
+  parser::VMOperation<void> op_;
 
 
 public:  //structors
 
-  Function(char returnType, char const * name, char const * prototype, parser::StackOperation const& stackOp);
+  Function(char returnType, char const * name, char const * prototype, parser::VMOperation<void> const& op);
 
   //generated destructor is fine
 
@@ -57,7 +62,7 @@ public:  //Function interface
 
   virtual PPlugin GetMotherPlugin() const;
 
-  virtual void AppendOperation(parser::VMCode& code) const { code += stackOp_; }
+  virtual void AppendOperation(parser::VMCode<void>& code) const { code += op_; }
 
 };
 

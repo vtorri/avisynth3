@@ -30,11 +30,11 @@
 namespace avs { namespace linker { namespace core {
 
 
-Function::Function(char returnType, char const * name, char const * prototype, parser::StackOperation const& stackOp)
+Function::Function(char returnType, char const * name, char const * prototype, parser::VMOperation<void> const& op)
   : returnType_( returnType )
   , name_( name )
   , prototype_( prototype )
-  , stackOp_( stackOp )
+  , op_( op )
 {
   Plugin::instance.Register( this );
 }
@@ -44,6 +44,9 @@ PPlugin Function::GetMotherPlugin() const
 {
   return Plugin::Get();
 }
+
+
+void Function::AppendOperation(parser::VMCode<void>& code) const { code += op_; }
 
 
 

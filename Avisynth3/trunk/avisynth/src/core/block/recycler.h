@@ -24,10 +24,10 @@
 #ifndef __AVS_BLOCK_RECYCLER_H__
 #define __AVS_BLOCK_RECYCLER_H__
 
-
+#ifdef _MSC_VER
 #pragma warning ( push )           //push warning state
 #pragma warning (disable : 4275)   //non dll-interface class 'boost::noncopyable' used as base for dll-interface class 'boost::mutex'
-
+#endif 
 
 //boost include
 #include <boost/thread/mutex.hpp>    //for mutex
@@ -81,6 +81,8 @@ public:
 
 } } //namespace avs::block
 
+#ifdef _MSC_VER
 #pragma warning ( pop )
+#endif
 
 #endif //__AVS_BLOCK_RECYCLER_H__

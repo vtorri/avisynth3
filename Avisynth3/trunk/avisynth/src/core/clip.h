@@ -27,6 +27,7 @@
 
 //boost include
 #include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 
 
 namespace avs {
@@ -46,13 +47,12 @@ typedef boost::shared_ptr<RuntimeEnvironment> PEnvironment;
 
 
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // Clip
 //
 // base class for all filters
 //
-class Clip
+class Clip : public boost::enable_shared_from_this<Clip>
 {
 
 public:  //structors
@@ -77,31 +77,21 @@ public:  //clip general interface
   virtual void GetAudio(void * buffer, __int64 start, int count) const = 0;  
 
 
-protected:  //filter chain simplication method
+public:  //filter chain simplication method
 
   //attempts to refactor self and its childs (if there is any)
   //into a more compact filter chain
   //a default version is provided (with no refactoring)
-  //
-  //NB: this method must be called like this:
-  //    PClip clip = ...
-  //    PClip simplified = clip->Simplify(clip);
-  virtual PClip Simplify(PClip self) const { return self; }
+  virtual PClip Simplify() const { return shared_from_this(); }
 
 
-public:
-
-  //provides correct call to the above method
-  static PClip SimplifyClip(PClip clip) { return clip->Simplify(clip); }
-
-
-protected:  //implementation helpers
+/*protected:  //implementation helpers
 
   //fill a buffer with blank noise (of the appropriate sample-type/channels)
   void FillWithBlank(BYTE * buffer, int count) const;
 
   void ThrowNoSuchFrameException(int n) const;
-  void ThrowNoAudioException() const;
+  void ThrowNoAudioException() const;*/
 
 };//Clip
 

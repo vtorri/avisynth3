@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -18,24 +18,25 @@
 
 
 //avisynth includes
-#include "recycler.h"
 #include "../block.h"
 #include "../ownedblock.h"
+#include "deleter/standard.h"
+#include "deleter/ownedstandard.h"
 
 
 namespace avs {
 
 
 
-Block::Block(int size, bool recycle)
-  : block::base<block::Deleter>( block::Deleter(size, recycle) ) { }
+block_<block::Align>::block_(int size, bool recycle)
+  : BaseBlockType( block::deleter::Standard(size, recycle) ) { }
 
 
-OwnedBlock::OwnedBlock(PEnvironment const& env)
-  : block::base<block::OwnedDeleter>( block::OwnedDeleter(env, 0, false) ) { }
+owned_block<block::Align>::owned_block(PEnvironment const& env)
+  : BaseBlockType( block::deleter::OwnedStandard(0, env, false) ) { }
 
-OwnedBlock::OwnedBlock(PEnvironment const& env, int size, bool recycle)
-  : block::base<block::OwnedDeleter>( block::OwnedDeleter(env, size, recycle) ) { }
+owned_block<block::Align>::owned_block(PEnvironment const& env, int size, bool recycle)
+  : BaseBlockType( block::deleter::OwnedStandard(size, env, recycle) ) { }
 
 
 

@@ -67,7 +67,7 @@ public:  //clip general interface
   virtual PEnvironment const& GetEnvironment() const;
   virtual CPVideoInfo GetVideoInfo() const { return vi_; }
 
-  virtual CPVideoFrame GetFrame(int n) const { return frame_; }
+  virtual CPVideoFrame GetFrame(int /*n*/) const { return frame_; }
   virtual void GetAudio(void * buffer, int64 start, int count) const;
 
 

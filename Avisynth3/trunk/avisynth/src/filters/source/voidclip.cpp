@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -37,12 +37,12 @@ CPVideoInfo VoidClip::GetVideoInfo() const
   return VideoInfo::Create();
 }
 
-CPVideoFrame VoidClip::GetFrame(int n) const
+CPVideoFrame VoidClip::GetFrame(int /*n*/) const
 {
   throw exception::NoVideo();
 }
 
-void VoidClip::GetAudio(void * buf, __int64 start, int count) const
+void VoidClip::GetAudio(void * /*buffer*/, int64 /*start*/, int /*count*/) const
 {
   throw exception::NoAudio();
 }

@@ -200,7 +200,7 @@ void YUY2::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
 
 #else
 #error "resize horizontal YUY2: missing code path"
-#endif _INTEL_ASM
+#endif //_INTEL_ASM
 
   }//for
 

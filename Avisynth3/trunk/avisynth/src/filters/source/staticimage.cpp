@@ -51,7 +51,7 @@ StaticImage::StaticImage(CPVideoFrame const& frame)
 PEnvironment const& StaticImage::GetEnvironment() const { return frame_->GetEnvironment(); }
 
 
-void StaticImage::GetAudio(void * buffer, int64 start, int count) const
+void StaticImage::GetAudio(void * /*buffer*/, int64 /*start*/, int /*count*/) const
 {
   throw exception::NoAudio();
 }

@@ -27,7 +27,7 @@
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="2"
-				PreprocessorDefinitions="_DEBUG;DEBUG;_STLP_DEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_USRDLL;AVISYNTH_EXPORTS;_INTEL_ASM"
+				PreprocessorDefinitions="_DEBUG;DEBUG;_STLP_DEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_USRDLL;AVISYNTH_EXPORTS;"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				DisableLanguageExtensions="FALSE"
@@ -110,7 +110,7 @@
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="2"
-				PreprocessorDefinitions="NDEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_USRDLL;AVISYNTH_EXPORTS;_INTEL_ASM"
+				PreprocessorDefinitions="NDEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_USRDLL;AVISYNTH_EXPORTS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"
@@ -265,7 +265,7 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="2"
-				PreprocessorDefinitions="NDEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_USRDLL;AVISYNTH_EXPORTS;_INTEL_ASM;_STLP_USE_STATIC_LIB"
+				PreprocessorDefinitions="NDEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_USRDLL;AVISYNTH_EXPORTS;_STLP_USE_STATIC_LIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="0"
 				RuntimeTypeInfo="TRUE"
@@ -1021,6 +1021,24 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				Name="Levels"
 				Filter="">
 				<File
+					RelativePath="..\..\..\src\filters\levels\coloryuv.cpp">
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCLCompilerTool"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release static|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCLCompilerTool"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\..\src\filters\levels\coloryuv.h">
+				</File>
+				<File
 					RelativePath="..\..\..\src\filters\levels\tweak.cpp">
 				</File>
 				<File
@@ -1063,6 +1081,107 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 							</FileConfiguration>
 						</File>
 					</Filter>
+				</Filter>
+				<Filter
+					Name="ColorYUV"
+					Filter="">
+					<File
+						RelativePath="..\..\..\src\filters\levels\coloryuv\analyze.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\levels\coloryuv\chromamap.cpp">
+						<FileConfiguration
+							Name="Debug|Win32"
+							ExcludedFromBuild="TRUE">
+							<Tool
+								Name="VCCLCompilerTool"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\levels\coloryuv\chromamap.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\levels\coloryuv\levels.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\levels\coloryuv\lumamap.cpp">
+						<FileConfiguration
+							Name="Release static|Win32"
+							ExcludedFromBuild="TRUE">
+							<Tool
+								Name="VCCLCompilerTool"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\levels\coloryuv\lumamap.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\levels\coloryuv\mode.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\levels\coloryuv\yuy2.cpp">
+						<FileConfiguration
+							Name="Debug|Win32"
+							ExcludedFromBuild="TRUE">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release static|Win32"
+							ExcludedFromBuild="TRUE">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\levels\coloryuv\yuy2.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\levels\coloryuv\yv12.cpp">
+						<FileConfiguration
+							Name="Debug|Win32"
+							ExcludedFromBuild="TRUE">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release static|Win32"
+							ExcludedFromBuild="TRUE">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)2.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\levels\coloryuv\yv12.h">
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
@@ -1529,6 +1648,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				RelativePath="..\..\..\src\functions\edit.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\functions\levels.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\functions\levels.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\functions\script.cpp">
 			</File>
 			<File
@@ -1841,6 +1966,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath="..\..\..\src\parser\adaptor\adaptor.h">
 				</File>
 				<File
+					RelativePath="..\..\..\src\parser\adaptor\arg.h">
+				</File>
+				<File
 					RelativePath="..\..\..\src\parser\adaptor\caller.h">
 				</File>
 				<File
@@ -1848,6 +1976,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 				<File
 					RelativePath="..\..\..\src\parser\adaptor\extractor.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\parser\adaptor\traits.h">
 				</File>
 			</Filter>
 			<Filter

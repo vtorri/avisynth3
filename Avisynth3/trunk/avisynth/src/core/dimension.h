@@ -110,6 +110,9 @@ public:  //others
 
   template <int bps> Dimension Turn() const { return Dimension(y_ * bps, x_ / bps); }
 
+  template <int xFactor, int yFactor> Dimension Multiply() const { return Dimension(x_ * xFactor, y_ * yFactor); }
+  template <int xFactor, int yFactor> Dimension Divide() const { return Dimension(x_ / xFactor, y_ / yFactor); }
+
 };//Dimension
 
 

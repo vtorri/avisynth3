@@ -82,7 +82,7 @@ template <int Shift, typename T>
 inline T
 RoundingShift(T value)
 {
-  return (value + 1 << (Shift - 1)) >> Shift;
+  return ( value + (1 << (Shift - 1)) ) >> Shift;
 }
 
 

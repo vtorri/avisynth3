@@ -8,7 +8,7 @@ dnl ==========================================================================
 dnl
 dnl Modified for Avisynth 3.0
 dnl
-dnl Copyright(C) 2004 Vincent TORRI <torri@math.u-strasbg.fr>
+dnl Copyright(C) 2004 Vincent TORRI <torri@math.iecn.u-nancy.fr>
 dnl
 dnl ==========================================================================
 
@@ -37,7 +37,6 @@ our_cxxflags_defaults="$our_cxxflags_defaults -fstrength-reduce"
 our_cxxflags_defaults="$our_cxxflags_defaults -finline-functions"
 our_cxxflags_defaults="$our_cxxflags_defaults -freduce-all-givs"
 our_cxxflags_defaults="$our_cxxflags_defaults -ffast-math"
-our_cxxflags_defaults="$our_cxxflags_defaults -ansi"
 
 dnl Default GEN_SOURCES for gen_source.sh
 dnl On Linux, Vfw and COM files should be removed
@@ -51,6 +50,35 @@ dnl
 dnl ==========================================================================
 
 FEATURES=""
+
+dnl Debug modes
+AC_ARG_ENABLE(
+	[core-debug],
+	AC_HELP_STRING(
+		[--enable-core-debug],
+		[Enable debug mode for avs' core (default=no)]),
+	[if test "$enable_core_debug" = "no" ; then
+		core_debug_mode="no"
+	 else
+		if test "$enable_core_debug" = "yes" ; then
+			core_debug_mode="yes"
+		fi
+	 fi],
+	[core_debug_mode="no"])
+
+AC_ARG_ENABLE(
+	[ffmpeg-debug],
+	AC_HELP_STRING(
+		[--enable-ffmpeg-debug],
+		[Enable debug mode for ffmpeg (default=no)]),
+	[if test "$enable_ffmpeg_debug" = "no" ; then
+		ffmpeg_debug_mode="no"
+	 else
+		if test "$enable_ffmpeg_debug" = "yes" ; then
+			ffmpeg_debug_mode="yes"
+		fi
+	 fi],
+	[ffmpeg_debug_mode="no"])
 
 dnl Assembly code
 AC_ARG_ENABLE(assembly,
@@ -68,16 +96,37 @@ AC_ARG_ENABLE(assembly,
 dnl STL library check
 AC_ARG_WITH(stl-path,
 		AC_HELP_STRING([--with-stl-path=PATH],
-		[STL Library headers]),
+		[STL Library prefix]),
 		[with_stl_arg="yes"],
 		[with_stl_arg="no"])
 
 dnl BOOST library check
 AC_ARG_WITH(boost-path,
 		AC_HELP_STRING([--with-boost-path=PATH],
-		[BOOST Library headers]),
+		[BOOST Library prefix]),
 		[with_boost_arg="yes"],
 		[with_boost_arg="no"])
+
+dnl FFMPEG support
+AC_ARG_ENABLE(ffmpeg,
+	AC_HELP_STRING(
+		[--enable-ffmpeg],
+		[Enable FFMPEG support]),
+	[if test "$enable_ffmpeg" = "no" ; then
+		ffmpeg_enable="no"
+	else
+		if test "$enable_ffmpeg" = "yes" ; then
+			ffmpeg_enable="yes"
+	     	fi
+	fi],
+	[ffmpeg_enable="yes"])
+
+dnl FFMPEG library check
+AC_ARG_WITH(ffmpeg-path,
+		AC_HELP_STRING([--with-ffmpeg-path=PATH],
+		[FFMPEG Library prefix]),
+		[with_ffmpeg_arg="yes"],
+		[with_ffmpeg_arg="no"])
 
 dnl Build as a module not a shared lib on darwin
 AC_ARG_ENABLE(macosx_module,
@@ -259,7 +308,7 @@ case "$target_os" in
 	STATIC_LIB="libavisynth.\$(STATIC_EXTENSION)"
 	SHARED_LIB="avisynth.\$(SHARED_EXTENSION)"
 dnl	SPECIFIC_LDFLAGS="-lwinmm -lavcodec -lavformat -lgdi32 -lvfw32 -luuid -lole32 -mno-cygwin -shared -Wl,--dll,--out-implib,\$@.a libavisynth.def"
-	SPECIFIC_LDFLAGS="-lwinmm -lgdi32 -lvfw32 -luuid -lole32 -mno-cygwin -shared -Wl,--out-implib,\$@.a"
+	SPECIFIC_LDFLAGS="-lwinmm -lgdi32 -lvfw32 -luuid -lole32 -mno-cygwin -shared --enable-stdcall-fixup -Wl,--out-implib,\$@.a libavisynth.def"
 	SPECIFIC_CFLAGS="-Os -mno-cygwin"
 	;;
      darwin*|raphsody*)
@@ -419,7 +468,9 @@ if test "$ARCHITECTURE" = "IA64" ; then
 fi
 
 dnl ==========================================================================
+dnl
 dnl Check arguments
+dnl
 dnl ==========================================================================
 
 dnl Set the name of the STLPort and Boost libraries
@@ -446,8 +497,8 @@ case "$target_os" in
 	;;
 esac
 
-if test "${with_stl_path+set}" = set && test $with_stl_arg != no; then
 dnl Check STLport library
+if test "${with_stl_path+set}" = set && test $with_stl_arg != no; then
   saved_CXXFLAGS="${CXXFLAGS}"
   CXXFLAGS="${CXXFLAGS} -I$with_stl_path/include/stlport"
   saved_LDFLAGS="${LDFLAGS}"
@@ -458,21 +509,16 @@ dnl Check STLport library
     [AC_CHECK_LIB(
       [$STLPORT_LIB_NAME],
       [main],
-      [LDFLAGS="$saved_LDFLAGS"
-      have_stl_path=yes
-      STLPORT_LIBS="-L$with_stl_path/lib -l$STLPORT_LIB_NAME"],
-      [AC_MSG_ERROR(STLport library not in $with_stl_path/lib)
-      have_stl_path=no])
-      STLPORT_CFLAGS="-I$with_stl_path/include/stlport"],
-    [AC_MSG_ERROR(STLport headers not in $with_stl_path/include/stlport)
-    have_stl_path=no])
+      [STLPORT_LIBS="-L$with_stl_path/lib -l$STLPORT_LIB_NAME"],
+      [AC_MSG_ERROR(STLport library not in $with_stl_path/lib)])
+     STLPORT_CFLAGS="-I$with_stl_path/include/stlport"],
+    [AC_MSG_ERROR(STLport headers not in $with_stl_path/include/stlport)])
   CXXFLAGS="$saved_CXXFLAGS"
   LDFLAGS="$saved_LDFLAGS"
 fi
-dnl AM_CONDITIONAL(HAVE_STL_PATH, test x$have_stl_path = xyes)
 
-if test "${with_boost_path+set}" = set && test $with_boost_arg != no; then
 dnl Check BOOST library
+if test "${with_boost_path+set}" = set && test $with_boost_arg != no; then
   saved_CXXFLAGS="${CXXFLAGS}"
   CXXFLAGS="${CXXFLAGS} -I${with_boost_path}/include/boost-${BOOST_VER_MAJOR}_${BOOST_VER_MINOR}"
   saved_LDFLAGS="${LDFLAGS}"
@@ -482,22 +528,62 @@ dnl Check BOOST library
     [boost/config.hpp],
     [AC_CHECK_FILE(
       [$with_boost_path/lib/${BOOST_LIB_NAME}],
-      [have_boost_path=yes
-      BOOST_LIBS="$with_boost_path/lib/${BOOST_LIB_NAME}"],
-      [AC_MSG_ERROR(Boost library not in $with_boost_path/lib)
-      have_boost_path=no])
-    BOOST_CFLAGS="-I$with_boost_path/include/boost-${BOOST_VER_MAJOR}_${BOOST_VER_MINOR}"],
-    [AC_MSG_ERROR(Boost headers not in $with_boost_path/include/boost-${BOOST_VER_MAJOR}_${BOOST_VER_MINOR})
-    have_boost_path=no])
+      [BOOST_LIBS="$with_boost_path/lib/${BOOST_LIB_NAME}"],
+      [AC_MSG_ERROR(Boost library not in $with_boost_path/lib)])
+     BOOST_CFLAGS="-I$with_boost_path/include/boost-${BOOST_VER_MAJOR}_${BOOST_VER_MINOR}"],
+    [AC_MSG_ERROR(Boost headers not in $with_boost_path/include/boost-${BOOST_VER_MAJOR}_${BOOST_VER_MINOR})])
   CXXFLAGS="$saved_CXXFLAGS"
   LDFLAGS="$saved_LDFLAGS"
 fi
-dnl AM_CONDITIONAL(HAVE_BOOST_PATH, test x$have_boost_path = xyes)
+
+dnl Check FFMPEG library
+if test "${with_ffmpeg_path+set}" = "set" && test "$ffmpeg_enable" != "no" && test "$with_ffmpeg_arg" != "no" ; then
+  saved_CXXFLAGS="${CXXFLAGS}"
+  CXXFLAGS="${CXXFLAGS} -I$with_ffmpeg_path/include"
+  saved_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} -L$with_ffmpeg_path/lib/"
+  AC_LANG([C++])
+  AC_CHECK_HEADERS(
+    [ffmpeg/avcodec.h ffmpeg/avformat.h],
+    [AC_CHECK_LIB(
+      [avcodec],
+      [main],
+      [AC_CHECK_LIB(
+      		[avformat],
+      		[main],
+      		[LDFLAGS="$saved_LDFLAGS"
+      		FFMPEG_LIBS="-lavformat -lavcodec"]
+      		LDFLAGS="$saved_LDFLAGS",
+      		[AC_MSG_ERROR(FFMPEG library not in $with_ffmpeg_path/lib)])
+      ],
+      [AC_MSG_ERROR(FFMPEG library not in $with_ffmpeg_path/lib)])
+      FFMPEG_CFLAGS="-DAVS_HAS_FFMPEGSOURCE -I$with_ffmpeg_path/include"],
+    [AC_MSG_ERROR(FFMPEG headers not in $with_ffmpeg_path/include)])
+  CXXFLAGS="$saved_CXXFLAGS"
+  LDFLAGS="$saved_LDFLAGS"
+fi
+
+dnl Check debug mode
+if test "$core_debug_mode" = "yes" ; then
+	CORE_DEBUG_MODE_CFLAGS="-g"
+else
+	CORE_DEBUG_MODE_CFLAGS="-DNDEBUG"
+fi
+
+FFMPEG_DEBUG_MODE_CFLAGS=
+if test "$ffmpeg_enable" = "yes" &&  test "$ffmpeg_debug_mode" = "yes" ; then
+	FFMPEG_DEBUG_MODE_CFLAGS="-DFF_DEBUG=1"
+fi
+
 
 dnl ==========================================================================
 dnl
 dnl Check for header files
 dnl
+dnl ==========================================================================
+
+dnl ==========================================================================
+dnl Standard header files
 dnl ==========================================================================
 
 AC_CHECK_HEADERS(
@@ -525,21 +611,56 @@ case "$target_os" in
     ;;
 esac
 
+dnl ==========================================================================
+dnl STLPORT header files
+dnl ==========================================================================
+
 if test "x$with_stl_arg" = "xno"; then
-AC_CHECK_HEADER([stl_user_config.h],
-                [AC_DEFINE([HAVE_STL])]
-		[],
-                [AC_MSG_ERROR([STL Library missing. Run configure --help])])
+  AC_CHECK_HEADER(
+	[stl_user_config.h],
+	[AC_DEFINE([HAVE_STL])]
+	[],
+	[AC_MSG_ERROR([STL Library missing. Run configure --help])])
 fi
+
+dnl ==========================================================================
+dnl BOOST header files
+dnl ==========================================================================
 
 if test "x$with_boost_arg" = "xno"; then
-AC_CHECK_HEADER([boost/config.hpp],
-                [AC_DEFINE([HAVE_BOOST])]
-		[],
-                [AC_MSG_ERROR([Boost Library missing. Run configure --help])])
+  AC_CHECK_HEADER(
+	[boost/config.hpp],
+	[AC_DEFINE([HAVE_BOOST])]
+	[],
+	[AC_MSG_ERROR([Boost Library missing. Run configure --help])])
 fi
 
-dnl FREETYPE library check
+dnl ==========================================================================
+dnl FFMPEG header and library files
+dnl ==========================================================================
+
+if test "x$with_ffmpeg_arg" = "xno" && test "x$ffmpeg_enable" = "xyes" ; then
+  AC_CHECK_HEADERS(
+	[ffmpeg/avcodec.h ffmpeg/avformat.h],
+	[AC_DEFINE([HAVE_FFMPEG])]
+	[FFMPEG_CFLAGS="-DAVS_HAS_FFMPEGSOURCE"],
+	[AC_MSG_ERROR([FFMPEG Headers missing. Run configure --help])])
+  AC_CHECK_LIB(
+      [avformat],
+      [main],
+      [AC_CHECK_LIB(
+      		[avcodec],
+      		[main],
+      		[FFMPEG_LIBS="-lavformat -lavcodec"],
+      		[AC_MSG_ERROR([FFMPEG library missing. Run configure --help])])
+      ],
+      [AC_MSG_ERROR([FFMPEG library missing. Run configure --help])])
+fi
+
+dnl ==========================================================================
+dnl FREETYPE header and library files
+dnl ==========================================================================
+
 FREETYPE_CONFIG="freetype-config"
 AC_ARG_WITH(freetype-config,
 [  --with-freetype-config=FILE   freetype-config script to use (eg /usr/bin/freetype-config)],
@@ -581,25 +702,6 @@ AC_ARG_WITH(freetype-config,
   FREETYPE_LIBS=`$FREETYPE_CONFIG --libs`
 ])
 
-function vser
-{
-  v=$1
-  VSTART=`echo $v | awk -F_ '{printf("%s", $1);}'`
-  V1=`echo $VSTART | awk -F\. '{printf("%s", $1);}'`
-  V2=`echo $VSTART | awk -F\. '{printf("%s", $2);}'`
-  V3=`echo $VSTART | awk -F\. '{printf("%s", $3);}'`
-  V4="0"
-  VEND=`echo $v | awk -F_ '{printf("%s", $2);}'`
-  if test -n "$VEND"; then
-    V4=`echo $VEND | sed s/pre//`
-  fi
-  V3=$(( $V3 * 100  ));
-  V2=$(( $V2 * 10000  ));
-  V1=$(( $V1 * 1000000  ));
-  V=$(( $V4 + $V3 + $V2 + $V1 ));
-  echo $V
-}
-
 dnl ==========================================================================
 dnl
 dnl Now we can set CXXFLAGS if needed
@@ -608,6 +710,9 @@ dnl ==========================================================================
 
 if test "$force_default_cxx_options" = "yes" ; then
    CXXFLAGS="$our_cxxflags_defaults"
+   if test "$ffmpeg_enable" != "yes" ; then
+      CXXFLAGS="-ansi ${CXXFLAGS}"
+   fi
 fi
 
 dnl ==========================================================================
@@ -615,6 +720,7 @@ dnl
 dnl Profiling stuff goes here
 dnl  - adds options to SPECIFIC_CFLAGS, SPECIFIC_LDLAGS
 dnl  - removes incompatible options from CFLAGS
+dnl  - adds some files when FFMPEG support is activated
 dnl
 dnl ==========================================================================
 
@@ -623,6 +729,11 @@ SPECIFIC_CFLAGS="$SPECIFIC_CFLAGS $GNU_PROF_CFLAGS"
 
 if test "$enable_gnuprofile" = "yes" ; then
    CFLAGS=`echo $CFLAGS | sed s/'-fomit-frame-pointer'/''/`
+fi
+
+FFMPEG_SOURCE_FILE_ADD=
+if test "$ffmpeg_enable" = "yes" ; then
+   FFMPEG_SOURCE_FILE_ADD="echo   filters/source/ffmpegsource.cpp >> sources.inc"
 fi
 
 dnl ==========================================================================
@@ -651,8 +762,13 @@ AC_SUBST(STLPORT_LIBS)
 AC_SUBST(STLPORT_CFLAGS)
 AC_SUBST(BOOST_LIBS)
 AC_SUBST(BOOST_CFLAGS)
+AC_SUBST(FFMPEG_LIBS)
+AC_SUBST(FFMPEG_CFLAGS)
+AC_SUBST(FFMPEG_SOURCE_FILE_ADD)
 AC_SUBST(FREETYPE_LIBS)
 AC_SUBST(FREETYPE_CFLAGS)
+AC_SUBST(CORE_DEBUG_MODE_CFLAGS)
+AC_SUBST(FFMPEG_DEBUG_MODE_CFLAGS)
 AC_SUBST(RANLIB)
 AC_SUBST(PACKAGE)
 AC_SUBST(API_MAJOR)
@@ -684,8 +800,15 @@ echo "------------------------------------------------------------------------"
 echo " $PACKAGE $VERSION"
 echo "------------------------------------------------------------------------"
 echo
-echo " Install path......: $prefix"
+echo " OS..................: $target_os"
 echo
-echo " Compilation.......: make"
-echo " Installation......: make install"
+echo " Core debug mode.....: $core_debug_mode"
+echo " FFMPEG debug mode...: $ffmpeg_debug_mode"
+echo " ASM support.........: $assembly"
+echo " FFMPEG support......: $ffmpeg_enable"
+echo
+echo " Install path........: $prefix"
+echo
+echo " Compilation.........: make"
+echo " Installation........: make install"
 echo

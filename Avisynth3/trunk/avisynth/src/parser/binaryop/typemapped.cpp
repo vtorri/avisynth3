@@ -42,12 +42,13 @@ TypeMapped::TypeMapped(std::string const& opName, VMOperation<void> const& op, s
 }
 
 
-char TypeMapped::get(char left, char right) const
+TypedOp TypeMapped::Get(char left, char right) const
 {
   TypeMap::const_iterator it = map_.find(std::make_pair(left, right));
   if ( it == map_.end() )
     throw exception::Generic("parsing failed");
-  return it->second;
+  
+  return TypedOp(op_, it->second);
 }
 
 

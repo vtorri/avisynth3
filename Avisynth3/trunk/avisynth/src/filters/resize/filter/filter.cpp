@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -41,9 +41,7 @@ namespace avs { namespace filters { namespace resize { namespace filter {
 
 double Point::operator ()(double x) const
 {
-  x = fabs(x);
-
-  return ( x < 1.0 ) ? x : 0.0;  // Can somebody confirm this function?
+  return 1.0;
 }
 
 

@@ -27,6 +27,9 @@
 //avisynth include
 #include "exception/baddimension.h"
 
+//assert include
+#include <assert.h>
+
 
 namespace avs {
 
@@ -108,7 +111,7 @@ public:  //others
 
   bool empty() const { return x_ == 0 || y_ == 0; }
 
-  template <int bps> Dimension Turn() const { return Dimension(y_ * bps, x_ / bps); }
+  template <int bps> Dimension Turn() const { assert(x_ % bps == 0); return Dimension(y_ * bps, x_ / bps); }
 
   template <int xFactor, int yFactor> Dimension Multiply() const { return Dimension(x_ * xFactor, y_ * yFactor); }
   template <int xFactor, int yFactor> Dimension Divide() const { return Dimension(x_ / xFactor, y_ / yFactor); }

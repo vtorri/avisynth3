@@ -25,8 +25,8 @@
 #define __AVS_EXCEPTION_COLLISION_DIMENSION_H__
 
 //avisynth includes
-#include "../../dimension.h"
 #include "../../exception.h"
+#include "../../geometry/dimension.h"
 
 
 namespace avs { namespace exception { namespace collision {

@@ -29,7 +29,8 @@
 namespace avs { namespace filters { namespace resize { namespace horizontal {
 
 
-void resize_horizontal_rgb32_mmx_nasm
+
+extern "C" void resize_horizontal_rgb32_mmx_nasm
     (BYTE const* src_ptr, BYTE * dst_ptr, int dst_width, int const *pptr, int count, int y, int src_pitch, int pad);
 
 

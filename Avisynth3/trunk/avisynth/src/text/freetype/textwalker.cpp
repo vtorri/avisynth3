@@ -23,6 +23,7 @@
 
 //avisynth includes
 #include "face.h"
+#include "outline.h"
 #include "textwalker.h"
 
 
@@ -30,35 +31,40 @@ namespace avs { namespace text { namespace freetype {
 
 
 
-TextWalker::TextWalker(PFace const& face, VecteurFP6 const& pen_)
+TextWalker::TextWalker(PFace const& face, VecteurFP6 const& pen)
   : slot_( face )
   , hasKerning_( face->HasKerning() )
-  , pen( pen_ ) { }
+  , pen_( pen ) { }
 
-
-Outline const& TextWalker::Reset(unsigned charCode)
-{
-  slot_.LoadGlyph( glyphIndex_ = slot_.GetFace()->GetCharIndex(charCode) );
-
-  return slot_.GetOutline();
-}
 
 
 Outline const& TextWalker::LoadChar(unsigned charCode)
 {
   unsigned index = slot_.GetFace()->GetCharIndex(charCode);
 
-  pen += slot_.GetAdvance();
-  if ( hasKerning_ )
-    pen += slot_.GetFace()->GetKerning(glyphIndex_, index);
+  pen_ += slot_.GetAdvance();
+  if ( hasKerning_ && glyphIndex_ )
+    pen_ += slot_.GetFace()->GetKerning( *glyphIndex_, index );
 
-  slot_.LoadGlyph( glyphIndex_ = index );
+  slot_.LoadGlyph(index);
+  glyphIndex_ = index;
 
   return slot_.GetOutline();
 }
 
 
-bool LineTokenize(std::string::const_iterator& begin, std::string::const_iterator end)
+void TextWalker::operator()(iterator begin, iterator end, rasterizer::OutlineSplitter& splitter)
+{
+  while ( begin != end )
+  {
+    VecteurFP6 pen = GetPen();                    //NB: beware LoadChar changes pen, so it must be read before
+    LoadChar( *begin++ ).Split( splitter, pen );
+  }
+}
+
+
+
+bool TextWalker::LineTokenize(std::string::const_iterator& begin, std::string::const_iterator end)
 {
   assert( begin != end );
 

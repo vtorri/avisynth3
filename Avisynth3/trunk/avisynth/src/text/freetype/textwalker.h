@@ -27,6 +27,9 @@
 //avisynth include
 #include "glyphslot.h"
 
+//boost include
+#include <boost/optional.hpp>
+
 
 namespace avs { namespace text { namespace freetype {
 
@@ -36,30 +39,38 @@ namespace avs { namespace text { namespace freetype {
 class TextWalker
 {
 
+  VecteurFP6 pen_;
   GlyphSlot slot_;
   bool hasKerning_;
-  unsigned glyphIndex_;
-
-
-public:  //public member
-
-  VecteurFP6 pen;
+  boost::optional<unsigned> glyphIndex_;
 
 
 public:  //structors
 
-  TextWalker(PFace const& face, VecteurFP6 const& pen_);
+  TextWalker(PFace const& face, VecteurFP6 const& pen);
 
   //generated destructor is fine
 
 
 public:  //interface
 
-  Outline const& Reset(unsigned charCode);
   Outline const& LoadChar(unsigned charCode);
 
 
-public:  
+public:  //access
+
+  VecteurFP6 const& GetPen() const { return pen_; }
+  void SetPen(VecteurFP6 const& pen) { pen_ = pen; glyphIndex_.reset(); }
+
+
+public:
+
+  typedef std::string::const_iterator iterator;
+
+  void operator()(iterator begin, iterator end, rasterizer::OutlineSplitter& splitter);
+
+
+public:
 
   static bool LineTokenize(std::string::const_iterator& begin, std::string::const_iterator end);
 

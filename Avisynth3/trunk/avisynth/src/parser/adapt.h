@@ -44,10 +44,10 @@ namespace detail {
 //  implementation helper for adapt(Functor const& functor)
 //
 template <typename Functor, typename FunctorMethodPtr>
-typename adaptor::adaptor<typename adaptor::caller<Functor, typename adaptor::decayer<FunctorMethodPtr>::type> > >
+typename adaptor::adaptor<typename adaptor::caller<Functor, typename adaptor::decayer<FunctorMethodPtr>::type> >
 adapt(Functor const& functor, FunctorMethodPtr)
 {
-  return adaptor::adaptor<adaptor::caller<Functor, adaptor::decayer<FunctorMethodPtr>::type> > >(functor);
+  return adaptor::adaptor<adaptor::caller<Functor, adaptor::decayer<FunctorMethodPtr>::type> >(functor);
 }
 
 

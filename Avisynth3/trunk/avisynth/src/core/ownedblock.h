@@ -27,7 +27,7 @@
 //avisynth includes
 #include "block/base.h"
 #include "block/align.h"
-#include "block/deleter/ownedbase.h"
+#include "block/ownedholder.h"
 
 
 namespace avs { 
@@ -42,7 +42,7 @@ namespace avs {
 //  which sees its memory usage updated accordingly
 //
 template <int align>
-class owned_block : public block::base<block::deleter::OwnedBase, align>
+class owned_block : public block::base<block::OwnedHolder, align>
 {
 
 public:  //structors
@@ -52,9 +52,9 @@ public:  //structors
   //normal constructor
   owned_block(PEnvironment const& env, int size, bool recycle);
 
-  template <class Deleter>
-  explicit owned_block(Deleter const& deleter)
-    :  BaseBlockType( deleter ) { }
+  template <class Holder>
+  explicit owned_block(Holder * holder)
+    :  BaseBlockType( holder ) { }
 
   template <int alignOther>
   explicit owned_block(owned_block<alignOther> const& other)

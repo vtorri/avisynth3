@@ -20,8 +20,8 @@
 //avisynth includes
 #include "../block.h"
 #include "../ownedblock.h"
-#include "deleter/standard.h"
-#include "deleter/ownedstandard.h"
+#include "holder/standard.h"
+#include "holder/ownedstandard.h"
 
 
 namespace avs {
@@ -29,14 +29,14 @@ namespace avs {
 
 
 block_<block::Align>::block_(int size, bool recycle)
-  : BaseBlockType( block::deleter::Standard(size, recycle) ) { }
+  : BaseBlockType( new block::holder::Standard(size, recycle) ) { }
 
 
 owned_block<block::Align>::owned_block(PEnvironment const& env)
-  : BaseBlockType( block::deleter::OwnedStandard(0, env, false) ) { }
+  : BaseBlockType( new block::holder::OwnedStandard(env, 0, false) ) { }
 
 owned_block<block::Align>::owned_block(PEnvironment const& env, int size, bool recycle)
-  : BaseBlockType( block::deleter::OwnedStandard(size, env, recycle) ) { }
+  : BaseBlockType( new block::holder::OwnedStandard(env, size, recycle) ) { }
 
 
 

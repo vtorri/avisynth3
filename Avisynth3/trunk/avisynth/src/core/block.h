@@ -26,7 +26,7 @@
 //avisynth includes
 #include "block/base.h"
 #include "block/align.h"
-#include "block/deleter/base.h"
+#include "block/holder.h"
 
 
 namespace avs {
@@ -53,16 +53,16 @@ namespace avs {
 //             even when some sizes are never requested anymore....
 //           
 template <int align> 
-class block_ : public block::base<block::deleter::Base, align>
+class block_ : public block::base<block::Holder, align>
 {
 
 public:  //structors
   
   explicit block_(int size, bool recycle = false);
 
-  template <class Deleter>
-  explicit block_(Deleter const& deleter)
-    :  BaseBlockType( deleter ) { }
+  template <class Holder>
+  explicit block_(Holder * holder)
+    :  BaseBlockType( holder ) { }
 
   template <int alignOther>
   explicit block_(block_<alignOther> const& other)

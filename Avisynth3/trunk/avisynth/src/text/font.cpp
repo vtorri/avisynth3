@@ -37,7 +37,7 @@ namespace avs { namespace text {
 Font::Font(std::string const& name, int size, bool bold, bool italic)
 {
   //try new before creating so thazt we don't miss a DeleOBject through bad_alloc
-  HFONT * pFont = new HFONT(  CreateFont( size, 0, 0, 0, bold ? FW_BOLD : FW_NORMAL, 
+  HFONT * pFont = new HFONT(  CreateFont( size * 8, 0, 0, 0, bold ? FW_BOLD : FW_NORMAL, 
                      italic, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
                      CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE | DEFAULT_PITCH, name.c_str() )  );
   if ( *pFont == NULL )
@@ -69,7 +69,7 @@ Dimension Font::GetTextBoundingBox(std::string const& text)
   if ( height == 0 )
     throw Exception("GetTextBoundingBox failure");
 
-  return Dimension(r.right + 8, height + 8);
+  return Dimension( (r.right >> 3) + 8, (height >> 3) + 8);
 }
 
 

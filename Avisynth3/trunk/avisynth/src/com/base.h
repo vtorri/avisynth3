@@ -28,9 +28,11 @@
 #include "../utility/instancecounted.h"
 
 //windows includes
+#ifndef NOMINMAX
 #define NOMINMAX          //prevents generation of min and max macros
-#include "initguid.h"
-#include "objbase.h"
+#endif //NOMINMAX
+#include <initguid.h>
+#include <objbase.h>
 
 //boost include
 #include <boost/utility.hpp>

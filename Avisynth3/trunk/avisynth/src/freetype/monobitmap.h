@@ -37,6 +37,7 @@ namespace avs { namespace freetype {
 //  MonoBitmap
 //
 //  helper class to gets the data of an avs frame buffer into an FT_Bitmap
+//
 class MonoBitmap : public FT_Bitmap
 {
 
@@ -47,7 +48,7 @@ public:  //structors
   {
     buffer     = bw.write();
     pitch      = bw.pitch();
-    width      = bw.width << 3;          //in pixels here
+    width      = bw.width() << 3;          //in pixels here
     rows       = bw.height();
 
     pixel_mode = FT_PIXEL_MODE_MONO;

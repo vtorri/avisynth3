@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -38,34 +38,26 @@ namespace avs { namespace text { namespace freetype {
 
 
 
-GlyphSlot::GlyphSlot(PFace face)
-{
-  glyphslot_ = const_cast<Face *>(face.get())->glyph;
-  face_ = face;
-}
+GlyphSlot::GlyphSlot(PFace const& face)
+  : face_( face )
+  , glyphslot_( face->glyph ) { }
 
-
-//API
-
-unsigned int GlyphSlot::GetGlyphIndex (unsigned charCode)
-{
-  return FT_Get_Char_Index (face_.get(), charCode);
-}
 
 void GlyphSlot::LoadGlyph (unsigned int index)
 {
-  FT_Load_Glyph (face_.get(), index,
-		 FT_LOAD_RENDER | FT_LOAD_TARGET_MONO);
+  FT_Load_Glyph(face_.get(), index, FT_LOAD_RENDER | FT_LOAD_TARGET_MONO);
 }
+
 
 VecteurFP6 GlyphSlot::GetAdvance() const
 {
   return VecteurFP6( glyphslot_->advance.x, glyphslot_->advance.y);
 }
 
+
 POutline GlyphSlot::GetOutline() const
 {
-  return static_cast<Outline *>(&glyphslot_->outline)->Clone();
+  return POutline( new Outline(static_cast<Outline&>(glyphslot_->outline)) );
 }
 
 

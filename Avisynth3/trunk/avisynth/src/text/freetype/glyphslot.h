@@ -61,9 +61,6 @@ public:  //structors
 
 public:  //GlyphSlot interface
 
-  //fetchs glyph index for a given char
-  unsigned GetGlyphIndex(unsigned charCode);
-
   //loads a glyph in the slot
   void LoadGlyph(unsigned glyphIndex);
 
@@ -72,13 +69,12 @@ public:  //GlyphSlot interface
 
   //fetchs glyph outline
   POutline GetOutline() const;
-  //useful agglomerate of LoadGlyph and GetOutline
-  POutline GetOutline(unsigned glyphIndex)
-  {
-    LoadGlyph(glyphIndex);
-    return GetOutline();
-  }
-    
+
+
+public:  //access
+
+  PFace const& GetFace() const { return face_; }
+
 };
 
 

@@ -38,7 +38,13 @@ long YV12::GetBitmapSize(Dimension const& dim) const
   return 3 * RoundUp<4>(dim.GetWidth()) * dim.GetHeight() / 2;
 }
 
-  
+
+bool YV12::HasProperty(Property prop) const
+{
+  return prop == P_PLANAR || prop == P_YUV || prop == P_DEPTH8;
+}
+ 
+
 void YV12::Check(long x, long y, bool interlaced) const
 {
   if ( interlaced )                             //if interlaced           

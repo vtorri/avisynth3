@@ -24,8 +24,9 @@
 #ifndef __AVS_COLORSPACE_CONCRETE_YV12_H__
 #define __AVS_COLORSPACE_CONCRETE_YV12_H__
 
-//avisynth include
-#include "yuvplanar8.h"
+//avisynth includes
+#include "../yuv/depth8.h"
+#include "../yuv/planar.h"
 
 
 namespace avs { namespace cspace { namespace concrete {
@@ -37,7 +38,8 @@ namespace avs { namespace cspace { namespace concrete {
 //
 //
 //
-class YV12 : public YuvPlanar8
+class YV12 : public yuv::Planar
+           , public yuv::Depth8
 {
 
 public:  //ColorSpace interface
@@ -48,6 +50,8 @@ public:  //ColorSpace interface
   virtual long GetBitsPerPixel() const { return 12; }
 
   virtual long GetBitmapSize(Dimension const& dim) const;
+
+  virtual bool HasProperty(Property prop) const;
 
   virtual void Check(long x, long y, bool interlaced = false) const;
 

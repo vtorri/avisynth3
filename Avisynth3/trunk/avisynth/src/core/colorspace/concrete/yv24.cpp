@@ -45,6 +45,12 @@ long YV24::GetBitmapSize(Dimension const& dim) const
 }
 
 
+bool YV24::HasProperty(Property prop) const
+{
+  return prop == P_PLANAR || prop == P_YUV || prop == P_DEPTH8;
+}
+
+
 void YV24::Check(long x, long y, bool interlaced) const
 {
   if ( interlaced && (y & 1) )                  //if interlaced y must be even

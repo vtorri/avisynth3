@@ -25,7 +25,6 @@
 #include "killaudio.h"
 #include "../source/voidclip.h"
 #include "../../core/videoinfo.h"
-#include "../../clip/folded/make.h"
 #include "../../core/exception/noaudio.h"
 
 
@@ -60,7 +59,7 @@ PClip KillAudio::Create(PClip const& child)
   if ( ! vi->HasAudio() )                              //if child has no audio
     return child;                                      //child is equivalent
 
-  return PClip( static_cast<Clip *>(new clip::folded::Make<KillAudio, WeakPClip>(child)) ); 
+  return PClip( static_cast<Clip *>(new KillAudio(child)) ); 
 }
 
 

@@ -38,7 +38,7 @@ namespace avs { namespace filters {
 //
 //  Removes the video from its child
 //
-class KillVideo : public clip::onechild::Simplifiable<KillVideo>
+class KillVideo : public clip::onechild::FinalSimplifiable<KillVideo>
                 , public clip::onechild::Concrete
 {
 
@@ -57,11 +57,6 @@ public:  //clip general interface
 
   virtual CPVideoFrame GetFrame(int n) const;
   virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const { return GetChildAudio(buffer, start, count); }
-
-
-public:  //Simplify method
-
-  virtual PClip Simplify() const;
 
 
 public:  //child changing clone

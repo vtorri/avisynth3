@@ -29,10 +29,15 @@
 namespace avs { namespace linker { namespace function {
 
 
-Core::Core(std::string const& name)
-  : Function( name )
+Core::Core()
 {
   plugin::Core::instance.Register( this );
+}
+
+
+PPlugin Core::GetMotherPlugin() const
+{
+  return plugin::Core::Get();
 }
 
 

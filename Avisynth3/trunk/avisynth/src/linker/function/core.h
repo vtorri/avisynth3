@@ -37,9 +37,14 @@ class Core : public Function
 
 public:
 
-  Core(std::string const& name);
+  Core();
 
   //generated destructor is fine
+
+
+public:  //Function interface
+
+  virtual PPlugin GetMotherPlugin() const;
 
 };
 

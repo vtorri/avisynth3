@@ -24,6 +24,9 @@
 #ifndef __AVS_LINKER_FUNCTION_H__
 #define __AVS_LINKER_FUNCTION_H__
 
+//avisynth include
+#include "forward.h"
+
 //stl include
 #include <string>
 
@@ -31,25 +34,27 @@
 namespace avs { namespace linker {
 
 
+
 class Function
 {
 
-  std::string const& name_;
-
-
 public:  //structors
 
-  Function(std::string const& name)
-    : name_( name ) { }
+  Function() { }
 
   virtual ~Function() { }
 
 
 public:  //Function interface
 
-  std::string const& GetName() const { return name_; }
+  //fetch function name
+  virtual std::string GetName() const = 0;
 
+  //return a string describing function prototype
+  //format to be specified later
+  virtual std::string GetPrototype() const = 0;
 
+  virtual PPlugin GetMotherPlugin() const = 0;
 
 };
 

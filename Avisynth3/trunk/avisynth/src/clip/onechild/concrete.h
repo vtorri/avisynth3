@@ -58,7 +58,7 @@ public:  //access to child
 
 protected:  //write access
 
-  void SetChild(PClip const& child) { child_ = child; }
+  void SetChild(PClip const& child) const { child_ = child; }
 
 
 protected:  //helper for FinalSimplify

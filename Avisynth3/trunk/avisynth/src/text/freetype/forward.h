@@ -54,7 +54,6 @@ typedef box<FP6> BoxFP6;
 typedef vecteur<FP6> VecteurFP6;
 typedef dimension<FP6> DimensionFP6;
 typedef boost::shared_ptr<Face> PFace;
-typedef boost::shared_ptr<Outline> POutline;
 
 
 

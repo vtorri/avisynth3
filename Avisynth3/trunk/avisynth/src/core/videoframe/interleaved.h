@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,10 +24,14 @@
 #ifndef __AVS_VIDEOFRAME_INTERLEAVED_H__
 #define __AVS_VIDEOFRAME_INTERLEAVED_H__
 
-
 //avisynth includes
 #include "base.h"
 #include "../bufferwindow.h"
+#include "../bufferwindow/blender.h"
+#include "../bufferwindow/leftturner.h"
+#include "../bufferwindow/rightturner.h"
+#include "../bufferwindow/verticalflipper.h"
+#include "../bufferwindow/horizontalflipper.h" 
 
 
 namespace avs { namespace vframe {
@@ -76,7 +80,7 @@ public:  //toolbox methods
   virtual void ChangeSize(Vecteur const& topLeft, Vecteur const& bottomRight);
   virtual void Copy(VideoFrame const& other, Vecteur const& coords);
 
-  virtual void FlipVertical() { GetMain() = GetConstMain().FlipVertical(); }
+  virtual void FlipVertical() { GetMain() = bw::VerticalFlipper()(GetConstMain()); }
 
   virtual void TurnLeft();
   virtual void TurnRight();
@@ -119,15 +123,15 @@ public:  //structors
 
 public:  //toobox methods
 
-  virtual void FlipHorizontal() { GetMain() = GetConstMain().FlipHorizontal<bpp>(); }
+  virtual void FlipHorizontal() { GetMain() = bw::HorizontalFlipper<bpp>()(GetConstMain()); }
 
 
 private:  //implementation helpers
 
-  virtual BufferWindow DoTurnLeft() { return GetConstMain().TurnLeft<bpp>(); }
-  virtual BufferWindow DoTurnRight() { return GetConstMain().TurnRight<bpp>(); }
+  virtual BufferWindow DoTurnLeft() { return bw::LeftTurner<bpp>()(GetConstMain()); }
+  virtual BufferWindow DoTurnRight() { return bw::RightTurner<bpp>()(GetConstMain()); }
 
-  virtual void DoBlend(BufferWindow const& other, float factor) { return GetMain().Blend<bps>(other, factor); }
+  virtual void DoBlend(BufferWindow const& other, float factor) { return bw::Blender<bps>(factor)(GetMain(), other); }
 
 };//interleaved<int bpp, int bps>
 

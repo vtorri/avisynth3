@@ -28,6 +28,11 @@
 #include "base.h"
 #include "../colorspace.h"
 #include "../bufferwindow.h"
+#include "../bufferwindow/blender.h"
+#include "../bufferwindow/leftturner.h"
+#include "../bufferwindow/rightturner.h"
+#include "../bufferwindow/verticalflipper.h"
+#include "../bufferwindow/horizontalflipper.h" 
 
 
 namespace avs { namespace vframe {
@@ -110,34 +115,40 @@ public:  //toolbox methods
 
   virtual void FlipVertical()
   {
-    BufferWindow Y = GetConstY().FlipVertical();
-    BufferWindow U = GetConstU().FlipVertical();
-    GetV() = GetConstV().FlipVertical();
+    bw::VerticalFlipper flip;
+
+    BufferWindow Y = flip(GetConstY());
+    BufferWindow U = flip(GetConstU());
+    GetV() = flip(GetConstV());
     GetY() = Y; GetU() = U;
   }
 
   virtual void FlipHorizontal()
   {
-    BufferWindow Y = GetConstY().FlipHorizontal<1>();
-    BufferWindow U = GetConstU().FlipHorizontal<1>();
-    GetV() = GetConstV().FlipHorizontal<1>();
+    bw::HorizontalFlipper<1> flip;
+
+    BufferWindow Y = flip(GetConstY());
+    BufferWindow U = flip(GetConstU());
+    GetV() = flip(GetConstV());
     GetY() = Y; GetU() = U;
   }
 
 
   virtual void TurnLeft()
   {
-    BufferWindow Y = GetConstY().TurnLeft<1>();
-    BufferWindow U = GetConstU().TurnLeft<1>();
-    GetV() = GetConstV().TurnLeft<1>();
+    bw::LeftTurner<1> turn;
+    BufferWindow Y = turn( GetConstY() );
+    BufferWindow U = turn( GetConstU() );
+    GetV() = turn( GetConstV() );
     GetY() = Y; GetU() = U;
   }
 
   virtual void TurnRight()
   {
-    BufferWindow Y = GetConstY().TurnRight<1>();
-    BufferWindow U = GetConstU().TurnRight<1>();
-    GetV() = GetConstV().TurnRight<1>();
+    bw::RightTurner<1> turn;
+    BufferWindow Y = turn( GetConstY() );
+    BufferWindow U = turn( GetConstU() );
+    GetV() = turn( GetConstV() );
     GetY() = Y; GetU() = U;
   }
 
@@ -146,9 +157,11 @@ public:  //toolbox methods
   {
     if ( GetColorSpace() == other.GetColorSpace() )
     {
-      GetY().Blend<1>( other[PLANAR_Y], factor );
-      GetU().Blend<1>( other[PLANAR_U], factor );
-      GetV().Blend<1>( other[PLANAR_V], factor );
+      bw::Blender<1> blend(factor);
+
+      blend(GetY(), other[PLANAR_Y]);
+      blend(GetY(), other[PLANAR_U]);
+      blend(GetY(), other[PLANAR_V]);
     }
   }
 
@@ -250,9 +263,11 @@ public:  //toolbox methods
   {
     if ( GetColorSpace() == other.GetColorSpace() )
     {
-      GetY().Blend<2>( other[PLANAR_Y], factor );
-      GetU().Blend<2>( other[PLANAR_U], factor );
-      GetV().Blend<2>( other[PLANAR_V], factor );
+      bw::Blender<2> blend(factor);
+
+      blend(GetY(), other[PLANAR_Y]);
+      blend(GetY(), other[PLANAR_U]);
+      blend(GetY(), other[PLANAR_V]);
     }
   }
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,9 +24,8 @@
 #ifndef __AVS_CACHE_CONCRETE_H__
 #define __AVS_CACHE_CONCRETE_H__
 
-//avisynth include
+//avisynth includes
 #include "base.h"
-
 #include "../timing/switchingtimer.h"
 
 
@@ -70,7 +69,7 @@ public:  //Cache interface
     if ( CPVideoFrame const * cached = cacheLogic_.GetCachedFrame(n) )
       return *cached;
 
-    Timer::Chrono chrono(timer_);
+    typename Timer::Chrono chrono(timer_);
 
     CPVideoFrame result = MakeFrame(n);
     cacheLogic_.StoreFrame(n, result);

@@ -62,7 +62,7 @@ public:  //structors
   //generated copy constructor and destructor are fine
 
 
-public:  
+public:  //code accumulation methods
 
   VMCode& operator+=(VMOperation const& op) 
   { 
@@ -78,11 +78,12 @@ public:
   }
 
 
-  void operator()(VMState& state) const
-  {
-    for( OperationVector::const_iterator it = code_.begin(); it != code_.end(); ++it )
-      (*it)(state);
-  }
+public:  //stack functor method
+
+  OpType operator()(VMState& state) const;
+
+
+public:  //misc
 
   int size() const { return code_.size(); }
 

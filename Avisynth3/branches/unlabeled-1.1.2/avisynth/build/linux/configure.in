@@ -6,9 +6,9 @@ dnl Copyright(C) 2003-2004 Edouard Gomez <ed.gomez@free.fr>
 dnl
 dnl ==========================================================================
 dnl
-dnl Modified By Vincent TORRI
+dnl Modified for Avisynth 3.0
 dnl
-dnl For Avisynth 3.0
+dnl Copyright(C) 2004 Vincent TORRI <torri@math.u-strasbg.fr>
 dnl
 dnl ==========================================================================
 
@@ -25,6 +25,10 @@ PACKAGE="Avisynth"
 dnl NASM version requirement
 minimum_nasm_patch_version=34
 nasm_prog="nasm"
+
+dnl BOOST version requirement
+BOOST_VER_MAJOR="1"
+BOOST_VER_MINOR="31"
 
 dnl Default CFLAGS -- Big impact on overall speed
 our_cxxflags_defaults="-Wall"
@@ -205,9 +209,9 @@ esac
 dnl
 dnl Testing endianness
 dnl
-ENDIANNESS=""
+dnl ENDIANNESS=""
 
-AC_C_BIGENDIAN(ENDIANNESS="BIG_ENDIAN", ENDIANNESS="LITTLE_ENDIAN")
+dnl AC_C_BIGENDIAN(ENDIANNESS="BIG_ENDIAN", ENDIANNESS="LITTLE_ENDIAN")
 
 dnl ==========================================================================
 dnl
@@ -278,7 +282,8 @@ case "$target_os" in
 	AC_MSG_RESULT([ok])
 	STATIC_LIB="libavisynth.\$(STATIC_EXTENSION)"
 	SHARED_LIB="avisynth.\$(SHARED_EXTENSION)"
-	SPECIFIC_LDFLAGS="-lboost_thread-mgw-mt-1_31 -lwinmm -lavcodec -lavformat -lgdi32 -lvfw32 -lstlport_mingw32_static -luuid -lole32 -mno-cygwin -shared -Wl,--dll,--out-implib,\$@.a libavisynth.def"
+dnl	SPECIFIC_LDFLAGS="-lwinmm -lavcodec -lavformat -lgdi32 -lvfw32 -luuid -lole32 -mno-cygwin -shared -Wl,--dll,--out-implib,\$@.a libavisynth.def"
+	SPECIFIC_LDFLAGS="-lwinmm -lgdi32 -lvfw32 -luuid -lole32 -mno-cygwin -shared -Wl,--out-implib,\$@.a"
 	SPECIFIC_CFLAGS="-Os -mno-cygwin"
 	;;
      darwin*|raphsody*)
@@ -373,7 +378,6 @@ if test "$ARCHITECTURE" = "IA32" ; then
 		  PREFIX="-DPREFIX"
                   ;;
           esac
-
           AS=nasm
           AFLAGS="-I\$(<D)/ -f $NASM_FORMAT $PREFIX"
           ASSEMBLY_EXTENSION="asm"
@@ -442,45 +446,77 @@ dnl ==========================================================================
 dnl Check arguments
 dnl ==========================================================================
 
+dnl Set the name of the STLport library
+case "$target_os" in
+     *bsd* | linux* | irix* | solaris* )
+        STLPORT_LIB_NAME="stlport_gcc"
+	BOOST_LIB_NAME="libboost_thread-gcc-mt-${BOOST_VER_MAJOR}_${BOOST_VER_MINOR}.so"
+	;;
+     [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
+        STLPORT_LIB_NAME="stlport_mingw32_static"
+	BOOST_LIB_NAME="boost_thread-mgw-mt-${BOOST_VER_MAJOR}_${BOOST_VER_MINOR}.dll"
+	;;
+     darwin*|raphsody*)
+        STLPORT_LIB_NAME=""
+	BOOST_LIB_NAME=""
+	;;
+     beos)
+        STLPORT_LIB_NAME=""
+	BOOST_LIB_NAME=""
+	;;
+     *)
+        STLPORT_LIB_NAME=""
+	BOOST_LIB_NAME=""
+	;;
+esac
+
 if test "${with_stl_path+set}" = set && test $with_stl_arg != no; then
-  AC_MSG_CHECKING([for stl_config.h])
-  saved_CXXFLAGS="$CXXFLAGS"
-  CXXFLAGS="$CXXFLAGS -I$with_stl_path"
+dnl Check STLport library
+  saved_CXXFLAGS="${CXXFLAGS}"
+  CXXFLAGS="${CXXFLAGS} -I$with_stl_path/include/stlport"
+  saved_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} -L$with_stl_path/lib/"
   AC_LANG([C++])
-  AC_TRY_COMPILE([
-#include <stl_user_config.h>
-   ], 
-   [],
-   [AC_MSG_RESULT(yes)
-    CXXFLAGS="$saved_CXXFLAGS"
-    have_stl_path=yes
-    our_cxxflags_defaults="$our_cxxflags_defaults  -I$with_stl_path"
-    ],
-   [AC_MSG_ERROR(STL Library not in this path)
-    CXXFLAGS="$saved_CXXFLAGS"
+  AC_CHECK_HEADER(
+    [assert.h],
+    [AC_CHECK_LIB(
+      [$STLPORT_LIB_NAME],
+      [main],
+      [LDFLAGS="$saved_LDFLAGS"
+      have_stl_path=yes
+      STLPORT_LIBS="-L$with_stl_path/lib -l$STLPORT_LIB_NAME"],
+      [AC_MSG_ERROR(STLport library not in $with_stl_path/lib)
+      have_stl_path=no])
+      STLPORT_CFLAGS="-I$with_stl_path/include/stlport"],
+    [AC_MSG_ERROR(STLport headers not in $with_stl_path/include/stlport)
     have_stl_path=no])
+  CXXFLAGS="$saved_CXXFLAGS"
+  LDFLAGS="$saved_LDFLAGS"
 fi
 dnl AM_CONDITIONAL(HAVE_STL_PATH, test x$have_stl_path = xyes)
 
 if test "${with_boost_path+set}" = set && test $with_boost_arg != no; then
-  AC_MSG_CHECKING([for config.hpp])
-  saved_CXXFLAGS="$CXXFLAGS"
-  CXXFLAGS="$CXXFLAGS -I$with_boost_path/"
-  AC_TRY_COMPILE([
-#include <boost/config.hpp>
-   ], 
-   [],
-   [AC_MSG_RESULT(yes)
-    CXXFLAGS="$saved_CXXFLAGS"
-    have_boost_path=yes
-    our_cxxflags_defaults="$our_cxxflags_defaults  -I$with_boost_path"
-    ],
-   [AC_MSG_ERROR(Boost Library not in this path)
-    CXXFLAGS="$saved_CXXFLAGS"
+dnl Check BOOST library
+  saved_CXXFLAGS="${CXXFLAGS}"
+  CXXFLAGS="${CXXFLAGS} -I${with_boost_path}/include/boost-${BOOST_VER_MAJOR}_${BOOST_VER_MINOR}"
+  saved_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} -L${with_boost_path}/lib/ ${BOOST_LIB_NAME}.dll"
+  AC_LANG([C++])
+  AC_CHECK_HEADERS(
+    [boost/config.hpp],
+    [AC_CHECK_FILE(
+      [$with_boost_path/lib/${BOOST_LIB_NAME}],
+      [have_boost_path=yes
+      BOOST_LIBS="$with_boost_path/lib/${BOOST_LIB_NAME}"],
+      [AC_MSG_ERROR(Boost library not in $with_boost_path/lib)
+      have_boost_path=no])
+    BOOST_CFLAGS="-I$with_boost_path/include/boost-${BOOST_VER_MAJOR}_${BOOST_VER_MINOR}"],
+    [AC_MSG_ERROR(Boost headers not in $with_boost_path/include/boost-${BOOST_VER_MAJOR}_${BOOST_VER_MINOR})
     have_boost_path=no])
+  CXXFLAGS="$saved_CXXFLAGS"
+  LDFLAGS="$saved_LDFLAGS"
 fi
 dnl AM_CONDITIONAL(HAVE_BOOST_PATH, test x$have_boost_path = xyes)
-
 
 dnl ==========================================================================
 dnl
@@ -489,12 +525,23 @@ dnl
 dnl ==========================================================================
 
 AC_CHECK_HEADERS(
-	assert.h     \
-	string.h     \
-	limits.h     \
-	malloc.h     \
-	math.h       \
-	, , AC_MSG_ERROR(Missing header file))
+  [assert.h malloc.h math.h],
+  [],
+  [AC_MSG_ERROR(Missing header file)])
+
+case "$target_os" in 
+  [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
+    AC_CHECK_HEADERS(
+      [initguid.h, windows.h vfw.h],
+      [],
+      [AC_MSG_ERROR(Missing header file)])
+    AC_CHECK_HEADERS(
+      [winbase.h wingdi.h],
+      [],
+      [AC_MSG_ERROR(Missing header file)],
+      [#include <windows.h>])
+    ;;
+esac
 
 if test "x$with_stl_arg" = "xno"; then
 AC_CHECK_HEADER([stl_user_config.h],
@@ -605,7 +652,7 @@ dnl ==========================================================================
 AC_SUBST(FEATURES)
 AC_SUBST(ARCHITECTURE)
 AC_SUBST(BUS)
-AC_SUBST(ENDIANNESS)
+dnl AC_SUBST(ENDIANNESS)
 AC_SUBST(SHARED_EXTENSION)
 AC_SUBST(STATIC_EXTENSION)
 AC_SUBST(OBJECT_EXTENSION)
@@ -620,9 +667,12 @@ AC_SUBST(LDFLAGS)
 AC_SUBST(CXXFLAGS)
 AC_SUBST(SPECIFIC_LDFLAGS)
 AC_SUBST(SPECIFIC_CFLAGS)
+AC_SUBST(STLPORT_LIBS)
+AC_SUBST(STLPORT_CFLAGS)
+AC_SUBST(BOOST_LIBS)
+AC_SUBST(BOOST_CFLAGS)
 AC_SUBST(FREETYPE_LIBS)
 AC_SUBST(FREETYPE_CFLAGS)
-AC_SUBST(DCT_IA64_SOURCES)
 AC_SUBST(RANLIB)
 AC_SUBST(PACKAGE)
 AC_SUBST(API_MAJOR)

@@ -100,7 +100,7 @@ $(BUILD_DIR):
 .cpp.$(OBJECT_EXTENSION):
 	@echo "  C: $(@D)/$(<F)"
 	@$(INSTALL) -d $(BUILD_DIR)/$(@D)
-	@$(CXX) -c $(ARCHITECTURE) $(BUS) $(ENDIANNESS) $(FEATURES) $(SPECIFIC_CFLAGS) $(CXXFLAGS) $(FREETYPE_CFLAGS) $< -o $(BUILD_DIR)/$@
+	@$(CXX) -c $(ARCHITECTURE) $(BUS) $(ENDIANNESS) $(FEATURES) $(SPECIFIC_CFLAGS) $(STLPORT_CFLAGS) $(BOOST_CFLAGS) $(FREETYPE_CFLAGS) $(CXXFLAGS) $< -o $(BUILD_DIR)/$@
 
 #-----------------------------------------------------------------------------
 # Static Library
@@ -127,8 +127,8 @@ $(STATIC_LIB): $(BUILD_DIR) $(OBJECTS)
 
 $(SHARED_LIB): $(BUILD_DIR) $(OBJECTS)
 	@echo "  L: $(@F)"
-	@$(INSTALL) -m 644 libavisynth.def $(BUILD_DIR)/libavisynth.def
-	@cd $(BUILD_DIR) && $(CXX) $(LDFLAGS) $(OBJECTS) -o $(PRE_SHARED_LIB) $(FREETYPE_LIBS) $(SPECIFIC_LDFLAGS)
+#	@$(INSTALL) -m 644 libavisynth.def $(BUILD_DIR)/libavisynth.def
+	@cd $(BUILD_DIR) && $(CXX) $(LDFLAGS) $(OBJECTS) -o $(PRE_SHARED_LIB) $(STLPORT_LIBS) $(BOOST_LIBS) $(FREETYPE_LIBS) $(SPECIFIC_LDFLAGS)
 
 #-----------------------------------------------------------------------------
 # Installation

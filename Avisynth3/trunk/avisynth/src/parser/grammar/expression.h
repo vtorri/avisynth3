@@ -52,11 +52,10 @@ typedef spirit::symbols<TypedIndex const> VarTable;
 namespace closure {
 
 
-struct FunctionCall : spirit::closure<FunctionCall, phoenix::nil_t, FunctionPool const *, std::string>
+struct FunctionCall : spirit::closure<FunctionCall, std::string, FunctionPool const *>
 {
-  member1 dummy;
+  member1 prototype;
   member2 functionPool;
-  member3 prototype;
 };
 
 
@@ -106,10 +105,16 @@ public:  //definition nested class
 
       atom_expr
           =   literal [ atom_expr.value = construct_<TypedCode>(first(arg1), second(arg1)) ]
-          |   '('
-          >>  expression [ atom_expr.value = arg1 ]
-          >>  ')'
-          |   var_expr
+          |   (   '('
+              >>  expression [ atom_expr.value = arg1 ]
+              >>  ')'
+              |   var_expr
+              |   call_expr
+              )
+          >> *(   spirit::eps_p( second(atom_expr.value) == val('c') )  //check we have a clip result 
+              >>  '.'
+              >>  call_expr( "c" )
+              )  
           ;
 
       var_expr

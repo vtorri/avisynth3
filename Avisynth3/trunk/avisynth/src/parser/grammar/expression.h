@@ -28,6 +28,7 @@
 #include "literal.h"
 #include "../vmcode.h"
 #include "../lazy/pair.h"
+#include "../functionpool.h"
 #include "../binaryop/parser.h"
 
 //boost include
@@ -43,6 +44,22 @@ namespace avs { namespace parser { namespace grammar {
 //typedefs
 typedef std::pair<int, char> TypedIndex;
 typedef spirit::symbols<TypedIndex const> VarTable;
+typedef spirit::symbols<FunctionPool> FunctionTable;
+
+
+namespace closure {
+
+
+struct FunctionCall : spirit::closure<FunctionCall, phoenix::nil_t, FunctionPool const *, std::string>
+{
+  member1 dummy;
+  member2 functionPool;
+  member3 prototype;
+};
+
+
+} //namespace closure
+
 
 
 
@@ -50,24 +67,18 @@ class Expression : public spirit::grammar<Expression, closure::Value<TypedCode>:
 {
 
   VarTable const& varTable;
-  //binaryop::TypeMapped plus, minus, square, divide;
+  FunctionTable const& functionTable;
   spirit::symbols<binaryop::TypeMapped const> add_op, mult_op;
 
 
 public:  //structors
 
-  Expression(VarTable const& _varTable);
+  Expression(VarTable const& _varTable, FunctionTable const& _functionTable);
 
 
 
 private:  //inner classes
 
-  //closure of the atom_expr rule
-  struct AtomClosure : public spirit::closure<AtomClosure, TypedCode, TypedIndex>
-  {
-    member1 value;
-    member2 typedIndex;
-  };
 
   //var_pusher functor
   struct var_pusher
@@ -78,7 +89,7 @@ private:  //inner classes
     var_pusher(int index)
       : index_( index ) { }
 
-    void operator()(Stack& stack) const { stack.push(stack[index_]); }
+    void operator()(VMState& state) const { state.push(state[index_]); }
 
   };
 
@@ -91,7 +102,7 @@ private:  //inner classes
     var_assigner(int index)
       : index_( index ) { }
 
-    void operator()(Stack& stack) const { stack[index_] = stack.top(); }
+    void operator()(VMState& state) const { state[index_] = state.top(); }
 
   };
 
@@ -139,6 +150,25 @@ public:  //definition nested class
                   ]
               )
           ;
+
+      call_expr
+          =   self.functionTable
+              [
+                call_expr.functionPool = bind(&boost::reference_wrapper<FunctionPool>::get_pointer)(arg1)
+              ]
+          >>  '('
+          >> !(   expression
+                  [
+                    first(atom_expr.value) += first(arg1),
+                    call_expr.prototype += second(arg1)
+                  ]
+              %   ','
+              )
+          >>  spirit::ch_p(')')
+              [
+                bind(&FunctionPool::Resolve)(call_expr.functionPool, call_expr.prototype, atom_expr.value)
+              ]
+          ;
     }
 
     spirit::rule<ScannerT> const& start() const { return top; }
@@ -151,6 +181,7 @@ public:  //definition nested class
     spirit::rule<ScannerT, closure::Value<TypedCode>::context_t> mult_expr;
     spirit::rule<ScannerT, closure::Value<TypedCode>::context_t> atom_expr;
     spirit::rule<ScannerT, closure::Value<TypedIndex>::context_t> var_expr;
+    spirit::rule<ScannerT, closure::FunctionCall::context_t> call_expr;
 
     Literal literal;
 

@@ -27,6 +27,7 @@
 //avisynth includes
 #include "name.h"
 #include "expression.h"
+#include "../functor/popper.h"
 #include "../lazy/add_symbol.h"
 
 
@@ -39,21 +40,15 @@ class Statement : public spirit::grammar<Statement, closure::Value<VMCode>::cont
 
   int& stackSize;
   VarTable& varTable;
-
-
-  struct popper
-  {
-
-    void operator()(Stack& stack) const { stack.pop(); }
-
-  };
+  FunctionTable const& functionTable;
 
 
 public:  //structors
 
-  Statement(int& _stackSize, VarTable& _varTable)
+  Statement(int& _stackSize, VarTable& _varTable, FunctionTable const& _functionTable)
     : stackSize( _stackSize )
-    , varTable( _varTable ) { }
+    , varTable( _varTable )
+    , functionTable( _functionTable ) { }
 
 
 public:  //definition nested class
@@ -63,7 +58,7 @@ public:  //definition nested class
   {
 
     definition(Statement const& self)
-      : expression( self.varTable )
+      : expression( self.varTable, self.functionTable )
     {
 
       using namespace lazy;
@@ -73,7 +68,7 @@ public:  //definition nested class
           =   expression
               [
                 self.value = first(arg1),
-                self.value += construct_<popper>()
+                self.value += construct_<functor::popper<1> >()
               ]
           |   createAssignVar
           ;

@@ -33,8 +33,9 @@ namespace avs { namespace parser { namespace grammar {
 
 
 
-Expression::Expression(VarTable const& _varTable)
+Expression::Expression(VarTable const& _varTable, FunctionTable const& _functionTable)
   : varTable( _varTable )
+  , functionTable( _functionTable )
 {
 
   using namespace visitor;

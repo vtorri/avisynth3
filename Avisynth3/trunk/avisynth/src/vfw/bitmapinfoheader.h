@@ -29,7 +29,9 @@
 #include "../core/geometry/dimension.h"
 
 //windows includes
+#ifndef NOMINMAX
 #define NOMINMAX          //prevents generation of min and max macros
+#endif //NOMINMAX
 #include <windows.h>
 #include <wingdi.h>
 

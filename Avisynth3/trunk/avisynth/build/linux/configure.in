@@ -296,7 +296,7 @@ case "$target_os" in
 	AC_MSG_RESULT([ok])
 	STATIC_LIB="libavisynth.\$(STATIC_EXTENSION)"
 	SHARED_LIB="libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR).\$(API_MINOR)"
-	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR) -shared -lc -lm"
+	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR) -shared -lc -lm -lrt"
 	SPECIFIC_CFLAGS="-pthread -fPIC"
 	GEN_SOURCES="/com\\\\/d;/vfw\\\\/d;"
 	;;

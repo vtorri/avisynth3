@@ -54,6 +54,11 @@ public:  //structors
   virtual ~Property() { }
 
 
+public:  //clone method
+
+  virtual CPProperty clone() const = 0;
+
+
 public:  //Key inner class
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -61,26 +66,12 @@ public:  //Key inner class
   //
   //  class used as a name/type for properties
   //
-  class Key
-  {
-
-  public:  //structors
-
-    Key() { }
-    virtual ~Key() { }
-
-
-  public: 
-
-    virtual bool operator==(Key const& other) const { return &other == this; }
-    virtual bool operator!=(Key const& other) const { return &other != this; }
-
-  };//Property::Key
+  class Key { };
 
 
 public:  //GetKey method
 
-  virtual Key const& GetKey() const  = 0;
+  virtual Key & GetKey() const  = 0;
 
 
 };//Property

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,33 +24,23 @@
 #ifndef __AVS_CACHE_H__
 #define __AVS_CACHE_H__
 
-//avisynth include
+//avisynth includes
 #include "forward.h"              //for PEnvironment, CPVideoFrame
-
-//boost includes
-#include <boost/utility.hpp>      //for noncopyable
+#include "../define.h"            //for AVS_NOVTABLE
+#include "framemaker.h"
 
 
 namespace avs { 
 
-  
-//declaration
-namespace clip { class Caching; }
-
-
+ 
 
 ////////////////////////////////////////////////////////////////////////
 //  Cache
 //
 //
 //
-class Cache : public boost::noncopyable
+class AVS_NOVTABLE Cache
 {
-
-public:  //typedefs
-
-  typedef clip::Caching Caching;
-
 
 public:  //structors
 
@@ -64,11 +54,15 @@ public:  //Cache interface
   virtual PEnvironment const& GetEnvironment() const = 0;
 
   //search the frame in the cache
-  //if not found, it use the source clip to make it
-  virtual CPVideoFrame GetFrame(int n) = 0;
+  //if not found, it should use a FrameMaker to make it
+  virtual CPVideoFrame GetFrame(long n) = 0;
+
+
+protected:  //implementation helper method 
+
+  static CPVideoFrame MakeFrame(FrameMaker const& maker, long n) { return maker.MakeFrame(n); }
 
 };
-
 
 
 

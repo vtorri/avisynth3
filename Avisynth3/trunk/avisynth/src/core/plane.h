@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,8 @@
 #define  __AVS_PLANE_H__
 
 
-
 namespace avs {
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -41,6 +41,11 @@ enum Plane
   PLANAR_U,
   PLANAR_V
 };
+
+
+//constant yielding the numbers of possible planes
+enum { PlaneCount = 4 };
+
 
 
 inline char const * NameOf(Plane plane)

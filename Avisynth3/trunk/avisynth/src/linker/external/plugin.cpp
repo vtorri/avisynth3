@@ -71,7 +71,7 @@ char const * Plugin::GetName() const
 {
   typedef char const * (__cdecl *GetNameFunction)();
 
-  GetNameFunction gnf = static_cast<GetNameFunction>(GetProcAddress("GetName"));
+  GetNameFunction gnf = (GetNameFunction)(GetProcAddress("GetName"));
   assert( gnf != NULL );
 
   return gnf();
@@ -94,7 +94,7 @@ PPlugin Plugin::Create(std::string const& fileName)
 void * Plugin::GetProcAddress(char const * procName) const
 {
 #ifdef _WIN32
-  return ::GetProcAddress(GetModuleHandle(fileName_.c_str()), procName);
+  return (void *)::GetProcAddress(GetModuleHandle(fileName_.c_str()), procName);
 #endif
 }
 
@@ -103,7 +103,7 @@ bool Plugin::CanUnloadNow() const
 {
   typedef int (__cdecl *CanUnloadNowFunction)();
 
-  CanUnloadNowFunction cunf = static_cast<CanUnloadNowFunction>(GetProcAddress("CanUnloadNow"));
+  CanUnloadNowFunction cunf = (CanUnloadNowFunction)(GetProcAddress("CanUnloadNow"));
   assert( cunf != NULL );
 
   return cunf() != 0;

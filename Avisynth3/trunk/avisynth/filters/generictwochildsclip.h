@@ -21,12 +21,13 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_STABLEVIDEOFILTER_H__
-#define __AVS_STABLEVIDEOFILTER_H__
+#ifndef __AVS_GENERICTWOCHILDSCLIP_H__
+#define __AVS_GENERICTWOCHILDSCLIP_H__
+
 
 //avisynth includes
-#include "childclip.h"
 #include "cachingclip.h"
+#include "twochildsclip.h"
 
 
 #pragma warning ( push )           //push warning state
@@ -34,58 +35,58 @@
 
 
 
-///////////////////////////////////////////////////////////////////////
-// StableVideoFilter
+
+///////////////////////////////////////////////////////////////////////////////
+// GenericTwoChildsClip
 //
-// instanciable null filter with a child, and caching frames
-// subclasses must override MakeFrame and no longer GetFrame
+// clip with two childs, a cache, and its own videoinfo
 //
-// it's called stable, because it forwards videoinfo from child
-//
-class StableVideoFilter : public ChildClip, public CachingClip
+class GenericTwoChildsClip : public TwoChildsClip, public CachingClip
 {
-  
-public:  //structors
 
-  StableVideoFilter(PClip child, const CachePolicy& policy = DefaultCachePolicy())
-    : ChildClip( child )
-    , CachingClip( child->GetEnvironment(), policy )
+protected:  //structors
+
+  GenericTwoChildsClip(PClip left, PClip right, const CachePolicy& policy = DefaultCachePolicy())
+    : TwoChildsClip( left, right )
+    , CachingClip( left->GetEnvironment(), policy )
   {
-    DispatchTo( GetChild() );    
+    DispatchTo( GetLeftChild() );
+    DispatchTo( GetRightChild() );
   }
 
-  virtual ~StableVideoFilter()
+  virtual ~GenericTwoChildsClip()
   {
-    WithdrawFrom( GetChild() );
+    WithdrawFrom( GetLeftChild() );
+    WithdrawFrom( GetRightChild() );
   }
-
-
-public:  //clip public interface
-
-  //resolving MI ambiguity
-  virtual CPVideoFrame GetFrame(int n, const CachingClip& client) const { return CachingClip::GetFrame(n, client); }
   
 
 public:  //cache hints methods
 
-  //resolving MI ambiguity
+  //resolving MI ambiguities
   virtual void Dispatch(const CacheRequest& request) const { CachingClip::Dispatch(request); }
   virtual void Withdraw(const CacheRequest& request) const { CachingClip::Withdraw(request); }
 
 
 protected:  //write access
 
-  void SetChild(PClip child)
+  void SetLeftChild(PClip left)
   {
-    WithdrawFrom( GetChild() );
-    ChildClip::SetChild( child );
-    DispatchTo( GetChild() );
+    WithdrawFrom( GetLeftChild() );
+    TwoChildsClip::SetLeftChild( left );
+    DispatchTo( GetLeftChild() );
+  }
+
+  void SetRightChild(PClip right)
+  {
+    WithdrawFrom( GetRightChild() );
+    TwoChildsClip::SetRightChild( right );
+    DispatchTo( GetRightChild() );
   }
 
 };
 
 
+#pragma warning ( pop ) 
 
-#pragma warning ( pop )
-
-#endif  //__AVS_STABLEVIDEOFILTER_H__
+#endif //__AVS_GENERICTWOCHILDSCLIP_H__

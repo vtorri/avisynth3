@@ -45,9 +45,6 @@ public:  //constructors
   ChildClip(PClip child)
     : child_( child->Simplify(child) ) { }
 
-  ChildClip(const ChildClip& other)
-    : child_( other.child_ ) { }
-
 
 public:  //clip interface
 

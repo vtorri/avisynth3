@@ -42,16 +42,10 @@ class TwoChildsClip : public VideoInfoClip
   PClip right_;       //right child
 
 
-public:  //constructors
+public:  //constructor
 
   TwoChildsClip(PClip left, PClip right)
     : left_( left->Simplify(left) )
-    , right_( right->Simplify(right) ) { }
-
-
-  TwoChildsClip(PClip left, PClip right, const VideoInfo& vi)
-    : VideoInfoClip( vi )
-    , left_( left->Simplify(left) )
     , right_( right->Simplify(right) ) { }
 
 

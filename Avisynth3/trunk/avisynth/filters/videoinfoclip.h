@@ -42,15 +42,9 @@ class VideoInfoClip : public virtual Clip
   VideoInfo vi_;
 
 
-public:  //constructors
+public:  //constructor
 
   VideoInfoClip() { }
-
-  VideoInfoClip(const VideoInfo& vi)
-    : vi_( vi ) { }
-
-  VideoInfoClip(const VideoInfoClip& other)
-    : vi_( other.vi_ ) { }
 
 
 public:  //clip general interface

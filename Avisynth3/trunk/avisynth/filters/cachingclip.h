@@ -42,15 +42,11 @@ class CachingClip : public virtual Clip
   const CachePolicy policy_;
 
 
-protected:  //constructors
+public:  //constructor
 
   CachingClip(PEnvironment env, const CachePolicy& policy)
     : cache( env )
     , policy_( policy ) { }
-
-  CachingClip(const CachingClip& other)
-    : cache( other.GetEnvironment() )
-    , policy_( other.policy_ ) { }
 
 
 public:  //clip public interface

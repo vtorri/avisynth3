@@ -43,19 +43,9 @@
 class EditFilter : public ChildClip, public VideoInfoClip
 {
 
-protected:  //constructors
+public:  //constructor
 
-  EditFilter(PClip child)
-    : ChildClip( child )
-    , VideoInfoClip( child->GetVideoInfo() ) { }
-
-  EditFilter(PClip child, const VideoInfo& vi)
-    : ChildClip( child )
-    , VideoInfoClip( vi ) { }
-
-  EditFilter(const EditFilter& other)
-    : ChildClip( other )
-    , VideoInfoClip( other ) { }
+  EditFilter(PClip child) : ChildClip( child ) { }
 
 
 public:  //clip general interface

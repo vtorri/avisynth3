@@ -46,14 +46,8 @@ class GenericVideoFilter : public StableVideoFilter, public VideoInfoClip
 
 public:  //constructors
 
-  //norma constructor, does not set up VideoInfo
   GenericVideoFilter(PClip child, const CachePolicy& policy = DefaultCachePolicy())
     : StableVideoFilter( child, policy ) { }
-
-  //copy constructor
-  GenericVideoFilter(const GenericVideoFilter& other)
-    : StableVideoFilter( other )
-    , VideoInfoClip( other ) { }
 
 
 public:  //clip public interface

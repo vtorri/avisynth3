@@ -24,6 +24,9 @@
 #ifndef __AVS_BLOCK_ALIGN_H__
 #define __AVS_BLOCK_ALIGN_H__
 
+//avisynth include
+#include "../roundup.h"
+
 
 namespace avs { namespace block {
 
@@ -33,7 +36,7 @@ enum { Align = 16 };       //alignment of memory allocated
 
 
 //alignment helper methods
-inline int AlignValue(int value) { return (value + Align - 1) & -Align; }
+inline int AlignValue(int value) { return RoundUp<Align>(value); }
 inline bool IsAligned(int value) { return value % Align == 0; }
 
 

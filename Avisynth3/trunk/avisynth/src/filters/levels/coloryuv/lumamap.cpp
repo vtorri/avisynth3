@@ -27,7 +27,8 @@
 #include "../../../core/utility/saturate.h"
 
 //stl include
-#include <cmath>   //for pow
+#include <cmath>        //for pow
+#include <functional>
 
 
 namespace avs { namespace filters { namespace coloryuv {
@@ -53,6 +54,20 @@ LumaMap::LumaMap(Levels const& levels, float gamma, int (* adjust)(int), bool co
                   : saturate<BYTE, 0, 255>(val);
   }
 
+}
+
+
+
+int (* LumaMap::Adjust(Mode mode))(int)
+{
+  switch ( mode )
+  {
+  case PCtoTV:      return &PCtoTVAdjust<65536, 76309>;
+  case TVtoPC:
+  case TVtoPCOnlyY: return &TVtoPCAdjust<65536, 76309>;
+
+  default:          return &identity;
+  }
 }
 
 

@@ -25,7 +25,8 @@
 #define __AVS_FILTERS_COLORYUV_LUMAMAP_H__
 
 //avisynth includes
-#include "forward.h"
+#include "mode.h"
+#include "forward.h"                     //for Levels
 #include "../../../utility/bytemap.h"
 
 
@@ -45,8 +46,7 @@ public:  //structors
 
   LumaMap(Levels const& levels, float gamma, int (* adjust)(int), bool coring);
 
-  LumaMap(LumaMap const& other)
-    : ByteMap( other ) { }
+  //generated copy constructor and destructor are fine
 
 
 public:  //assignement
@@ -71,6 +71,12 @@ public:  //methods usable as parameter in the constructor
   {
     return ( value * shift * pcFactor / tvFactor + 16 * shift + shift / 2 ) / shift;
   }
+
+  static int identity(int value) { return value; }
+
+
+  //method to choose the constructor adjust function given a mode
+  static int (* Adjust(Mode mode))(int);
 
 };
 

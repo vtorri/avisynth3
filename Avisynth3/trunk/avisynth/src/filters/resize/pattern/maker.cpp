@@ -23,6 +23,8 @@
 
 //avisynth include
 #include "maker.h"
+#include "../filter.h"
+#include "../subrange.h"
 
 //stl include
 #include <math.h>    //for ceil

@@ -25,8 +25,7 @@
 #define __AVS_FILTERS_RESIZE_PATTERN_MAKER_H__
 
 //avisynth include
-#include "../filter.h"
-#include "../subrange.h"
+#include "../forward.h"
 
 //boost include
 #include <boost/utility.hpp>
@@ -55,12 +54,15 @@ class Maker : private boost::noncopyable
   double total, partial, current;
   int minus;
 
+
 public:  //constructor
 
   Maker(Filter const& filter, SubRange const& subrange, int size);
 
+  //generated destructor is fine
 
-public: 
+
+public:  //Maker interface
   
   //return number of significative coefficients it intends to produce
   int count() { return count_; }

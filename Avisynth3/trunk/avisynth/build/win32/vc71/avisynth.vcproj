@@ -51,7 +51,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="msacm32.lib quartz.lib ddraw.lib amstrmid.lib vfw32.lib version.lib winmm.lib"
+				AdditionalDependencies="msacm32.lib quartz.lib ddraw.lib amstrmid.lib vfw32.lib version.lib winmm.lib freetype219.lib"
 				OutputFile=".\Debug/avisynth.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -110,9 +110,9 @@
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="2"
-				PreprocessorDefinitions="NDEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_USRDLL;AVISYNTH_EXPORTS;_INTEL_ASM;_STLP_USE_STATIC_LIB"
+				PreprocessorDefinitions="NDEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_USRDLL;AVISYNTH_EXPORTS;_INTEL_ASM"
 				StringPooling="TRUE"
-				RuntimeLibrary="0"
+				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Release/avisynth.pch"
@@ -295,6 +295,7 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				ModuleDefinitionFile=".\avisynth.def"
 				ProgramDatabaseFile=".\Release static/avisynth.pdb"
 				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
 				OptimizeForWindows98="1"
 				ImportLibrary=".\Release static/avisynth.lib"
 				TargetMachine="1"/>
@@ -1679,13 +1680,46 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath="..\..\..\src\parser\grammar\keywords.h">
 				</File>
 				<File
+					RelativePath="..\..\..\src\parser\grammar\literal.cpp">
+				</File>
+				<File
 					RelativePath="..\..\..\src\parser\grammar\literal.h">
 				</File>
 				<File
 					RelativePath="..\..\..\src\parser\grammar\name.h">
 				</File>
 				<File
+					RelativePath="..\..\..\src\parser\grammar\script.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release static|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath="..\..\..\src\parser\grammar\script.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\parser\grammar\statement.cpp">
 				</File>
 				<File
 					RelativePath="..\..\..\src\parser\grammar\statement.h">
@@ -1748,6 +1782,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 				<File
 					RelativePath="..\..\..\src\parser\functor\var.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\parser\functor\while.cpp">
 				</File>
 				<File
 					RelativePath="..\..\..\src\parser\functor\while.h">
@@ -1893,6 +1930,19 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				Filter="">
 				<File
 					RelativePath="..\..\..\src\text\gdi\renderer.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Freetype"
+				Filter="">
+				<File
+					RelativePath="..\..\..\src\text\freetype\forward.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\freetype\library.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\freetype\outline.h">
 				</File>
 			</Filter>
 		</Filter>
@@ -2051,9 +2101,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			</File>
 			<File
 				RelativePath="..\..\..\src\freetype\glyph.h">
-			</File>
-			<File
-				RelativePath="..\..\..\src\freetype\library.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\freetype\monobitmap.h">

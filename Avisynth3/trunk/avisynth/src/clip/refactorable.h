@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -32,25 +32,50 @@
 namespace avs { namespace clip {
 
 
-//declaration
-  namespace onechild { template <class T> class Simplifiable; }
+namespace onechild { 
+  
+//declarations
+template <class T> class InitialSimplifiable;
+template <class T> class Simplifiable; 
+
+}
 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
-//  Refactorable<Parent>
+//  InitialRefactorable<Parent>
 //
-//  Signature class of clips able of refactoring a parent of type Parent
-//  (Clip) subclass must define the method to do so
+//  Signature class of clips able of initial refactoring a parent of type Parent
 //
-template <class Parent> class Refactorable : public virtual Clip
+template <class Parent> 
+class NOVTABLE InitialRefactorable : public virtual Clip
 {
 
 private:  //Refactor method
 
   //Refactorisation method (associated with parent type)
   //parent is passed so info can be extracted from it
-  virtual PClip Refactor(Parent const& parent) const = 0;
+  virtual PClip InitialRefactor(Parent const& parent) const = 0;
+
+  friend class onechild::InitialSimplifiable<Parent>;
+
+};
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+//  FinalRefactorable<Parent>
+//
+//  Signature class of clips able of initial refactoring a parent of type Parent
+//
+template <class Parent> 
+class NOVTABLE FinalRefactorable : public virtual Clip
+{
+
+private:  //Refactor method
+
+  //Refactorisation method (associated with parent type)
+  //parent is passed so info can be extracted from it
+  virtual PClip FinalRefactor(Parent const& parent) const = 0;
 
   friend class onechild::Simplifiable<Parent>;
 

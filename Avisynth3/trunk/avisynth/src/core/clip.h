@@ -40,6 +40,7 @@ class RuntimeEnvironment;
 
 //typedefs
 typedef boost::shared_ptr<Clip const> PClip;
+typedef boost::shared_ptr<VideoInfo const> CPVideoInfo;
 typedef boost::shared_ptr<VideoFrame const> CPVideoFrame;
 typedef boost::shared_ptr<RuntimeEnvironment> PEnvironment;
 
@@ -65,7 +66,7 @@ public:  //clip general interface
   //get owning environment
   virtual PEnvironment GetEnvironment() const = 0;
   //get info about the clip
-  virtual VideoInfo const& GetVideoInfo() const = 0;
+  virtual CPVideoInfo GetVideoInfo() const = 0;
  
   //get the frame n
   //undefined behavior if frame n don't exist

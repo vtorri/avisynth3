@@ -43,7 +43,7 @@ template <typename Caller, typename Result = typename Caller::ResultType>
 struct adaptor
 {
 
-  Caller const caller_;
+  Caller caller_;
 
   enum { consume = Caller::consume };
 
@@ -69,7 +69,7 @@ template <typename Caller>
 struct adaptor<Caller, void>
 {
 
-  Caller const caller_;
+  Caller caller_;
 
   enum { consume = Caller::consume };
 
@@ -78,7 +78,7 @@ struct adaptor<Caller, void>
 
   void operator()(VMState& state) const
   {
-    caller<Function>::operator()(state);
+    caller_(state);
     functor::popper<consume>()(state);
   }
 

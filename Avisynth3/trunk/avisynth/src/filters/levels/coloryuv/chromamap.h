@@ -68,7 +68,7 @@ public:  //methods usable as parameter in the constructor
   template <int pcFactor, int tvFactor>
   static int TVtoPCAdjust(int value)
   {
-    ( value * shift * pcFactor / tvFactor + 16 * shift + shift / 2 ) / shift;
+    return ( value * shift * pcFactor / tvFactor + 16 * shift + shift / 2 ) / shift;
   }
 
 };

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 #ifndef __AVS_FILTERS_COLORBARS_H__
 #define __AVS_FILTERS_COLORBARS_H__
 
-//avisynth includes
+//avisynth include
 #include "staticimage.h"
 
 
@@ -46,7 +46,15 @@ public:  //factory methods
 
   static CPVideoFrame CreateFrame(Dimension const& dim, PEnvironment const& env);
 
-  static PClip Create(Dimension const& dim, PEnvironment const& env) { return PClip( (Clip *)new ColorBars(dim, env) ); }
+  static PClip Create(Dimension const& dim, PEnvironment const& env) 
+  { 
+    return PClip( static_cast<Clip *>(new ColorBars(dim, env)) ); 
+  }
+
+  struct Creator
+  {
+    PClip operator()(Dimension const& dim, PEnvironment const& env) const { return Create(dim, env); }
+  };
 
 };
 

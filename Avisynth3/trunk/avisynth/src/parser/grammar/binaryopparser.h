@@ -68,7 +68,6 @@ public:  //parser interface
     char opSymbol;
     char rightType;
 
-    using namespace lazy;
     using namespace phoenix;
 
     typename spirit::match_result<ScannerT, result_t>::type match

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -75,7 +75,7 @@ void * Recycler::mem_alloc(int size)
   if ( raw == NULL )
     throw std::bad_alloc();
 
-  BYTE * result = (BYTE *)AlignValue(int(value));
+  BYTE * result = (BYTE *)AlignValue(int(raw));
 
   *(result - 1) = result - raw;
 #endif

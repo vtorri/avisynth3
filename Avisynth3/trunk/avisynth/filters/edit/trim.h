@@ -21,15 +21,23 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_TRIM_H__
-#define __AVS_TRIM_H__
+#ifndef __AVS_FILTERS_TRIM_H__
+#define __AVS_FILTERS_TRIM_H__
+
 
 //avisynth include
 #include "../editfilter.h"
-
+#include "../simplifiable.h"
 
 #pragma warning ( push )           //push warning state
 #pragma warning (disable : 4250)   //get rid of MI dominance decisions
+
+
+namespace avs { namespace filters {
+
+//class declarations
+class KillAudio;
+
 
 
 
@@ -38,7 +46,9 @@
 //
 // clip to select a range of frames from a longer clip
 //
-class Trim : public EditFilter
+class Trim : public EditFilter                
+           , public Simplifiable<Trim>        
+           , public Refactorable<KillAudio>  
 {
 
   int begin_;               //frame offset
@@ -63,15 +73,26 @@ public:  //clip general interface
   }
 
 
-public:  //Simplify method
+public:  //child changing clone
 
-  //only one case is supported : if child is a Splice
-  //(Trim-child case is taken care of in constructor through inplace absorbstion)
-  virtual PClip Simplify(PClip self) const;
+  virtual Clip * clone(PClip child) const;
+
+
+private:  //Refactorable<KillAudio>
+
+  virtual PClip Refactor(const KillAudio& parent) const;
+
+
+public:  //read access
+
+  int GetBegin() const { return begin_; }
+  int GetEnd() const { return GetVideoInfo().GetFrameCount(); }
 
 };
 
 
+}; }; //namespace avs::filters
+
 #pragma warning ( pop )
 
-#endif //__AVS_TRIM_H__
+#endif //__AVS_FILTERS_TRIM_H__

@@ -63,7 +63,7 @@ VFWFrameDecompressor::~VFWFrameDecompressor()
 }
 
 
-OwnedBlock VFWFrameDecompressor::operator()(bool keyframe, bool preroll, OwnedBlock const& src, int bytesRead)
+OwnedBlock VFWFrameDecompressor::operator()(bool keyframe, bool preroll, OwnedBlock const& src, long bytesRead)
 {
  
   input_.biSizeImage = bytesRead;  

@@ -29,14 +29,15 @@
 #include "../../../core/bufferwindow.h"
 
 
-namespace avs { namespace filters { 
+namespace avs { 
 
 
-//forward declaration
-class AviSource;
+//forward declarations
+namespace vfw { class BitmapInfoHeader; }
+namespace filters { class AviSource; }
   
   
-namespace avisource {
+namespace filters { namespace avisource {
 
 
 
@@ -70,7 +71,12 @@ public:  //FrameDecompressor public interface
 private:  //private interface
 
   //NB: in both passed and returned block, the data starts at + BufferWindow::Guard (for later promotion)
-  virtual OwnedBlock operator()(bool keyframe, bool preroll, OwnedBlock const& block, int bytesRead) { return block; }
+  virtual OwnedBlock operator()(bool keyframe, bool preroll, OwnedBlock const& block, long bytesRead) { return block; }
+
+
+public:  //factory method
+
+  static FrameDecompressor * Create(AviSource const& src, vfw::BitmapInfoHeader& bih);
 
 };
 

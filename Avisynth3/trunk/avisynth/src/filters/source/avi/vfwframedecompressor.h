@@ -66,16 +66,7 @@ public:  //structors
 
 private:  //FrameDecompressor private interface
 
-  virtual OwnedBlock operator()(bool keyframe, bool preroll, OwnedBlock const& block, int bytesRead);
-
-
-public:  //factory method
-
-  static FrameDecompressor * Create(AviSource const& src, vfw::BitmapInfoHeader& bih)
-  {
-    return bih.GetColorSpace() != NULL ? new FrameDecompressor(src)
-                                       : new VFWFrameDecompressor(src, bih);
-  }
+  virtual OwnedBlock operator()(bool keyframe, bool preroll, OwnedBlock const& block, long bytesRead);
 
 };
 

@@ -24,9 +24,11 @@
 //avisynth includes
 #include "../avisource.h"
 #include "framedecompressor.h"
+#include "vfwframedecompressor.h"
 #include "../../../core/videoinfo.h"
 #include "../../../core/colorspace.h"
 #include "../../../core/exception/fatal.h"
+#include "../../../vfw/bitmapinfoheader.h"
 
 
 namespace avs { namespace filters { namespace avisource {
@@ -78,6 +80,14 @@ CPVideoFrame FrameDecompressor::operator()(int n, bool preroll)
   default: throw exception::Fatal();
   }
 
+}
+
+
+
+FrameDecompressor * FrameDecompressor::Create(filters::AviSource const& src, vfw::BitmapInfoHeader& bih)
+{
+    return bih.GetColorSpace() != NULL ? new FrameDecompressor(src)
+                                       : new VFWFrameDecompressor(src, bih);
 }
 
 

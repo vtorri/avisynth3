@@ -24,9 +24,10 @@
 #ifndef __AVS_CS_YUY2_H__
 #define __AVS_CS_YUY2_H__
 
-//avisynh include
+//avisynh includes
 #include "interleaved.h"
 #include "../videoframe/yuy2.h"
+#include "../exception/colorspace/invalidwidth.h"
 
 
 namespace avs { namespace cspace {
@@ -60,8 +61,8 @@ public:  //ColorSpace interface
   virtual void Check(int x, int y, bool interlaced = false) const 
   {
     InterleavedType::Check(x, y, interlaced);
-    if ( x & 1 )                                      //if x is not even
-      ThrowInvalidWidthException(2, x);               //exception
+    if ( x & 1 )                                           //if x is not even
+      throw exception::cspace::InvalidWidth(*this, x, 2);  //exception
   }
 
 

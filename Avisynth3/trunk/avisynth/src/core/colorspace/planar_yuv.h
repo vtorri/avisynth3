@@ -28,6 +28,9 @@
 #include "../colorspace.h"
 #include "../videoframe/planar_yuv.h"
 #include "../exception/nosuchplane.h"
+#include "../exception/colorspace/unsupported.h"
+#include "../exception/colorspace/invalidwidth.h"
+#include "../exception/colorspace/invalidheight.h"
 
 
 namespace avs { namespace cspace {
@@ -94,12 +97,12 @@ public:  //ColorSpace interface
 
   virtual void Check(int x, int y, bool interlaced = false) const
   {
-    if ( x & 1 )                          //x must be mod 2
-      ThrowInvalidWidthException(2, x);
-    if ( interlaced && (y & 3) )          //y must be mod 4 when interlaced             
-      ThrowInvalidInterlacedHeightException(4, y);
-    if ( y & 1 )                          //y must be mod 2 when not interlaced
-      ThrowInvalidHeightException(2, y);
+    if ( x & 1 )                                            //x must be mod 2
+      throw exception::cspace::InvalidWidth(*this, x, 2);
+    if ( interlaced && (y & 3) )                            //y must be mod 4 when interlaced             
+      throw exception::cspace::InvalidHeight(*this, y, 4, true);
+    if ( y & 1 )                                            //y must be mod 2 when not interlaced
+      throw exception::cspace::InvalidHeight(*this, y, 2, false);
   }
 
   virtual void ToPlane(int& x, int& y, Plane plane) const
@@ -142,7 +145,7 @@ public:  //ColorSpace interface
 
   virtual ID id() const { return I_YV24; }
   virtual char const * GetName() const { return "YV24"; }
-  virtual unsigned long GetFourCC() const { throw exception::UnsupportedColorSpace(*this); }
+  virtual unsigned long GetFourCC() const { throw exception::cspace::Unsupported(*this); }
   virtual int GetBitsPerPixel() const { return 24; }
 
   virtual int GetBitmapSize(Dimension const& dim) const
@@ -188,7 +191,7 @@ public:  //ColorSpace interface
 
   virtual ID id() const { return I_YV45; }
   virtual char const * GetName() const { return "YV45"; }
-  virtual unsigned long GetFourCC() const { throw exception::UnsupportedColorSpace(*this); }
+  virtual unsigned long GetFourCC() const { throw exception::cspace::Unsupported(*this); }
   virtual int GetBitsPerPixel() const { return 45; }
 
   virtual int GetBitmapSize(Dimension const& dim) const

@@ -27,13 +27,20 @@
 #include "yuy2.h"
 #include "planar_yuv.h"
 #include "../exception/generic.h"
-#include "../exception/unsupportedcolorspace.h"
+#include "../exception/colorspace/unsupported.h"
 
 //boost include
 #include <boost/format.hpp>
 
 
 namespace avs {
+
+
+void ColorSpace::Check(int /*x*/, int y, bool interlaced = false) const
+{
+  if ( interlaced && (y & 1) )
+    throw exception::cspace::InvalidHeight(*this, y, 2, true);
+}
 
 
 void ColorSpace::CheckDim(Dimension const& dim, bool interlaced) const
@@ -81,23 +88,6 @@ ColorSpace& ColorSpace::FromString(std::string const& name)
   
   return *result;
 }
-
-
-void ColorSpace::ThrowInvalidInterlacedHeightException(int modulo, int /*height*/) const
-{
-  throw exception::Generic(str( boost::format("%s: interlaced height must be mod %d") % GetName() % modulo ));
-}
-
-void ColorSpace::ThrowInvalidHeightException(int modulo, int /*height*/) const
-{
-  throw exception::Generic(str( boost::format("%s: height must be mod %d") % GetName() % modulo ));
-}
-
-void ColorSpace::ThrowInvalidWidthException(int modulo, int /*width*/) const
-{
-  throw exception::Generic(str( boost::format("%s: width must be mod %d") % GetName() % modulo ));
-}
-
 
 
 

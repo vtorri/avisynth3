@@ -26,10 +26,10 @@
 
 //avisynth includes
 #include "plane.h"
-#include "vecteur.h"
 #include "forward.h"
-#include "dimension.h"
 #include "frametype.h"
+#include "geometry/vecteur.h"
+#include "geometry/dimension.h"
 
 
 namespace avs {
@@ -87,11 +87,7 @@ public:  //ColorSpace interface
   virtual bool HasProperty(Property prop) const = 0;
   virtual bool HasPlane(Plane plane) const = 0;
 
-  virtual void Check(int /*x*/, int y, bool interlaced = false) const
-  {
-    if ( interlaced && (y & 1) )
-      ThrowInvalidInterlacedHeightException(2, y);
-  }
+  virtual void Check(int x, int y, bool interlaced = false) const;
 
   virtual void CheckDim(Dimension const& dim, bool interlaced = false) const;
   virtual void CheckVect(Vecteur const& vect, bool interlaced = false) const;
@@ -145,13 +141,6 @@ public:  //factory methods
   static ColorSpace & yv45();
 
   static ColorSpace & FromString(std::string const& name);
-
-
-public:  //exception helper methods
-
-  void ThrowInvalidInterlacedHeightException(int modulo, int height) const;
-  void ThrowInvalidHeightException(int modulo, int height) const;
-  void ThrowInvalidWidthException(int modulo, int width) const;
 
 
 public:  //small helper for 4cc

@@ -70,17 +70,17 @@ ColorSpace& ColorSpace::yv45() { return cspace::YV45::instance; }
 
 
 
-void ColorSpace::ThrowInvalidInterlacedHeightException(int modulo, int height) const
+void ColorSpace::ThrowInvalidInterlacedHeightException(int modulo, int /*height*/) const
 {
   throw exception::Generic(str( boost::format("%s: interlaced height must be mod %d") % GetName() % modulo ));
 }
 
-void ColorSpace::ThrowInvalidHeightException(int modulo, int height) const
+void ColorSpace::ThrowInvalidHeightException(int modulo, int /*height*/) const
 {
   throw exception::Generic(str( boost::format("%s: height must be mod %d") % GetName() % modulo ));
 }
 
-void ColorSpace::ThrowInvalidWidthException(int modulo, int width) const
+void ColorSpace::ThrowInvalidWidthException(int modulo, int /*width*/) const
 {
   throw exception::Generic(str( boost::format("%s: width must be mod %d") % GetName() % modulo ));
 }

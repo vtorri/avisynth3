@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -129,7 +129,7 @@ public:  //ColorSpace interface
   }
 
 
-  virtual void ToPlane(int& x, int& y, Plane plane) const
+  virtual void ToPlane(int& /*x*/, int& /*y*/, Plane plane) const
   {
     if ( ! HasPlane(plane) )
       throw exception::NoSuchPlane(*this, plane);
@@ -177,7 +177,7 @@ public:  //ColorSpace interface
   }
 
 
-  virtual void ToPlane(int& x, int& y, Plane plane) const
+  virtual void ToPlane(int& x, int& /*y*/, Plane plane) const
   {
     if ( ! HasPlane(plane) )
       throw exception::NoSuchPlane(*this, plane);

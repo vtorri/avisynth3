@@ -33,7 +33,7 @@ namespace avs { namespace filters {
 
 Resize::Resize(PClip const& child, resize::PFilter const& filter, Dimension const& dim, resize::SubRange const& subrange)
   : clip::onechild::Concrete( child )
-  , clip::caching::Concrete( child->GetEnvironment() )
+  , clip::framemaker::Concrete( child->GetEnvironment() )
   , filter_( filter )
   , subrange_( subrange )
 {

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -27,9 +27,9 @@
 //avisynth includes
 #include "forward.h"
 #include "subrange.h"
-#include "../../clip/caching/concrete.h"
 #include "../../clip/onechild/concrete.h"
-#include "../../clip/onechild/cachingpipeline.h"
+#include "../../clip/framemaker/concrete.h"
+#include "../../clip/onechild/framemakerpipeline.h"
 
 
 namespace avs { namespace filters {
@@ -41,9 +41,9 @@ namespace avs { namespace filters {
 //
 //  common base class of resize::Horizontal and resize::Vertical
 //
-class Resize : public clip::onechild::CachingPipeline
+class Resize : public clip::onechild::FrameMakerPipeline
              , public clip::onechild::Concrete
-             , public clip::caching::Concrete
+             , public clip::framemaker::Concrete
 {
 
   CPVideoInfo vi_;

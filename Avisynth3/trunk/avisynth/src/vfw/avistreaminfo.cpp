@@ -91,8 +91,7 @@ void AviStreamInfo::SetLengthsTo(VideoInfo& vi) const
   {
     assert( fccType == streamtypeAUDIO );          //defend against weirdness
 
-    vi.SetSampleCount(dwLength);
-    vi.SetSampleRate(dwRate / dwScale);
+    vi.SetSampleCount( dwLength * (vi.GetSampleRate() * dwScale / dwRate) );
   }
 }
 

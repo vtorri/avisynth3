@@ -52,10 +52,9 @@ PVideoFrame RuntimeEnvironment::CreateFrame(ColorSpace& space, Dimension const& 
 }
 
 
-PVideoFrame RuntimeEnvironment::CreateFrame(VideoInfo const& vi)
+PVideoFrame RuntimeEnvironment::CreateFrame(VideoInfo const& vi, FrameType type)
 {
-  return vi.GetColorSpace().CreateFrame
-    ( shared_from_this(), vi.GetDimension(), vi.IsFrameClip() ? PROGRESSIVE : FIELD_TOP );
+  return vi.GetColorSpace().CreateFrame( shared_from_this(), vi.GetDimension(), type );
 }
 
 

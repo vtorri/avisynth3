@@ -55,7 +55,6 @@ void ScriptFunction::Define(StatementCode const& code)
   else 
     op_ = functor::function::Call<>(arity, code);
 
-
   defined_ = true;
 }
 

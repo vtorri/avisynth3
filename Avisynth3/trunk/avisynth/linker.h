@@ -56,7 +56,7 @@ public:
 
   AVSValue operator()(const AVSValue& arg) const { return (*caster)(arg); }
 
-  DescriptionArgument operator()(const DescriptionArgument& arg) const { if ( IsIdentity() ) ret
+  DescriptionArgument operator()(const DescriptionArgument& arg) const ; //{ if ( IsIdentity() ) return arg; 
 
   bool IsIdentity() const { return caster == &id; }
 };

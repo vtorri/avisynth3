@@ -29,10 +29,9 @@
 #include "videoframe.h"
 
 
-
-#define FRAME_ALIGN 16 
+#define FRAME_ALIGN 16 //MUST be a power of 2
 // Default frame alignment is 16 bytes, to help P4, when using SSE2
-#pragma warning( disable : 4290 )
+#pragma warning( disable : 4290 )  //get rid of C++ exception ... ignored warning
 
 
 
@@ -150,6 +149,9 @@ public:
   virtual const VideoInfo& GetVideoInfo() { return vi; }
 
 };
+
+
+#include "cache.h"  
 
 // instanciable null filter with a cache
 class GenericVideoFilter : public ChildClip {

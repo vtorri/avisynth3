@@ -39,9 +39,10 @@
 #include <boost/scoped_ptr.hpp>
 
 
-class ScriptEnvironment;
+class ScriptEnvironment; 
 
 
+//base expression class
 class Expression {
 
 public:
@@ -49,10 +50,10 @@ public:
   virtual ~Expression() {}
 
   virtual AVSValue Evaluate(VarTable& table, ScriptEnvironment& env) = 0;
-
-
 };
 
+
+//template expression subclass, the templated type is the return type of the expression
 template <class Result> class TypedExpression : public Expression {
 
 public:
@@ -61,8 +62,9 @@ public:
   //default implementation using the new TypedEval method
   virtual AVSValue Evaluate(VarTable& table, ScriptEnvironment& env) { return AVSValue(TypedEval(table, env)); }
   virtual Result TypedEval(VarTable& table, ScriptEnvironment& env) = 0;
-
 };
+
+
 
 typedef TypedExpression<bool> Predicate;
 
@@ -81,10 +83,26 @@ public:
 
 
 
+
+template <class Result> class ExpVariable : public TypedExpression<Result> {
+
+  int position;
+
+public:
+  ExpVariable(int _position) : position(_position) { }
+
+  virtual AVSValue Evaluate(VarTable& table, ScriptEnvironment& env) { return table[position]; }
+  virtual Result TypedEval(VarTable& table, ScriptEnvironment& env) { return any_cast<Result>(table[position]); }
+};
+
+
+
+
+
 template <class Result, class Arg> class BinaryExp : public TypedExpression<Result> {
 
 protected:
-  typedef TypedExpression<Arg>  ExpBase;
+  typedef TypedExpression<Arg> ExpBase;
   typedef boost::scoped_ptr<ExpBase> ScopedExpBase;
 
   ScopedExpBase left, right;
@@ -97,7 +115,7 @@ public:
 
 //basic binaries operations
 
-template <class T> ExpPlus : public BinaryExp<T, T> {
+template <class T> class ExpPlus : public BinaryExp<T, T> {
 
 public:
   ExpPlus(ExpBase * left, ExpBase * right) : BinaryExp<T, T>(left, right) { }
@@ -106,7 +124,7 @@ public:
 };
 
 
-template <class T> ExpMinus : public BinaryExp<T, T> {
+template <class T> class ExpMinus : public BinaryExp<T, T> {
 
 public:
   ExpMinus(ExpBase * left, ExpBase * right) : BinaryExp<T, T>(left, right) { }
@@ -114,7 +132,7 @@ public:
   virtual T TypedEval(VarTable& table, ScriptEnvironment& env) { return left->TypedEval(table, env) - right->TypedEval(table, env); }
 };
 
-template <class T> ExpMult : public BinaryExp<T, T> {
+template <class T> class ExpMult : public BinaryExp<T, T> {
 
 public:
   ExpMult(ExpBase * left, ExpBase * right) : BinaryExp<T, T>(left, right) { }
@@ -122,7 +140,7 @@ public:
   virtual T TypedEval(VarTable& table, ScriptEnvironment& env) { return left->TypedEval(table, env) * right->TypedEval(table, env); }
 };
 
-template <class T> ExpDiv : public BinaryExp<T, T> {
+template <class T> class ExpDiv : public BinaryExp<T, T> {
 
 public:
   ExpDiv(ExpBase * left, ExpBase * right) : BinaryExp<T, T>(left, right) { }
@@ -130,7 +148,7 @@ public:
   virtual T TypedEval(VarTable& table, ScriptEnvironment& env) { return left->TypedEval(table, env) / right->TypedEval(table, env); }
 };
 
-template <class T> ExpModulo : public BinaryExp<T, T> {
+template <class T> class ExpModulo : public BinaryExp<T, T> {
 
 public:
   ExpDiv(ExpBase * left, ExpBase * right) : BinaryExp<T, T>(left, right) { }
@@ -141,7 +159,7 @@ public:
 
 //binaries predicates
 
-template <class T> ExpEqual : public BinaryExp<bool, T> {
+template <class T> class ExpEqual : public BinaryExp<bool, T> {
 
 public:
   ExpEqual(ExpBase * left, ExpBase * right) : BinaryExp<bool, T>(left, right) { }
@@ -149,7 +167,7 @@ public:
   virtual bool TypedEval(VarTable& table, ScriptEnvironment& env) { return left->TypedEval(table, env) == right->TypedEval(table, env); }  
 };
 
-template <class T> ExpLess : public BinaryExp<bool, T> {
+template <class T> class ExpLess : public BinaryExp<bool, T> {
 
 public:
   ExpLess(ExpBase * left, ExpBase * right) : BinaryExp<bool, T>(left, right) { }
@@ -158,7 +176,21 @@ public:
 };
 
 
+class ExpBreakOr : public BinaryExp<bool, bool> {
 
+public:
+  ExpBreakOr(ExpBase * left, ExpBase * right) : BinaryExp<bool, bool>(left, right) { }
+
+  virtual bool TypedEval(VarTable& table, ScriptEnvironment& env) { return left->TypedEval(table, env) || right->TypedEval(table, env); }
+};
+
+class ExpBreakAnd : public BinaryExp<bool, bool> {
+
+public:
+  ExpBreakAnd(ExpBase * left, ExpBase * right) : BinaryExp<bool, bool>(left, right) { }
+
+  virtual bool TypedEval(VarTable& table, ScriptEnvironment& env) { return left->TypedEval(table, env) && right->TypedEval(table, env); }
+};
 
 /**** Object classes ****/
 

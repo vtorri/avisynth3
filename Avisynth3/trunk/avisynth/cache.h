@@ -66,14 +66,6 @@ class RangeCache : public FrameCache {
   CacheMap cache;
   unsigned size;
 
-  //predicate used in store
-  struct IsOutOfRange {
-    int min, max;
-    IsOutOfRange(int n, unsigned size) : min(n - size), max(n + size) { }
-
-    bool operator()(const CacheMap::value_type& value) { return value.first <= min || value.first >= max; }
-  };
-
 public:
   RangeCache(unsigned _size) : size(_size) { }
   
@@ -86,8 +78,10 @@ public:
   virtual CPVideoFrame store(int n, CPVideoFrame frame)
   {
     if ( cache.size() >= size )
-      //remove eveything out of range
-      cache.erase(remove_if(cache.begin(), cache.end(), IsOutOfRange(n, size)), cache.end() );
+    { //remove eveything out of range
+      cache.erase(cache.lower_bound(n + size), cache.end());
+      cache.erase(cache.begin(), cache.upper_bound(n - size));
+    }
     return cache[n] = frame;
   }
 };
@@ -123,7 +117,7 @@ public:
     cache.push_back(make_pair(n, frame));
     return frame;
   }
-};
+};  
 
 class Clip;
 

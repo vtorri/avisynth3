@@ -74,9 +74,10 @@ public:
   };
 
 
-public:  //constructor
+public:  //structors
 
   ColorSpace() { }
+  virtual ~ColorSpace() { }
 
 
 public:  //ColorSpace interface

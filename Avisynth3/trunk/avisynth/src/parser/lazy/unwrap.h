@@ -68,7 +68,7 @@ struct Unwrapper
   template <typename T>
   struct result
   {
-    typedef typename boost::unwrap_reference<T>::type type;
+    typedef typename boost::unwrap_reference<T>::type& type;
   };
 
   template <typename T>

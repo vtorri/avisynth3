@@ -45,13 +45,13 @@ void SpanMaker::LineTo(VecteurFP3 const& pt)
 
   if ( startY != endY )         //horizontal edges doesn't yield spans, so no work then
   {
-    long dy = lastPt_.y.get() - pt.y.get();
+    long dy = pt.y.get() - lastPt_.y.get();                             //not zero
     long long invSlope = ((pt.x.get() - lastPt_.x.get()) << 16) / dy;   //16 bits fractional part
 
     if ( dy < 0 )
       std::swap( startY, endY );
 
-    //that's the x on the line at y = startY + 12, with 16 bits fractional part
+    //that's the x on the line at y = startY, with 16 bits fractional part
     long long x = (lastPt_.x.get() << 13) + ((( (startY << 3) - lastPt_.y.get() ) * invSlope) >> 3);
 
     for ( long y = startY; y < endY; ++y, x += invSlope )

@@ -31,7 +31,7 @@
 
 //boost include
 #include <boost/thread/mutex.hpp>    //for mutex
-#include <boost/utility.hpp>         //for noncopyable
+#include <boost/noncopyable.hpp>     //for noncopyable
 
 //stl include
 #include <map>                       //for multimap

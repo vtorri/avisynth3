@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,29 @@
 namespace avs {
 
 
+
+///////////////////////////////////////////////////////////////////////
+//  Exception
+//
+//  root class for avs exceptions
+//
 class Exception : public std::exception
+{
+
+public:  //string diagnotic message (no need to be pre built)
+
+  virtual std::string msg() const { return what(); }
+
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//  GenericException
+//
+//  
+//
+class GenericException : public Exception
 {
 
   std::string msg_;
@@ -39,20 +61,19 @@ class Exception : public std::exception
 
 public:  //structors
 
-  Exception(std::string const& msg)
+  GenericException(std::string const& msg)
     : msg_( msg ) { }
 
-  //generated copy construcor and destructor are fine
+  //generated copy constructor and destructor are fine
 
 
-public:
+public:  //interface
 
-  std::string msg() const { return msg_; }
+  virtual std::string msg() const { return msg_; }
 
-  virtual char const * what() const { return msg_.c_str(); }
+  virtual char const * what() const throw() { return msg_.c_str(); }
 
 };
-
 
 
 } //namespace avs

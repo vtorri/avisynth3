@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,9 @@
 #ifndef __AVS_MAIN_H__
 #define __AVS_MAIN_H__
 
+
+#ifdef _WIN32
+
 //windows includes
 #include <initguid.h>
 #include <objbase.h>
@@ -32,7 +35,7 @@
 extern "C" GUID const CLSID_CAVIFileSynth;   // {E6D6B700-124D-11D4-86F3-DB80AFD98778}
 
 
-//extern "C" const GUID IID_IAvisynthClipInfo;   // {E6D6B708-124D-11D4-86F3-DB80AFD98778}
+#endif  //_WIN32
 
 
 #endif //__AVS_MAIN_H__

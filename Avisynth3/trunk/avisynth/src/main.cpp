@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -21,48 +21,33 @@
 // General Public License cover the whole combination.
 
 
-//avisynth include
+//avisynth includes
 #include "main.h"
+
+#ifdef _WIN32
+
 #include "com/base.h"
 #include "vfw/avifilefactory.h"
 
 
 
-extern "C" const GUID IID_IAvisynthClipInfo   // {E6D6B708-124D-11D4-86F3-DB80AFD98778}
-  = {0xe6d6b708, 0x124d, 0x11d4, {0x86, 0xf3, 0xdb, 0x80, 0xaf, 0xd9, 0x87, 0x78}};
+//methods required of a COM dll
 
-
-
-struct IAvisynthClipInfo : IUnknown {
-  virtual int __stdcall GetError(const char** ppszMessage) = 0;
-  virtual bool __stdcall GetParity(int n) = 0;
-  virtual bool __stdcall IsFieldBased() = 0;
-};
-
-
-
-
-
-BOOL APIENTRY DllMain(HANDLE hModule, ULONG ulReason, LPVOID lpReserved) {
-
-	switch(ulReason) {
+BOOL APIENTRY DllMain(HANDLE hModule, ULONG ulReason, LPVOID lpReserved) 
+{
+	switch(ulReason) 
+  {
 	case DLL_PROCESS_ATTACH:
 		CoInitialize(NULL);
-		//_RPT0(0,"Process attach\n");
 		break;
 
 	case DLL_PROCESS_DETACH:
 		CoUninitialize();
-		//_RPT0(0,"Process detach\n");
 		break;
 	}
 
-    return TRUE;
+  return TRUE;
 }
-
-
-// From the Microsoft AVIFile docs.  Dense code...
-
 
 
 STDAPI DllGetClassObject(CLSID const& rclsid, IID const& riid, void ** ppv)
@@ -72,10 +57,10 @@ STDAPI DllGetClassObject(CLSID const& rclsid, IID const& riid, void ** ppv)
 }
 
 
-
 STDAPI DllCanUnloadNow() 
 {
   return avs::com::Base::ObjectCount() == 0 ? S_OK : S_FALSE;
 }
 
 
+#endif //_WIN32

@@ -27,7 +27,6 @@
 //avisynth includes
 #include "plane.h"
 #include "forward.h"
-#include "property.h"
 #include "frametype.h"
 #include "window_ptr.h"
 
@@ -95,7 +94,6 @@ public:  //plane access (can do more with them than with the above)
 
 public:  //property system
 
-  typedef Property::PKey PKey;
   typedef std::vector<CPProperty> PropertyVector;
 
   virtual void SetProperty(CPProperty const& prop) = 0;

@@ -25,6 +25,7 @@
 #define __AVS_VIDEOFRAME_BASE_H__
 
 //avisynth includes
+#include "../key.h"
 #include "../videoframe.h"
 #include "../geometry/dimension.h"
 
@@ -44,19 +45,10 @@ namespace avs { namespace vframe {
 class Base : public VideoFrame
 {
 
-private:  //declarations and typedefs
+private:  //typedefs
 
-  struct HashPKey
-  {
-    unsigned operator()(PKey const& key) const { return key->hash(); }
-  };
-  struct EqualPKey
-  {
-    bool operator()(PKey const& left, PKey const& right) const { return *left == *right; }
-  };
-
-	typedef std::hash_map<PKey, CPProperty, HashPKey, EqualPKey> PropertyMap;
-  typedef std::hash_multimap<PKey, CPProperty, HashPKey, EqualPKey> PropertyMultiMap;
+  typedef std::hash_map<PKey, CPProperty, Key::Hasher, Key::Comparator> PropertyMap;
+  typedef std::hash_multimap<PKey, CPProperty, Key::Hasher, Key::Comparator> PropertyMultiMap;
 
 
 private:  //members
@@ -68,7 +60,7 @@ private:  //members
   mutable PropertyMap statics_;  //holds static properties
 
 
-public: //constructors
+public: //structors
 
   //normal constructor
   Base(ColorSpace& space, Dimension const& dim, FrameType type);

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -51,45 +51,16 @@ public:  //clone method
   virtual CPProperty clone() const = 0;
 
 
-public:  //Key inner class
-
-  ///////////////////////////////////////////////////////////////////////////////
-  //  Property::Key 
-  //
-  //  class used as a name/type for properties
-  //
-  class Key
-  { 
-  
-  public:  //structors
-
-    Key() { }
-    virtual ~Key() { }
-
-  public:  //Key interface
-
-    //NB: == and hash must be consistent together (the defaults are)
-    //ie  A == B  =>  A.hash() == B.hash()
-    virtual bool operator==(Key const& other) const { return &other == this; }    
-    virtual unsigned hash() const { return unsigned(this); }
-
-  };//Property::Key
-
-  typedef boost::shared_ptr<Key const> PKey;
-
-
 public:  //Property interface
 
   virtual PKey GetKey() const  = 0;
 
   virtual bool IsStatic() const = 0;
 
-};//Property
-
-
+};
 
 
 
 } //namespace avs
 
-#endif //#define __AVS_PROPERTY_H__
+#endif //__AVS_PROPERTY_H__

@@ -21,8 +21,9 @@
 // General Public License cover the whole combination.
 
 
-//avisynth include
+//avisynth includes
 #include "base.h"
+#include "../property.h"
 #include "../colorspace.h"
 
 //boost include

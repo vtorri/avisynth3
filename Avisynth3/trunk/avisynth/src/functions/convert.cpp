@@ -34,7 +34,7 @@ using parser::adapt;
 using linker::core::Function;
 
 
-Function Source::toRGB24( 'c', "ConvertToRGB24", "c", adapt( &filters::convert::ToRGB24::Create ) );
+Function Convert::toRGB24( 'c', "ConvertToRGB24", "c", adapt( &filters::convert::ToRGB24::Create ) );
 
 
 

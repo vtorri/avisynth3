@@ -63,6 +63,7 @@ typedef boost::shared_ptr<Key const> PKey;
 typedef boost::shared_ptr<Clip const> PClip;
 typedef boost::shared_ptr<Property const> CPProperty;
 typedef boost::shared_ptr<VideoInfo const> CPVideoInfo;
+typedef boost::shared_ptr<ColorSpace const> PColorSpace;
 typedef boost::shared_ptr<VideoFrame const> CPVideoFrame;
 typedef boost::shared_ptr<RuntimeEnvironment> PEnvironment;
 

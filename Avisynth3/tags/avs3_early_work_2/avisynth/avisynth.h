@@ -1,4 +1,4 @@
-// Avisynth v2.5 alpha.  Copyright 2002 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2002 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@
 #ifndef __AVISYNTH_H__
 #define __AVISYNTH_H__
 
-enum { AVISYNTH_INTERFACE_VERSION = 2 };
+enum { AVISYNTH_INTERFACE_VERSION = 3 };
 
 
 /* Define all types necessary for interfacing with avisynth.dll
@@ -94,6 +94,18 @@ using namespace std;
 #define FRAME_ALIGN 16 
 // Default frame alignment is 16 bytes, to help P4, when using SSE2
 
+
+
+
+//exception class
+class AvisynthError  {
+public:
+  const string err_msg;
+  AvisynthError(const string& _err_msg) : err_msg(_err_msg) { }
+};
+
+
+
 // The VideoInfo struct holds global information about a clip (i.e.
 // information that does not depend on the frame number).  The GetVideoInfo
 // method in IClip returns this struct.
@@ -101,24 +113,23 @@ using namespace std;
 // Audio Sample information
 typedef float SFLOAT;
 
-enum SampleType {
-  SAMPLE_INT8,
-  SAMPLE_INT16, 
-  SAMPLE_INT24,    // Int24 is a very stupid thing to code, but it's supported by some hardware.
-  SAMPLE_INT32,
-  SAMPLE_FLOAT
-};
+class VideoInfo {
 
+public:
 
-
-struct VideoInfo {
-  int width, height;    // width=0 means no video
-  unsigned fps_numerator, fps_denominator;
-  int num_frames;
-  // This is more extensible than previous versions. More properties can be added seeminglesly.
+  typedef short dimension;
+  
+  //some enumerations
+  enum SampleType {
+    SAMPLE_INT8,
+    SAMPLE_INT16, 
+    SAMPLE_INT24,    // Int24 is a very stupid thing to code, but it's supported by some hardware.
+    SAMPLE_INT32,
+    SAMPLE_FLOAT
+  };
 
   // Colorspace properties.
-  enum {
+  enum CS_Property {
     CS_BGR = 1<<28,  
     CS_YUV = 1<<29,
     CS_INTERLEAVED = 1<<30,
@@ -127,64 +138,128 @@ struct VideoInfo {
 
   // Specific colorformats
   enum ColorSpace { 
-         CS_UNKNOWN = 0,
-         CS_BGR24 = 1<<0 | CS_BGR | CS_INTERLEAVED,
-         CS_BGR32 = 1<<1 | CS_BGR | CS_INTERLEAVED,
-         CS_YUY2 = 1<<2 | CS_YUV | CS_INTERLEAVED,
-         CS_YV12 = 1<<3 | CS_YUV | CS_PLANAR,  // y-v-u, planar
-         CS_I420 = 1<<4 | CS_YUV | CS_PLANAR,  // y-u-v, planar
-         CS_IYUV = 1<<4 | CS_YUV | CS_PLANAR  // same as above
-         };
-  int pixel_type;                // changed to int as of 2.5
-  
-
-  int audio_samples_per_second;   // 0 means no audio
-  int sample_type;                // as of 2.5
-  __int64 num_audio_samples;      // changed as of 2.5
-  int nchannels;                  // as of 2.5
-
-  // Imagetype properties
-
-  int image_type;
-
-  enum {
-    IT_BFF = 1<<0,
-    IT_TFF = 1<<1,
-    IT_FIELDBASED = 1<<2
+    CS_UNKNOWN = 0,
+    CS_BGR24 = 1<<0 | CS_BGR | CS_INTERLEAVED,
+    CS_BGR32 = 1<<1 | CS_BGR | CS_INTERLEAVED,
+    CS_YUY2 = 1<<2 | CS_YUV | CS_INTERLEAVED,
+    CS_YV12 = 1<<3 | CS_YUV | CS_PLANAR,  // y-v-u, planar
+    CS_I420 = 1<<4 | CS_YUV | CS_PLANAR,  // y-u-v, planar
+    CS_IYUV = 1<<4 | CS_YUV | CS_PLANAR  // same as above
   };
 
+
+  //methods used to check that clip dimensions respect ColorSpace contraints  
+  //for convenience reasons, they return their argument  
+  static inline dimension WidthCheckYUY2(dimension width) {
+    static const string YUY2_ODD_WD = "Filter Error: Attempted to request a YUY2 VideoFrame with an odd width";
+    if ( width & 1)
+      throw AvisynthError(YUY2_ODD_WD);
+    return width;
+  }
+  static inline dimension WidthCheckYV12(dimension width) {
+    static const string YV12_ODD_WD = "Filter Error: Attempted to request a YV12 VideoFrame with an odd width";
+    if ( width & 1)
+      throw AvisynthError(YV12_ODD_WD);
+    return width;
+  }
+  static inline dimension WidthCheck(dimension width, ColorSpace space) {
+    switch(space)
+    {
+      case CS_YUY2:
+        return WidthCheckYUY2(width);
+      case CS_YV12:
+      case CS_I420:
+        return WidthCheckYV12(width);
+    }
+    return width;
+  }
+
+  static inline dimension HeightFBCheck(dimension height, bool fieldBased) {
+    static const string FB_AND_ODD_HT = "Filter Error: Attempted to request a field based VideoFrame with an odd height";
+    if ( height & 1 )
+      throw AvisynthError(FB_AND_ODD_HT);
+    return height;
+  }
+  static inline dimension HeightFBCheckYV12(dimension height, bool fieldBased) {
+    static const string YV12FB_AND_HT_MOD4 = "Filter Error: Attempted to request a field based YV12 VideoFrame with a not mod 4 height";
+    if ( height & 3)
+      throw AvisynthError(YV12FB_AND_HT_MOD4);
+    return height;
+  }
+  static inline dimension HeightCheck(dimension height, bool fieldBased, ColorSpace space) {
+    return (space == CS_YV12 || space == CS_I420) ? HeightFBCheckYV12(height, fieldBased) 
+                                                  : HeightFBCheck(height, fieldBased);
+  }
+
+  //default constructor : no video, no audio
+  VideoInfo() : width(0), audio_samples_per_second(0) { }
+
+
+
+  /*
+   * Video stuff
+   */
+private:
+
+  ColorSpace pixel_type;  
+  dimension width, height;    // width=0 means no video
+  unsigned fps_numerator, fps_denominator;
+  int num_frames;
+
+public:
+
   // useful functions of the above
-  bool HasVideo() const { return (width!=0); }
-  bool HasAudio() const { return (audio_samples_per_second!=0); }
-  bool IsRGB() const { return !!(pixel_type&CS_BGR); }
-  bool IsRGB24() const { return (pixel_type&CS_BGR24)==CS_BGR24; } // Clear out additional properties
-  bool IsRGB32() const { return (pixel_type & CS_BGR32) == CS_BGR32 ; }
-  bool IsYUV() const { return !!(pixel_type&CS_YUV ); }
-  bool IsYUY2() const { return (pixel_type & CS_YUY2) == CS_YUY2; }  
-  bool IsYV12() const { return ((pixel_type & CS_YV12) == CS_YV12)||((pixel_type & CS_I420) == CS_I420); }
-  bool IsColorSpace(int c_space) const { return ((pixel_type & c_space) == c_space); }
-  bool Is(int property) const { return ((pixel_type & property)==property ); }
-  bool IsPlanar() const { return !!(pixel_type & CS_PLANAR); }
-  bool IsFieldBased() const { return !!(image_type & IT_FIELDBASED); }
-  bool IsParityKnown() const { return ((image_type & IT_FIELDBASED)&&(image_type & (IT_BFF||IT_TFF))); }
-  bool IsBFF() const { return !!(pixel_type & IT_BFF); }
-  bool IsTFF() const { return !!(pixel_type & IT_TFF); }
-  
-  bool IsVPlaneFirst() const {return ((pixel_type & CS_YV12) == CS_YV12); }  // Don't use this 
+
+  bool HasVideo() const { return width != 0; }
+  void RemoveVideo() { width = 0; }
+
+  dimension GetWidth() const { return width; }
+  dimension GetHeight() const { return height; }
+  ColorSpace GetColorSpace() const { return pixel_type; }
+  int GetFrameCount() const { return num_frames; }
+
+  void SetVideo(dimension _width, dimension _height, ColorSpace space, int frame_count) {
+    if (_width <= 0 || _height <= 0 || frame_count <= 0)
+      throw AvisynthError("Filter Error: Requested an illegal VideoInfo");
+    pixel_type = space;
+    width = WidthCheck(_width, space);
+    height = HeightCheck(_height, IsFieldBased(), space);
+    num_frames = frame_count;
+  }
+
+  bool IsColorSpace(ColorSpace space) const { return (pixel_type & space) == space; } // Clear out additional properties
+  bool HasProperty(CS_Property property) const { return (pixel_type & property) == property ; }
+
+  bool IsPlanar() const { return HasProperty(CS_PLANAR); }
+ 
+  bool IsRGB() const { return HasProperty(CS_BGR); }      
+  bool IsRGB24() const { return IsColorSpace(CS_BGR24); } 
+  bool IsRGB32() const { return IsColorSpace(CS_BGR32); }
+
+  bool IsYUV() const { return HasProperty(CS_YUV); }
+  bool IsYUY2() const { return IsColorSpace(CS_YUY2); }  
+  bool IsYV12() const { return IsColorSpace(CS_YV12) || IsColorSpace(CS_I420); }
+
+  bool IsVPlaneFirst() const { return IsYV12(); }  // Don't use this 
+  //defining all these with the first two, will help if we have to change how ColorSpaces are handled
+
+  unsigned GetFPSNumerator() const { return fps_numerator; }
+  unsigned GetFPSDenominator() const { return fps_denominator; }
+
+  double GetFPS() const { return fps_numerator/fps_denominator; }
+
+  void SetFPS(unsigned numerator, unsigned denominator) {
+    unsigned x = numerator, y = denominator;
+    while (y) {   // find gcd
+      unsigned t = x%y; x = y; y = t;
+    }
+    fps_numerator = numerator/x;
+    fps_denominator = denominator/x;
+  }
+
   int BytesFromPixels(int pixels) const { return pixels * (BitsPerPixel()>>3); }   // Will not work on planar images, but will return only luma planes
   int RowSize() const { return BytesFromPixels(width); }  // Also only returns first plane on planar images
   int BMPSize() const { if (IsPlanar()) {int p = height * ((RowSize()+3) & ~3); p+=p>>1; return p;  } return height * ((RowSize()+3) & ~3); }
-  __int64 AudioSamplesFromFrames(__int64 frames) const { return (__int64(frames) * audio_samples_per_second * fps_denominator / fps_numerator); }
-  int FramesFromAudioSamples(__int64 samples) const { return (int)(samples * (__int64)fps_numerator / (__int64)fps_denominator / (__int64)audio_samples_per_second); }
-  __int64 AudioSamplesFromBytes(__int64 bytes) const { return bytes / BytesPerAudioSample(); }
-  __int64 BytesFromAudioSamples(__int64 samples) const { return samples * BytesPerAudioSample(); }
-  int AudioChannels() const { return nchannels; }
-  int SampleType() const{ return sample_type;}
-  int SamplesPerSecond() const { return audio_samples_per_second; }
-  int BytesPerAudioSample() const { return nchannels*BytesPerChannelSample();}
-  void SetFieldBased(bool isfieldbased)  { if (isfieldbased) image_type|=IT_FIELDBASED; else  image_type&=~IT_FIELDBASED; }
-  void Set(int property)  { image_type|=property; }
-  void Clear(int property)  { image_type&=~property; }
 
   int BitsPerPixel() const { 
     switch (pixel_type) {
@@ -201,33 +276,79 @@ struct VideoInfo {
         return 0;
     }
   }
-  int BytesPerChannelSample() const { 
-    switch (sample_type) {
-    case SAMPLE_INT8:
-      return sizeof(signed char);
-    case SAMPLE_INT16:
-      return sizeof(signed short);
-    case SAMPLE_INT24:
-      return 3;
-    case SAMPLE_INT32:
-      return sizeof(signed int);
-    case SAMPLE_FLOAT:
-      return sizeof(SFLOAT);
-    default:
-      _ASSERTE("Sample type not recognized!");
-      return 0;
-    }
+
+
+  /*
+   * Audio stuff
+   */
+private:
+
+  SampleType sample_type;           
+  int audio_samples_per_second;   // 0 means no audio
+  __int64 num_audio_samples;      // changed as of 2.5
+  int nchannels;                  // as of 2.5
+
+public:
+
+  bool HasAudio() const { return audio_samples_per_second != 0; }
+  void RemoveAudio() { audio_samples_per_second = 0; }
+
+  SampleType GetSampleType() const { return sample_type; }
+  int GetChannelCount() const { return nchannels; }
+  int GetSamplesPerSecond() const { return audio_samples_per_second; }
+  __int64 GetSamplesCount() const { return num_audio_samples; }
+
+  void SetAudio(SampleType _sample_type, int _nchannels, int samples_per_sec, __int64 samples_count) {
+    if (_nchannels <= 0 || samples_per_sec < 0 || samples_count < 0)
+      throw AvisynthError("Filter Error: Requested an illegal VideoInfo");
+    sample_type = _sample_type;
+    nchannels = nchannels;
+    audio_samples_per_second = samples_per_sec;
+    num_audio_samples = samples_count;
   }
 
-  // useful mutator
-  void SetFPS(unsigned numerator, unsigned denominator) {
-    unsigned x=numerator, y=denominator;
-    while (y) {   // find gcd
-      unsigned t = x%y; x = y; y = t;
-    }
-    fps_numerator = numerator/x;
-    fps_denominator = denominator/x;
+  int FramesFromAudioSamples(__int64 samples) const { return (int)(samples * (__int64)fps_numerator / (__int64)fps_denominator / (__int64)audio_samples_per_second); }
+  __int64 AudioSamplesFromFrames(__int64 frames) const { return (__int64(frames) * audio_samples_per_second * fps_denominator / fps_numerator); }
+  __int64 AudioSamplesFromBytes(__int64 bytes) const { return bytes / BytesPerAudioSample(); }
+  __int64 BytesFromAudioSamples(__int64 samples) const { return samples * BytesPerAudioSample(); }
+
+  int BytesPerAudioSample() const { return nchannels * BytesPerChannelSample();}
+  int BytesPerChannelSample() const { 
+    static int bytes[] = { sizeof(signed char), sizeof(signed short), 3, sizeof(signed int), sizeof(SFLOAT) };
+    return bytes[sample_type];
   }
+
+
+ 
+  /*
+   * Field based stuff
+   */
+private:
+
+  int image_type;
+
+  enum {
+    IT_BFF = 1<<0,
+    IT_TFF = 1<<1,
+    IT_FIELDBASED = 1<<2
+  };
+
+public:
+  bool IsFieldBased() const { return image_type & IT_FIELDBASED != 0; }
+  bool IsBFF() const { return image_type & IT_BFF != 0; }
+  bool IsTFF() const { return image_type & IT_TFF != 0; }
+  bool IsParityKnown() const { return IsFieldBased() && (IsBFF() || IsTFF()); }
+  
+  void SetFieldBased(bool isfieldbased)  { 
+    if (isfieldbased) {
+      HeightCheck(height, true, pixel_type);
+      image_type |= IT_FIELDBASED;
+    } else 
+        image_type &= ~IT_FIELDBASED;
+  }
+  void SetBFF() { image_type |= (IT_FIELDBASED | IT_BFF); image_type &= ~IT_TFF; }
+  void SetTFF() { image_type |= (IT_FIELDBASED | IT_TFF); image_type &= ~IT_BFF; }
+
 };
 
 enum {
@@ -353,7 +474,7 @@ protected:
     if (ptr) {
       RefCounted * newPtr = ptr->clone();
       newPtr->InitAddRef();   //must be done first, clone is allowed to return this...
-      ptr->Release();       //otherwise we might end up destroying the object
+      ptr->Release();         //otherwise we might end up destroying the object
       ptr = newPtr;
     }
   }
@@ -404,22 +525,20 @@ public:
 //converting a smart const T * to a smart T * (constructor or operator =) will perform cleanup 
 template <class T> class smart_ptr : public smart_ptr_base {
 
- inline void Clean() { if (ptr) ((T*)ptr)->clean(); }
-
 public:
   smart_ptr() { }
   smart_ptr(T* _ptr) : smart_ptr_base(_ptr) { }
   //casting constructor 
   template <class Y> smart_ptr(const smart_ptr<Y>& other) : smart_ptr_base(other) { }  
-  smart_ptr(smart_ptr_to_cst<T>& other) { StealOrClone(other); Clean(); }
-  smart_ptr(const smart_ptr_to_cst<T>& other) { Clone(other); Clean(); }
+  smart_ptr(smart_ptr_to_cst<T>& other) { StealOrClone(other); }
+  smart_ptr(const smart_ptr_to_cst<T>& other) { Clone(other); }
 
   void swap(smart_ptr<T>& other) { std::swap(ptr, other.ptr); }
   
   const smart_ptr<T>& operator =(T* newPtr) { Set(newPtr); return *this; }
   const smart_ptr<T>& operator =(const smart_ptr<T>& other) { Copy(other); return *this; }
-  const smart_ptr<T>& operator =(smart_ptr_to_cst<T>& other) { StealOrClone(other); Clean(); return *this; }
-  const smart_ptr<T>& operator =(const smart_ptr_to_cst<T>& other) { Clone(other); Clean(); return *this; }
+  const smart_ptr<T>& operator =(smart_ptr_to_cst<T>& other) { StealOrClone(other); return *this; }
+  const smart_ptr<T>& operator =(const smart_ptr_to_cst<T>& other) { Clone(other);  return *this; }
 
   T * const operator ->() const { return (T*)ptr; }
   T& operator *() const { return *((T*)ptr); }
@@ -451,11 +570,10 @@ template <class T> const smart_ptr_to_cst<T>& smart_ptr_to_cst<T>::operator =(co
   MakeWritable is no longer required : CPVideoFrame are never Writable, nor mutable in any sort
   PVideoframe are always writable/mutable, and will copy buffers before returning Write Ptr if they are shared
 */
+
 class VideoFrame;
 typedef smart_ptr<VideoFrame> PVideoFrame;
 typedef smart_ptr_to_cst<VideoFrame> CPVideoFrame;
-
-// polymorphic VideoFrame class
 
 enum Plane {
   NOT_PLANAR,
@@ -468,10 +586,10 @@ class VideoFrame : public RefCounted {
 
 public:
 
+  //some typedefs
   typedef short dimension;  
   typedef signed char Align;
   typedef VideoInfo::ColorSpace ColorSpace;
-
 
 
   //static method to convert index in Plane enum, USE it !!!
@@ -483,7 +601,7 @@ public:
 
   class NoSuchPlane { }; //exception for inadequate plane requests 
 
-  //some legacy methods
+  //some legacy methods, no longer get plane Y when planar
   dimension GetPitch() const throw(NoSuchPlane) { return GetPitch(NOT_PLANAR); }
   dimension GetRowSize() const throw(NoSuchPlane) { return GetRowSize(NOT_PLANAR); }
   dimension GetAlignedRowSize() const throw(NoSuchPlane) { return GetAlignedRowSize(NOT_PLANAR); }
@@ -500,25 +618,26 @@ public:
 
   virtual const BYTE * GetReadPtr(Plane plane) const throw(NoSuchPlane) = 0;
   virtual BYTE * GetWritePtr(Plane plane) throw(NoSuchPlane) = 0;
-
-
+  
+  //methods to get some other general infos
   virtual ColorSpace GetColorSpace() const = 0;
-  bool IsPlanar() const { return GetColorSpace() & VideoInfo::CS_PLANAR != 0; }
-
-  //method to get Video width and height, default implementation: not planar case
-  virtual dimension GetVideoHeight() const { return GetHeight(NOT_PLANAR); }  
-  virtual dimension GetVideoWidth() const { return 2 * GetRowSize(NOT_PLANAR) / WidthToRowSize(2); }
+  bool IsPlanar() const { return GetColorSpace() & VideoInfo::CS_PLANAR != 0; }  
+  virtual Align GetAlign() const = 0;
 
   //frames now know about their fieldbased state
   bool IsFieldBased() const;
   void SetFieldBased(bool fieldBased);
 
+  //method to get Video width and height, default implementation: not planar case
+  virtual dimension GetVideoHeight() const = 0; 
+  virtual dimension GetVideoWidth() const = 0; 
+
   //methods used to check that pixels args match Colorspace restrictions
   //they throw the appropriate error msg when arg are illegal
   //you are not supposed to use them, all calls are done internally where needed
   //btw, they don't check sign, just parity and such (sign check are done at a lower level)
-  virtual dimension WidthToRowSize(dimension width) const;
-  virtual dimension HeightCheck(dimension height) const;
+  virtual dimension WidthToRowSize(dimension width) const = 0;
+  virtual dimension HeightCheck(dimension height) const = 0;
 
   //construction method, moved from IScriptEnvironment
   static PVideoFrame NewVideoFrame(const VideoInfo& vi, Align align = FRAME_ALIGN);
@@ -602,12 +721,19 @@ public:
   void SetProperty(PProperty prop) { SetProperty(CPProperty(prop)); }  //exists so outside PProperty won't be casted to CPProperty by the call of the above and loses its ref
   virtual void RemoveProperty(const PropertyName& name) = 0;
 
-
 protected:
-  //part of a common err msg
-  static const string UNMATCHING_CLR_SPACE;  //= "ColorSpace don't match"
+  //cleanup of all volatiles properties
+  virtual void CleanProperties() = 0;
+  friend class smart_ptr<VideoFrame>; //so it can clean
 
 };
+
+//template specialisations, so properties will be get cleaned correctly
+template <> smart_ptr<VideoFrame>::smart_ptr(smart_ptr_to_cst<VideoFrame>& other) { StealOrClone(other); if (ptr) ((VideoFrame*)ptr)->CleanProperties(); }
+template <> smart_ptr<VideoFrame>::smart_ptr(const smart_ptr_to_cst<T>& other) { Clone(other); if (ptr) ((VideoFrame*)ptr)->CleanProperties(); }
+
+template <> const smart_ptr<VideoFrame>& smart_ptr<VideoFrame>::operator =(smart_ptr_to_cst<VideoFrame>& other) { StealOrClone(other); if (ptr) ((VideoFrame*)ptr)->CleanProperties(); return *this; }
+template <> const smart_ptr<VideoFrame>& smart_ptr<VideoFrame>::operator =(const smart_ptr_to_cst<VideoFrame>& other) { Clone(other);  if (ptr) ((VideoFrame*)ptr)->CleanProperties(); return *this; }
 
 
 class IScriptEnvironment;
@@ -627,9 +753,9 @@ public:
 
   virtual int __stdcall GetVersion() { return AVISYNTH_INTERFACE_VERSION; }
   
-  virtual CPVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env) = 0;
+  virtual CPVideoFrame __stdcall GetFrame(int n) = 0;
   virtual bool __stdcall GetParity(int n) = 0;  // return field parity if field_based, else parity of first field in frame
-  virtual void __stdcall GetAudio(void* buf, __int64 start, __int64 count, IScriptEnvironment* env) = 0;  // start and count are in samples
+  virtual void __stdcall GetAudio(void* buf, __int64 start, __int64 count) = 0;  // start and count are in samples
   virtual void __stdcall SetCacheHints(CachePolicy policy, int size) { }  // We do not pass cache requests upwards, only to the next filter.
   virtual const VideoInfo& __stdcall GetVideoInfo() = 0;
 
@@ -757,8 +883,6 @@ public:
 
 };
 
-typedef vector<AVSValue> ArgVector;
-
 
 // instanciable null filter that forwards all requests to child
 // use for filter who don't change VideoInfo
@@ -767,12 +891,12 @@ class StableVideoFilter : public IClip {
 protected:
   PClip child;
 
-  //protected constructors
+  //protected constructor
   StableVideoFilter(PClip _child) : child(_child) { }
 
 public:
-  CPVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env) { return child->GetFrame(n, env); }
-  void __stdcall GetAudio(void* buf, __int64 start, __int64 count, IScriptEnvironment* env) { child->GetAudio(buf, start, count, env); }
+  CPVideoFrame __stdcall GetFrame(int n) { return child->GetFrame(n); }
+  void __stdcall GetAudio(void* buf, __int64 start, __int64 count) { child->GetAudio(buf, start, count); }
   const VideoInfo& __stdcall GetVideoInfo() { return child->GetVideoInfo(); }
   bool __stdcall GetParity(int n) { return child->GetParity(n); }
 };
@@ -786,9 +910,9 @@ protected:
   VideoInfo vi;
 
   //protected constructor
-  GenericVideoFilter(PClip _child, const VideoInfo& _vi)
-    : StableVideoFilter(_child), vi(_vi) { }
+  GenericVideoFilter(PClip _child, const VideoInfo& _vi) : StableVideoFilter(_child), vi(_vi) { }
 
+    
 public:
   const VideoInfo& __stdcall GetVideoInfo() { return vi; }
 
@@ -797,35 +921,11 @@ public:
 
 
 
-class AvisynthError /* exception */ {
-public:
-  const string err_msg;
-  AvisynthError(const string& _err_msg) : err_msg(_err_msg) { }
-};
 
 
 
 
 /* Helper classes useful to plugin authors */
-
-class AlignPlanar : public GenericVideoFilter 
-{
-public:
-  AlignPlanar(PClip _clip);
-  static PClip Create(PClip clip);
-  CPVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
-};
-
-
-
-class FillBorder : public GenericVideoFilter 
-{
-public:
-  FillBorder(PClip _clip);
-  static PClip Create(PClip clip);
-  CPVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
-};
-
 
 
 class ConvertAudio : public GenericVideoFilter 
@@ -835,13 +935,13 @@ class ConvertAudio : public GenericVideoFilter
 {
 public:
   ConvertAudio(PClip _clip, int prefered_format);
-  void __stdcall GetAudio(void* buf, __int64 start, __int64 count, IScriptEnvironment* env);
+  void __stdcall GetAudio(void* buf, __int64 start, __int64 count);
 
   static PClip Create(PClip clip, int sample_type, int prefered_type);
-  static AVSValue __cdecl Create_float(AVSValue args, void*, IScriptEnvironment*);
-  static AVSValue __cdecl Create_32bit(AVSValue args, void*, IScriptEnvironment*);
-  static AVSValue __cdecl Create_16bit(AVSValue args, void*, IScriptEnvironment*);
-  static AVSValue __cdecl Create_8bit(AVSValue args, void*, IScriptEnvironment*);
+  static AVSValue __cdecl Create_float(AVSValue args, void*);
+  static AVSValue __cdecl Create_32bit(AVSValue args, void*);
+  static AVSValue __cdecl Create_16bit(AVSValue args, void*);
+  static AVSValue __cdecl Create_8bit(AVSValue args, void*);
   virtual ~ConvertAudio()
   {if (tempbuffer_size) {delete[] tempbuffer;tempbuffer_size=0;}}
 private:
@@ -887,12 +987,8 @@ public:
 
   virtual /*static*/ long __stdcall GetCPUFlags() = 0;
 
-  virtual char* __stdcall SaveString(const char* s, int length = -1) = 0;
-  virtual char* __stdcall Sprintf(const char* fmt, ...) = 0;
-  // note: val is really a va_list; I hope everyone typedefs va_list to a pointer
-  virtual char* __stdcall VSprintf(const char* fmt, void* val) = 0;
 
-  __declspec(noreturn) virtual void __stdcall ThrowError(const char* fmt, ...) = 0;
+  __declspec(noreturn) void __stdcall ThrowError(const string& err_msg) { throw AvisynthError(err_msg); }
 
   class NotFound /*exception*/ {};  // thrown by Invoke and GetVar
 
@@ -909,10 +1005,6 @@ public:
   virtual void __stdcall PushContext(int level=0) = 0;
   virtual void __stdcall PopContext() = 0;
 
-  // align should be 4 or 8
-  virtual PVideoFrame __stdcall NewVideoFrame(const VideoInfo& vi, int align=FRAME_ALIGN) = 0;
-
-  virtual bool __stdcall MakeWritable(PVideoFrame* pvf) = 0;
 
   static void __stdcall BitBlt(BYTE* dstp, int dst_pitch, const BYTE* srcp, int src_pitch, int row_size, int height);
 
@@ -920,8 +1012,6 @@ public:
   virtual void __stdcall AtExit(ShutdownFunc function, void* user_data) = 0;
 
   virtual void __stdcall CheckVersion(int version = AVISYNTH_INTERFACE_VERSION) = 0;
-
-  virtual PVideoFrame __stdcall Subframe(PVideoFrame src, int rel_offset, int new_pitch, int new_row_size, int new_height) = 0;
 
 	virtual int __stdcall SetMemoryMax(int mem) = 0;
 

@@ -44,14 +44,16 @@ Glyph::Glyph(FT_GlyphRec_ * glyph)
 
 Vecteur Glyph::GetAdvance() const
 {
-  return Vecteur( glyph_->advance.x, glyph_->advance.y );
+  return Vecteur( glyph_->advance.x >> 16, glyph_->advance.y >> 16);
 }
 
 
 Box Glyph::GetControlBox() const
 {
   FT_BBox box;
-  
+  FT_Glyph_Get_CBox(glyph_.get(), ft_glyph_bbox_pixels, &box);
+
+  return Box( Vecteur(box.xMin, box.yMin), Vecteur(box.xMax, box.yMax) );
 }
 
 /*  // Basic API

@@ -27,12 +27,11 @@
 #include "avistream/yv12.h"
 #include "avistream/audio.h"
 #include "avistream/interleaved.h"
-#include "../core/clip.h"
 #include "../core/videoinfo.h"
 #include "../core/colorspace.h"
 #include "../core/exception/generic.h"
 #include "../core/runtime_environment.h"
-#include "../filters/source/staticimage.h"
+#include "../filters/source/messageclip.h"
 #include "../parser/parser.h"
 
 //stl include
@@ -126,6 +125,9 @@ bool AviFile::DelayedInit()
 {
   if ( ! clip_ )
   {
+
+    PEnvironment env = RuntimeEnvironment::Create(10000000);    //memMax = 10M
+
     try 
     {
 /*      // create a script environment and load the script into it
@@ -144,10 +146,11 @@ bool AviFile::DelayedInit()
       std::ifstream src( scriptName_.c_str() );
       std::stringstream dst;
 
-      while ( ! src.eof() )
+      while ( ! src.eof() )                  //copy from src to dst
         dst.put( src.get() );
+      dst.put( '\n' );                       //solve 'I forgot newline and my script don't work issue'
 
-      clip_ = parser::Parser()(dst.str());
+      clip_ = parser::Parser()(dst.str(), env);
 
       // get information about the clip
       vi_ = clip_->GetVideoInfo();
@@ -159,20 +162,26 @@ bool AviFile::DelayedInit()
     catch (Exception& ex)
     {
       error_msg_ = ex.msg();
-      clip_ = filters::StaticImage::CreateMessageClip( error_msg_, RuntimeEnvironment::Create(10000000) );        
+      clip_ = filters::MessageClip::Create( error_msg_, env );        
       vi_ = clip_->GetVideoInfo();
     }    
-    catch (...) { assert(false); return false; }    
+    catch (...) 
+    { 
+      assert( false );          //to help figure out where pb lies
+      return false; 
+    }    
   } 
 
-  return true;
+  return true;                  
 }
 
-/*
-void AviFile::MakeErrorStream(const char* msg) {
-  error_msg = msg;
-  filter_graph = Create_MessageClip(msg, vi->width, vi->height, vi->pixel_type, false, 0xFF3333, 0, 0, env);
-}*/
+
+void AviFile::MakeErrorStream(std::string const& msg)
+{
+  error_msg_ = msg;
+  clip_ = filters::MessageClip::CreateErrorClip(clip_, msg);
+  vi_ = clip_->GetVideoInfo();
+}
 
 
 STDMETHODIMP AviFile::Info(AVIFILEINFOW *pfi, LONG lSize) 

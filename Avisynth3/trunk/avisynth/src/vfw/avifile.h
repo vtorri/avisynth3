@@ -105,7 +105,7 @@ public:  //IAVIFile
 private:  //implementation
     
   bool DelayedInit();    
-  void MakeErrorStream(std::string const& /*msg*/) { }   //IMPLEMENT ME !!!!!!!!
+  void MakeErrorStream(std::string const& msg);
 
   friend class AviStream;  //so can call the above
 

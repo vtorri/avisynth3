@@ -32,6 +32,14 @@ namespace avs { namespace vfw {
 
 
 
+BitmapInfoHeader::BitmapInfoHeader()
+{
+  memset( static_cast<BITMAPINFOHEADER *>(this), 0, sizeof(BITMAPINFOHEADER) );
+
+  biSize        = sizeof(BITMAPINFOHEADER);
+}
+
+
 BitmapInfoHeader::BitmapInfoHeader(VideoInfo const& vi)
 {
   memset( static_cast<BITMAPINFOHEADER *>(this), 0, sizeof(BITMAPINFOHEADER) );

@@ -53,7 +53,7 @@ namespace avs {
 //    //...
 //  };
 //
-//  bool PluginCanUnloadNow() { return InstanceCounted::InstanceCount() == 0; }
+//  bool PluginCanUnloadNow() { return InstanceCounted::Count() == 0; }
 //
 template <typename Tag> class instance_counted
 {

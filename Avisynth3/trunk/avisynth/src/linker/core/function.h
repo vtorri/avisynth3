@@ -26,7 +26,7 @@
 
 //avisynth includes
 #include "../function.h"
-#include "../../parser/vmcode.h"
+#include "../../parser/vmoperation.h"
 
 
 namespace avs { namespace linker { namespace core {
@@ -62,7 +62,7 @@ public:  //Function interface
 
   virtual PPlugin GetMotherPlugin() const;
 
-  virtual void AppendOperation(parser::VMCode<void>& code) const { code += op_; }
+  virtual void AppendOperation(parser::VMCode<void>& code) const;
 
 };
 

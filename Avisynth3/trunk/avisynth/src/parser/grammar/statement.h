@@ -27,11 +27,14 @@
 //avisynth includes
 #include "name.h"
 #include "expression.h"
+#include "../optype.h"
 #include "../codecouple.h"
 #include "../functor/if.h"
 #include "../functor/popper.h"
 #include "../functor/swapper.h"
+#include "../lazy/throw.h"
 #include "../lazy/add_symbol.h"
+#include "../exception/badreturntype.h"
 
 
 namespace avs { namespace parser { namespace grammar {
@@ -59,6 +62,7 @@ struct Statement : spirit::closure
     , boost::reference_wrapper<boost::optional<int> >
     , boost::reference_wrapper<VarTable>
     , boost::reference_wrapper<FunctionTable>
+    , char
     >
 {
   member1 value;
@@ -66,6 +70,7 @@ struct Statement : spirit::closure
   member3 last;
   member4 globalTable;
   member5 functionTable;
+  member6 returnTypeExpected;
 };
 
 
@@ -133,6 +138,7 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
       using namespace lazy;
       using namespace functor;
       using namespace phoenix;
+      using namespace exception::parser;
 
       top
           =   statement( CodeCouple(), self.localTable, self.last )
@@ -155,6 +161,7 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
                     unwrap(statement.last) = second(arg1)                   //update definition of last
                   ]
               |   ifStatement
+              |   returnStatement
               )
           >>  (   spirit::eol_p           //statement are normally ended by a newline
               |   spirit::eps_p( '}' )    //but an end of block would do too
@@ -243,6 +250,18 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
           >>  '}'
           ;
 
+      returnStatement
+          =   spirit::str_p("return")
+          >>  expression( value::Expression(), statement.localTable, unwrap(statement.last), self.globalTable, self.functionTable )
+              [
+                if_( second(arg1) != self.returnTypeExpected )
+                [
+                  throw_( construct_<BadReturnType>( self.returnTypeExpected ) )
+                ],
+                statement.value += first(arg1),
+                statement.value -= construct_<literal<OpType> >(RETURN)
+              ]
+          ;
     }
 
     spirit::rule<ScannerT> const & start() const { return top; }
@@ -256,6 +275,7 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
     spirit::rule<ScannerT, closure::CreateVar::context_t> createVar;
     spirit::rule<ScannerT, closure::Value<StatementCode>::context_t> ifStatement;
     spirit::rule<ScannerT, closure::StatementBlock::context_t> block;
+    spirit::rule<ScannerT> returnStatement;
 
     Name name;
     Expression expression;

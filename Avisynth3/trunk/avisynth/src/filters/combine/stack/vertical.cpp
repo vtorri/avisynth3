@@ -24,7 +24,7 @@
 //avisynth includes
 #include "vertical.h"
 #include "../../../core/videoinfo.h"
-#include "../../../core/dimension.h"
+#include "../../../core/geometry/dimension.h"
 
 
 namespace avs { namespace filters { namespace stack {

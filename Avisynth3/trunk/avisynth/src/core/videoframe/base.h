@@ -25,8 +25,8 @@
 #define __AVS_VIDEOFRAME_BASE_H__
 
 //avisynth includes
-#include "../dimension.h"
 #include "../videoframe.h"
+#include "../geometry/dimension.h"
 
 //stl include
 #include <hash_map>  //for hash_map

@@ -25,6 +25,7 @@
 #define __AVS_PARSER_GRAMMAR_LITERAL_H__
 
 //avisynth includes
+#include "forward.h"
 #include "../forward.h"
 #include "../lazy/tuple.h"
 #include "../vmoperation.h"
@@ -44,14 +45,11 @@ namespace spirit = boost::spirit;
 namespace avs { namespace parser { namespace grammar {
   
 
-//typedef
-namespace value { typedef boost::tuples::tuple<ElementalOperation, char> Literal; }
-
 
 namespace closure {
 
 
-template <class Type> struct Value : spirit::closure<Value, Type>
+template <class Type> struct Value : spirit::closure<Value<Type>, Type>
 {
   member1 value;
 };

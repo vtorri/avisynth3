@@ -25,18 +25,15 @@
 
 
 const int ColorSpace::flagList[] = { 
-  0, 
   1<<ColorSpace::BGR | 1<<ColorSpace::INTERLEAVED,
   1<<ColorSpace::BGR | 1<<ColorSpace::INTERLEAVED,
   1<<ColorSpace::YUV | 1<<ColorSpace::INTERLEAVED,
-  1<<ColorSpace::YUV | 1<<ColorSpace::PLANAR,
   1<<ColorSpace::YUV | 1<<ColorSpace::PLANAR,
   1<<ColorSpace::YUV | 1<<ColorSpace::PLANAR
 };
 
 
-const ColorSpace VideoInfo::NO_VIDEO = I_VOID;
-const ColorSpace VideoInfo::CS_BGR24 = I_BRG24;
+const ColorSpace VideoInfo::CS_BGR24 = I_BGR24;
 const ColorSpace VideoInfo::CS_BGR32 = I_BGR32;
 const ColorSpace VideoInfo::CS_YUY2  = I_YUY2;
 const ColorSpace VideoInfo::CS_YV12  = I_YV12;

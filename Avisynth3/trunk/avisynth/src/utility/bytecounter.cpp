@@ -21,47 +21,78 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_TEXT_FREETYPE_FORWARD_H__
-#define __AVS_TEXT_FREETYPE_FORWARD_H__
+//avisynth include
+#include "bytecounter.h"
 
-//boost include
-#include <boost/shared_ptr.hpp>
-
-
-//freetype declaration
-struct FT_Bitmap_;
-typedef struct FT_Bitmap_ FT_Bitmap;
+//stl include
+#include <numeric>           //for std::accumulate
 
 
-namespace avs { 
+namespace avs {
 
 
-//declarations
-template <typename T> class box;
-template <typename T> class vecteur;
-template <typename T> class dimension;
-template <int fractionPart> class fixed_point;  
 
-  
-namespace text { namespace freetype {
+int ByteCounter::GetMin() const
+{
+  int result = 0;
 
+  while ( count_[result] == 0 && result < 255 ) ++result;
 
-//more declarations
-class Face;
-class Outline;
-class MonoBitmap;
-class TextWalker;
+  return result;
+}
 
 
-//typedefs
-typedef fixed_point<6> FP6;
-typedef box<FP6> BoxFP6;
-typedef FT_Bitmap Bitmap;
-typedef vecteur<FP6> VecteurFP6;
-typedef dimension<FP6> DimensionFP6;
-typedef boost::shared_ptr<Face> PFace;
+int ByteCounter::GetMax() const
+{
+  int result = 255;
+
+  while ( count_[result] == 0 && result > 0 ) --result;
+
+  return result;
+}
 
 
-} } } //namespace avs::text::freetype
 
-#endif //__AVS_TEXT_FREETYPE_FORWARD_H__
+int ByteCounter::GetLooseMin(long limit) const
+{
+  long sum = 0;
+
+  for ( int i = 0; i < 255; ++i )
+    if ( (sum += count_[i]) > limit )
+      return i;
+
+  return 255;
+}
+ 
+
+int ByteCounter::GetLooseMax(long limit) const
+{
+  long sum = 0;
+
+  for ( int i = 256; i-- > 0; )
+    if ( (sum += count_[i]) > limit )
+      return i;
+
+  return 0;
+}
+
+
+
+long ByteCounter::GetTotal() const
+{
+  return std::accumulate( count_, count_ + 256, 0L );
+}
+
+
+long long ByteCounter::GetWeightedTotal() const
+{
+  long long result = 0;
+
+  for ( int i = 256; i-- > 0; )
+    result += count_[i] * i;
+
+  return result;
+}
+
+
+} //namespace avs

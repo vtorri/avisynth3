@@ -63,16 +63,6 @@ Box Glyph::GetControlBox() const
 }
 
 
-void Glyph::Draw(Vecteur const& pen, MonoBitmap const& bitmap) const
-{
-  FT_Outline * outline = &reinterpret_cast<FT_OutlineGlyphRec_ *>(glyph_.get())->outline;
-
-  FT_Outline_Translate(outline, pen.x, pen.y); 
-  FT_Error error = FT_Outline_Get_Bitmap(Library::instance, outline, const_cast<MonoBitmap *>(&bitmap));
-  FT_Outline_Translate(outline, -pen.x, -pen.y);
-  
-  assert( error == 0 );
-}
 
 
 

@@ -24,11 +24,12 @@
 #ifndef __AVS_BYTEMAP_H__
 #define __AVS_BYTEMAP_H__
 
-//avisynth include
-#include "../core/window_ptr.h"
+//avisynth includes
+#include "../core/forward.h"           //for WindowPtr typedef
+#include "../core/window_ptr.h"        //for its definition
 
 //stl include
-#include <algorithm>  //for std::copy
+#include <algorithm>                   //for std::copy
 
 //assert include
 #include <assert.h>

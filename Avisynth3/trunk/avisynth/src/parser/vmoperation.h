@@ -88,6 +88,11 @@ template <typename Result> class VMOperation
   boost::shared_ptr<detail::CallBack<Result> const> cb_;
 
 
+public:
+
+  typedef Result result_type;
+
+
 public:  //structors
   
   VMOperation() { }

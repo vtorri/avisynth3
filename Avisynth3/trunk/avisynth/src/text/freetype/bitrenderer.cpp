@@ -48,7 +48,9 @@ BufferWindow BitRenderer::operator()(std::string const& text, VecteurFP6 const& 
   if ( text.size() == 0 )   //if no text, return a black bw
     return bw;
 
-  Draw( text.begin(), text.end(), TextWalker(face_, GetFTOrigin(pen, Font(face_).GetTextBoundingBox(text), align)), MonoBitmap(bw) );
+  TextWalker walker( face_, GetFTOrigin(pen, Font(face_).GetTextBoundingBox(text), align) );
+
+  Draw( text.begin(), text.end(), walker, MonoBitmap(bw) );
 
   return bw;
 }
@@ -69,10 +71,10 @@ VecteurFP6 BitRenderer::GetFTOrigin(VecteurFP6 pen, BoxFP6 const& box, Align ali
   case TOP_LEFT:      return pen + VecteurFP6( 0, -box.GetDimension().GetHeight() );
   case TOP_CENTER:    return pen + VecteurFP6( -box.GetDimension().GetWidth(), -box.GetDimension().GetHeight() );
   case TOP_RIGHT:     return pen + VecteurFP6( -box.GetDimension().GetWidth(), -box.GetDimension().GetHeight() );
-  }
 
-  assert( align == BOTTOM_LEFT );
-  return pen;
+  default:  assert( align == BOTTOM_LEFT );
+            return pen;
+  }
 }
 					  
 

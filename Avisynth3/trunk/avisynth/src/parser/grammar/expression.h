@@ -34,9 +34,6 @@
 #include <boost/optional.hpp>               //for optional
 
 
-
-
-
 namespace avs { namespace parser { namespace grammar {
 
 

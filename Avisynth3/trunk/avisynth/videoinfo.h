@@ -46,8 +46,8 @@ class ClipAudioProperties : public RefCounted {
   
   static __int64 CheckSamplesCount(__int64 samplesCount)
   {
-    if (samplesCount <= 0)
-      throw invalid_argument("Samples Count must be strictly positive");
+    if (samplesCount < 0)
+      throw invalid_argument("Samples Count must be positive");
     return samplesCount;
   }
   static int CheckSign(int value, const string& err_msg)
@@ -93,20 +93,16 @@ typedef smart_ptr<ClipAudioProperties> PClipAudProps;
 typedef float SFLOAT;
 
 
-class ScriptEnvironment;
-typedef smart_ptr<ScriptEnvironment> PEnvironment;
-
 class VideoInfo {
   
   PClipVidProps vidProps;  //NULL if no video else valid
   PClipAudProps audProps;  //NULL if no audio else valid
-  PEnvironment env;
 
 public:
   //default constructor : no video, no audio
-  VideoInfo(PEnvironment _env) : env(_env) { }
+  VideoInfo() { }
   //copy constructor
-  VideoInfo(const VideoInfo& other) : vidProps(other.vidProps), audProps(other.audProps), env(other.env) { }
+  VideoInfo(const VideoInfo& other) : vidProps(other.vidProps), audProps(other.audProps) { }
   
   PEnvironment GetEnvironment() const { return env; }
 

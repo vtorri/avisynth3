@@ -44,12 +44,12 @@ class Function : public linker::Function
   char const returnType_;
   char const * const name_;
   char const * const prototype_;
-  parser::VMOperation<void> op_;
+  parser::ElementalOperation op_;
 
 
 public:  //structors
 
-  Function(char returnType, char const * name, char const * prototype, parser::VMOperation<void> const& op);
+  Function(char returnType, char const * name, char const * prototype, parser::ElementalOperation const& op);
 
   //generated destructor is fine
 
@@ -62,7 +62,7 @@ public:  //Function interface
 
   virtual PPlugin GetMotherPlugin() const;
 
-  virtual void AppendOperation(parser::VMCode<void>& code) const;
+  virtual parser::ElementalOperation const& GetOperation() const { return op_; }
 
 };
 

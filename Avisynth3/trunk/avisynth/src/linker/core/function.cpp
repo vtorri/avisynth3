@@ -21,16 +21,15 @@
 // General Public License cover the whole combination.
 
 
-//avisynth include
+//avisynth includes
 #include "plugin.h"
 #include "function.h"
-#include "../../parser/vmcode.h"
 
 
 namespace avs { namespace linker { namespace core {
 
 
-Function::Function(char returnType, char const * name, char const * prototype, parser::VMOperation<void> const& op)
+Function::Function(char returnType, char const * name, char const * prototype, parser::ElementalOperation const& op)
   : returnType_( returnType )
   , name_( name )
   , prototype_( prototype )
@@ -45,8 +44,6 @@ PPlugin Function::GetMotherPlugin() const
   return Plugin::Get();
 }
 
-
-void Function::AppendOperation(parser::VMCode<void>& code) const { code += op_; }
 
 
 

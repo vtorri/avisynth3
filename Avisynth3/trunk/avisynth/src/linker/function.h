@@ -24,15 +24,12 @@
 #ifndef __AVS_LINKER_FUNCTION_H__
 #define __AVS_LINKER_FUNCTION_H__
 
-//avisynth include
+//avisynth includes
 #include "forward.h"
+#include "../parser/forward.h"
 
 //stl include
 #include <string>
-
-
-//declaration
-namespace avs { namespace parser { template <typename Result> class VMCode; } }
 
 
 namespace avs { namespace linker {
@@ -68,8 +65,8 @@ public:  //Function interface
   //fetch plugin from which the function belongs
   virtual PPlugin GetMotherPlugin() const = 0;
 
-  //append corresponding code
-  virtual void AppendOperation(parser::VMCode<void>& code) const = 0;
+  //fetch operation
+  virtual parser::ElementalOperation const& GetOperation() const = 0;
 
 };
 

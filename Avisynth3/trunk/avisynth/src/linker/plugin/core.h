@@ -33,6 +33,11 @@ namespace avs { namespace linker { namespace plugin {
 
 
 
+///////////////////////////////////////////////////////////////////////////////
+//  plugin::Core
+//
+//  plugin representing all avisynth internals
+//
 class Core : public Plugin
 {
 
@@ -43,18 +48,19 @@ class Core : public Plugin
 
 private:  //structors
 
-  Core()
-    : Plugin( "Core" ) { }
+  Core() { }
 
   //generated destructor is fine
 
 
 public:  //plugin interface
 
+  virtual std::string GetName() const { return "Core"; }
+
   virtual FunctionList GetFunctionList() const;
 
 
-private:
+private:  //register method for core functions
 
   void Register(function::Core * funct) { list_.push_back( funct ); }
 

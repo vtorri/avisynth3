@@ -95,7 +95,7 @@ struct window_ptr
   void toBottom() { to(0, height - 1); }
   //bpp = bytes per pixel
   template <int bpp> void toRight() { to(width - bpp, 0); }
-  template <int bpp> void toLeft() { to(step - bpp, 0); }
+  template <int bpp> void toLeft() { to(width - bpp, 0); }
 
 
   //pad methods

@@ -93,8 +93,8 @@ public:  //assignment
     if ( &other != this )
     {
       //ensure mutex are always locked in same order, to avoid deadlocks
-      Lock( &other < this ? mutex_ : other.mutex_ );
-      Lock( &other < this ? other.mutex_ : mutex_ );
+      Lock( (&other) < this ? mutex_ : other.mutex_ );
+      Lock( (&other) < this ? other.mutex_ : mutex_ );
 
       map_.swap(other.map_);
       std::swap(op_count_, other.op_count_);

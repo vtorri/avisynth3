@@ -61,8 +61,8 @@ public:  //read access
 
 protected:  //write access
 
-  void SetLeftChild(PClip const& left) { left_ = left; }
-  void SetRightChild(PClip const& right) { right_ = right; }
+  void SetLeftChild(PClip const& left) const { left_ = left; }
+  void SetRightChild(PClip const& right) const { right_ = right; }
 
 
 protected:  //implementations helpers

@@ -37,6 +37,7 @@ namespace avs {
 
 
 //declarations
+class Key;
 class Clip;
 class Blitter;
 class Property;
@@ -58,6 +59,7 @@ typedef buffer_window<block::Align> BufferWindow;
 typedef boost::rational<int> Fraction;
 
 //ptr typedefs
+typedef boost::shared_ptr<Key const> PKey;
 typedef boost::shared_ptr<Clip const> PClip;
 typedef boost::shared_ptr<Property const> CPProperty;
 typedef boost::shared_ptr<VideoInfo const> CPVideoInfo;

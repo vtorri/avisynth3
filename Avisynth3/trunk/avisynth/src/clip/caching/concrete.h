@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,16 +24,12 @@
 #ifndef __AVS_CLIP_CACHING_CONCRETE_H__
 #define __AVS_CLIP_CACHING_CONCRETE_H__
 
-//avisynth include
+//avisynth includes
 #include "../caching.h"
 #include "../../core/runtime_environment.h"
 
 //boost include
 #include <boost/scoped_ptr.hpp>
-
-
-#pragma warning ( push )           //push warning state
-#pragma warning (disable : 4355)   //'this' : used in base member initializer list
 
 
 namespace avs { namespace clip { namespace caching {
@@ -51,10 +47,12 @@ class Concrete : public virtual Caching
   boost::scoped_ptr<Cache> cache_;
 
 
-public:  //constructor
+public:  //structors
 
   Concrete(PEnvironment const& env)
     : cache_( env->CreateCache(*this) ) { }
+
+  //generated destructor is fine
 
 
 private:  //Caching requirement
@@ -66,7 +64,5 @@ private:  //Caching requirement
 
 
 } } } //namespace avs::clip::caching
-
-#pragma warning ( pop )
 
 #endif //__AVS_CLIP_CACHING_CONCRETE_H__

@@ -46,13 +46,15 @@ CPVideoFrame AviSource::MakeFrame(int n) const
 
   CPVideoFrame result;
 
-  for ( int i = startIndex; i <= n; ++i, lastIndex_ = i ) 
+  lastIndex_ = -1;              //safety measure: ensure that an exception in the loop don't let this in invalid state
+  for ( int i = startIndex; i <= n; ++i ) 
   {
     CPVideoFrame frame = (*frameDecompressor_)(i, i != n);
 
     if ( frame )                //if frame not NULL, aka a valid frame
       result = frame;           //keep it
-  }
+  }  
+  lastIndex_ = n;               //update to new value
 
   return result ? result
                 : MakeFrame(startIndex - 1);         //all we decoded was dropped frames, so we take the previous 

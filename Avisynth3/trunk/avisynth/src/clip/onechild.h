@@ -48,7 +48,7 @@ public:  //FinalSimplify
 
 public:  //access to child
 
-  virtual PClip const& GetChild() const = 0;
+  virtual PClip GetChild() const = 0;
 
 
 public:  //child changing clone method

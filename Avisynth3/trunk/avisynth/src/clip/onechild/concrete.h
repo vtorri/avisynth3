@@ -53,7 +53,7 @@ public:  //constructor
 
 public:  //access to child
 
-  virtual PClip const& GetChild() const { return child_; }
+  virtual PClip GetChild() const { return child_; }
 
 
 protected:  //write access

@@ -45,7 +45,11 @@ BoxFP6 Font::GetTextBoundingBox(std::string const& text) const
   BoxFP6 result;              //init empty box
 
   if ( text.length() != 0 )   //only work if some text, else empty box
-    result = GetTextLineBoundingBox( text.begin(), text.end(), TextWalker(face_, VecteurFP6()) );
+  {
+    TextWalker walker(face_, VecteurFP6());
+
+    result = GetTextLineBoundingBox( text.begin(), text.end(), walker );
+  }
 
   return result;
 }

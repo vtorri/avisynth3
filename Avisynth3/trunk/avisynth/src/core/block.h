@@ -15,22 +15,40 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA, or visit
 // http://www.gnu.org/copyleft/gpl.html .
-
+//
+// Linking Avisynth statically or dynamically with other modules is making a
+// combined work based on Avisynth.  Thus, the terms and conditions of the GNU
+// General Public License cover the whole combination.
 
 #ifndef __AVS_BLOCK_H__
 #define __AVS_BLOCK_H__
 
 
-//boost include
-#include <boost/shared_ptr.hpp>
+//avisynth include
+#include "block_base.h"
 
 
 namespace avs {
 
 
-//typedef
-typedef unsigned char BYTE;
 
+namespace block {
+
+
+struct Deleter
+{
+
+  int size_;  
+  bool recycle_;
+  
+  Deleter(int size, bool recycle) : size_( size ), recycle_( recycle ) { }
+  
+  void operator()(void * ptr) const;
+
+};
+
+
+} //namespace block
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -52,16 +70,8 @@ typedef unsigned char BYTE;
 //  Problem: The recycling list only grows and never release memory,
 //             even when some sizes are never requested anymore....
 //           
-class Block
+class Block : public block::base<block::Deleter>
 {
-
-  boost::shared_ptr<BYTE> block;  //underlying shared_ptr
-
-
-public:  
-
-  //alignment of memory allocated by Blocks
-  enum { Align = 16 };
 
 
 public:  //constructor
@@ -71,50 +81,9 @@ public:  //constructor
   //generated copy constructor and destructor are fine
 
 
-public:  //assignment
-
-  //generated operator= is fine
-
-  void swap(Block& other) { block.swap( other.block ); }
-
-
-public:  //reset methods
+public:  //reset method
 
   void reset(int size, bool recycle = false) { Block(size, recycle).swap(*this); }
-
-
-public:  //read access
-
-  BYTE * get() const { return block.get(); }
-  int size() const { return boost::get_deleter<Deleter>(block)->size_; }
-
-  bool unique() const { return block.unique(); }
-
-
-public:  //helper methods
-
-  static int AlignValue(int value) { return (value + Align - 1) & -Align; }
-
-  static bool IsAligned(int value) { return value % Align == 0; }
-
-
-private:  //implementation details 
-  
-  class Recycler;      //manages recycling
-
-  //custom deleter used by the underlying shared_ptr
-  struct Deleter
-  {
-    int size_;
-    bool recycle_;
-
-    Deleter(int size, bool recycle) : size_( size ), recycle_( recycle ) { }
-
-    void operator()(void * ptr) const;
-
-  };//Deleter
-
-  friend class Recycler;
 
 };//Block
 

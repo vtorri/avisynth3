@@ -17,15 +17,31 @@
 // http://www.gnu.org/copyleft/gpl.html .
 
 
-//avisynth include
-#include "block.h"
+//avisynth includes
+#include "ownedblock.h"
 #include "block_recycler.h"
+#include "runtime_environment.h"
 
 
 namespace avs { namespace block {
 
 
-void Deleter::operator ()(void * ptr) const
+OwnedDeleter::OwnedDeleter(PEnvironment env, int size, bool recycle)
+  : env_( env )
+  , size_( size )
+  , recycle_( recycle )
+{
+  env->MemoryAllocated( size );
+}
+
+
+OwnedDeleter::~OwnedDeleter()
+{
+  env_->MemoryFreed( size_ );
+}
+
+
+void OwnedDeleter::operator ()(void * ptr) const
 {
   Recycler().Return(ptr, size_, recycle_);
 }
@@ -35,8 +51,11 @@ void Deleter::operator ()(void * ptr) const
 
 
 
-Block::Block(int size, bool recycle)
-  : block::base<block::Deleter>( block::Deleter(size, recycle) ) { }
+
+  
+OwnedBlock::OwnedBlock(PEnvironment env, int size, bool recycle)
+: block::base<block::OwnedDeleter>( block::OwnedDeleter(env, size, recycle) ) { }
+
 
 
 

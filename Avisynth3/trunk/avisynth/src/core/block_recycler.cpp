@@ -15,29 +15,52 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA, or visit
 // http://www.gnu.org/copyleft/gpl.html .
+//
+// Linking Avisynth statically or dynamically with other modules is making a
+// combined work based on Avisynth.  Thus, the terms and conditions of the GNU
+// General Public License cover the whole combination.
 
 
 //avisynth include
-#include "block.h"
 #include "block_recycler.h"
+
+//C Runtime
+#include <malloc.h>
 
 
 namespace avs { namespace block {
 
 
-void Deleter::operator ()(void * ptr) const
-{
-  Recycler().Return(ptr, size_, recycle_);
+
+void Recycler::Return(void * ptr, int size, bool recycle)
+{ 
+  if ( recycle )
+    map_.insert( std::make_pair(size, ptr) ); 
+  else _aligned_free(ptr);
 }
 
 
-} //namespace block
+BYTE * Recycler::Acquire(int size) 
+{
+  void * result;
+
+  RecycleMap::iterator it = map_.find(size);
+
+  if ( it != map_.end() )
+  {
+    result = it->second;
+    map_.erase(it);
+  }     
+  else 
+  {
+    result = _aligned_malloc(size, block::Align);
+
+    if ( result == NULL )
+      throw std::bad_alloc();
+  }
+
+  return (BYTE *)result;
+}
 
 
-
-Block::Block(int size, bool recycle)
-  : block::base<block::Deleter>( block::Deleter(size, recycle) ) { }
-
-
-
-} //namespace avs
+} } //namespace avs::block

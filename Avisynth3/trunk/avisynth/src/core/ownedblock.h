@@ -15,6 +15,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA, or visit
 // http://www.gnu.org/copyleft/gpl.html .
+//
+// Linking Avisynth statically or dynamically with other modules is making a
+// combined work based on Avisynth.  Thus, the terms and conditions of the GNU
+// General Public License cover the whole combination.
 
 
 #ifndef __AVS_OWNEDBLOCK_H__
@@ -22,67 +26,74 @@
 
 
 //avisynth includes
-#include "block.h"
-#include "runtime_environment.h"
+#include "block_base.h"
 
 
-namespace avs {
+namespace avs { 
+
+  
+//declaration and typedef
+class RuntimeEnvironment;
+typedef boost::shared_ptr<RuntimeEnvironment> PEnvironment;
+
+
+namespace block {
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+//  OwnedDeleter
+//
+//  custom deleter used by OwnedBlock
+//
+struct OwnedDeleter
+{
+
+  PEnvironment env_;
+  int size_;
+  bool recycle_;
+
+  OwnedDeleter(PEnvironment env, int size, bool recycle);
+  ~OwnedDeleter();
+
+  void operator()(void * ptr) const;
+
+};
+
+
+} //namespace block
 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //  OwnedBlock
 //
+//  provides same service than Block (from block.h)
+//  but the memory is considered owned by an environment
+//  which sees its memory usage updated accordingly
 //
-//
-class OwnedBlock
+class OwnedBlock : public block::base<block::OwnedDeleter>
 {
-
-  Block block_;             //underlying owned block
-  PEnvironment env_;        //owning environment
-
 
 public:  //structors
 
   //normal constructor
-  OwnedBlock(PEnvironment env, int size, bool recycle)
-    : block_( env->NewBlock(size, recycle) )
-    , env_( env ) { }
+  OwnedBlock(PEnvironment env, int size, bool recycle);
 
   //generated copy constructor is fine
-
-  //destructor
-  ~OwnedBlock()
-  {
-    if ( unique() )
-      env->MemoryFreed( size() );
-  }
-
-
-public:  //assignment
-
-  //generated operator= is fine
-
-  void swap(OwnedBlock& other)
-  { 
-    block_.swap(other.block_); 
-    env_.swap(other.env_);
-  }
 
 
 public:  //reset methods
 
-  void reset(int size, bool recycle) { OwnedBlock( env_, size, recycle ).swap(*this); }
+  void reset(int size, bool recycle)
+  { 
+    OwnedBlock( GetEnvironment(), size, recycle ).swap(*this); 
+  }
 
 
 public:  //read access
 
-  PEnvironment GetEnvironment() const { return env_; }
+  PEnvironment GetEnvironment() const { return GetDeleter().env_; }
 
-  BYTE * get() const { return block_.get(); }
-  int size() const { return block_.size(); }
-
-  bool unique() const { return block_.unique(); }
 
 };//OwnedBlock
 

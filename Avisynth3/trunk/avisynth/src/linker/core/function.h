@@ -62,7 +62,7 @@ public:  //Function interface
 
   virtual PPlugin GetMotherPlugin() const;
 
-  virtual parser::ElementalOperation const& GetOperation() const { return op_; }
+  virtual void AppendOperation(parser::ElementalCode& appendTo) const;
 
 };
 

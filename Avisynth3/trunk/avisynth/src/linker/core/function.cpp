@@ -24,9 +24,11 @@
 //avisynth includes
 #include "plugin.h"
 #include "function.h"
+#include "../../parser/vmcode.h"
 
 
 namespace avs { namespace linker { namespace core {
+
 
 
 Function::Function(char returnType, char const * name, char const * prototype, parser::ElementalOperation const& op)
@@ -45,6 +47,10 @@ PPlugin Function::GetMotherPlugin() const
 }
 
 
+void Function::AppendOperation(parser::ElementalCode& appendTo) const
+{ 
+  appendTo += op_;
+}
 
 
 } } } //namespace avs::linker::core

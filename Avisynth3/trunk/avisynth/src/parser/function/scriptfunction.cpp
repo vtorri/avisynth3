@@ -36,13 +36,11 @@ char const * ScriptFunction::GetPrototype() const { return id_.get<2>().c_str();
 linker::PPlugin ScriptFunction::GetMotherPlugin() const { return linker::PPlugin(); }
 
 
-void ScriptFunction::AppendOperation(parser::TypedCode& appendTo) const
+void ScriptFunction::AppendOperation(ElementalCode& appendTo) const
 { 
   if ( op_.empty() )   //if op_ is not defined, we code a forward call to self
-    appendTo.get<0>() += functor::function::ForwardCall(shared_from_this());
-  else appendTo.get<0>() += op_;       //else op_ itself
-
-  appendTo.get<1>() = id_.get<0>();    //update type
+    appendTo += functor::function::ForwardCall(shared_from_this());
+  else appendTo += op_;       //else op_ itself
 }
 
 

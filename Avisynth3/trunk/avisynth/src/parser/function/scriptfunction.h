@@ -66,7 +66,7 @@ public:  //Function interface
   virtual char const * GetPrototype() const;
   virtual linker::PPlugin GetMotherPlugin() const;
 
-  virtual void AppendOperation(TypedCode& appendTo) const;
+  virtual void AppendOperation(ElementalCode& appendTo) const;
 
 
 private:

@@ -26,8 +26,8 @@
 
 //avisynth includes
 #include "forward.h"
-#include "dimension.h"
 #include "window_ptr.h"
+#include "geometry/dimension.h"
 
 
 namespace avs {

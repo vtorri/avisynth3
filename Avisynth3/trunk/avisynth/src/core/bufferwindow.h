@@ -26,9 +26,9 @@
 
 //avisynth includes
 #include "blitter.h"
-#include "dimension.h"
 #include "ownedblock.h"
 #include "window_ptr.h"
+#include "geometry/dimension.h"
 #include "runtime_environment.h"
 
 //assert include
@@ -91,7 +91,7 @@ public:  //structors
       ReAlign();              //realign (blit to correct)
   }
 
-  //conversion from anothe buffer_window type
+  //conversion from another buffer_window type
   template<int otherAlign, int otherGuard>
   buffer_window(buffer_window<otherAlign, otherGuard> const& other)
     : dim_( other.dim_ )
@@ -128,7 +128,7 @@ public:  //access
   BYTE * write()
   {
     if ( ! buffer_.unique() )                      //if data is shared
-      ReAlign();                                   //
+      ReAlign();                                   //blit it so we become sole owner
     return buffer_.get() + offset_;
   }
 

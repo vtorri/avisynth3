@@ -31,11 +31,16 @@
 namespace avs {
 
 
+
 //declarations
 class Clip;
 class Property;
+struct Vecteur;
+class Dimension;
 class VideoInfo;
+class ColorSpace;
 class VideoFrame;
+class BufferWindow;
 class RuntimeEnvironment;
 template <class T> class cow_shared_ptr;
 

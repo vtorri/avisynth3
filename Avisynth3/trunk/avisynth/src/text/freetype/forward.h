@@ -45,6 +45,7 @@ namespace text { namespace freetype {
 class Face;
 class Outline;
 class MonoBitmap;
+class TextWalker;
 
 
 //typedefs

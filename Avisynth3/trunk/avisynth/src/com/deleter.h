@@ -37,7 +37,11 @@ namespace avs { namespace com {
 template <typename T> struct Deleter
 {
 
-  void operator()(T * ptr) const { ptr->Release(); }
+  void operator()(T * ptr) const 
+  { 
+    if ( ptr != NULL ) 
+      ptr->Release(); 
+  }
 
 };
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -78,7 +78,7 @@ protected:  //assignment
 
 public:  //read access
 
-  unsigned char const& operator[](int i) const { assert(i >= 0 && i < 256); return map_[i]; }
+  unsigned char const operator[](int i) const { assert(i >= 0 && i < 256); return map_[i]; }
   unsigned char const * data() const { return map_; }
 
 
@@ -91,14 +91,16 @@ protected:  //write access
 public:  //use method
 
   //use the lookup table on all the passed data
-  template <long step>
-  void ApplyTo(WindowPtr wp) const
+  template <int step>
+  void ApplyTo(WindowPtr const& wp) const
   {
     assert( wp.width % step == 0 );
 
-    for ( int y = wp.height; y-- > 0; wp.pad() )
-      for ( int x = wp.width /step; x-- > 0; wp.to(step, 0) )
-        *wp.ptr = map_[ *wp.ptr ];
+    BYTE * ptr = wp.ptr;
+
+    for ( int y = wp.height; y-- > 0; ptr += wp.padValue() )
+      for ( int x = wp.width / step; x-- > 0; ptr += step )
+        *ptr = map_[ *ptr ];
   }
 
 };

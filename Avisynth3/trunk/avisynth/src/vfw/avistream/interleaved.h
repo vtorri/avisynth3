@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -35,19 +35,15 @@ namespace avs { namespace vfw { namespace avistream {
 class Interleaved : public Video
 {
 
-  int bpp_;
+public:  //structors
+
+  Interleaved(AviFile& parent)
+    : Video( parent ) { }
+
+  //generated destructor is fine
 
 
-public:  //constructor
-
-  Interleaved(AviFile& parent, DWORD fccHandler, int bpp)
-    : Video( parent, fccHandler )
-    , bpp_( bpp ) { }
-
-
-protected:  //Video implementation
-
-  virtual int GetBMPSize(Dimension const& dim);
+private:  //Video implementation
 
   virtual void ReadFrame(VideoFrame const& frame, BYTE * ptr); 
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -27,9 +27,6 @@
 //avisynth include
 #include "video.h"
 
-//windows include
-#include <mmsystem.h>  //for MAKEFOURCC
-
 
 namespace avs { namespace vfw { namespace avistream {
 
@@ -43,15 +40,15 @@ namespace avs { namespace vfw { namespace avistream {
 class YV12 : public Video
 {
 
-public:  //constructor
+public:  //structors
 
   YV12(AviFile& parent)
-    : Video( parent, MAKEFOURCC('Y','V','1','2') ) { }
+    : Video( parent ) { }
+
+  //generated destructor is fine
 
 
-protected:  //Video implementation
-
-  virtual int GetBMPSize(Dimension const& dim);
+private:  //Video implementation
 
   virtual void ReadFrame(VideoFrame const& frame, BYTE * ptr); 
 

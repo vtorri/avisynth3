@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -40,17 +40,20 @@ namespace vfw { namespace avistream {
 
 
 
+////////////////////////////////////////////////////////////////////////////////
+//  avistream::Video
+//
+//  AviStream subclass for handling video streams
+//
 class Video : public AviStream
 {
 
-  DWORD fccHandler_;
+public:  //structors
 
+  Video(AviFile& parent)
+    : AviStream( parent ) { }
 
-public:  //constructor
-
-  Video(AviFile& parent, DWORD fccHandler)
-    : AviStream(parent)
-    , fccHandler_( fccHandler ) { }
+  //generated destructor is fine
 
 
 public:  //IAVIStream
@@ -65,9 +68,7 @@ protected:  //AviStream implementation
   virtual void Read(void* lpBuffer, int lStart, int lSamples);
 
 
-protected:  //Video implementation
-
-  virtual int GetBMPSize(Dimension const& dim) = 0;
+private:  //Video implementation
 
   virtual void ReadFrame(VideoFrame const& frame, BYTE * ptr) = 0; 
 

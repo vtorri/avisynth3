@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,17 +25,11 @@
 #include "interleaved.h"
 #include "../../core/blitter.h"
 #include "../../core/roundup.h"
-#include "../../core/dimension.h"
 #include "../../core/videoframe.h"
 
 
 namespace avs { namespace vfw { namespace avistream {
 
-
-int Interleaved::GetBMPSize(Dimension const& dim)
-{
-  return dim.GetHeight() * RoundUp<4>( dim.GetWidth() * bpp_ );
-}
 
 
 void Interleaved::ReadFrame(VideoFrame const& frame, BYTE * ptr)

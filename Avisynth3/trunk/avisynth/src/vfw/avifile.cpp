@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -234,9 +234,9 @@ AviStream * AviFile::CreateStream(DWORD fccType, int lParam)
       if ( fccType == 0 || fccType == streamtypeVIDEO )
         switch( vi_->GetColorSpace().id() )
         {
-        case ColorSpace::I_RGB24: return new avistream::Interleaved(*this, BI_RGB, 3);
-        case ColorSpace::I_RGB32: return new avistream::Interleaved(*this, BI_RGB, 4);
-        case ColorSpace::I_YUY2: return new avistream::Interleaved(*this, MAKEFOURCC('Y','U','Y','2'), 2);
+        case ColorSpace::I_RGB24:
+        case ColorSpace::I_RGB32: 
+        case ColorSpace::I_YUY2: return new avistream::Interleaved(*this);
         case ColorSpace::I_YV12: return new avistream::YV12(*this);
         }
       return NULL;

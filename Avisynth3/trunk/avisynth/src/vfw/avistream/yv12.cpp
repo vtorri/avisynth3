@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,17 +24,12 @@
 //avisynth include
 #include "yv12.h"
 #include "../../core/blitter.h"
-#include "../../core/dimension.h"
+#include "../../core/roundup.h"
 #include "../../core/videoframe.h"
 
 
 namespace avs { namespace vfw { namespace avistream {
 
-
-int YV12::GetBMPSize(Dimension const& dim)
-{
-  return 3 * dim.GetHeight() * RoundUp<4>(dim.GetWidth()) / 2;
-}
 
 
 void YV12::ReadFrame(VideoFrame const& frame, BYTE * ptr)

@@ -26,6 +26,8 @@
 #include "../../core/clip.h"
 #include "../../core/exception.h"
 #include "../../core/videoinfo.h"
+#include "../../core/colorspace.h"
+#include "../bitmapinfoheader.h"
 
 
 namespace avs { namespace vfw { namespace avistream {
@@ -40,18 +42,11 @@ STDMETHODIMP Video::ReadFormat(LONG /*lPos*/, LPVOID lpFormat, LONG *lpcbFormat)
 	  return S_OK;
   }
 
-  CPVideoInfo vi = GetVideoInfo();
+  //NB: I don't handle the case buffer too small (Fix me ?)
 
-  BITMAPINFOHEADER * bi = (BITMAPINFOHEADER *)lpFormat;
-  memset(bi, 0, sizeof(BITMAPINFOHEADER));
+  BitmapInfoHeader * bi = static_cast<BitmapInfoHeader *>(lpFormat);
 
-  bi->biSize        = sizeof(BITMAPINFOHEADER);
-  bi->biWidth       = vi->GetWidth();
-  bi->biHeight      = vi->GetHeight();
-  bi->biPlanes      = 1;
-  bi->biBitCount    = vi->BitsPerPixel();
-  bi->biCompression = vi->IsRGB() ? BI_RGB : fccHandler_;
-  bi->biSizeImage   = GetBMPSize(vi->GetDimension());
+  new (bi) BitmapInfoHeader(*GetVideoInfo());
 
   return S_OK;
 }
@@ -63,7 +58,7 @@ STDMETHODIMP Video::Read(LONG lStart, LONG lSamples, LPVOID lpBuffer, LONG cbBuf
 {
   CPVideoInfo vi = GetVideoInfo();
 
-  int bmpSize = GetBMPSize(vi->GetDimension());
+  int bmpSize = vi->GetColorSpace().GetBitmapSize(vi->GetDimension());
     
   if ( plSamples != NULL )
     *plSamples = 1;
@@ -101,11 +96,11 @@ void Video::FillAviStreamInfo(AVISTREAMINFOW& asi)
 { 
   CPVideoInfo vi = GetVideoInfo();
 
-  int bmpSize = GetBMPSize(vi->GetDimension());
+  int bmpSize = vi->GetColorSpace().GetBitmapSize(vi->GetDimension());
 
   asi.fccType        = streamtypeVIDEO;
   asi.dwQuality      = DWORD(-1);     
-  asi.fccHandler     = fccHandler_;
+  asi.fccHandler     = vi->GetColorSpace().GetFourCC();
   asi.dwScale        = vi->GetFPSDenominator();    
   asi.dwRate         = vi->GetFPSNumerator();
   asi.dwLength       = vi->GetFrameCount();

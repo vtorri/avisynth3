@@ -33,20 +33,20 @@ namespace avs { namespace parser { namespace functor {
 
 
 //////////////////////////////////////////////////////////////////////////////
-//  pusher<Value>
+//  pusher<Holder>
 //
-//  pushs a value onto the stack
+//  push what is hold by the Holder onto the stack
 //
-template <typename Value>
+template <typename Holder>
 struct pusher
 {
 
-  Value const value_;
+  Holder const holder_;
 
-  pusher(Value const& value)
-    : value_( value ) { }
+  pusher(Holder const& holder)
+    : holder_( holder ) { }
 
-  void operator()(VMState& state) const { state.push(value_); }
+  void operator()(VMState& state) const { state.push(holder_(state)); }
 
 };
 

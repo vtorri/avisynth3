@@ -28,6 +28,7 @@
 #include "caller.h"
 #include "popper.h"
 #include "pusher.h"
+#include "literal.h"
 #include "../vmstate.h"
 
 
@@ -49,7 +50,7 @@ struct adaptor_impl
 
   void operator()(VMState& state) const
   {
-    pusher<Result> push( caller(state) );
+    pusher<literal<Result> > push( caller(state) );
     popper<boost::function_traits<Function>::arity>()(state);
     push(state);
   }

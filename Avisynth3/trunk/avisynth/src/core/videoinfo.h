@@ -26,6 +26,7 @@
 
 //avisynth includes
 #include "forward.h"
+#include "../define.h"
 #include "sampletype.h"
 
 
@@ -45,7 +46,7 @@ namespace avs {
 //  ie all tests are the responsability of VideoInfo,
 //  you try it and if illegal it will throw the appropriate error.
 //
-class NOVTABLE VideoInfo
+class AVS_NOVTABLE VideoInfo
 {
   
 public:  //structors

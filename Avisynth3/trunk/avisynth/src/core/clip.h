@@ -24,8 +24,9 @@
 #ifndef __AVS_CLIP_H__
 #define __AVS_CLIP_H__
 
-//avisynth include
+//avisynth includes
 #include "forward.h"
+#include "../define.h"    //for AVS_NOVTABLE macro
 
 //boost include
 #include <boost/enable_shared_from_this.hpp>
@@ -47,7 +48,7 @@ namespace avs {
 //
 //  base class for all filters
 //
-class NOVTABLE Clip : public boost::enable_shared_from_this<Clip>
+class AVS_NOVTABLE Clip : public boost::enable_shared_from_this<Clip>
 {
 
 public:  //structors

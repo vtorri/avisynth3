@@ -54,7 +54,7 @@ private:  //structors
 
   BinaryOpMapper();
   
-  ~BinaryOpMapper() { }
+  //generated destructor is fine
   
 
 public: 

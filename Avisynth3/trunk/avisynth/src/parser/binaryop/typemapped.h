@@ -24,7 +24,7 @@
 #define __AVS_PARSER_BINARYOP_TYPEMAPPED_H__
 
 //avisynth include
-#include "../stackoperation.h"
+#include "../vmoperation.h"
 #include "../../core/exception/generic.h"
 
 //stl include
@@ -41,13 +41,13 @@ class TypeMapped
   typedef std::map<std::pair<char, char>, char> TypeMap;
    
   TypeMap map_;
-  StackOperation op_;
+  VMOperation op_;
   std::string opName_;
 
 
 public:  //structors
 
-  TypeMapped(std::string const& opName, StackOperation const& op, std::string const types);
+  TypeMapped(std::string const& opName, VMOperation const& op, std::string const types);
 
   //generated copy constructor and destructor are fine
 
@@ -62,7 +62,7 @@ public:  //interface
     return it->second;
   }
 
-  StackOperation const& op() const { return op_; }
+  VMOperation const& op() const { return op_; }
 
 };
 

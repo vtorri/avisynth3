@@ -25,7 +25,7 @@
 #define __AVS_PARSER_BINARYOP_MAKE_H__
 
 //avisynth include
-#include "../stack.h"
+#include "../vmstate.h"
 
 //boost include
 #include <boost/variant/apply_visitor.hpp>
@@ -47,10 +47,10 @@ public:  //structors
     : visitor_( visitor ) { }
 
 
-  void operator()(Stack& stack) const
+  void operator()(VMState& state) const
   {
-    stack.peek(1) = boost::apply_visitor(visitor_, stack.peek(1), stack.top());
-    stack.pop();
+    state.peek(1) = boost::apply_visitor(visitor_, state.peek(1), state.top());
+    state.pop();
   }
 
 };

@@ -28,7 +28,7 @@
 namespace avs { namespace parser { namespace binaryop {
 
 
-  TypeMapped::TypeMapped(std::string const& opName, StackOperation const& op, std::string const types)
+TypeMapped::TypeMapped(std::string const& opName, VMOperation const& op, std::string const types)
   : opName_( opName )
   , op_( op )
 {

@@ -33,7 +33,35 @@ namespace avs { namespace parser { namespace lazy {
 
 
 
+////////////////////////////////////////////////////////////////////////
+//  Wrapper
+//
+//  functor to wraps a ref into a reference_wrapper
+//
+struct Wrapper
+{
 
+  template <typename T>
+  struct result
+  {
+    typedef typename boost::reference_wrapper<T> type;
+  };
+
+  template <typename T>
+  typename result<T>::type operator()(T& val) const
+  {
+    return boost::reference_wrapper<T>(val);
+  }
+
+};
+
+
+
+/////////////////////////////////////////////////////////////////////////
+//  Unwrapper
+//
+//  functor to extract the ref from a reference wrapper
+//
 struct Unwrapper
 {
 
@@ -52,6 +80,8 @@ struct Unwrapper
 };
 
 
+
+phoenix::function<Wrapper> const wrap = Wrapper();
 phoenix::function<Unwrapper> const unwrap = Unwrapper();
 
 

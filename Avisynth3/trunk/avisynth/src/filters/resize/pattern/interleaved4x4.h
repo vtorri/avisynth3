@@ -37,32 +37,12 @@ namespace avs { namespace filters { namespace resize { namespace pattern {
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-//  interleaved<2, 2>
-//
-//  The pattern datas for 2 pixels are interleaved,
-//  with coefficients coded as shorts and grouped by 2.
-//  Besides the offsets are guaranteed even (done by inserting coeffs to compensate)
-//
-//  For that:
-//     size (number of pixels) is rounded even up (may introduce dummy pixel data)
-//     count is padded to the next even value (so we have room for the compensation)    
-//
-//  It produces the following layout:
-//    off0 | off1 | coeff block | coeff block ... coeff block | off0 | off1 | coeff block ...
-//                    <----      count / 2 times      ---->
-//
-//  Where  | coeff block |  =  | c0a|c0b | c1a|c1b |   2 short coeffs for each pixel
-//
-//  The pattern is quaranteed 8 bytes aligned, making each offset int aligned
-//  and each coeff block 8 bytes aligned
-//
-template <> class interleaved<2, 2> : public Base
+template <> class interleaved<4, 4> : public Base
 {
 
 public:  //structors
 
-  interleaved<2, 2>(PEnvironment const& env, Filter const& filter, SubRange const& subrange, int size);
+  interleaved<4, 4>(PEnvironment const& env, Filter const& filter, SubRange const& subrange, int size);
 
   //generated copy constructor and destructor are fine
 

@@ -21,8 +21,8 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_FILTERS_RESIZE_PATTERN_INTERLEAVED2X2_H__
-#define __AVS_FILTERS_RESIZE_PATTERN_INTERLEAVED2X2_H__
+#ifndef __AVS_FILTERS_RESIZE_PATTERN_INTERLEAVED2X4_H__
+#define __AVS_FILTERS_RESIZE_PATTERN_INTERLEAVED2X4_H__
 
 //avisynth includes
 #include "base.h"
@@ -33,36 +33,36 @@ namespace avs { namespace filters { namespace resize { namespace pattern {
 
 
 //template declaration so I can make the specialisation below
-  template <int pixelCount, int coeffCount> class interleaved : public Base { };
+template <int pixelCount, int coeffCount> class interleaved;
 
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-//  interleaved<2, 2>
+//  interleaved<2, 4>
 //
 //  The pattern datas for 2 pixels are interleaved,
-//  with coefficients coded as shorts and grouped by 2.
+//  with coefficients coded as shorts and grouped by 4.
 //  Besides the offsets are guaranteed even (done by inserting coeffs to compensate)
 //
 //  For that:
 //     size (number of pixels) is rounded even up (may introduce dummy pixel data)
-//     count is padded to the next even value (so we have room for the compensation)    
+//     count is padded to the next mod 4 value (so we have room for the compensation)    
 //
 //  It produces the following layout:
 //    off0 | off1 | coeff block | coeff block ... coeff block | off0 | off1 | coeff block ...
-//                    <----      count / 2 times      ---->
+//                    <----      count / 4 times      ---->
 //
-//  Where  | coeff block |  =  | c0a|c0b | c1a|c1b |   2 short coeffs for each pixel
+//  Where  | coeff block |  =  | c0a|c0b|c0c|c0d | c1a|c1b|c1c|c1d |   4 short coeffs for each pixel
 //
 //  The pattern is quaranteed 8 bytes aligned, making each offset int aligned
 //  and each coeff block 8 bytes aligned
 //
-template <> class interleaved<2, 2> : public Base
+template <> class interleaved<2, 4> : public Base
 {
 
 public:  //structors
 
-  interleaved<2, 2>(PEnvironment const& env, Filter const& filter, SubRange const& subrange, int size);
+  interleaved<2, 4>(PEnvironment const& env, Filter const& filter, SubRange const& subrange, int size);
 
   //generated copy constructor and destructor are fine
 
@@ -71,4 +71,4 @@ public:  //structors
 
 } } } } //namespace avs::filters::resize::pattern
 
-#endif //__AVS_FILTERS_RESIZE_PATTERN_INTERLEAVED2X2_H__
+#endif //__AVS_FILTERS_RESIZE_PATTERN_INTERLEAVED2X4_H__

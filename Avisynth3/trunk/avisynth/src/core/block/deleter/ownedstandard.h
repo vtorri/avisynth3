@@ -30,6 +30,9 @@
 #include "../recycler.h"
 #include "../../runtime_environment.h"
 
+//boost include
+#include <boost/shared_ptr.hpp>
+
 
 namespace avs { namespace block { namespace deleter {
 
@@ -72,5 +75,17 @@ public:  //deleter interface expected by block::base
 
 
 } } } //namespace avs::block::deleter
+
+
+namespace boost { namespace detail { 
+
+
+using namespace avs::block::deleter;
+
+//specialisation needed for shared_ptr get_deleter to work with the Base superclass
+template<> struct deleter_caster<OwnedStandard> : deleter_caster<OwnedBase> {};  
+
+
+} } //namespace boost::detail
 
 #endif //__AVS_BLOCK_DELETER_OWNEDSTANDARD_H__

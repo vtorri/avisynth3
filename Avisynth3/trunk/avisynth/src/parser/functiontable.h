@@ -24,10 +24,11 @@
 #ifndef __AVS_PARSER_FUNCTIONTABLE_H__
 #define __AVS_PARSER_FUNCTIONTABLE_H__
 
-//avisynth include
+//avisynth includes
+#include "forward.h"           //for StatementCode declaration
 #include "functionpool.h"
 
-//boost include
+//spirit include
 #include <boost/spirit/symbols.hpp>
 
 
@@ -43,9 +44,14 @@ class FunctionTable : public spirit::symbols<FunctionPool>
 
 public:
 
+  //add all functions from given plugin
   void AddPlugin(linker::PPlugin const& plugin);
 
+  //add given function
   void AddFunction(linker::PFunction const& function);
+
+  //create a ScriptFunction from given args and add it to self
+  void AddScriptFunction(char type, std::string const& name, std::string const& prototype, StatementCode const& code);
 
 };
 

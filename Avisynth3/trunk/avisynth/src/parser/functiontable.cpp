@@ -21,10 +21,12 @@
 // General Public License cover the whole combination.
 
 
-//avisynth include
+//avisynth includes
 #include "functiontable.h"
+#include "scriptfunction.h"
 #include "../linker/plugin.h"
 #include "../linker/function.h"
+#include "functor/functioncall.h"
 
 
 namespace avs { namespace parser {
@@ -49,5 +51,18 @@ void FunctionTable::AddFunction(linker::PFunction const& function)
   pool->Add(function);
 }
 
+
+void FunctionTable::AddScriptFunction(char type, std::string const& name, std::string const& prototype, StatementCode const& code)
+{
+  ElementalOperation op;
+
+  if ( type == 'v' )
+    op = functor::VoidFunctionCall(prototype.size(), code);
+  else op = functor::FunctionCall(prototype.size(), code);
+
+  linker::PFunction funct( new ScriptFunction(type, name, prototype, op ) );
+
+  AddFunction( funct );
+}
 
 } } //namespace avs::parser

@@ -60,12 +60,28 @@ class MemoryPiece : public boost::noncopyable {
   BYTE * data;
 
 public:
+  //default constructor, for delayed allocation (needed by SolidFrameBuffer)
+  MemoryPiece() : size(0), data(NULL) { }   
+  //normal constructor
   MemoryPiece(int _size) : size_(_size), data(MemoryManager::alloc(size_)) { }
   ~MemoryPiece() { MemoryManager::free(data, size_); }
 
   int size() const { return size_; }
   BYTE * get() { return data; }
-  const BYTE * get() const { return data; } 
+  const BYTE * get() const { return data; }
+  
+  //the delayed acquisition method, no effect if not empty
+  //return true if it had an effect
+  bool alloc(int _size)
+  { 
+    if ( size_ == 0 )
+    { 
+      size_ = _size; 
+      data = MemoryManager::alloc(size_);
+      return true;
+    }
+    return false;
+  }
 
 };
 
@@ -76,6 +92,8 @@ class OwnedMemoryPiece : public MemoryPiece {
   PEnvironment env;       //owning environment
 
 public:
+  //delayed acquisition constructor
+  OwnedMemoryPiece(PEvironment _env) : env(_env) { }
   OwnedMemoryPiece(int _size, PEnvironment _env)
     : MemoryPiece(_size), env(_env) { env->MemoryAllocated(size()); }
 
@@ -91,6 +109,17 @@ public:
       env = _env;
       env->MemoryAllocated(size());
     }
+  }
+
+  //delayed acquisition method with memory usage update
+  bool alloc(int size)
+  { 
+    if ( MemoryPiece::allo(size) )
+    {
+      env->MemoryAllocated(size());
+      return true;
+    }
+    return false;
   }
 };
 

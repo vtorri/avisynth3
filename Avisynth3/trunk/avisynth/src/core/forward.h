@@ -24,9 +24,8 @@
 #ifndef __AVS_FORWARD_H__
 #define __AVS_FORWARD_H__
 
-//avisynth includes
+//avisynth include
 #include "block/align.h"           //for block::Align
-//#include "cow_shared_ptr.h"        //includes <boost/shared_ptr.hpp>
 
 //boost include
 #include <boost/rational.hpp>      //for rational
@@ -49,11 +48,9 @@ namespace avs {
 //declarations
 class Key;
 class Clip;
-enum Plane;
 class Cache;
 class Blitter;
 class Property;
-enum FrameType;
 class VideoInfo;
 class FrameMaker;
 class ColorSpace;

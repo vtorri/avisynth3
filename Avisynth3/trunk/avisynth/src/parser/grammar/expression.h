@@ -25,15 +25,15 @@
 #define __AVS_PARSER_GRAMMAR_EXPRESSION_H__
 
 //avisynth includes
+#include "check.h"
+#include "action.h"
 #include "literal.h"
 #include "vartable.h"
 #include "../vmcode.h"
-#include "../lazy/tuple.h"
 #include "../lazy/unwrap.h"
 #include "../functiontable.h"
 #include "../binaryop/parser.h"
 #include "../functor/var.h"
-#include "../functor/pusher.h"
 #include "../functor/assigner.h"
 
 //boost includes
@@ -200,11 +200,10 @@ public:  //definition nested class
               [
                 expression.implicit = val(false)
               ]
-          >> *(   spirit::eps_p( second(atom_expr.value) == val('c') )  //check we have a clip result so far
-              >>  '.'
-              >>  call_expr( "c" )   //then dot chained function calls are possible
-              )  
-          ;
+          >> *(   subscript_helper( false )
+              ||  infix_helper
+              )
+         ;
 
       nested_expr
           =   '('
@@ -230,10 +229,9 @@ public:  //definition nested class
           ;
 
       last_expr
-          =   spirit::eps_p( !! self.last )   //check whether last is defined
-          >>  spirit::str_p("last")
+          =   spirit::str_p("last")
               [
-                first(atom_expr.value) += construct_<LocalVarPusher>( bind(&boost::optional<int>::get)(self.last) ),
+                first(atom_expr.value) += construct_<LocalVarPusher>( bind(&Check::LastIsDefined)( self.last ) ),
                 second(atom_expr.value) = val('c')
               ]
           ;
@@ -256,6 +254,39 @@ public:  //definition nested class
                 bind(&FunctionPool::Resolve)(call_expr.functionPool, call_expr.prototype, atom_expr.value)
               ]
           ;
+
+      subscript_helper
+          =  '['
+          >>  int_expr_helper
+          >>  ','
+          >>  (   spirit::str_p("end")
+                  [
+                    subscript_helper.value = val(true)
+                  ]
+              |   int_expr_helper
+              )
+          >>  spirit::ch_p(']')
+              [
+                bind(&Action::AppendSubscriptOperation)(atom_expr.value, subscript_helper.value)
+              ]
+          ;
+
+      int_expr_helper
+          =   expression( TypedCode(), false )
+              [
+                bind(&Check::TypeIsExpected)(second(arg1), val('i')),
+                first(atom_expr.value) += first(arg1)
+              ]
+          ;
+
+      infix_helper
+          =   spirit::ch_p('.')
+              [   //check if infix allowed (throw if not)                
+                infix_helper.value = bind(&Check::IsInfixable)(second(atom_expr.value))
+              ]
+              >>  call_expr( infix_helper.value )
+          ;
+ 
     }
 
     spirit::rule<ScannerT> const& start() const { return top; }
@@ -271,6 +302,9 @@ public:  //definition nested class
     spirit::rule<ScannerT, closure::Value<TypedCode>::context_t> atom_expr;
     spirit::rule<ScannerT> nested_expr, var_expr, last_expr;
     spirit::rule<ScannerT, closure::FunctionCall::context_t> call_expr;
+    spirit::rule<ScannerT, closure::Value<bool>::context_t> subscript_helper;
+    spirit::rule<ScannerT> int_expr_helper;
+    spirit::rule<ScannerT, closure::Value<std::string>::context_t> infix_helper;
 
     Literal literal;
 

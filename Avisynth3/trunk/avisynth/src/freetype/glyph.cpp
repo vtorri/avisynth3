@@ -76,7 +76,7 @@ PositionedBitmap Glyph::GetBitmap() const
 {
   FT_GlyphRec_ * glyph = glyph_.get();
 
-  FT_Error error = FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, NULL, 0);
+  FT_Error error = FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_MONO, NULL, 0);
   assert( error == 0 );
 
   boost::shared_ptr<FT_BitmapGlyphRec_> bitmapGlyph

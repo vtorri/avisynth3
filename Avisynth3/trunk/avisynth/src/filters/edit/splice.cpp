@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -22,76 +22,155 @@
 
 
 //avisynth includes
+#include "trim.h"
 #include "splice.h"
+#include "splice/noaudio.h"
+#include "splice/novideo.h"
+#include "splice/aligned.h"
+#include "splice/unaligned.h"
 #include "../../core/videoinfo.h"
-#include "../../core/exception/novideo.h"
-#include "../../core/exception/nosuchframe.h"
 
 
 namespace avs { namespace filters {
 
 
-
 Splice::Splice(CPVideoInfo const& vi, PEnvironment const& env)
-  : env_( env )
+  : vi_( vi )
+  , env_( env )
 {
-  PVideoInfo vi_ = vi;
-
   if ( vi_->HasVideo() )
     vi_->SetFrameCount( 0 );
   if ( vi_->HasAudio() )
     vi_->SetSampleCount( 0LL );
-
-  this->vi_ = vi_;
-}
-
-
-CPVideoFrame Splice::GetFrame(int n) const
-{
-  //search position where inserting respect the switchs ordering
-  VideoSwitchOver::const_iterator it = std::upper_bound(videoSwitchs_.begin(), videoSwitchs_.end(), n);
-
-  if ( it == videoSwitchs_.end() )      //insertion at end is suggested: ie beyond the frame range of the last clip
-    if ( vi_->HasVideo() )              //if clip has video
-      throw exception::NoSuchFrame(n);  //report frame don't exist
-    else
-      throw exception::NoVideo();       //else report no video (the video switchs vector was empty coz of that)
-
-  //NB: it[-1] exists: the vector is not empty and we are not at begin()
-  //NB2: the n < 0 case is taken care of by the first clip of the splice
-  return childs_[ it - videoSwitchs_.begin() ]->GetFrame( n - (it == videoSwitchs_.begin() ? 0 : it[-1]) );
-}
-
-
-void Splice::GetAudio(void * buffer, long long start, int count) const
-{
-
 }
 
 
 PClip Splice::Simplify() const
 {
-  if ( childs_.size() == 1 )
-    return childs_.back();
+  return childs_.size() == 1 ? operator[]( 0 )
+                             : shared_from_this();
+}
+
+
+PClip Splice::FinalSimplify() const
+{
+  for ( std::vector<PClip>::iterator it = childs_.begin(); it != childs_.end(); ++it )
+    *it = (*it)->FinalSimplify();
 
   return shared_from_this();
 }
 
 
-void Splice::AddChild(PClip const& child)
+void Splice::CheckCompatible(PClip const& clip)
 {
-  //check if child is a Splice itself
-  boost::shared_ptr<Splice const> splice = boost::dynamic_pointer_cast<Splice const>(child);
+  CPVideoInfo self = GetVideoInfo();
+  CPVideoInfo other = clip->GetVideoInfo();
 
-  if ( splice )  //if it is
-  {              //absorb it into self
-    for ( ClipVector::const_iterator it = splice->childs_.begin(); it != splice->childs_.end(); ++it )
-      AddChild( *it );
-  }
+  if ( self->HasVideo() )              //if video
+    self->CheckVideoMatch(*other);     //check other matchs
+  else 
+    if ( other->HasVideo() )           //other has video, but not self
+      self->CheckHasVideo();           //trigger exception
 
-
+  if ( self->HasAudio() )              //same as above
+    self->CheckAudioMatch(*other);
+  else
+    if ( other->HasAudio() )
+      self->CheckHasAudio();
 }
 
+
+void Splice::Merge(Splice const& source)
+{
+  for ( std::vector<PClip>::const_iterator it = source.childs_.begin(); it != source.childs_.end(); ++it )
+    PushChild( *it );
+}
+
+
+void Splice::SetFrameCount(int count)
+{
+  vi_->SetFrameCount(count);
+}
+
+void Splice::SetSampleCount(long long count)
+{
+  vi_->SetSampleCount(count);
+}
+
+
+bool Splice::MergingPush(PClip const& child)
+{
+  if ( ! childs_.empty() )
+  {
+    boost::shared_ptr<Trim const> left = boost::dynamic_pointer_cast<Trim const>(childs_.back());
+    boost::shared_ptr<Trim const> right = boost::dynamic_pointer_cast<Trim const>(child);
+  
+    if (  left                                    //if left is a Trim
+       || right                                   //if right is a Trim
+       || left->GetChild() == right->GetChild()   //if they have same child
+       || left->GetEnd() == right->GetBegin()     //if they are contiguous
+       )
+    {
+      //update back with the appropriate Trim
+      childs_.back() = Trim::Create(left->GetChild(), left->GetBegin(), right->GetEnd());
+      return true;                                //report success
+    }
+  }
+
+  childs_.push_back(child);                       //push child
+  return false;                                   //report failure
+}
+
+
+
+PClip Splice::CreateAligned(PClip const& left, PClip const& right)
+{
+  CPVideoInfo vi = left->GetVideoInfo();
+  PEnvironment const& env = left->GetEnvironment();
+
+  boost::shared_ptr<Splice> splice;
+
+  if ( vi->HasVideo() )
+    splice.reset
+        ( vi->HasAudio() ? static_cast<Splice *>(new splice::Aligned(vi, env))
+                         : static_cast<Splice *>(new splice::NoAudio(vi, env))
+        );
+  else
+    if ( ! vi->HasAudio() )
+      vi->CheckHasVideo();        //force an exception in the no video no audio case
+    else
+      splice.reset( static_cast<Splice *>(new splice::NoVideo(vi, env)) );
+
+  splice->AddChild(left);
+  splice->AddChild(right);
+
+  return splice->Simplify();
+}
+
+
+PClip Splice::CreateUnaligned(PClip const& left, PClip const& right)
+{
+  CPVideoInfo vi = left->GetVideoInfo();
+  PEnvironment const& env = left->GetEnvironment();
+
+  boost::shared_ptr<Splice> splice;
+
+  if ( vi->HasVideo() )
+    splice.reset
+        ( vi->HasAudio() ? static_cast<Splice *>(new splice::Unaligned(vi, env))
+                         : static_cast<Splice *>(new splice::NoAudio(vi, env))
+        );
+  else
+    if ( ! vi->HasAudio() )
+      vi->CheckHasVideo();        //force an exception in the no video no audio case
+    else
+      splice.reset( static_cast<Splice *>(new splice::NoVideo(vi, env)) );
+
+  splice->AddChild(left);
+  splice->AddChild(right);
+
+  return splice->Simplify();
+}
 
 
 } } //namespace avs::filters

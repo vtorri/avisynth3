@@ -30,11 +30,8 @@
 //stl include
 #include <vector>
 
+
 namespace avs { namespace filters {
-
-
-//declaration
-class Trim;
 
 
 
@@ -43,19 +40,12 @@ class Trim;
 //
 //  Joins clips together keeping audio-video in synch
 //
-class Splice : public clip::ManyChilds
+class NOVTABLE Splice : public clip::ManyChilds
 {  
 
-  typedef std::vector<PClip> ClipVector;
-  typedef std::vector<int> VideoSwitchOver;
-  typedef std::vector<long long> AudioSwitchOver;
-
-  CPVideoInfo vi_;
+  PVideoInfo vi_;
   PEnvironment env_;
-  
-  ClipVector childs_;
-  VideoSwitchOver videoSwitchs_;
-  AudioSwitchOver audioSwitchs_;
+  mutable std::vector<PClip> childs_;
 
 
 public:  //structors
@@ -70,19 +60,61 @@ public:  //clip general interface
   virtual PEnvironment const& GetEnvironment() const { return env_; }
   virtual CPVideoInfo GetVideoInfo() const { return vi_; }
 
-  virtual CPVideoFrame GetFrame(int n) const;
-  virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const;
 
-
-public:  //Simplify method()
+public:  //Simplify methods
 
   virtual PClip Simplify() const;
+  virtual PClip FinalSimplify() const;
+
+
+public:  //ManyChilds interface
+
+  virtual int GetChildCount() const { return childs_.size(); }
+  virtual PClip const& GetChild(int n) const { return childs_[n]; }
 
 
 public:  //Splice interface
 
   //if child is A/V compatible with self, add it into the splice, else throw
-  void AddChild(PClip const& child);
+  virtual void AddChild(PClip const& child) = 0;
+
+  virtual PClip operator[](int n) const { return GetChild(n); }
+
+
+protected:  //Splice protected interface
+
+  virtual void PushChild(PClip const& child) = 0;
+
+
+protected:  //implementation helpers
+
+  //checks clip is splice-compatible with self
+  void CheckCompatible(PClip const& clip);
+
+  void Merge(Splice const& source);
+
+  void SetFrameCount(int count);
+  void SetSampleCount(long long count);
+
+  //attempts to merge with previous clip (if any) and push to childs list
+  //returns whether merging could be performed or not
+  bool MergingPush(PClip const& child);
+
+
+public:  //factory methods and functors
+
+  static PClip CreateAligned(PClip const& left, PClip const& right);
+  static PClip CreateUnaligned(PClip const& left, PClip const& right);
+
+  struct AlignedCreator
+  {
+    PClip operator()(PClip const& left, PClip const& right) const { return CreateAligned(left, right); }
+  };
+
+  struct UnalignedCreator
+  {
+    PClip operator()(PClip const& left, PClip const& right) const { return CreateUnaligned(left, right); }
+  };
 
 };
 

@@ -7,7 +7,7 @@
 // (at your option) any later version.
 //
 // This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// but WITHOUT ANY WARRANTY; witho4ut even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
@@ -22,6 +22,7 @@
 
 
 //avisynth include
+#include "../../define.h" //included by native.h anyway
 #include "native.h"
 
 //asssert include
@@ -40,9 +41,9 @@ namespace avs { namespace linker { namespace external {
 
 void Native::FillFunctionList(FunctionList& addTo) const
 {
-  typedef PFunction (__stdcall * GetFunctionFunction)(int index);
+  typedef PFunction (AVS_STDCALL * GetFunctionFunction)(int index);
 
-  GetFunctionFunction gff = (GetFunctionFunction)(GetProcAddress("GetFunction"));
+  GetFunctionFunction gff = (GetFunctionFunction)GetProcedureAddress("GetFunction");
   assert( gff != NULL );
 
   for ( int i = 0; true; ++i )

@@ -26,6 +26,7 @@
 
 //avisynth includes
 #include "../plugin.h"
+#include "../../define.h"
 #include "../../utility/folder.h"
 
 
@@ -38,7 +39,7 @@ namespace avs { namespace linker { namespace external {
 //
 //
 //
-class Plugin : public linker::Plugin
+class AVS_NOVTABLE Plugin : public linker::Plugin
 {
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -64,6 +65,10 @@ class Plugin : public linker::Plugin
   std::string fileName_;                   //name of source file
   static PluginFolder pluginFolder;        //folds external plugins by file name
 
+#ifndef _WIN32
+  void* handle_;                           //plugin handle in the linux path
+#endif
+
 
 public:  //structors
 
@@ -84,7 +89,7 @@ public:  //factory method
 
 protected:  //implementation helper
 
-  void * GetProcAddress(char const * procName) const;
+  void * GetProcedureAddress(char const * procName) const;
 
 
 private:  //...

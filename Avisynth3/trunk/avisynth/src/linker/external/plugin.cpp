@@ -32,8 +32,10 @@
 
 #ifdef _WIN32
 //windows includes
-#include <windows.h>
-#include <winbase.h>
+# include <windows.h>
+# include <winbase.h>
+#else
+# include <dlfcn.h>
 #endif //_WIN32
 
 
@@ -47,10 +49,14 @@ Plugin::PluginFolder Plugin::pluginFolder;
 
 Plugin::Plugin(std::string const& fileName)
   : fileName_( fileName )
-{
 #ifdef _WIN32
+{
   HMODULE module = LoadLibrary(fileName_.c_str());
   if ( module == NULL )
+#else
+  , handle_( dlopen(fileName_.c_str() , RTLD_LAZY) )
+{
+  if ( handle_ == NULL )
 #endif
     throw exception::Generic("Unable to load library");
 
@@ -63,15 +69,17 @@ Plugin::~Plugin()
 #ifdef _WIN32
   HMODULE module = GetModuleHandle(fileName_.c_str());
   FreeLibrary(module);
+#else
+  dlclose(handle_);
 #endif
 }
 
 
 char const * Plugin::GetName() const
 {
-  typedef char const * (__cdecl *GetNameFunction)();
+  typedef char const * (AVS_CDECL *GetNameFunction)();
 
-  GetNameFunction gnf = (GetNameFunction)(GetProcAddress("GetName"));
+  GetNameFunction gnf = (GetNameFunction)GetProcedureAddress("GetName");
   assert( gnf != NULL );
 
   return gnf();
@@ -91,19 +99,21 @@ PPlugin Plugin::Create(std::string const& fileName)
 }
 
 
-void * Plugin::GetProcAddress(char const * procName) const
+void * Plugin::GetProcedureAddress(char const * procName) const
 {
 #ifdef _WIN32
-  return (void *)::GetProcAddress(GetModuleHandle(fileName_.c_str()), procName);
+  return (void *)GetProcAddress(GetModuleHandle(fileName_.c_str()), procName);
+#else
+  return dlsym(handle_, procName);
 #endif
 }
 
 
 bool Plugin::CanUnloadNow() const
 {
-  typedef int (__cdecl *CanUnloadNowFunction)();
+  typedef int (AVS_CDECL *CanUnloadNowFunction)();
 
-  CanUnloadNowFunction cunf = (CanUnloadNowFunction)(GetProcAddress("CanUnloadNow"));
+  CanUnloadNowFunction cunf = (CanUnloadNowFunction)GetProcedureAddress("CanUnloadNow");
   assert( cunf != NULL );
 
   return cunf() != 0;

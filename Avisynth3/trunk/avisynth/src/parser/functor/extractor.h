@@ -27,6 +27,7 @@
 //avisynth include
 #include "../vmstate.h"
 #include "../../core/dimension.h"
+#include "../../core/colorspace.h"
 
 //boost includes
 #include <boost/variant/get.hpp>
@@ -82,6 +83,19 @@ struct extractor<PEnvironment const&>
 
 };
 
+
+template <>
+struct extractor<ColorSpace&>
+{
+
+  enum { consume = 1 };
+
+  ColorSpace& operator()(VMState& state, int pos) const
+  {
+    return ColorSpace::FromString( boost::get<std::string>(state.peek(pos)) );
+  }
+
+};
 
 
 } } } //namespace avs::parser::extractor

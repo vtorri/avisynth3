@@ -32,8 +32,8 @@ namespace avs {
 
 
 
-BufferWindow::BufferWindow(Dimension const& dimension, PEnvironment const& env)
-  : dimension_( dimension )
+BufferWindow::BufferWindow(Dimension const& dim, PEnvironment const& env)
+  : dim_( dim )
   , pitch_( block::AlignValue(width()) )
   , offset_( block::Align )
   , buffer_( env, pitch() * height() + block::Align * 2, true ) { }
@@ -41,7 +41,7 @@ BufferWindow::BufferWindow(Dimension const& dimension, PEnvironment const& env)
 
 void BufferWindow::swap(BufferWindow& other)
 {
-  dimension_.swap(other.dimension_);
+  dim_.swap(other.dim_);
   std::swap(pitch_, other.pitch_);
   std::swap(offset_, other.offset_);
   buffer_.swap(other.buffer_);
@@ -66,7 +66,7 @@ BYTE * BufferWindow::write()
 void BufferWindow::ChangeSize(Vecteur const& topLeft, Vecteur const& bottomRight)
 {
 
-  Dimension dim(dimension_);
+  Dimension dim(dim_);
   
   //updating parameters
   dim += bottomRight - topLeft;  
@@ -85,7 +85,7 @@ void BufferWindow::ChangeSize(Vecteur const& topLeft, Vecteur const& bottomRight
     *this = result;                       //replace current by new one
   }
   else {             
-    dimension_ = dim;                     //else commit updated parameters
+    dim_ = dim;                           //else commit updated parameters
     offset_ = offs;
   }
 
@@ -107,25 +107,4 @@ void BufferWindow::Copy(BufferWindow other, Vecteur const& coords)
 
 
 
-
-
-
-
-/*
-
-BufferWindow BufferWindow::FlipVertical() const
-{
-  BufferWindow result(dimension_, GetEnvironment());
-
-  CWindowPtr src = Read();
-
-  src.to(0, src.height - 1 );   //move to last line
-  src.pitch = -src.pitch;       //negate pitch (so it will blit bottom to top)           
-
-  Blitter::Get()( src, result.Write(), dimension_);
-
-  return result;
-}
-
-*/
 }//namespace avs

@@ -43,7 +43,7 @@ namespace avs {
 class BufferWindow
 {
 
-  Dimension dimension_;        //dimension of the window
+  Dimension dim_;              //dimension of the window
   int pitch_;
   int offset_;                 //offset from buffer start to window start
   OwnedBlock buffer_;
@@ -52,7 +52,7 @@ class BufferWindow
 public:  //sstructors
 
   //normal constructor
-  BufferWindow(Dimension const& dimension, PEnvironment const& env);
+  BufferWindow(Dimension const& dim, PEnvironment const& env);
  
   //generated copy constructor and destructor are fine
   
@@ -67,28 +67,27 @@ public:  //assignment
 public:  //access
 
   PEnvironment const& GetEnvironment() const { return buffer_.GetEnvironment(); }
-  Dimension const& GetDimension() const { return dimension_; }
+  Dimension const& GetDimension() const { return dim_; }
 
   BYTE const * read() const { return buffer_.get() + offset_; }
   BYTE * write();
 
   int pitch() const { return pitch_; }
-  int width() const { return dimension_.GetWidth(); }
-  int height() const { return dimension_.GetHeight(); }
+  int width() const { return dim_.GetWidth(); }
+  int height() const { return dim_.GetHeight(); }
 
 
   CWindowPtr Read() const { return CWindowPtr( read(), pitch(), width(), height() ); }
-  WindowPtr Write()
-  { 
-    BYTE * ptr = write();
-    return WindowPtr( ptr, pitch(), width(), height() ); 
-  }
+  WindowPtr Write() { BYTE * ptr = write(); return WindowPtr( ptr, pitch(), width(), height() ); }
+
+  CWindowPtr ReadFromBottom() const { return CWindowPtr( read() + pitch() * (height() - 1), -pitch(), width(), height() ); }
+  WindowPtr WriteFromBottom() const { BYTE * ptr = write(); return WindowPtr( ptr + pitch() * (height() - 1), -pitch(), width(), height() ); }  
 
 
 public:  //comparison operators
 
-  bool operator==(BufferWindow const& other) const { return buffer_ == other.buffer_ && offset_ == other.offset_; }
-  bool operator!=(BufferWindow const& other) const { return buffer_ != other.buffer_ || offset_ != other.offset_; }
+  bool operator==(BufferWindow const& other) const { return buffer_ == other.buffer_ && offset_ == other.offset_ && dim_ == other.dim_; }
+  bool operator!=(BufferWindow const& other) const { return buffer_ != other.buffer_ || offset_ != other.offset_ || dim_ != other.dim_; }
 
 
 public:  

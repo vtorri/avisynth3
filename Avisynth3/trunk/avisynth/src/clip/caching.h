@@ -29,13 +29,7 @@
 #include "../core/cache.h"
 
 
-namespace avs { 
-  
-//declaration
-namespace cache { class Base; }
-  
-
-namespace clip {
+namespace avs { namespace clip {
 
 
 
@@ -57,15 +51,6 @@ public:  //clip general interface
 private:  //CachingClip requirement: have a cache
 
   virtual Cache& GetCache() const = 0;
-
-
-private:  //MakeFrame method
-  
-  //method who creates the requested frame
-  //called by the cache, when not cached
-  virtual CPVideoFrame MakeFrame(long n) const = 0;
-
-  friend class cache::Base;  //so can call MakeFrame
 
 };
 

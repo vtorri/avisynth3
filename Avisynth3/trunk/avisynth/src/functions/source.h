@@ -40,7 +40,9 @@ namespace avs { namespace functions {
 struct Source
 {
 
+#ifdef _WIN32
   static linker::core::Function aviFileSource;
+#endif //_WIN32
   static linker::core::Function colorBars;
 
 

@@ -54,9 +54,18 @@ public:  //structors
   ~Outline();
 
 
-private:  //declared but not implemented
+public:  //assignment
 
-  Outline& operator=(Outline const& other);
+  Outline& operator=(Outline const& other)
+  {
+    swap(Outline(other));
+    return *this;
+  }
+
+  void swap(Outline& other)
+  {
+    std::swap( static_cast<FT_Outline&>(*this), static_cast<FT_Outline&>(other) );
+  }
 
 
 public:  //Outline interface
@@ -68,6 +77,10 @@ public:  //Outline interface
   void Draw(MonoBitmap const& bitmap) const;
 
 };
+
+
+//global scope swap
+inline void swap(Outline& left, Outline& right) { left.swap(right); }
 
 
 

@@ -43,8 +43,8 @@ static inline T Saturate(S value)
   static T const min = std::numeric_limits<T>::min();
   static T const max = std::numeric_limits<T>::max();
 
-  return ( value < min ) ? min
-                         : ( value > max ) ? max : value;
+  return ( value <= (S)min ) ? min
+                             : ( value >= (S)max ) ? max : (T)value;
 }
 
 

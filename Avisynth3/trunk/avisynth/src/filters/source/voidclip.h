@@ -29,6 +29,10 @@
 #include "../../clip/nochild.h"
 
 
+#pragma warning ( push )           //push warning state
+#pragma warning (disable : 4250)   //get rid of MI dominance decisions
+
+
 namespace avs { namespace filters {
 
 
@@ -73,5 +77,7 @@ public:  //factory method
 
 
 } } //namespace avs::filters
+
+#pragma warning ( pop )
 
 #endif //__AVS_FILTERS_VOIDCLIP_H__

@@ -39,7 +39,7 @@ namespace avs { namespace cspace { namespace impl {
 //
 //
 //
-template <int bpp_, int bps_, typename VFrame> 
+template <long bpp_, long bps_, typename VFrame> 
 class interleaved : public Interleaved
 {
 
@@ -52,22 +52,22 @@ public:  //declarations and typedefs
 
 public:  //ColorSpace interface
 
-  virtual int GetBitsPerPixel() const { return 8 * bpp; }
+  virtual long GetBitsPerPixel() const { return 8 * bpp; }
 
-  virtual int GetBitmapSize(Dimension const& dim) const
+  virtual long GetBitmapSize(Dimension const& dim) const
   {
     return RoundUp<4>( dim.GetWidth() * bpp ) * dim.GetHeight();
   }
 
   virtual bool HasPlane(Plane plane) const { return plane == NOT_PLANAR; }
 
-  virtual void Check(int /*x*/, int y, bool interlaced) const
+  virtual void Check(long /*x*/, long y, bool interlaced) const
   {
     if ( interlaced && (y & 1) )
       throw exception::cspace::InvalidHeight(shared_from_this(), y, 2, true);
   }
 
-  virtual void ToPlane(int& x, int& /*y*/, Plane plane) const
+  virtual void ToPlane(long& x, long& /*y*/, Plane plane) const
   {
     if ( plane != NOT_PLANAR )
       throw exception::NoSuchPlane(shared_from_this(), plane);

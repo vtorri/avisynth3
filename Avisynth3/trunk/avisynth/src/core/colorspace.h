@@ -85,14 +85,14 @@ public:  //ColorSpace interface
   virtual ID id() const = 0;
   virtual char const * GetName() const = 0;
   virtual unsigned long GetFourCC() const = 0;
-  virtual int GetBitsPerPixel() const = 0;
+  virtual long GetBitsPerPixel() const = 0;
   
-  virtual int GetBitmapSize(Dimension const& dim) const = 0;  //NB: bitmaps are 4 bytes aligned
+  virtual long GetBitmapSize(Dimension const& dim) const = 0;  //NB: bitmaps are 4 bytes aligned
 
   virtual bool HasProperty(Property prop) const = 0;
   virtual bool HasPlane(Plane plane) const = 0;
 
-  virtual void Check(int x, int y, bool interlaced = false) const = 0;
+  virtual void Check(long x, long y, bool interlaced = false) const = 0;
 
   //convenience versions of Check
   void CheckDim(Dimension const& dim, bool interlaced = false) const { Check(dim.GetWidth(), dim.GetHeight(), interlaced); }
@@ -101,12 +101,12 @@ public:  //ColorSpace interface
 
   //method to convert frame coords into to plane coords
   //unlike the above, it does not check validity, but just perform the operation   
-  virtual void ToPlane(int& x, int& y, Plane plane) const = 0;
+  virtual void ToPlane(long& x, long& y, Plane plane) const = 0;
  
   //convenience versions of ToPlane
   Dimension ToPlaneDim(Dimension const& dim, Plane plane) const
   {
-    int x = dim.GetWidth(), y = dim.GetHeight();
+    long x = dim.GetWidth(), y = dim.GetHeight();
     ToPlane(x, y, plane);
     return Dimension(x, y);
   }

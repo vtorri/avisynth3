@@ -93,7 +93,7 @@ public:  //ColorSpace interface
   virtual ID id() const { return I_RGB45; }
   virtual char const * GetName() const { return "RGB45"; }
   virtual unsigned long GetFourCC() const { throw exception::cspace::Unsupported(shared_from_this()); }
-  virtual int GetBitsPerPixel() const { return 45; }
+  virtual long GetBitsPerPixel() const { return 45; }
 
   virtual bool HasProperty(Property prop) const
   {

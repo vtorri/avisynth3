@@ -78,9 +78,9 @@ public:  //ColorSpace interface
   virtual ID id() const { return I_YV12; }
   virtual char const * GetName() const { return "YV12"; }
   virtual unsigned long GetFourCC() const { return MakeFourCC('Y', 'V', '1', '2'); }
-  virtual int GetBitsPerPixel() const { return 12; }
+  virtual long GetBitsPerPixel() const { return 12; }
 
-  virtual int GetBitmapSize(Dimension const& dim) const
+  virtual long GetBitmapSize(Dimension const& dim) const
   {
     return 3 * RoundUp<4>(dim.GetWidth()) * dim.GetHeight() / 2;
   }
@@ -90,7 +90,7 @@ public:  //ColorSpace interface
     return prop == P_PLANAR || prop == P_YUV || prop == P_DEPTH8;
   }
 
-  virtual void Check(int x, int y, bool interlaced = false) const
+  virtual void Check(long x, long y, bool interlaced = false) const
   {
     if ( x & 1 )                                            //x must be mod 2
       throw exception::cspace::InvalidWidth(shared_from_this(), x, 2);
@@ -100,7 +100,7 @@ public:  //ColorSpace interface
       throw exception::cspace::InvalidHeight(shared_from_this(), y, 2, false);
   }
 
-  virtual void ToPlane(int& x, int& y, Plane plane) const
+  virtual void ToPlane(long& x, long& y, Plane plane) const
   {
     switch(plane)
     {
@@ -131,9 +131,9 @@ public:  //ColorSpace interface
   virtual ID id() const { return I_YV24; }
   virtual char const * GetName() const { return "YV24"; }
   virtual unsigned long GetFourCC() const { throw exception::cspace::Unsupported(shared_from_this()); }
-  virtual int GetBitsPerPixel() const { return 24; }
+  virtual long GetBitsPerPixel() const { return 24; }
 
-  virtual int GetBitmapSize(Dimension const& dim) const
+  virtual long GetBitmapSize(Dimension const& dim) const
   {
     return 3 * RoundUp<4>(dim.GetWidth()) * dim.GetHeight();
   }
@@ -143,13 +143,13 @@ public:  //ColorSpace interface
     return prop == P_PLANAR || prop == P_YUV || prop == P_DEPTH8;
   }
 
-  virtual void Check(int /*x*/, int y, bool interlaced) const
+  virtual void Check(long /*x*/, long y, bool interlaced) const
   {
     if ( interlaced && (y & 1) )
       throw exception::cspace::InvalidHeight(shared_from_this(), y, 2, true);
   }
 
-  virtual void ToPlane(int& /*x*/, int& /*y*/, Plane plane) const
+  virtual void ToPlane(long& /*x*/, long& /*y*/, Plane plane) const
   {
     if ( ! HasPlane(plane) )
       throw exception::NoSuchPlane(shared_from_this(), plane);
@@ -172,9 +172,9 @@ public:  //ColorSpace interface
   virtual ID id() const { return I_YV45; }
   virtual char const * GetName() const { return "YV45"; }
   virtual unsigned long GetFourCC() const { throw exception::cspace::Unsupported(shared_from_this()); }
-  virtual int GetBitsPerPixel() const { return 45; }
+  virtual long GetBitsPerPixel() const { return 45; }
 
-  virtual int GetBitmapSize(Dimension const& dim) const
+  virtual long GetBitmapSize(Dimension const& dim) const
   {
     return 3 * RoundUp<4>(dim.GetWidth() * 2) * dim.GetHeight();
   }
@@ -184,13 +184,13 @@ public:  //ColorSpace interface
     return prop == P_PLANAR || prop == P_YUV || prop == P_DEPTH15;
   }
 
-  virtual void Check(int /*x*/, int y, bool interlaced) const
+  virtual void Check(long /*x*/, long y, bool interlaced) const
   {
     if ( interlaced && (y & 1) )
       throw exception::cspace::InvalidHeight(shared_from_this(), y, 2, true);
   }
 
-  virtual void ToPlane(int& x, int& /*y*/, Plane plane) const
+  virtual void ToPlane(long& x, long& /*y*/, Plane plane) const
   {
     if ( ! HasPlane(plane) )
       throw exception::NoSuchPlane(shared_from_this(), plane);

@@ -120,6 +120,7 @@ public:  //structors
 
 private:  //typedefs 
 
+  typedef functor::LocalVar LocalVar;
   typedef functor::pusher<functor::LocalVar> LocalVarPusher;
   typedef functor::pusher<functor::GlobalVar> GlobalVarPusher;
   typedef functor::assigner<functor::LocalVar> LocalVarAssigner;
@@ -166,7 +167,8 @@ public:  //definition nested class
           >>  expression( TypedCode(), expression.implicit )
               [
                 expression.value = arg1,
-                first(expression.value) += construct_<LocalVarAssigner>( first(local_assign_expr.value) )
+                first(expression.value) += construct_<LocalVarAssigner>
+                    (  construct_<LocalVar>( self.localTable, first(local_assign_expr.value) )  )
               ]
           ;
 
@@ -234,7 +236,7 @@ public:  //definition nested class
       var_expr
           =   spirit::lazy_p( unwrap(self.localTable) )
               [
-                first(atom_expr.value) += construct_<LocalVarPusher>( first(arg1) ),
+                first(atom_expr.value) += construct_<LocalVarPusher>( construct_<LocalVar>(self.localTable, first(arg1)) ),
                 second(atom_expr.value) = second(arg1)
               ]
           |   !   spirit::str_p("global")
@@ -248,7 +250,8 @@ public:  //definition nested class
       last_expr
           =   spirit::str_p("last")
               [
-                first(atom_expr.value) += construct_<LocalVarPusher>( bind(&Check::LastIsDefined)( self.last ) ),
+                first(atom_expr.value) += construct_<LocalVarPusher>
+                    (  construct_<LocalVar>( self.localTable, bind(&Check::LastIsDefined)( self.last ) )  ),
                 second(atom_expr.value) = val('c')
               ]
           ;

@@ -268,7 +268,7 @@ class RefCounted {
 
   void InitAddRef() { refcount += (refcount == -1)? 2 : 1; } //used by smart ptrs when getting a ptr
   void AddRef() { ++refcount; }
-  void Release() { if (--refcount == 0) recycle(); }
+  void Release() { if (--refcount == 0) delete this; }
   
   friend class smart_ptr_base;
 
@@ -276,10 +276,6 @@ protected:
   //refcount starts at -1 to prevent confusion between new instances and unreferrenced ones 
   //will help achieve thread-safety in instance recycling
   RefCounted() : refcount(-1) { } 
-
-  //method to put oneself in a recyclable state, default implementation = suicide 
-  //subclass who recycle instance must redefine it
-  virtual void recycle() { delete this; } 
 
   //clean volatile data (if there is any), performed when going from smart_ptr_to_cst to a smart_ptr
   virtual void clean() { }   //default implementation : no effect
@@ -291,7 +287,6 @@ protected:
   virtual ~RefCounted() { }  //virtual destructor 
 
 public:
-  bool isFree() { return refcount == 0; }   //useful for instance recycling
   bool isShared() { return refcount > 1; }  //used to decide whether clone or steal by smart pointers
 
 };
@@ -356,6 +351,16 @@ protected:
     }
   } 
 
+  inline void SelfClone()
+  {
+    if (ptr) {
+      RefCounted * newPtr = ptr->clone();
+      newPtr->InitAddRef();   //must be done first, clone is allowed to return this...
+      ptr->Release();       //otherwise we might end up destroying the object
+      ptr = newPtr;
+    }
+  }
+
   inline void Clean() { if (ptr) ptr->clean(); }
 
 public:
@@ -375,10 +380,9 @@ template <class T> class smart_ptr_to_cst : public smart_ptr_base {
 public:
   smart_ptr_to_cst() { }
   smart_ptr_to_cst(T* _ptr) : smart_ptr_base(_ptr) { }
-  //casting constructor using a dynamic cast (illegal cast will get a NULL ref)
-  template <class Y> smart_ptr_to_cst(const smart_ptr_to_cst<Y>& other) : smart_ptr_base(dynamic_cast<T*>(other.ptr)) { }
-  //template specialisation to spare the dynamic cast when T = Y
-  template <> smart_ptr_to_cst(const smart_ptr_to_cst<T>& other) : smart_ptr_base(other) { }
+  smart_ptr_to_cst(const T *_ptr) : smart_ptr_base(const_cast<T*>(_ptr)) { }
+  //casting constructor 
+  template <class Y> smart_ptr_to_cst(const smart_ptr_to_cst<Y>& other) : smart_ptr_base(other) { }
   smart_ptr_to_cst(smart_ptr<T>& other);
   smart_ptr_to_cst(const smart_ptr<T>& other);
 
@@ -386,6 +390,7 @@ public:
   void swap(smart_ptr_to_cst<T>& other) { std::swap(ptr, other.ptr); }
 
   const smart_ptr_to_cst<T>& operator =(T* newPtr) { Set(newPtr); return *this; }
+  const smart_ptr_to_cst<T>& operator =(const T* newPtr) { Set(const_cast<T*>(newPtr)); return *this; }
   const smart_ptr_to_cst<T>& operator =(const smart_ptr_to_cst<T>& other) { Copy(other); return *this; }
   const smart_ptr_to_cst<T>& operator =(smart_ptr<T>& other);
   const smart_ptr_to_cst<T>& operator =(const smart_ptr<T>& other);
@@ -407,10 +412,8 @@ template <class T> class smart_ptr : public smart_ptr_base {
 public:
   smart_ptr() { }
   smart_ptr(T* _ptr) : smart_ptr_base(_ptr) { }
-  //casting constructor using a dynamic cast (illegal cast will get a NULL ref)
-  template <class Y> smart_ptr(const smart_ptr<Y>& other) : smart_ptr_base(dynamic_cast<T*>(other.ptr)) { }  
-  //template specialisation to spare the dynamic cast when T = Y
-  template <> smart_ptr(const smart_ptr<T>& other) : smart_ptr_base(other) { }
+  //casting constructor 
+  template <class Y> smart_ptr(const smart_ptr<Y>& other) : smart_ptr_base(other) { }  
   smart_ptr(smart_ptr_to_cst<T>& other) { StealOrClone(other); Clean(); }
   smart_ptr(const smart_ptr_to_cst<T>& other) { Clone(other); Clean(); }
 
@@ -428,6 +431,8 @@ public:
   bool operator ==(const smart_ptr<T>& other) const { return *((T*)ptr) == *((T*)other.ptr); }
   bool operator < (const smart_ptr<T>& other) const { return *((T*)ptr) < *((T*)other.ptr); }
 
+  //clone the pointed object, ensuring you don't modify something shared by another smart T *  
+  void clone() { SelfClone(); }
 };
 
 
@@ -459,7 +464,7 @@ class VideoFrame : public RefCounted {
 
 public:
 
-  typedef short dimension;  //generally in Bytes when horizontal, not pixels
+  typedef short dimension;  
   typedef signed char Align;
   typedef VideoInfo::ColorSpace ColorSpace;
 
@@ -471,14 +476,13 @@ public:
   };
 
   //method to convert index in Plane enum, USE it !!!
-  static Plane IndexToYUVPlane(int i) {
+  inline static Plane IndexToYUVPlane(int i) {
     static Plane planes[] = { PLANAR_Y, PLANAR_U, PLANAR_V };
     _ASSERTE( i>=0 && i < 3);
     return planes[i];
   }
 
-  class NoSuchPlane { }; //exception for inadequate plane requests
-  class IllegalDimension { };
+  class NoSuchPlane { }; //exception for inadequate plane requests 
 
   //some legacy methods
   dimension GetPitch() const throw(NoSuchPlane) { return GetPitch(NOT_PLANAR); }
@@ -502,7 +506,7 @@ public:
   virtual ColorSpace GetColorSpace() const = 0;
   bool IsPlanar() const { return GetColorSpace() & VideoInfo::CS_PLANAR != 0; }
   dimension GetVideoHeight() const { return GetHeight( IsPlanar()? PLANAR_Y : NOT_PLANAR ); }
-  //dimension GetVideoWidth() const { return GetRowSize( IsPlanar()? PLANAR_Y : NOT_PLANAR ) //COMPLETE ME !!
+  dimension GetVideoWidth() const;  
 
   //frames now know about their fieldbased state
   bool IsFieldBased() const;
@@ -511,6 +515,7 @@ public:
   //methods used to check that pixels args match Colorspace restrictions
   //they throw the appropriate error msg when arg are illegal
   //you are not supposed to use them, all calls are done internally when needed
+  //btw, they don't check sign, just parity and such (sign check are done at a lower level)
   dimension WidthToRowSize(dimension width) const;
   dimension HeightCheck(dimension height) const;
 
@@ -542,10 +547,10 @@ public:
   virtual void FlipVertical() = 0;
   virtual void FlipHorizontal() = 0;
 
-  virtual void TurnLeft() = 0;
+  virtual void TurnLeft() = 0;  //how do we turn a YUY2 frame !?...
   virtual void TurnRight() = 0;
 
-  virtual Blend(CPVideoFrame other, float factor) = 0;
+  virtual void Blend(CPVideoFrame other, float factor) = 0;
 
   //what else ???
 
@@ -596,6 +601,10 @@ public:
   void SetProperty(PProperty prop) { SetProperty(CPProperty(prop)); }  //exists so outside PProperty won't be casted to CPProperty by the call of the above and loses its ref
   virtual void RemoveProperty(const PropertyName& name) = 0;
 
+
+protected:
+  //part of a common err msg
+  static const string UNMATCHING_CLR_SPACE;  //= "ColorSpace don't match"
 
 };
 

@@ -36,6 +36,17 @@ struct Action
   //append appropriate version of the operator[]
   static void AppendSubscriptOperation(TypedCode& appendTo, bool firstArgOnly);
 
+  //append operation for operator== or operator!=, or throw if types don't allow comparison 
+  static void AppendEqualityOperation(TypedCode& appendTo, TypedCode const& rightExpr, bool isEqual);
+
+
+private:
+
+  static int TypeToIndex(char type);
+
+  static ElementalOperation const equal_op[5];
+  static ElementalOperation const differ_op[5];
+
 };
 
 

@@ -23,6 +23,7 @@
 //avisynth includes
 #include "action.h"
 #include "../vmcode.h"
+#include "../functor/adaptor.h"
 #include "../../core/Exception/generic.h"
 
 
@@ -41,6 +42,58 @@ void Action::AppendSubscriptOperation(TypedCode& appendTo, bool firstArgOnly)
   }
 
 }
+
+
+void Action::AppendEqualityOperation(TypedCode& appendTo, TypedCode const& rightExpr, bool isEqual)
+{
+  char type = appendTo.get<1>();
+
+  if ( type != rightExpr.get<1>() )
+    throw exception::Generic("Cannot compare expression of different types");
+  if ( type == 'v' )
+    throw exception::Generic("Cannot do comparison on void");
+
+  appendTo.get<0>() += rightExpr.get<0>();                                     //appends right expr generating code
+  appendTo.get<0>() += (isEqual ? equal_op : differ_op)[ TypeToIndex(type) ];  //appends comparison op
+  appendTo.get<1>() = 'b';                                                     //set final type to bool
+
+}
+
+
+int Action::TypeToIndex(char type)
+{
+  switch(type)
+  {
+  case 'b': return 0;
+  case 'c': return 1;
+  case 'f': return 2;
+  case 'i': return 3;
+  case 's': return 4;
+  default: throw exception::Generic("Illegal type encountered");
+  }
+}
+
+
+template <typename T> inline bool equals(T left, T right) { return left == right; }
+template <typename T> inline bool differs(T left, T right) { return left != right; }
+
+
+ElementalOperation const Action::equal_op[5] = 
+    { functor::adapt(&equals<bool>)
+    , functor::adapt(&equals<PClip const&>)
+    , functor::adapt(&equals<double>)
+    , functor::adapt(&equals<int>)
+    , functor::adapt(&equals<std::string const&>) 
+    }; 
+
+ElementalOperation const Action::differ_op[5] = 
+    { functor::adapt(&differs<bool>)
+    , functor::adapt(&differs<PClip const&>)
+    , functor::adapt(&differs<double>)
+    , functor::adapt(&differs<int>)
+    , functor::adapt(&differs<std::string const&>) 
+    }; 
+
 
 
 } } } //namespace avs::parser::grammar

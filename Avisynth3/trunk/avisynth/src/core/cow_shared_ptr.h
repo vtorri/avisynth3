@@ -47,7 +47,7 @@ template <class T> class cow_shared_ptr : public boost::shared_ptr<T const>
 
   void MakeOwner() const
   {
-    if ( ! unique() )
+    if ( ! parent_type::unique() )
     {
       parent_type const * parent = this;
       const_cast<parent_type *>(parent)->operator=( (*parent)->clone() );

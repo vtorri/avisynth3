@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@
 #include "../colorspace.h"
 #include "../bufferwindow.h"
 #include "../bufferwindow/blender.h"
+#include "../exception/nosuchplane.h"
 #include "../bufferwindow/leftturner.h"
 #include "../bufferwindow/rightturner.h"
 #include "../bufferwindow/verticalflipper.h"
@@ -84,7 +85,7 @@ public:  //plane access
     case PLANAR_U: return GetU();
     case PLANAR_V: return GetV();
     }
-    GetColorSpace().ThrowNoSuchPlaneException(plane);
+    throw exception::NoSuchPlane(GetColorSpace(), plane);
   }
 
   virtual BufferWindow const& operator[](Plane plane) const
@@ -95,7 +96,7 @@ public:  //plane access
     case PLANAR_U: return GetConstU();
     case PLANAR_V: return GetConstV();
     }
-    GetColorSpace().ThrowNoSuchPlaneException(plane);
+    throw exception::NoSuchPlane(GetColorSpace(), plane);
   }
 
   BufferWindow& GetY() { ClearStaticProperties(); return y_; }

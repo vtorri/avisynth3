@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,9 +24,9 @@
 #ifndef __AVS_CS_INTERLEAVED_H__
 #define __AVS_CS_INTERLEAVED_H__
 
-
-//avisynth include
+//avisynth includes
 #include "../colorspace.h"
+#include "../exception/nosuchplane.h"
 
 
 namespace avs { namespace cspace {
@@ -48,7 +48,7 @@ public:  //ColorSpace interface
   virtual void ToPlane(int& x, int& y, Plane plane) const
   {
     if ( plane != NOT_PLANAR )
-      ThrowNoSuchPlaneException(plane);
+      throw exception::NoSuchPlane(*this, plane);
     x *= bpp_;
   }
 

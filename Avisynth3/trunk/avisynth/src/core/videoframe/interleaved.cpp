@@ -25,6 +25,7 @@
 #include "interleaved.h"
 #include "../colorspace.h"
 #include "../bufferwindow/copier.h"
+#include "../exception/nosuchplane.h"
 #include "../bufferwindow/sizechanger.h"
 
 
@@ -45,14 +46,14 @@ InterleavedBase::InterleavedBase(ColorSpace& space, Base const& other)
 BufferWindow& InterleavedBase::operator[](Plane plane)
 {
   if ( plane != NOT_PLANAR )
-    GetColorSpace().ThrowNoSuchPlaneException(plane);
+    throw exception::NoSuchPlane(GetColorSpace(), plane);
   return GetMain();
 }
 
 BufferWindow const& InterleavedBase::operator[](Plane plane) const
 {
   if ( plane != NOT_PLANAR )
-    GetColorSpace().ThrowNoSuchPlaneException(plane);
+    throw exception::NoSuchPlane(GetColorSpace(), plane);
   return GetConstMain();
 }
 

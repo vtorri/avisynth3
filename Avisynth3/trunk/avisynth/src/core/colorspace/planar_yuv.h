@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,7 @@
 //avisynh includes
 #include "../colorspace.h"
 #include "../videoframe/planar_yuv.h"
+#include "../exception/nosuchplane.h"
 
 
 namespace avs { namespace cspace {
@@ -81,7 +82,7 @@ public:  //ColorSpace interface
     case PLANAR_V: x >>= 1; y >>= 1; break;
 
     default:
-      ThrowNoSuchPlaneException(plane);
+      throw exception::NoSuchPlane(*this, plane);
     }
   }
 
@@ -131,7 +132,7 @@ public:  //ColorSpace interface
   virtual void ToPlane(int& x, int& y, Plane plane) const
   {
     if ( ! HasPlane(plane) )
-      ThrowNoSuchPlaneException(plane);
+      throw exception::NoSuchPlane(*this, plane);
   }
 
   virtual CPVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
@@ -179,7 +180,7 @@ public:  //ColorSpace interface
   virtual void ToPlane(int& x, int& y, Plane plane) const
   {
     if ( ! HasPlane(plane) )
-      ThrowNoSuchPlaneException(plane);
+      throw exception::NoSuchPlane(*this, plane);
 
     x <<= 1;
   }

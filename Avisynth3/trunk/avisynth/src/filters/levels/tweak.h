@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,14 +24,10 @@
 #ifndef __AVS_FILTERS_TWEAK_H__
 #define __AVS_FILTERS_TWEAK_H__
 
-//avisynth include
+//avisynth includes
 #include "../../clip/caching/concrete.h"
 #include "../../clip/onechild/concrete.h"
 #include "../../clip/onechild/cachingpipeline.h"
-
-
-#pragma warning ( push )           //push warning state
-#pragma warning (disable : 4250)   //get rid of MI dominance decisions
 
 
 namespace avs { namespace filters {
@@ -64,7 +60,7 @@ public:  //constructors
 
 public:  //Clip general interface
 
-  virtual CPVideoInfo GetVideoInfo() const { return GetChild()->GetVideoInfo(); }
+  virtual CPVideoInfo GetVideoInfo() const { return GetChildVideoInfo(); }
 
   virtual void GetAudio(void * buffer, __int64 start, int count) const { return GetChildAudio(buffer, start, count); }
 
@@ -78,94 +74,12 @@ public:  //factory method
 
   static PClip Create(PClip child, double hue, double sat, double bright, double cont);
 
-
-private:  //colorspace specific inner subclasses
-
-  class YUY2;
-  class YV12;
-
 };
 
   
-/////////////////////////////////////////////////////////////////////////////
-//  Tweak::YUY2
-//
-//  Tweak subclass dealing with the YUY2 color space
-//
-class Tweak::YUY2 : public Tweak
-{
-
-public:  //constructors
-
-  YUY2(PClip child, double hue, double sat, double bright, double cont)
-    : Tweak(child, hue, sat, bright, cont) { }
-
-  YUY2(PClip child, Tweak const& other)
-    : Tweak(child, other) { }
-
-
-protected:  //Pipeline MakeFrame method
-
-  virtual CPVideoFrame MakeFrame(CPVideoFrame const& source) const;
-
-
-public:  //special codepath inner subclasses
-
-  class ISSE;
-
-};
-
-/////////////////////////////////////////////////////////////////////////////
-//  Tweak::YUY2::ISSE
-//
-//  ISSE codepath for Tweak::YUY2
-//
-class Tweak::YUY2::ISSE : public Tweak::YUY2
-{
-
-public:  //constructors
-
-  ISSE(PClip child, double hue, double sat, double bright, double cont)
-    : YUY2(child, hue, sat, bright, cont) { }
-
-  ISSE(PClip child, Tweak const& other)
-    : YUY2(child, other) { }
-
-
-protected:  //Pipeline MakeFrame method
-
-  virtual CPVideoFrame MakeFrame(CPVideoFrame const& source) const;
-
-};
-
-
-/////////////////////////////////////////////////////////////////////////////
-//  Tweak::YV12
-//
-//  Tweak subclass dealing with the YV12 color space
-//
-class Tweak::YV12 : public Tweak
-{
-
-public:  //constructors
-
-  YV12(PClip child, double hue, double sat, double bright, double cont)
-    : Tweak(child , hue, sat, bright, cont) { }
-
-  YV12(PClip child, Tweak const& other)
-    : Tweak(child, other) { }
-
-
-protected:  //Pipeline MakeFrame method
-
-  virtual CPVideoFrame MakeFrame(CPVideoFrame const& source) const;
-
-};
 
 
 
 } } //namespace avs::filters
-
-#pragma warning ( pop )
 
 #endif //__AVS_FILTERS_TWEAK_H__

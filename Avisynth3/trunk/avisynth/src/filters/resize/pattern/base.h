@@ -82,7 +82,7 @@ public:  //access
 
 protected:  //at the disposition of subclasses constructor
 
-  void init(int count, int size) { count_ = count; pattern_.reset(size << 2, false); }
+  void init(int count, int size) { count_ = count; pattern_.reset(size << 2); }
 
   int * get() { return reinterpret_cast<int *>(pattern_.get()); }
 

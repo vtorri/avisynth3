@@ -49,7 +49,7 @@ class Plugin : public linker::Plugin
 
 private:  //structors
 
-  Plugin() { }
+  Plugin();
 
   //generated destructor is fine
 
@@ -61,11 +61,9 @@ public:  //plugin interface
   virtual void FillFunctionList(FunctionList& addTo) const;
 
 
-private:  //register method for core functions
+public:  //register method for core functions
 
   void Register(core::Function * funct) { list_.push_back( funct ); }
-
-  friend class core::Function;  //so can call the above
 
 
 public:  //Get instance method

@@ -21,8 +21,15 @@
 // General Public License cover the whole combination.
 
 
-//avisynth include
+//avisynth includes
 #include "plugin.h"
+#include "../../functions/edit.h"
+#include "../../functions/audio.h"
+#include "../../functions/combine.h"
+#include "../../functions/convert.h"
+#include "../../functions/script.h"
+#include "../../functions/source.h"
+
 
 //stl include
 #include <functional>   //for identity
@@ -30,6 +37,16 @@
 
 namespace avs { namespace linker { namespace core {
 
+
+Plugin::Plugin()
+{
+  functions::Edit::RegisterAll(*this);
+  functions::Audio::RegisterAll(*this);
+  functions::Combine::RegisterAll(*this);
+  functions::Convert::RegisterAll(*this);
+  functions::Script::RegisterAll(*this);
+  functions::Source::RegisterAll(*this);
+}
 
 
 void Plugin::FillFunctionList(FunctionList& addTo) const

@@ -32,6 +32,10 @@
 namespace avs { namespace linker { namespace core {
 
 
+//declaration
+class Plugin;
+
+
 
 //////////////////////////////////////////////////////////////////////////////////
 //  core::Function

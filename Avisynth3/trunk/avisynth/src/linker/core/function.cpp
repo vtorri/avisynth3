@@ -35,10 +35,7 @@ Function::Function(char returnType, char const * name, char const * prototype, p
   : returnType_( returnType )
   , name_( name )
   , prototype_( prototype )
-  , op_( op )
-{
-  Plugin::Get()->Register( this );
-}
+  , op_( op ) { }
 
 
 PPlugin Function::GetMotherPlugin() const

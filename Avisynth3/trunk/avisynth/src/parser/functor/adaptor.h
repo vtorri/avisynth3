@@ -50,11 +50,11 @@ struct adaptor_impl
   adaptor_impl(Function * function)
     : caller( function ) { }
 
-  void operator()(VMState& state) const
+  OpType operator()(VMState& state) const
   {
     pusher<literal<Result> > push( caller(state) );
     popper<consume>()(state);
-    push(state);
+    return push(state);
   }
 
 };
@@ -71,10 +71,10 @@ struct adaptor_impl<Function, void>
   adaptor_impl(Function * function)
     : caller( function ) { }
 
-  void operator()(VMState& stack) const
+  OpType operator()(VMState& stack) const
   {
     caller<Function>::operator()(state);
-    popper<consume>()(state);
+    return popper<consume>()(state);
   }
 
 };

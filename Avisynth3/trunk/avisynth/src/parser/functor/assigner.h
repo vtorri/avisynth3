@@ -24,7 +24,8 @@
 #ifndef __AVS_PARSER_FUNCTOR_ASSIGNER_H__
 #define __AVS_PARSER_FUNCTOR_ASSIGNER_H__
 
-//avisynth include
+//avisynth includes
+#include "../optype.h"
 #include "../vmstate.h"
 
 
@@ -46,7 +47,11 @@ struct assigner
   assigner(Holder const& holder)
     : holder_( holder ) { }
 
-  void operator()(VMState& state) const { holder_(state) = state.top(); }
+  OpType operator()(VMState& state) const 
+  { 
+    holder_(state) = state.top(); 
+    return NORMAL;
+  }
 
 };
 
@@ -66,7 +71,12 @@ struct popassigner
   popassigner(Holder const& holder)
     : holder_( holder ) { }
 
-  void operator()(VMState& state) const { holder_(state) = state.top(); state.pop(); }
+  OpType operator()(VMState& state) const 
+  { 
+    holder_(state) = state.top(); 
+    state.pop(); 
+    return NORMAL;
+  }
 
 };
 

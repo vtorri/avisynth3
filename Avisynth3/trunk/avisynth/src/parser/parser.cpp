@@ -29,6 +29,9 @@
 #include "../filters/source/staticimage.h"
 #include "../linker/core/plugin.h"
 
+//boost include
+#include <boost/variant/get.hpp>
+
 //stl include
 #include <sstream>
 
@@ -41,45 +44,50 @@ namespace avs { namespace parser {
 PClip Parser::operator ()(std::string const& src)
 {
   
+  using namespace lazy;
   using namespace phoenix;
   using namespace avs::parser::grammar;
 
-  //Expression expression;
   PEnvironment env = RuntimeEnvironment::Create(10000000);
 
-  int stackSize = 0;
-  VMState state(env);  
-  VarTable varTable;
   FunctionTable functionTable;
 
   functionTable.AddPlugin(linker::core::Plugin::Get());
 
-  Statement statement(stackSize, varTable, functionTable);
-  //Variable variable(varTable);
+  Statement statement(functionTable);
+  Expression expression(functionTable);
 
   VMCode code;
-  //std::string types;
+  VarTable varTable;
+  int stackSize = 0;
+  boost::optional<int> last;
+
+  //varTable.add( "un", TypedIndex(0, 'i') );
+
+  boost::reference_wrapper<VarTable const> varRef(varTable);
 
   parse(src.c_str(), 
-   *( statement
-      [
-        var(code) += arg1//,
-    //    var(types) += bind(&TypedCode::type)(arg1)
-      ]
-      >> spirit::eol_p
-    ), spirit::blank_p);
+     *(   statement( VMCode(), boost::ref(varTable), boost::ref(stackSize), boost::ref(last) )
+          //expression( value::Expression(), boost::ref(varTable), last )
+          [            
+            var(code) += arg1
+          ]
+      ), spirit::blank_p);
 
 
-  code(state);
+  VMState state(env);  
+  //state.push(1);
 
 
+  code(state); 
 
+  //return boost::get<PClip>(state.top());
   std::stringstream stream;
 
   stream << "parsed:";
 
   for(int i = 0; i < state.size(); ++i)
-    stream << ' ' /*<< types[i] << ":"*/ << state[i];
+    stream << ' '  << state[i];  
 
   return filters::StaticImage::CreateMessageClip(stream.str(), env );
 }

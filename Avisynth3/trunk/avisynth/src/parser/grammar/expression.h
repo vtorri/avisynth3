@@ -28,6 +28,7 @@
 #include "literal.h"
 #include "../vmcode.h"
 #include "../lazy/tuple.h"
+#include "../lazy/unwrap.h"
 #include "../functiontable.h"
 #include "../binaryop/parser.h"
 #include "../functor/pusher.h"
@@ -37,6 +38,7 @@
 //boost includes
 #include <boost/optional.hpp>
 #include <boost/spirit/symbols.hpp>
+#include <boost/spirit/dynamic/lazy.hpp>    //for lazy_p
 
 //stl include
 #include <utility>   //for pair
@@ -49,8 +51,11 @@ namespace avs { namespace parser { namespace grammar {
 typedef boost::tuples::tuple<int, char> TypedIndex;
 typedef spirit::symbols<TypedIndex const> VarTable;
 
+namespace value { typedef boost::tuples::tuple<VMCode, char, bool> Expression; }
+
 
 namespace closure {
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,13 +63,24 @@ namespace closure {
 //
 //  closure for the Expression grammar
 //
-struct Expression : spirit::closure<Expression, boost::tuples::tuple<VMCode, char, bool>, boost::optional<int>, bool>
+struct Expression : spirit::closure
+    < Expression
+    , value::Expression
+    , boost::reference_wrapper<VarTable>
+    , boost::optional<int>
+    >
 {
   member1 value;
-  member2 last;
-  member3 implicit;   //mark if implicit last function call are possible
+  member2 varTable;
+  member3 last;
 };
 
+
+struct InnerExpression : spirit::closure<InnerExpression, TypedCode, bool>
+{
+  member1 value;
+  member2 implicit;   //mark if implicit last function call are possible within the expression
+};
 
 struct FunctionCall : spirit::closure<FunctionCall, std::string, FunctionPool const *>
 {
@@ -86,14 +102,13 @@ struct FunctionCall : spirit::closure<FunctionCall, std::string, FunctionPool co
 class Expression : public spirit::grammar<Expression, closure::Expression::context_t>
 {
 
-  VarTable const& varTable;
   FunctionTable const& functionTable;
   spirit::symbols<binaryop::TypeMapped const> add_op, mult_op;
 
 
 public:  //structors
 
-  Expression(VarTable const& _varTable, FunctionTable const& _functionTable);
+  Expression(FunctionTable const& _functionTable);
 
 
 private:  //typedefs 
@@ -115,11 +130,7 @@ public:  //definition nested class
       using namespace phoenix;
 
       top 
-          =   spirit::eps_p
-              [
-                self.implicit = !! self.last       //init if implicit last is available
-              ]
-          >>  expression 
+          =   expression( TypedCode(), self.last() ) 
               [ 
                 first(self.value) = first(arg1),
                 second(self.value) = second(arg1)
@@ -129,19 +140,22 @@ public:  //definition nested class
       expression 
           =   assign_expr 
               [ 
-                third(self.value) = val(true)
+                third(self.value) = val(true)      //report the expression parsed is an affectation
               ]
           |   binary_op_p(mult_expr, self.add_op) 
               [ 
                 expression.value = arg1,
-                third(self.value) = val(false)
+                third(self.value) = val(false)     //report it is not
               ]
           ;
 
       assign_expr
-          =   self.varTable [ assign_expr.value = arg1 ]
+          =   spirit::lazy_p( unwrap(self.varTable) )
+              [ 
+                assign_expr.value = arg1 
+              ]
           >>  '='
-          >>  expression
+          >>  expression( TypedCode(), false )
               [
                 expression.value = arg1,
                 first(expression.value) += construct_<LocalVarAssigner>( first(assign_expr.value) )
@@ -154,10 +168,13 @@ public:  //definition nested class
       atom_expr
           =   (   literal [ atom_expr.value = construct_<TypedCode>(first(arg1), second(arg1)) ]
               |   '('
-              >>  expression [ atom_expr.value = arg1 ]
+              >>  expression( TypedCode(), false ) 
+                  [ 
+                    atom_expr.value = arg1 
+                  ]
               >>  ')'
               |   call_expr
-              |   self.varTable
+              |   spirit::lazy_p( unwrap(self.varTable) )
                   [
                     first(atom_expr.value) += construct_<LocalVarPusher>( first(arg1) ),
                     second(atom_expr.value) = second(arg1)
@@ -170,7 +187,7 @@ public:  //definition nested class
                   ]
               )
               [
-                self.implicit = val(false)
+                expression.implicit = val(false)
               ]
           >> *(   spirit::eps_p( second(atom_expr.value) == val('c') )  //check we have a clip result 
               >>  '.'
@@ -184,7 +201,7 @@ public:  //definition nested class
                 call_expr.functionPool = bind(&boost::reference_wrapper<FunctionPool>::get_pointer)(arg1)
               ]
           >>  '('
-          >> !(   expression
+          >> !(   expression( TypedCode(), false )
                   [
                     first(atom_expr.value) += first(arg1),
                     call_expr.prototype += second(arg1)
@@ -204,7 +221,7 @@ public:  //definition nested class
   private:
 
     spirit::rule<ScannerT> top;
-    spirit::rule<ScannerT, closure::Value<TypedCode>::context_t> expression;
+    spirit::rule<ScannerT, closure::InnerExpression::context_t> expression;
     spirit::rule<ScannerT, closure::Value<TypedIndex>::context_t> assign_expr;
     spirit::rule<ScannerT, closure::Value<TypedCode>::context_t> mult_expr;
     spirit::rule<ScannerT, closure::Value<TypedCode>::context_t> atom_expr;

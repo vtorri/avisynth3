@@ -27,7 +27,9 @@
 //avisynth includes
 #include "name.h"
 #include "expression.h"
+#include "../functor/if.h"
 #include "../functor/popper.h"
+#include "../functor/swapper.h"
 #include "../lazy/add_symbol.h"
 
 
@@ -35,20 +37,60 @@ namespace avs { namespace parser { namespace grammar {
 
 
 
-class Statement : public spirit::grammar<Statement, closure::Value<VMCode>::context_t>
+namespace value { 
+  
+typedef boost::tuples::tuple<boost::optional<int>, bool> StackingStatement;
+
+}
+
+namespace closure {
+
+
+struct Statement : spirit::closure
+    < Statement
+    , VMCode
+    , boost::reference_wrapper<VarTable>
+    , boost::reference_wrapper<int>
+    , boost::reference_wrapper<boost::optional<int> >
+    >
+{
+  member1 value;
+  member2 varTable;
+  member3 stackSize;
+  member4 last;
+};
+
+
+struct StatementBlock : spirit::closure
+    < StatementBlock
+    , VMCode
+    , VarTable
+    , int
+    , boost::optional<int>
+    >
+{
+  member1 value;
+  member2 varTable;
+  member3 stackSize;
+  member4 last;
+};
+
+
+} //namespace closure
+
+
+
+
+class Statement : public spirit::grammar<Statement, closure::Statement::context_t>
 {
 
-  int& stackSize;
-  VarTable& varTable;
   FunctionTable const& functionTable;
 
 
 public:  //structors
 
-  Statement(int& _stackSize, VarTable& _varTable, FunctionTable const& _functionTable)
-    : stackSize( _stackSize )
-    , varTable( _varTable )
-    , functionTable( _functionTable ) { }
+  Statement(FunctionTable const& _functionTable)
+    : functionTable( _functionTable ) { }
 
 
 public:  //definition nested class
@@ -58,17 +100,53 @@ public:  //definition nested class
   {
 
     definition(Statement const& self)
-      : expression( self.varTable, self.functionTable )
+      : expression( self.functionTable )
     {
 
       using namespace lazy;
       using namespace phoenix;
 
+      top
+          =   statement( VMCode(), self.varTable, self.stackSize, self.last )
+              [ 
+                self.value = arg1 
+              ]
+          ;
+
       statement
-          =   expression
+          =  !(   stackingStatement( boost::tuples::make_tuple(boost::optional<int>(), true) )
+                  [
+                    if_( unwrap(statement.last) )   //if last was defined
+                    [
+                      if_( second(arg1) )           //if we actually added to the stack
+                      [
+                        statement.value += construct_<functor::Swapper>()   //swap so last is at top
+                      ],
+                      statement.value += construct_<functor::popper<1> >()  //pop last
+                    ],
+                    unwrap(statement.last) = first(arg1)                    //update definition of last
+                  ]
+              |   ifStatement
+              )
+          >>  spirit::eol_p
+          ;
+
+      stackingStatement
+          =   expression( value::Expression(), statement.varTable, unwrap(statement.last) )
               [
-                self.value = first(arg1),
-                self.value += construct_<functor::popper<1> >()
+                statement.value = first(arg1),
+                if_( second(arg1) == val('c') && ! third(arg1) )          //if type clip and not a top level =
+                [
+                  stackingStatement.value = construct_<boost::optional<int> >( statement.stackSize )
+                ]
+                .else_
+                [
+                  if_( second(arg1) != val('v') )                         //if expr is not type void
+                  [
+                    statement.value += construct_<functor::popper<1> >()  //we pop it
+                  ],
+                  second(stackingStatement.value) = val(false)            //report we stack nothing
+                ]
               ]
           |   createAssignVar
           ;
@@ -79,24 +157,56 @@ public:  //definition nested class
                 createAssignVar.value = construct_<std::string>(arg1, arg2)
               ]
           >>  '='
-          >>  expression
+          >>  expression( value::Expression(), statement.varTable, unwrap(statement.last) )
               [
-                self.value = first(arg1),
-                add_symbol(  var(self.varTable), createAssignVar.value, 
-                    construct_<TypedIndex>( var(self.stackSize), second(arg1) )  ),                
-                var(self.stackSize) += val(1)      
+                statement.value = first(arg1),
+                add_symbol(  unwrap(statement.varTable), createAssignVar.value, 
+                    construct_<TypedIndex>( statement.stackSize, second(arg1) )  ),
+                unwrap(statement.stackSize) += val(1)
+              ]
+          ;
+
+      ifStatement
+          =   spirit::str_p("if")
+          >>  '('
+          >>  expression( value::Expression(), statement.varTable, unwrap(statement.last) )
+              [
+                statement.value = first(arg1)
+              ]
+          >>  ')'
+          >>  *spirit::eol_p
+          >>  block( VMCode(), unwrap(statement.varTable), unwrap(statement.stackSize) )
+              [
+                statement.value += construct_<functor::IfThen>(arg1)
+              ]
+          ;
+
+      block
+          =   '{'
+          >> *(   statement( VMCode(), wrap(block.varTable), wrap(block.stackSize), wrap(block.last) )
+                  [
+                    block.value += arg1
+                  ]
+              )
+          >>  spirit::ch_p('}')
+              [
+                block.value += construct_<functor::Popper>( block.stackSize - unwrap(statement.stackSize) )
               ]
           ;
 
     }
 
-    spirit::rule<ScannerT> const & start() const { return statement; }
+    spirit::rule<ScannerT> const & start() const { return top; }
 
 
   private:
 
-    spirit::rule<ScannerT> statement;
+    spirit::rule<ScannerT> top;
+    spirit::rule<ScannerT, closure::Statement::context_t> statement;
+    spirit::rule<ScannerT, closure::Value<value::StackingStatement>::context_t> stackingStatement;
     spirit::rule<ScannerT, closure::Value<std::string>::context_t> createAssignVar;
+    spirit::rule<ScannerT> ifStatement;
+    spirit::rule<ScannerT, closure::StatementBlock::context_t> block;
 
     Name name;
     Expression expression;

@@ -38,10 +38,8 @@ Blender<1>::Blender<1>(float factor)
   if ( weight >= 32767 )
     fullBlend_ = true;
 
-  weight = (weight << 16) + 32767 - weight;     //aka weight-other | weight-this
+  weight_ = (weight << 16) + 32767 - weight;     //aka weight-other | weight-this
 
-  weight64_ = static_cast<long long>(weight) << 32
-            | static_cast<long long>(weight);          //WO | WT | WO | WT
 }
 
 
@@ -63,7 +61,7 @@ void Blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom
   //we have to work     
   WindowPtr dst = blendIn.Write();
   CWindowPtr src = blendFrom.Read();
-  long long weight64 = weight64_;
+  int weight = weight_;
 
 
 #ifdef _INTEL_ASM
@@ -82,7 +80,8 @@ void Blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom
   {
     movq mm5, [rounder]
     pxor mm6, mm6
-    movq mm7, [weight64]
+    movd mm7, [weight]          // 0 |  0 | WO | WT
+    punpckldq mm7, mm7          //WO | WT | WO | WT
     mov  ebx, [dst.width]
     mov  esi, [dst.ptr]
     mov  edi, [src.ptr]

@@ -52,7 +52,7 @@ template <int bps> class Blender { };
 template <> class Blender<1>
 {
 
-  long long weight64_;
+  int weight_;
   bool noBlend_;         //true if the blend is a no op
   bool fullBlend_;       //true if the blend is a copy from blendFrom to blendIn
 

@@ -40,7 +40,7 @@ Blender<1>::Blender<1>(float factor)
 
   weight = (weight << 16) + 32767 - weight;     //aka weight-other | weight-this
 
-  weight64_ = __int64(weight) | (__int64(weight) << 32); //WO | WT | WO | WT
+  weight64_ = int64(weight) | (int64(weight) << 32); //WO | WT | WO | WT
 }
 
 
@@ -57,12 +57,12 @@ void Blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom
     return;
   }
 
-  static __int64 const rounder = 0x0000400000004000;		         //(0.5)<<15 in each dword
+  static int64 const rounder = 0x0000400000004000;		         //(0.5)<<15 in each dword
                                      
   //we have to work     
   WindowPtr dst = blendIn.Write();
   CWindowPtr src = blendFrom.Read();
-  __int64 weight64 = weight64_;
+  int64 weight64 = weight64_;
 
 
 #ifdef _MSC_VER

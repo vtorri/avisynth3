@@ -66,7 +66,7 @@ public:  //clip general interface
 
   //fill the passed buffer with audio samples
   //out of bounds values are allowed, the excess is filled with blank noise
-  virtual void GetAudio(void * buffer, __int64 start, int count) const = 0;  
+  virtual void GetAudio(void * buffer, int64 start, int count) const = 0;  
 
 
 public:  //filter chain simplication method

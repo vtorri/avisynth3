@@ -35,7 +35,7 @@ namespace avs { namespace clip { namespace twochilds {
 /////////////////////////////////////////////////////////////////////////////////////////
 //  Concrete
 //
-//  implementation of the TwoChilds template
+//  implementation of the TwoChilds interface
 //
 class Concrete : public virtual TwoChilds
 {
@@ -68,7 +68,7 @@ protected:  //write access
   void SetRightChild(PClip right) { right_ = right; }
 
 
-protected:  //implementations helper
+protected:  //implementations helpers
 
   PEnvironment GetChildEnvironment() const { return left_->GetEnvironment(); }
   
@@ -78,8 +78,8 @@ protected:  //implementations helper
   CPVideoFrame GetLeftFrame(int n) const { return left_->GetFrame(n); }
   CPVideoFrame GetRightFrame(int n) const { return right_->GetFrame(n); }
 
-  void GetLeftAudio(void * buffer, __int64 start, int count) const { return left_->GetAudio(buffer, start, count); }
-  void GetRightAudio(void * buffer, __int64 start, int count) const { return right_->GetAudio(buffer, start, count); }
+  void GetLeftAudio(void * buffer, int64 start, int count) const { return left_->GetAudio(buffer, start, count); }
+  void GetRightAudio(void * buffer, int64 start, int count) const { return right_->GetAudio(buffer, start, count); }
 
 };
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -29,10 +29,6 @@
 #include "../../clip/onechild/simplifiable.h"
 
 
-#pragma warning ( push )           //push warning state
-#pragma warning (disable : 4250)   //get rid of MI dominance decisions
-
-
 namespace avs { namespace filters {
 
 
@@ -60,7 +56,7 @@ public:  //clip general interface
   virtual CPVideoInfo GetVideoInfo() const;
 
   virtual CPVideoFrame GetFrame(int n) const;
-  virtual void GetAudio(void * buffer, __int64 start, int count) const { GetChildAudio(buffer, start, count); }
+  virtual void GetAudio(void * buffer, int64 start, int count) const { GetChildAudio(buffer, start, count); }
 
 
 public:  //Simplify method
@@ -80,14 +76,12 @@ protected:  //GetKey method
 
 public:  //factory method
 
-  static PClip Create(PClip const& child); // { return PClip((Clip *)new KillVideo(child)); }
+  static PClip Create(PClip const& child); 
 
 };
 
 
 
 } } //namespace avs::filters
-
-#pragma warning ( pop )
 
 #endif //__AVS_FILTERS_KILLVIDEO_H__

@@ -61,7 +61,7 @@ public:  //clip general interface
     return GetVideoChild()->GetFrame(n);
   }
 
-  virtual void GetAudio(void * buf, __int64 start, int count) const
+  virtual void GetAudio(void * buf, int64 start, int count) const
   {
     GetAudioChild()->GetAudio(buf, start, count);
   }

@@ -45,6 +45,11 @@ class AudioProcess : public virtual OneChild
                    , public Refactorable<filters::KillVideo>
 {
 
+public:  //clip general interface
+
+  virtual CPVideoFrame GetFrame(int n) const { return GetChild()->GetFrame(n); }
+
+
 private:  //Refactor methods
 
   virtual PClip Refactor(filters::KillAudio const& parent) const

@@ -24,9 +24,11 @@
 #ifndef __AVS_FORWARD_H__
 #define __AVS_FORWARD_H__
 
-//boost includes
+//avisynth include
+#include "cow_shared_ptr.h"        //includes <boost/shared_ptr.hpp>
+
+//boost include
 #include <boost/rational.hpp>      //for rational
-#include <boost/shared_ptr.hpp>    //for shared_ptr
 
 
 namespace avs {
@@ -44,10 +46,8 @@ class ColorSpace;
 class VideoFrame;
 class BufferWindow;
 class RuntimeEnvironment;
-template <class T> class cow_shared_ptr;
 
 //typedefs
-typedef long long int64;
 typedef boost::rational<int> Fraction;
 typedef boost::shared_ptr<Clip const> PClip;
 typedef boost::shared_ptr<Property const> CPProperty;

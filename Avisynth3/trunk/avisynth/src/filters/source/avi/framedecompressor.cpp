@@ -64,6 +64,19 @@ CPVideoFrame FrameDecompressor::operator()(int n, bool preroll)
       return static_cast<cspace::Interleaved&>(space).CreateFrame(dim, UNKNOWN, main);
     }
   
+  case ColorSpace::I_YV12:
+    {
+      //like above, promote the block into frame buffers with the proper alignment
+      //they are overlapping, thus breaking the guard requirement
+      //but it's not a problem because since they are sharing the same memory block
+      //they will blit on write, restoring the guards at this time (supposing align stuff didn't already blit)
+      buffer_window<4> y( space.ToPlaneDim(dim, PLANAR_Y), block, Guard );
+      buffer_window<2> u( space.ToPlaneDim(dim, PLANAR_U), block, Guard + y.size() );
+      buffer_window<2> v( space.ToPlaneDim(dim, PLANAR_V), block, Guard + y.size() + u.size() );
+
+      return static_cast<cspace::PlanarYUV&>(space).CreateFrame(dim, UNKNOWN, y, u, v);
+    }
+
   default: throw exception::Fatal();
   }
 

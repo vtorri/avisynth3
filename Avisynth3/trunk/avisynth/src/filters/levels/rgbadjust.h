@@ -35,6 +35,12 @@ namespace avs { namespace filters {
 
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////
+//  RGBAdjust
+//
+//
+//
 class RGBAdjust : public clip::onechild::FrameMakerPipeline
                 , public clip::onechild::Concrete  
                 , public clip::framemaker::Concrete
@@ -45,11 +51,11 @@ class RGBAdjust : public clip::onechild::FrameMakerPipeline
 
 public:  //structors
 
-  RGBAdjust(PClip const& child, double r, double g, double, b, double a);
+  RGBAdjust(PClip const& child, double r, double g, double b, double a);
 
   RGBAdjust(PClip const& child, RGBAdjust const& other);
 
-  //gerenated destructor is fine
+  //generated destructor is fine
 
 
 public:  //Clip general interface
@@ -69,15 +75,12 @@ protected:  //Pipeline interface
   virtual CPVideoFrame MakeFrame(PVideoFrame const& source) const;
 
 
-public:  //factory functor
+public:  //factory function
 
-  struct Creator
+  static PClip Create(PClip const& child, double r, double g, double b, double a)
   {
-    PClip operator()(PClip const& child, double r, double g, double b, double a) const 
-    { 
-      return PClip( static_cast<Clip *>(new RGBAdjust(child, r, g, b, a)) );
-    }
-  };
+    return PClip( static_cast<Clip *>(new RGBAdjust(child, r, g, b, a)) );
+  }
 
 };
 

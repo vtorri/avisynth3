@@ -32,6 +32,7 @@
 #include "../../../vfw/bitmapinfoheader.h"
 
 //windows includes
+#define NOMINMAX          //prevents generation of min and max macros
 #include <windows.h>
 #include <vfw.h>
 

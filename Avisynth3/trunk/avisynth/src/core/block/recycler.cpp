@@ -41,7 +41,7 @@ void Recycler::Return(void * ptr, int size, bool recycle)
 { 
   if ( recycle )
     map_.insert( std::make_pair(size, ptr) ); 
-  else mem_free( ptr);
+  else mem_free( ptr );
 }
 
 
@@ -58,7 +58,7 @@ Recycler::BYTE * Recycler::Acquire(int size)
   }     
   else result = mem_alloc(size);
 
-  return (BYTE *)result;
+  return static_cast<BYTE *>(result);
 }
 
 
@@ -92,6 +92,19 @@ void Recycler::mem_free(void * ptr)
   free( (BYTE *)ptr - *((BYTE *)ptr - 1) );
 #endif //_MSC_VER
 }
+
+
+void Recycler::CleanUp()
+{
+  for ( RecycleMap::iterator it = map_.begin(); it != map_.end(); ++it )
+    mem_free( it->second );
+
+  map_.clear();
+}
+
+
+Recycler::Cleaner Recycler::cleaner;
+
 
 
 } } //namespace avs::block

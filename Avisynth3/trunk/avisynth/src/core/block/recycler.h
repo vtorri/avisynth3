@@ -81,6 +81,20 @@ private:  //aligned mem alloc/dealloc
   static void * mem_alloc(int size);
   static void mem_free(void * ptr);
 
+
+private:  //handles deallocation of all blocks when dll unloaded
+
+  //releases all blocks to the heap
+  void CleanUp();
+
+  //call the above when deleted
+  struct Cleaner 
+  { 
+    ~Cleaner() { Recycler().CleanUp(); } 
+  };
+
+  static Cleaner cleaner;   
+
 };
 
 

@@ -37,7 +37,7 @@ namespace avs { namespace clip { namespace onechild {
 //
 //  implementation of the OneChild interface
 //
-class Concrete : public virtual OneChild
+class NOVTABLE Concrete : public virtual OneChild
 {
 
   PClip child_;
@@ -47,6 +47,8 @@ public:  //constructor
 
   Concrete(PClip const& child)
     : child_( child->Simplify() ) { }
+
+  //generated destrcutor is fine
 
 
 public:  //access to child
@@ -59,7 +61,7 @@ protected:  //write access
   void SetChild(PClip const& child) { child_ = child; }
 
 
-protected:  //implementations helper
+protected:  //implementations helpers
 
   PEnvironment const& GetChildEnvironment() const { return child_->GetEnvironment(); }
   CPVideoInfo GetChildVideoInfo() const { return child_->GetVideoInfo(); }

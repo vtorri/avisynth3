@@ -26,6 +26,9 @@
 #define __AVS_CACHE_H__
 
 
+//avisynth include
+#include "runtime_environment.h"
+
 //boost includes
 #include <boost/utility.hpp>      //for noncopyable
 #include <boost/shared_ptr.hpp>   //for shared_ptr
@@ -34,14 +37,11 @@
 namespace avs { 
 
   
-//class declarations
+//class declaration
 class VideoFrame;
-class RuntimeEnvironment;
-
 
 //typedefs
-typedef shared_ptr<VideoFrame const> CPVideoFrame;
-typedef shared_ptr<RuntimeEnvironment> PEnvironment;
+typedef boost::shared_ptr<VideoFrame const> CPVideoFrame;
 
 
 
@@ -53,10 +53,21 @@ typedef shared_ptr<RuntimeEnvironment> PEnvironment;
 class Cache : public boost::noncopyable
 {
 
+  PEnvironment env_;        //owning environment
+
+
 public:  //structors
 
-  Cache() { }
-  virtual ~Cache() { }
+  Cache(PEnvironment env)
+    : env_( env )
+  { 
+    env_->RegisterCache(this);
+  }
+
+  virtual ~Cache()
+  { 
+    env_->UnRegisterCache(this);
+  }
 
 
 public:  //Cache interface 
@@ -65,15 +76,22 @@ public:  //Cache interface
   //if not found, it has the source clip make it
   virtual CPVideoFrame GetFrame(int n) = 0;
 
-  //fetch owning environment
-  virtual PEnvironment GetEnvironment() const = 0;
-
+  //feedback method for the env to call
+  //drop a cached frame (if any) and adjust caching objectives
+  virtual void Drop() = 0;
  
+
+public:  //fetch owning environment method
+
+  PEnvironment GetEnvironment() const { return env_; }
+
+
 public:  //inner implementation subclass
 
   class Concrete;
 
 };//Cache
+
 
 
 

@@ -24,18 +24,24 @@
 #ifndef __AVS_FREETYPE_LIBRARY_H__
 #define __AVS_FREETYPE_LIBRARY_H__
 
-// freetype includes
-#include <ft2build.h>
-#include FT_FREETYPE_H
-
 //boost include
 #include <boost/noncopyable.hpp>
+
+
+//declarations
+struct FT_LibraryRec_;
+typedef FT_LibraryRec_ * FT_Library;
 
 
 namespace avs { namespace freetype {
 
 
 
+/////////////////////////////////////////////////////////////////////////////
+//  freetype::Library
+//
+//  C++ wrapper around freetype FT_Library handle
+//
 class Library : public boost::noncopyable
 {
 

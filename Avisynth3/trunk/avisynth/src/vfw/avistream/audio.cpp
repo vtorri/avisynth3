@@ -65,7 +65,7 @@ STDMETHODIMP Audio::Read(LONG lStart, LONG lSamples, LPVOID lpBuffer, LONG cbBuf
   CPVideoInfo vi = GetVideoInfo();
 
   if ( lSamples == AVISTREAMREAD_CONVENIENT )
-    lSamples = vi->AudioSamplesFromFrames(1);
+    lSamples = static_cast<long>(vi->AudioSamplesFromFrames(1));
     
   if ( plBytes != NULL ) 
     *plBytes = vi->BytesPerAudioSample() * lSamples;

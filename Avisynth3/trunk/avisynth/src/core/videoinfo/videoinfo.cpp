@@ -72,7 +72,7 @@ int VideoInfo::BytesPerChannelSample() const
 
 long long VideoInfo::AudioSamplesFromFrames(int frames) const
 {
-  return (long long)(frames) * GetSampleRate() * GetFPSDenominator() / GetFPSNumerator();
+  return static_cast<long long>(frames) * GetSampleRate() * GetFPSDenominator() / GetFPSNumerator();
 }
 
 BYTE * VideoInfo::GetBlankNoise(BYTE * buffer, int count) const

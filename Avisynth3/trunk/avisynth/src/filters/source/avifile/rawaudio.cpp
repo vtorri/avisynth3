@@ -38,6 +38,9 @@
 #endif //NOMINMAX
 #include <windows.h>
 #include <vfw.h>
+#ifndef AVISTREAMREAD_CONVENIENT        
+#define AVISTREAMREAD_CONVENIENT -1
+#endif //AVISTREAMREAD_CONVENIENT
 
 //assert include
 #include <assert.h>

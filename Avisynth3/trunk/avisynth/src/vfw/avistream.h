@@ -24,9 +24,9 @@
 #ifndef __AVS_VFW_AVISTREAM_H__
 #define __AVS_VFW_AVISTREAM_H__
 
-//avisynth include
+//avisynth includes
 #include "../com/base.h"
-#include "../core/forward.h"
+#include "../core/forward.h"       //for PClip
 
 //stl include
 #include <string>
@@ -35,14 +35,19 @@
 #include <vfw.h>
 
 
-//declarations
-namespace avs { namespace vfw { class AviFile; } }
-
-
 namespace avs { namespace vfw {
   
 
+//declaration
+class AviFile;      //in avifile.h
 
+
+
+//////////////////////////////////////////////////////////////////////////////////
+//  AviStream
+//
+//  implementation of the vfw IAVIStream interface
+//
 class AviStream : public IAVIStream
                 , public com::Base
 {
@@ -65,17 +70,17 @@ public:  //IUnknown
 
 public:  //IAVIStream
 
-  STDMETHODIMP Create(LONG lParam1, LONG lParam2) { return AVIERR_READONLY; }
-  STDMETHODIMP Delete(LONG lStart, LONG lSamples) { return AVIERR_READONLY; }
+  STDMETHODIMP Create(LONG /*lParam1*/, LONG /*lParam2*/) { return AVIERR_READONLY; }
+  STDMETHODIMP Delete(LONG /*lStart*/, LONG /*lSamples*/) { return AVIERR_READONLY; }
 	STDMETHODIMP_(LONG) Info(AVISTREAMINFOW *psi, LONG lSize);
 	STDMETHODIMP_(LONG) FindSample(LONG lPos, LONG lFlags);
-  STDMETHODIMP ReadData(DWORD fcc, LPVOID lp, LONG *lpcb) { return AVIERR_NODATA; }
-	STDMETHODIMP SetFormat(LONG lPos, LPVOID lpFormat, LONG cbFormat) { return AVIERR_READONLY; }
-	STDMETHODIMP Write(LONG lStart, LONG lSamples, LPVOID lpBuffer, LONG cbBuffer, 
-		DWORD dwFlags, LONG *plSampWritten, LONG *plBytesWritten) { return AVIERR_READONLY; }
+  STDMETHODIMP ReadData(DWORD /*fcc*/, LPVOID /*lp*/, LONG * /*lpcb*/) { return AVIERR_NODATA; }
+	STDMETHODIMP SetFormat(LONG /*lPos*/, LPVOID /*lpFormat*/, LONG /*cbFormat*/) { return AVIERR_READONLY; }
+	STDMETHODIMP Write(LONG /*lStart*/, LONG /*lSamples*/, LPVOID /*lpBuffer*/, LONG /*cbBuffer*/, 
+		DWORD /*dwFlags*/, LONG * /*plSampWritten*/, LONG * /*plBytesWritten*/) { return AVIERR_READONLY; }
     
-  STDMETHODIMP WriteData(DWORD fcc, LPVOID lpBuffer, LONG cbBuffer) { return AVIERR_READONLY; }
-	STDMETHODIMP SetInfo(AVISTREAMINFOW *psi, LONG lSize) { return AVIERR_READONLY; }
+  STDMETHODIMP WriteData(DWORD /*fcc*/, LPVOID /*lpBuffer*/, LONG /*cbBuffer*/) { return AVIERR_READONLY; }
+	STDMETHODIMP SetInfo(AVISTREAMINFOW * /*psi*/, LONG /*lSize*/) { return AVIERR_READONLY; }
 
 
 protected:  //AviStream implementation

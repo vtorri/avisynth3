@@ -21,12 +21,16 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_CHILDCLIP_H__
-#define __AVS_CHILDCLIP_H__
+#ifndef __AVS_FILTERS_CHILDCLIP_H__
+#define __AVS_FILTERS_CHILDCLIP_H__
 
 
 //avisynth include
 #include "../clip.h"
+
+
+namespace avs { namespace filters {
+
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -68,6 +72,11 @@ public:  //cache hints methods
   virtual void Withdraw(const CacheRequest& request) const { child_->Withdraw(request); }
 
 
+public:  //child changing clone
+
+  virtual Clip * clone(PClip child) const = 0;
+
+
 public:  //read access
 
   PClip GetChild() const { return child_; }
@@ -80,5 +89,6 @@ protected:  //write access
 };
 
 
+}; }; //namespace avs::filters
 
-#endif  //__AVS_CHILDCLIP_H__
+#endif  //__AVS_FILTERS_CHILDCLIP_H__

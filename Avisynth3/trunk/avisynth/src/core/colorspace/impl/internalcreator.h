@@ -56,7 +56,7 @@ public:  //interface
   {
     PColorSpace result = value_.lock();
     if ( ! result )
-      value_ = result = operator()();
+      value_ = result = Create();
     return result;
   }
 

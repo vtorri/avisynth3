@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 #define __AVS_DIMENSION_H__
 
 //avisynth includes
-#include "../roundup.h"
+#include "../forward.h"                   //for vecteur template declaration
 #include "../exception/baddimension.h"
 
 //stl include
@@ -33,10 +33,6 @@
 
 
 namespace avs {
-
-
-//class declaration
-template <typename T> struct vecteur;
 
 
 
@@ -135,8 +131,6 @@ public:  //others
   template <long xFactor, long yFactor> dimension<T> Divide() const { return dimension<T>(x_ / xFactor, y_ / yFactor); }
 
   template <long xShift, long yShift> dimension<T> Shift() const { return dimension<T>(x_ + xShift, y_ + yShift); }
-
-  template <long xRound, long yRound> dimension<T> Round() const { return dimension<T>( RoundUp<xRound>(x_), RoundUp<yRound>(y_) ); }
 
 };
 

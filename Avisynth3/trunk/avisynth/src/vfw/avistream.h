@@ -88,6 +88,13 @@ protected:  //AviStream implementation
   virtual void FillAviStreamInfo(AVISTREAMINFOW& asi) = 0;
   virtual void Read(void* lpBuffer, int lStart, int lSamples) = 0;
 
+  //helpers for ReadWrapper
+  __declspec(noreturn) void ThrowAccessViolation(EXCEPTION_POINTERS * ei);
+  __declspec(noreturn) void ThrowIllegalInstruction(EXCEPTION_POINTERS * ei);
+  __declspec(noreturn) void ThrowIntDivideByZero(EXCEPTION_POINTERS * ei);
+  __declspec(noreturn) void ThrowStackOverFlow();
+  __declspec(noreturn) void ThrowUnknownException(EXCEPTION_POINTERS * ei, DWORD code);
+
 };
 
 

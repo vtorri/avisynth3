@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -21,12 +21,15 @@
 // General Public License cover the whole combination.
 
 
-//avisynth include
+//avisynth includes
 #include "avifile.h"
 #include "avistream.h"
 #include "../core/clip.h"
 #include "../core/videoinfo.h"
 #include "../core/colorspace.h"
+
+//boost include
+#include <boost/format.hpp>
 
 
 namespace avs { namespace vfw {
@@ -115,40 +118,57 @@ void AviStream::ReadWrapper(void* lpBuffer, int lStart, int lSamples)
 {
   // It's illegal to call GetExceptionInformation() inside an __except
   // block!  Hence this variable and the horrible hack below...
-#ifndef _DEBUG
+
   EXCEPTION_POINTERS* ei;
   DWORD code;
-  __try { 
-#endif
 
-    Read(lpBuffer, lStart, lSamples);
-
-#ifndef _DEBUG
+  __try { Read(lpBuffer, lStart, lSamples); }
+  __except ( ei = GetExceptionInformation(), code = GetExceptionCode(), (code >> 28) == 0xC) 
+  {
+    switch (code) 
+    {
+    case EXCEPTION_ACCESS_VIOLATION:    ThrowAccessViolation(ei);
+    case EXCEPTION_ILLEGAL_INSTRUCTION: ThrowIllegalInstruction(ei);
+    case EXCEPTION_INT_DIVIDE_BY_ZERO:  ThrowIntDivideByZero(ei);      
+    case EXCEPTION_STACK_OVERFLOW:      ThrowStackOverFlow();
+    default:                            ThrowUnknownException(ei, code);
+    }        
   }
-  __except (ei = GetExceptionInformation(), code = GetExceptionCode(), (code >> 28) == 0xC) {
-    switch (code) {
-    case EXCEPTION_ACCESS_VIOLATION:
-      parent->env->ThrowError("Avisynth: caught an access violation at 0x%08x,\nattempting to %s 0x%08x",
-        ei->ExceptionRecord->ExceptionAddress,
-        ei->ExceptionRecord->ExceptionInformation[0] ? "write to" : "read from",
-        ei->ExceptionRecord->ExceptionInformation[1]);
-    case EXCEPTION_ILLEGAL_INSTRUCTION:
-      parent->env->ThrowError("Avisynth: illegal instruction at 0x%08x",
-        ei->ExceptionRecord->ExceptionAddress);
-    case EXCEPTION_INT_DIVIDE_BY_ZERO:
-      parent->env->ThrowError("Avisynth: division by zero at 0x%08x",
-        ei->ExceptionRecord->ExceptionAddress);
-    case EXCEPTION_STACK_OVERFLOW:
-      throw AvisynthError("Avisynth: stack overflow");
-    default:
-      parent->env->ThrowError("Avisynth: unknown exception 0x%08x at 0x%08x",
-        code, ei->ExceptionRecord->ExceptionAddress);
-    }
-  }
-#endif
 }
 
+void AviStream::ThrowAccessViolation(EXCEPTION_POINTERS * ei)
+{
+  throw Exception(str( 
+      boost::format("Avisynth: caught an access violation at 0x%08x,\nattempting to %s 0x%08x")
+        % ei->ExceptionRecord->ExceptionAddress
+        % ( ei->ExceptionRecord->ExceptionInformation[0] ? "write to" : "read from" )
+        % ei->ExceptionRecord->ExceptionInformation[1]  
+      ));
+}
 
+void AviStream::ThrowIllegalInstruction(EXCEPTION_POINTERS * ei)
+{
+  throw Exception(str( boost::format("Avisynth: illegal instruction at 0x%08x") % ei->ExceptionRecord->ExceptionAddress ));
+}
+
+void AviStream::ThrowIntDivideByZero(EXCEPTION_POINTERS * ei)
+{
+  throw Exception(str( boost::format("Avisynth: division by zero at 0x%08x") % ei->ExceptionRecord->ExceptionAddress ));
+}
+
+void AviStream::ThrowStackOverFlow()
+{
+  throw Exception("Avisynth: stack overflow");
+}
+
+void AviStream::ThrowUnknownException(EXCEPTION_POINTERS * ei, DWORD code)
+{
+  throw Exception(str( 
+      boost::format("Avisynth: unknown exception 0x%08x at 0x%08x")
+        % code 
+        % ei->ExceptionRecord->ExceptionAddress
+      ));
+}
 
 
 } } //namespace avs::vfw

@@ -37,7 +37,7 @@ namespace avs { namespace block { namespace holder {
 //
 //  implementers may wish to subclass Base to implement the Holder interface
 //
-class Base : public Holder
+class AVS_NOVTABLE Base : public Holder
 {
 
   int size_;

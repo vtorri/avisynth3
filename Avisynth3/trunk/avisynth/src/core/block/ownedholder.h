@@ -24,8 +24,9 @@
 #ifndef __AVS_BLOCK_OWNEDHOLDER_H__
 #define __AVS_BLOCK_OWNEDHOLDER_H__
 
-//avisynth include
+//avisynth includes
 #include "../forward.h"          //for BYTE
+#include "../../define.h"        //for AVS_NOVTABLE macro
 
 
 namespace avs { namespace block {
@@ -38,7 +39,7 @@ namespace avs { namespace block {
 //
 //  this is pretty much the same as Holder, but adds a method to fetch the owning env
 //
-class OwnedHolder
+class AVS_NOVTABLE OwnedHolder
 {
 
 public:  //structors

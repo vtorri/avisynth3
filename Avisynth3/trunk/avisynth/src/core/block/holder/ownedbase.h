@@ -33,7 +33,12 @@ namespace avs { namespace block { namespace holder {
 
 
 
-class OwnedBase : public OwnedHolder
+//////////////////////////////////////////////////////////////////////////////////////////
+//  holder::OwnedBase
+//
+//  implementers may wish to subclass OwnedBase to implement the OwnedHolder interface
+//
+class AVS_NOVTABLE OwnedBase : public OwnedHolder
 {
 
   int size_;

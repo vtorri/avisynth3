@@ -24,8 +24,9 @@
 #ifndef __AVS_BLOCK_HOLDER_H__
 #define __AVS_BLOCK_HOLDER_H__
 
-//avisynth include
+//avisynth includes
 #include "../forward.h"          //for BYTE
+#include "../../define.h"        //for AVS_NOVTABLE macro
 
 
 namespace avs { namespace block {
@@ -37,7 +38,7 @@ namespace avs { namespace block {
 //
 //  polymorphic interface of the block template memory holder
 //
-class Holder
+class AVS_NOVTABLE Holder
 {
 
 public:  //structors

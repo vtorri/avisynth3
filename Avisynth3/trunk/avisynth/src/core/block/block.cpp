@@ -31,7 +31,10 @@ Block::Block(int size, bool recycle)
   : block::base<block::Deleter>( block::Deleter(size, recycle) ) { }
 
 
-OwnedBlock::OwnedBlock(PEnvironment env, int size, bool recycle)
+OwnedBlock::OwnedBlock(PEnvironment const& env)
+  : block::base<block::OwnedDeleter>( block::OwnedDeleter(env, 0, false) ) { }
+
+OwnedBlock::OwnedBlock(PEnvironment const& env, int size, bool recycle)
   : block::base<block::OwnedDeleter>( block::OwnedDeleter(env, size, recycle) ) { }
 
 

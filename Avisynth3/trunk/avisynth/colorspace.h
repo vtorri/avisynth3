@@ -21,193 +21,121 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __COLORSPACE_H__
-#define __COLORSPACE_H__
-
-#include "geometric.h"         //which includes string
-#pragma warning(disable:4290)  //to get rid of the C++ exception Notification ignored
-using namespace std;
-
-//ColorSpace ids
-enum CS_ID {
-  I_RGB24,
-  I_RGB32,
-  I_YUY2,
-  I_YV12
-};
-
-//planes
-enum Plane {
-  NOT_PLANAR,
-  PLANAR_Y,
-  PLANAR_U,
-  PLANAR_V
-};
-
-#define PLANE_COUNT 4   //number of planes, used to loop over planes with HasPlane
+#ifndef __AVS_COLORSPACE_H__
+#define __AVS_COLORSPACE_H__
 
 
-//exception class for requesting about a plane who don't exist
-//subclass of invalid_argument
-class invalid_plane : public invalid_argument {
+//avisynth include
+#include "plane.h"
+
+//boost include
+#include <boost/utility.hpp>    //for noncopyable
+
+
+namespace avs {
+
+
+//////////////////////////////////////////////////////////////////////////////
+//  ColorSpace
+//
+//  polymorphic class representing a video color space
+//
+class ColorSpace : public boost::noncopyable
+{
 
 public:
-  invalid_plane() : invalid_argument("No such plane") { }
-}; 
 
-
-
-class ColorSpace {
-
-protected:
-  //factorisation of a common check of YV12 and YUY2
-  void YUVIsLegalWidthShift(int shift) const throw(invalid_argument)
+  //ColorSpace ids, used to switch on color spaces
+  enum ID
   {
-    if (shift & 1)
-      ThrowError(": Width must be mod 2");
-  }
-
-  void ThrowError(const string& err_msg) const { throw invalid_argument(GetName() + err_msg); }
-
-public:
-  ColorSpace(CS_ID _id) : id(_id) { } 
-
-  const CS_ID id;   //ColorSpace id, used to switch on ColorSpaces
-
-  bool operator== (const ColorSpace& other) const { return id == other.id; }
-  bool operator!= (const ColorSpace& other) const { return id != other.id; }
-
-  //return the colorspace name ("RGB24" and co..)
-  const string& GetName() const
-  {
-    static const string names[] = { "RGB24", "RGB32", "YUY2", "YV12" };
-    return names[id];
-  }
+    I_RGB24,
+    I_RGB32,
+    I_YUY2,
+    I_YV12
+  };
 
   //ColorSpace properties
-  enum Property {
+  enum Property
+  {
     RGB,
     YUV,
     INTERLEAVED,
-    PLANAR,
+    PLANAR
   };
 
-  virtual bool HasProperty(Property prop) const = 0;
-  virtual bool HasPlane(Plane plane) const { return plane == NOT_PLANAR; } //default implementation not planar case
 
-  //helper functions of the above
+public:  //constructor
+
+  ColorSpace() { }
+
+
+public:  //ColorSpace interface
+
+  virtual ID id() const = 0;
+  virtual char const * GetName() const = 0;
+
+  virtual bool HasProperty(Property prop) const = 0;
+  virtual bool HasPlane(Plane plane) const = 0;
+
+  virtual void CheckCoordinates(int x, int y, bool interlaced = false) const = 0;
+
+  //method to convert frame coords into to plane coords
+  //unlike the above, it does not check validity, but just perform the operation   
+  virtual void ToPlaneCoordinates(int& x, int& y, Plane plane) const = 0;
+
+
+  bool operator== (const ColorSpace& other) const { return this == &other; }
+  bool operator!= (const ColorSpace& other) const { return this != &other; }
+
+
+public:  
+
+  bool IsRGB24() const { return id() == I_RGB24; }
+  bool IsRGB32() const { return id() == I_RGB32; }
+  bool IsYUY2() const { return id() == I_YUY2; }
+  bool IsYV12() const { return id() == I_YV12; }
+
   bool IsRGB() const { return HasProperty(RGB); }
   bool IsYUV() const { return HasProperty(YUV); }
-
   bool IsInterleaved() const { return HasProperty(INTERLEAVED); }
   bool IsPlanar() const { return HasProperty(PLANAR); }
 
-  virtual void IsLegalCoords(const Vecteur& coords, bool interlaced = false) const throw(invalid_argument) = 0;
 
-  //methods to convert frame coords into to plane coords
-  //unlike the above, they does not check validity, but just perform the operation   
-  virtual Vecteur ToPlaneCoords(const Vecteur& vect, Plane plane) const throw(invalid_plane) = 0;
+public:  //implementation inner subclasses
 
-};
+  class Interleaved;  //: public ColorSpace
 
+  class RGB;          //: public Interleaved
+  class RGB24;        //: public RGB
+  class RGB32;        //: public RGB
+ 
+  class YUY2;         //: public Interleaved
 
-class InterLeaved : public ColorSpace {
-
-  int BytesPerPixel;
-
-public:
-  InterLeaved(CS_ID _id, int bpp) : ColorSpace(_id), BytesPerPixel(bpp) { }
-
-  //HasProperty for RGB24 & 32 cases
-  virtual bool HasProperty(Property prop) const { return prop == ColorSpace::RGB || prop == ColorSpace::INTERLEAVED; }
+  class YV12;         //: public ColorSpace
 
 
-  virtual void IsLegalCoords(const Vecteur& coords, bool interlaced = false) const throw(invalid_argument)
-  {
-    if (interlaced && (coords.GetY() & 1))
-      ThrowError(": Interlaced Height must be mod 2");
-  }
+public:  //access to relevant instances
 
-  virtual Vecteur ToPlaneCoords(const Vecteur& coords, Plane plane) const throw(invalid_plane)
-  {
-    if (plane != NOT_PLANAR)
-      throw invalid_plane();
-    return Vecteur(coords.GetX() * BytesPerPixel, coords.GetY());
-  }
-
-  int GetBytesPerPixel() const { return BytesPerPixel; }
-};
+  static ColorSpace & rgb24();
+  static ColorSpace & rgb32();
+  static ColorSpace & yuy2();
+  static ColorSpace & yv12();
 
 
-class RGB24 : public InterLeaved {
+public:  //exception helper methods
 
-  RGB24() : InterLeaved(I_RGB24, 3) { }
+  __declspec(noreturn) void ThrowUnsupportedColorSpaceException()  const;
+  __declspec(noreturn) void ThrowInvalidPlaneException(Plane plane) const;
 
-public:
-  static const RGB24 instance;
-};
-
-
-class RGB32 : public InterLeaved {
-
-  RGB32() : InterLeaved(I_RGB32, 4) { }
-
-public:
-  static const RGB32 instance;
-};
-
-
-
-
-class YUY2 : public InterLeaved {
-
-  YUY2() : InterLeaved(I_YUY2, 1) { }
-
-public:
-  static const YUY2 instance;
-
-  virtual bool HasProperty(Property prop) const { return prop == ColorSpace::YUV || prop == ColorSpace::INTERLEAVED; }
-
-  virtual void IsLegalCoords(const Vecteur& coords, bool interlaced = false) const throw(invalid_argument)
-  {
-    YUVIsLegalWidthShift(coords.GetX());
-    InterLeaved::IsLegalCoords(coords, interlaced);
-  }
-
+  __declspec(noreturn) void ThrowInvalidInterlacedHeightException(int modulo, int height) const;
+  __declspec(noreturn) void ThrowInvalidHeightException(int modulo, int height) const;
+  __declspec(noreturn) void ThrowInvalidWidthException(int modulo, int width) const;
 
 };
 
 
 
-class YV12 : public ColorSpace {
 
-  YV12() : ColorSpace(I_YV12) { }
+} //namespace avs
 
-public:
-  static const YV12 instance;
-
-  virtual bool HasProperty(Property prop) const { return prop == ColorSpace::YUV || prop == ColorSpace::PLANAR; }
-  virtual bool HasPlane(Plane plane) const { return plane != NOT_PLANAR; }
-  
-  virtual void IsLegalCoords(const Vecteur& coords, bool interlaced = false) const throw(invalid_argument)
-  {
-    YUVIsLegalWidthShift(coords.GetX());
-    if (interlaced && (coords.GetY() & 3))
-      ThrowError(": Height must be mod 2");
-    if (coords.GetY() & 1)
-      ThrowError(": Interlaced Height must be mod 4");    
-  }
-
-  virtual Vecteur ToPlaneCoords(const Vecteur& coords, Plane plane) const throw(invalid_plane)
-  {
-    switch(plane)
-    {
-      case PLANAR_Y: return coords;
-      case PLANAR_U:
-      case PLANAR_V: return Vecteur(coords.GetX()/2, coords.GetY()/2);
-    }
-    throw invalid_plane();
-  }
-};
-
-#endif //__COLORSPACE_H__
+#endif //__AVS_COLORSPACE_H__

@@ -24,19 +24,12 @@
 #ifndef __AVS_VFW_AVISTREAM_VIDEO_H__
 #define __AVS_VFW_AVISTREAM_VIDEO_H__
 
-//avisynth include
+//avisynth includes
 #include "../avistream.h"
+#include "../../core/forward.h"       //for Dimension, VideoFrame
 
 
-namespace avs { 
-  
-
-//declarations
-class Dimension;
-class VideoFrame;
-
-  
-namespace vfw { namespace avistream {
+namespace avs { namespace vfw { namespace avistream {
 
 
 
@@ -64,7 +57,7 @@ public:  //IAVIStream
 
 protected:  //AviStream implementation
 
-  virtual void FillAviStreamInfo(AviStreamInfo * asi);
+  virtual bool IsVideo() { return true; }
   virtual void Read(void* lpBuffer, int lStart, int lSamples);
 
 

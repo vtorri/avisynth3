@@ -40,9 +40,8 @@
 namespace avs { namespace vfw {
   
 
-//declarations
+//declaration
 class AviFile;         //in avifile.h
-class AviStreamInfo;   //in avistreaminfo.h
 
 
 
@@ -92,7 +91,7 @@ protected:  //AviStream implementation
   CPVideoInfo GetVideoInfo();
   void MakeErrorStream(std::string const& msg);
 
-  virtual void FillAviStreamInfo(AviStreamInfo * asi) = 0;
+  virtual bool IsVideo() = 0;
   virtual void Read(void* lpBuffer, int lStart, int lSamples) = 0;
 
 };

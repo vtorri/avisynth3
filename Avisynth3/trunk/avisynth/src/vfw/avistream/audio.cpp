@@ -97,12 +97,6 @@ STDMETHODIMP Audio::Read(LONG lStart, LONG lSamples, LPVOID lpBuffer, LONG cbBuf
 }
 
 
-void Audio::FillAviStreamInfo(AviStreamInfo * asi)
-{ 
-  //creates an audio AviStreamInfo in the passed buffer
-  new (asi) AviStreamInfo(*GetVideoInfo(), false);
-}
-
 
 void Audio::Read(void* lpBuffer, int lStart, int lSamples)
 {

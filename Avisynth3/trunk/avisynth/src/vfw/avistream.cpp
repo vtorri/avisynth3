@@ -24,6 +24,7 @@
 //avisynth includes
 #include "avifile.h"
 #include "avistream.h"
+#include "avistreaminfo.h"
 #include "../core/clip.h"
 #include "../core/videoinfo.h"
 #include "../core/colorspace.h"
@@ -72,11 +73,12 @@ STDMETHODIMP AviStream::QueryInterface(IID const& iid, void **ppv)
 
 STDMETHODIMP_(LONG) AviStream::Info(AVISTREAMINFOW * psi, LONG lSize)
 {
-  if ( lSize < (long)sizeof(AVISTREAMINFOW) )
+  if ( lSize < static_cast<long>(sizeof(AVISTREAMINFOW)) )
     return AVIERR_BUFFERTOOSMALL; 
  
   if ( psi != NULL )
-    FillAviStreamInfo(reinterpret_cast<AviStreamInfo *>(psi));
+    //in place construct of the avistream info
+    new ( static_cast<AviStreamInfo *>(psi) ) AviStreamInfo(*GetVideoInfo(), IsVideo());
 
   return S_OK;
 }

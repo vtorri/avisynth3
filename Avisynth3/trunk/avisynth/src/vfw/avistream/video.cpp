@@ -94,13 +94,6 @@ STDMETHODIMP Video::Read(LONG lStart, LONG lSamples, LPVOID lpBuffer, LONG cbBuf
 }
 
 
-void Video::FillAviStreamInfo(AviStreamInfo * asi)
-{ 
-  //constructs a video AviStreamInfo in the passed buffer
-  new (asi) AviStreamInfo(*GetVideoInfo(), true);
-}
-
-
 
 void Video::Read(void* lpBuffer, int lStart, int /*lSamples*/)
 {

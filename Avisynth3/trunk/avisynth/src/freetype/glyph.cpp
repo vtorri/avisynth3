@@ -23,15 +23,16 @@
 
 //avisynth includes
 #include "glyph.h"
-#include "../core/exception/generic.h"
+//#include "../core/exception/generic.h"
+
+//assert include
+#include <assert.h>
 
 // freetype includes
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 
-//assert include
-//#include <assert.h>
 
 
 namespace avs { namespace freetype {

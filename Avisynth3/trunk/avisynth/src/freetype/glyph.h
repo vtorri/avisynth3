@@ -65,7 +65,7 @@ public:  //API
   Vecteur GetAdvance() const;
   Box GetControlBox() const;
 
-/*    void render           (FT_GlyphSlot    slot,
+ /*   void render           (FT_GlyphSlot    slot,
 			   FT_Render_Mode render_mode);
     
     

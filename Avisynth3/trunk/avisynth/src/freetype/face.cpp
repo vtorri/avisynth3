@@ -30,6 +30,9 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+//assert include
+#include <assert.h>
+
 
 namespace avs { namespace freetype {
 
@@ -37,17 +40,20 @@ namespace avs { namespace freetype {
 
 Face::Face(std::string const& fileName, int index)
 {
-
   FT_Face face = NULL;
 
-  FT_Error error = FT_New_Face(Library::instance, fileName.c_str(), index, &face);
-    
-  if ( error != 0 )
+  if ( FT_New_Face(Library::instance, fileName.c_str(), index, &face) != 0 )
     throw avs::exception::Generic ("Error while creating a Face.");
 
   face_.reset(face, &FT_Done_Face);  
 }
   
+
+
+unsigned Face::GetCharIndex(unsigned charCode)
+{
+  return FT_Get_Char_Index(face_.get(), charCode);
+}
 
 
 
@@ -175,17 +181,7 @@ Vecteur Face::GetKerning(unsigned leftGlyph, unsigned rightGlyph) const
       throw avs::exception::Generic ("Error while selecting a charmap for character code in a Face.");
   }
 
-  FT_UInt Face::get_char_index (FT_ULong charcode)
-  {
-    FT_UInt index;
 
-    index = FT_Get_Char_Index (face, charcode );
-			   
-    if (!index)
-      throw avs::exception::Generic ("Error while returning the glyph index for a character code in a Face.");
-
-    return index;
-  }
 
   FT_ULong Face::get_first_char (FT_UInt *gindex)
   {

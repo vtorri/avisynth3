@@ -25,8 +25,9 @@
 #define __AVS_FREETYPE_FACE_H__
 
 //avisynth includes
-#include "../core/vecteur.h"
-#include "../core/dimension.h"
+#include "glyph.h"
+//#include "bitmapglyph.h"
+#include "../core/geometry/vecteur.h"
 
 //boost include
 #include <boost/shared_ptr.hpp>
@@ -65,11 +66,15 @@ public:  //Basic API
 
 /*  void SetCharSize(Dimension const& size, Dimension const& resolution);
     
-  void SetPixelSize(Dimension const& dim);
+  void SetPixelSize(Dimension const& dim);  */
+  
+  unsigned GetCharIndex(unsigned charCode);
+
+  Glyph GetGlyph(unsigned glyphIndex);
+
+//  BitmapGlyp GetBitmapGlyp(unsigned glyphIndex);
     
-  void LoadGlyph(unsigned glyphIndex, int loadFlags);
-    
-  void LoadChar(unsigned charCode, int loadFlags);*/
+//void LoadChar(unsigned charCode, int loadFlags);
 
   bool HasKerning() const;
        
@@ -78,7 +83,7 @@ public:  //Basic API
   //std::string GetGlyphName(unsigned glyphIndex);
 
   //std::string GetPostscriptName();
-    
+
 };
 
 

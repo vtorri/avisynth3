@@ -35,14 +35,11 @@ AviSource::AviSource(PEnvironment const& env)
   , lastIndex_( -1 ) { }
 
 
-AviSource::~AviSource() { }
-
-
 CPVideoFrame AviSource::MakeFrame(int n) const
 {
   GetVideoInfo()->CheckHasFrame(n);                  //defends against illegal values
 
-  int startIndex = NearestKeyFrame(n);               //find the last keyframe
+  int startIndex = PreviousKeyFrame(n);              //find the last keyframe
 
   if ( lastIndex_ < n && startIndex <= lastIndex_ )  //maybe we don't need to go back that far
     startIndex = lastIndex_ + 1;

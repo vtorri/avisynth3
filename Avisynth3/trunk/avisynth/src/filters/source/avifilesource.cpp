@@ -54,24 +54,19 @@ AviFileSource::AviFileSource(std::string const& fileName, PEnvironment const& en
 
   video_.reset( GetStream(aviFile_, streamtypeVIDEO), com::Deleter<IAVIStream>() );
 
-  long size = 0;
-  video_->ReadFormat(0, NULL, &size);                            //get size needed for the format
+  //fetchs bitmapinfoheader from the video stream
+  vfw::PBitmapInfoHeader bih = boost::static_pointer_cast<vfw::BitmapInfoHeader>(ReadFormat(video_));
+  PColorSpace space;  
 
-  Block temp(size, false);                                       //allocates a block of that size
-  HRESULT result = video_->ReadFormat(0, temp.get(), &size);     //and pass it to be filled
-  assert( result == S_OK ); 
-
-  //reinterpret buffer as a BitmapInfoHeader
-  vfw::BitmapInfoHeader * bih = reinterpret_cast<vfw::BitmapInfoHeader *>(temp.get());
   //use it to create and set a frame decompressor, now it contains output format
-  SetFrameDecompressor(avisource::VFWFrameDecompressor::Create(*this, *bih));
+  SetFrameDecompressor(avisource::VFWFrameDecompressor::Create(*this, bih, space));
 
   vfw::AviStreamInfo asi;
-  result = video_->Info(&asi, sizeof(vfw::AviStreamInfo));
+  HRESULT  result = video_->Info(&asi, sizeof(vfw::AviStreamInfo));
   assert( result == S_OK );
 
   PVideoInfo vi = VideoInfo::Create();                           //creates an empty videoinfo
-  vi->AddVideo(*bih->GetColorSpace(), bih->GetDimension(), 0);   //starts filling its video
+  vi->AddVideo(space, bih->GetDimension(), 0);                   //starts filling its video
   asi.SetLengthsTo(*vi);                                         //complete its video
 
   vi_ = vi;                                                      //save it as this'
@@ -84,12 +79,23 @@ BYTE * AviFileSource::GetAudio(BYTE * buffer, long long start, int count) const
 }
 
 
-int AviFileSource::NearestKeyFrame(int n) const
+int AviFileSource::PreviousKeyFrame(int n) const
 {
   return video_->FindSample(n, FIND_KEY | FIND_PREV);
 }
 
 
+long AviFileSource::ReadVideo(int n, BYTE * buffer, long bufferSize) const
+{
+  long size = 0;
+
+  if ( video_->Read(n, 1, buffer, bufferSize, &size, NULL) != AVIERR_OK )
+    throw exception::Generic("Cannot read from source file");
+
+  return size;
+}
+
+/*
 std::pair<OwnedBlock, long> AviFileSource::ReadVideo(int n) const
 {
   long size = 0;
@@ -106,7 +112,7 @@ std::pair<OwnedBlock, long> AviFileSource::ReadVideo(int n) const
   }
 
   return std::make_pair(block, size);
-}
+}*/
 
 
 IAVIStream * AviFileSource::GetStream(PAVIFile const& aviFile, unsigned long fccType)
@@ -116,6 +122,20 @@ IAVIStream * AviFileSource::GetStream(PAVIFile const& aviFile, unsigned long fcc
   //handles AVIERR_MEMORY error case, AVIERR_NODATA is naturally handled by returning NULL in that case
   if ( aviFile->GetStream(&result, fccType, 0) == AVIERR_MEMORY )
     throw std::bad_alloc(); 
+
+  return result;
+}
+
+
+boost::shared_ptr<void> AviFileSource::ReadFormat(PAVIStream const& aviStream)
+{
+  long size = 0;
+  aviStream->ReadFormat(0, NULL, &size);              //fetch size of the format struct
+
+  boost::shared_ptr<void> result( new BYTE[size] );   //allocates it into a shared_ptr
+
+  HRESULT hResult = aviStream->ReadFormat(0, result.get(), &size);
+  assert( hResult == S_OK ); 
 
   return result;
 }

@@ -49,17 +49,17 @@ class VFWFrameDecompressor : public FrameDecompressor
 {
 
   vfw::Hic hic_;                   //smart handle to a VFW decompressor
-  vfw::BitmapInfoHeader input_;
+  vfw::PBitmapInfoHeader input_;
   vfw::BitmapInfoHeader output_;
 
-  //preferred ColorSpaces for output in priority order
-  static ColorSpace * const preferredColorSpace_[4];
+  //preferred ColorSpaces (names) for output in priority order
+  static char const * const preferredColorSpace_[4];
 
 
 public:  //structors
 
   //NB: bih is returned containing the output format
-  VFWFrameDecompressor(AviSource const& src, vfw::BitmapInfoHeader& bih);
+  VFWFrameDecompressor(AviSource const& src, vfw::PBitmapInfoHeader const& bih, PColorSpace& space);
 
   virtual ~VFWFrameDecompressor();
 
@@ -69,6 +69,7 @@ private:  //FrameDecompressor private interface
   virtual OwnedBlock operator()(bool keyframe, bool preroll, OwnedBlock const& block, long bytesRead);
 
 };
+
 
 
 } } } //namespace avs::filters::avisource

@@ -24,7 +24,8 @@
 #ifndef __AVS_FILTERS_AVISOURCE_FRAMEDECOMPRESSOR_H__
 #define __AVS_FILTERS_AVISOURCE_FRAMEDECOMPRESSOR_H__
 
-//avisynth include
+//avisynth includes
+#include "../../../vfw/forward.h"
 #include "../../../core/ownedblock.h"
 #include "../../../core/bufferwindow.h"
 
@@ -32,8 +33,7 @@
 namespace avs { 
 
 
-//forward declarations
-namespace vfw { class BitmapInfoHeader; }
+//forward declaration
 namespace filters { class AviSource; }
   
   
@@ -76,7 +76,7 @@ private:  //private interface
 
 public:  //factory method
 
-  static FrameDecompressor * Create(AviSource const& src, vfw::BitmapInfoHeader& bih);
+  static FrameDecompressor * Create(AviSource const& src, vfw::PBitmapInfoHeader const& bih, PColorSpace& output);
 
 };
 

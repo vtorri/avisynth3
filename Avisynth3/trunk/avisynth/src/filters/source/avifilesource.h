@@ -36,6 +36,11 @@ namespace avs { namespace filters {
 
 
 
+///////////////////////////////////////////////////////////////////////////////////////////
+//  AviFileSource
+//
+//  AviSource subclass opening avis using vfw
+//
 class AviFileSource : public AviSource
 {
 
@@ -70,16 +75,20 @@ public:  //clip general interface
   virtual BYTE * GetAudio(BYTE * buffer, __int64 start, int count) const;
 
 
-private:  //AviSource interface
+private:  //AviSource private interface
 
-  virtual int NearestKeyFrame(int n) const;
+  virtual int PreviousKeyFrame(int n) const;
 
-  virtual std::pair<OwnedBlock, long> ReadVideo(int n) const;
+  virtual long ReadVideo(int n, BYTE * buffer, long bufferSize) const;
 
 
-private:  //implementation helper
+private:  //implementation helpers
 
+  //get stream of asked type from an avifile, returns NULL if don't exist
   static IAVIStream * GetStream(PAVIFile const& aviFile, unsigned long fccType);
+
+  //wraps result from IAVIStream::ReadFormat into a shared_ptr
+  static boost::shared_ptr<void> ReadFormat(PAVIStream const& aviStream);
 
 
 public:  //factory method and functor

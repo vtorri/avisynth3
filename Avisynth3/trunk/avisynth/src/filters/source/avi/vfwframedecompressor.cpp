@@ -33,27 +33,26 @@ namespace avs { namespace filters { namespace avisource {
 
 
 
-ColorSpace * const VFWFrameDecompressor::preferredColorSpace_[4]
-    = { &ColorSpace::yv12(), &ColorSpace::yuy2(), &ColorSpace::rgb32(), &ColorSpace::rgb24() };
+char const * const VFWFrameDecompressor::preferredColorSpace_[4] = { "YV12", "YUY2", "RGB32", "RGB24" };
 
 
-VFWFrameDecompressor::VFWFrameDecompressor(AviSource const& src, vfw::BitmapInfoHeader& bih)
+VFWFrameDecompressor::VFWFrameDecompressor(AviSource const& src, vfw::PBitmapInfoHeader const& bih, PColorSpace& space)
   : FrameDecompressor( src )
-  , hic_( bih.biCompression )
+  , hic_( bih->biCompression )
   , input_( bih )
-  , output_( bih )
 {
+  output_.SetDimension(bih->GetDimension());   //init output bih dimension
 
   int i = 0;
-  do { output_.SetColorSpace( *preferredColorSpace_[i++] ); }   //test an output colorspace
-  while( ! hic_.DecompressQuery(input_, output_) && i < 4 );    //while conversion can't be done and more spaces to test
+  do { output_.SetColorSpace( ColorSpace::FromString(preferredColorSpace_[i++]) ); }   //test an output colorspace
+  while( ! hic_.DecompressQuery(*input_, output_) && i < 4 );    //while conversion can't be done and more spaces to test
 
   if ( i == 4 )      //ie all color spaces tested without success
     throw exception::Generic("Decompressor couldn't do any requested output");
 
-  hic_.DecompressBegin(input_, output_);  //now ready the codec for decompression
+  hic_.DecompressBegin(*input_, output_);     //now ready the codec for decompression
 
-  bih = output_;     //report output format to caller
+  space = output_.GetColorSpace();            //report output colorspace to caller
 }
 
 
@@ -66,13 +65,13 @@ VFWFrameDecompressor::~VFWFrameDecompressor()
 OwnedBlock VFWFrameDecompressor::operator()(bool keyframe, bool preroll, OwnedBlock const& src, long bytesRead)
 {
  
-  input_.biSizeImage = bytesRead;  
+  input_->biSizeImage = bytesRead;  
   OwnedBlock dst( src.GetEnvironment(), output_.biSizeImage + Guard* 2, true );
 
   BYTE * srcPtr = src.get() + Guard;   //position where the data starts
   BYTE * dstPtr = dst.get() + Guard;   //idem
 
-  hic_.Decompress(input_, output_, srcPtr, dstPtr, keyframe, preroll);
+  hic_.Decompress(*input_, output_, srcPtr, dstPtr, keyframe, preroll);
 
   return dst;
 }

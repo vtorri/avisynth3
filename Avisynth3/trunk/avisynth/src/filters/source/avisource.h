@@ -29,12 +29,6 @@
 #include "../../clip/caching/concrete.h"
 #include "avi/framedecompressor.h"
 
-//boost include
-#include <boost/optional.hpp>
-
-//stl include
-#include <utility>                      //for pair
-
 
 namespace avs { namespace filters {
 
@@ -62,7 +56,7 @@ public:  //structors
 
   AviSource(PEnvironment const& env);
 
-  virtual ~AviSource();
+  //generated destructor is fine
 
 
 private:  //MakeFrame method
@@ -70,15 +64,16 @@ private:  //MakeFrame method
   virtual CPVideoFrame MakeFrame(int n) const;
 
 
-private:  //AviSource interface
+private:  //AviSource private interface
 
-  virtual int NearestKeyFrame(int n) const = 0;
+  //returns index of previous keyframe
+  virtual int PreviousKeyFrame(int n) const = 0;
 
-  //returns a block containing read data, beginning at get() + BufferWindow::Guard
-  //and the size of the data, in a pair
-  virtual std::pair<OwnedBlock, long> ReadVideo(int n) const = 0;
+  //reads video data for frame n into passed buffer and returns read data size
+  //can be passed a NULL buffer to get the necessary buffer size
+  virtual long ReadVideo(int n, BYTE * buffer, long bufferSize) const = 0;
 
-  friend class avisource::FrameDecompressor;  //so it can call ReadVideo
+  friend class avisource::FrameDecompressor;   //so it can call ReadVideo
 
 
 protected:  //protected interface

@@ -25,8 +25,8 @@
 #define __AVS_PARSER_VISITOR_MULT_H__
 
 //avisynth includes
-#include "../failure.h"
 #include "../avsvalue.h"
+#include "../exception/failure.h"
 
 
 namespace avs { namespace parser { namespace visitor {

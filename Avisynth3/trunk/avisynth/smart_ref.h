@@ -134,6 +134,12 @@ public:  //pointers operators
   T * operator->() const { return ptr_.operator->(); }
   T & operator*() const { return ptr_.operator*(); }
 
+
+public:  //access
+
+  //return underlying while retaining ownership
+  T * get() const { return ptr_.get(); }
+
 };
 
 #endif  //__AVS_SMART_REF_H__

@@ -48,7 +48,9 @@ public:  //structors
   Generic(std::string const& msg)
     : msg_( msg ) { }
 
-  //generated copy constructor and destructor are fine
+  virtual ~Generic() throw() { }
+
+  //generated copy constructor is fine
 
 
 public:  //diagnostic

@@ -24,7 +24,6 @@
 //avisynth includes
 #include "yv12.h"
 #include "../../../core/videoframe.h"
-#include "../../../core/cow_shared_ptr.h"
 #include "../../../core/utility/saturate.h"
 
 

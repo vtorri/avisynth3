@@ -84,10 +84,10 @@ Glyph Face::GetGlyph(unsigned glyphIndex)
 {
   FT_Glyph glyph;
   if ( FT_Load_Glyph(face_.get(), glyphIndex, FT_LOAD_DEFAULT) != 0 )
-    throw avs::exception::Generic ("Error while loading a glyphslot in a Face.");
+    throw avs::exception::Generic("Error while loading a glyphslot in a Face.");
   
   if ( FT_Get_Glyph(face_.get()->glyph, &glyph) != 0 )
-    throw avs::exception::Generic ("Error while retrieving a glyph from a glyphslot.");
+    throw avs::exception::Generic("Error while retrieving a glyph from a glyphslot.");
   
   return Glyph(glyph);
 }

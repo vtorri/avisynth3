@@ -373,9 +373,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				RelativePath=".\src\core\cow_shared_ptr.h">
 			</File>
 			<File
-				RelativePath=".\src\core\dimension.h">
-			</File>
-			<File
 				RelativePath=".\src\core\exception.h">
 			</File>
 			<File
@@ -404,9 +401,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			</File>
 			<File
 				RelativePath=".\src\core\saturate.h">
-			</File>
-			<File
-				RelativePath=".\src\core\vecteur.h">
 			</File>
 			<File
 				RelativePath=".\src\core\videoframe.h">
@@ -554,6 +548,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath=".\src\core\colorspace\interleaved.h">
 				</File>
 				<File
+					RelativePath=".\src\core\colorspace\map.cpp">
+				</File>
+				<File
+					RelativePath=".\src\core\colorspace\map.h">
+				</File>
+				<File
 					RelativePath=".\src\core\colorspace\planar_yuv.h">
 				</File>
 				<File
@@ -627,9 +627,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				<File
 					RelativePath=".\src\core\exception\novideo.h">
 				</File>
-				<File
-					RelativePath=".\src\core\exception\unsupportedcolorspace.h">
-				</File>
 				<Filter
 					Name="Collision"
 					Filter="">
@@ -646,6 +643,32 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 						RelativePath=".\src\core\exception\collision\framecount.h">
 					</File>
 				</Filter>
+				<Filter
+					Name="ColorSpace"
+					Filter="">
+					<File
+						RelativePath=".\src\core\exception\colorspace\invalidheight.h">
+					</File>
+					<File
+						RelativePath=".\src\core\exception\colorspace\invalidwidth.h">
+					</File>
+					<File
+						RelativePath=".\src\core\exception\colorspace\unsupported.h">
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="Geometry"
+				Filter="">
+				<File
+					RelativePath=".\src\core\geometry\box.h">
+				</File>
+				<File
+					RelativePath=".\src\core\geometry\dimension.h">
+				</File>
+				<File
+					RelativePath=".\src\core\geometry\vecteur.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="Timing"
@@ -670,6 +693,16 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 			</Filter>
 			<Filter
+				Name="VideoInfo"
+				Filter="">
+				<File
+					RelativePath=".\src\core\videoinfo\concrete.h">
+				</File>
+				<File
+					RelativePath=".\src\core\videoinfo\videoinfo.cpp">
+				</File>
+			</Filter>
+			<Filter
 				Name="VideoFrame"
 				Filter="">
 				<File
@@ -677,6 +710,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 				<File
 					RelativePath=".\src\core\videoframe\base.h">
+				</File>
+				<File
+					RelativePath=".\src\core\videoframe\forward.h">
 				</File>
 				<File
 					RelativePath=".\src\core\videoframe\interleaved.h">
@@ -692,16 +728,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 				<File
 					RelativePath=".\src\core\videoframe\yuy2.h">
-				</File>
-			</Filter>
-			<Filter
-				Name="VideoInfo"
-				Filter="">
-				<File
-					RelativePath=".\src\core\videoinfo\concrete.h">
-				</File>
-				<File
-					RelativePath=".\src\core\videoinfo\videoinfo.cpp">
 				</File>
 			</Filter>
 		</Filter>
@@ -753,6 +779,50 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					</File>
 					<File
 						RelativePath=".\src\filters\convert\torgb24\fromrgb32.h">
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="Combine"
+				Filter="">
+				<File
+					RelativePath=".\src\filters\combine\stack.cpp">
+				</File>
+				<File
+					RelativePath=".\src\filters\combine\stack.h">
+				</File>
+				<Filter
+					Name="Stack"
+					Filter="">
+					<File
+						RelativePath=".\src\filters\combine\stack\horizontal.cpp">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\src\filters\combine\stack\horizontal.h">
+					</File>
+					<File
+						RelativePath=".\src\filters\combine\stack\vertical.cpp">
+					</File>
+					<File
+						RelativePath=".\src\filters\combine\stack\vertical.h">
 					</File>
 				</Filter>
 			</Filter>
@@ -1051,9 +1121,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				Name="Source"
 				Filter="">
 				<File
-					RelativePath=".\src\filters\source\avifilesource.cpp">
-				</File>
-				<File
 					RelativePath=".\src\filters\source\avifilesource.h">
 				</File>
 				<File
@@ -1127,7 +1194,64 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			Name="Functions"
 			Filter="">
 			<File
+				RelativePath=".\src\functions\audio.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Profile|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath=".\src\functions\audio.h">
+			</File>
+			<File
+				RelativePath=".\src\functions\combine.cpp">
+			</File>
+			<File
+				RelativePath=".\src\functions\combine.h">
+			</File>
+			<File
+				RelativePath=".\src\functions\convert.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Profile|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\src\functions\convert.h">
+			</File>
+			<File
+				RelativePath=".\src\functions\edit.cpp">
+			</File>
+			<File
+				RelativePath=".\src\functions\edit.h">
 			</File>
 			<File
 				RelativePath=".\src\functions\script.cpp">
@@ -1649,10 +1773,16 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			Name="FreeType"
 			Filter="">
 			<File
+				RelativePath=".\src\freetype\bitmapglyph.h">
+			</File>
+			<File
 				RelativePath=".\src\freetype\face.cpp">
 			</File>
 			<File
 				RelativePath=".\src\freetype\face.h">
+			</File>
+			<File
+				RelativePath=".\src\freetype\glyph.cpp">
 			</File>
 			<File
 				RelativePath=".\src\freetype\glyph.h">

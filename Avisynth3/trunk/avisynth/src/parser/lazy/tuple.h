@@ -28,6 +28,7 @@
 #include <boost/ref.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/spirit/phoenix/functions.hpp>
+#include <boost/type_traits/add_reference.hpp>
 
 
 namespace avs { namespace parser { namespace lazy {
@@ -45,7 +46,8 @@ template <int n> struct Attribute
   template <typename T>
   struct result
   {
-    typedef typename boost::tuples::element<n, T>::type& type;
+    //NB: add_reference is necessary, in the case where the tuple element is a reference itself
+    typedef typename boost::add_reference<typename boost::tuples::element<n, T>::type>::type type;
   };
 
   template <typename T>
@@ -60,7 +62,7 @@ template <int n> struct Attribute
     typedef typename result<T>::type type;
   };
 
-  //deflect phoenix::nil_t... I dunno why it's necessary
+  //deflect phoenix::nil_t... no idea why it's necessary
   template <>
   struct result<phoenix::nil_t>
   {

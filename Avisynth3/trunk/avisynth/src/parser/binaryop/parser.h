@@ -24,7 +24,7 @@
 #ifndef __AVS_PARSER_BINARYOP_PARSER_H__
 #define __AVS_PARSER_BINARYOP_PARSER_H__
 
-//avisynth include
+//avisynth includes
 #include "../vmcode.h"
 #include "typemapped.h"
 
@@ -74,17 +74,15 @@ public:  //parser interface
               [
                 var(result) = arg1
               ]
-          >> *( op_table_
-                [
-                  var(mappedOp) = bind(&boost::reference_wrapper<TypeMapped const>::get_pointer)(arg1)
-                ]
-                >>
-                term_
-                [
-                  first(var(result)) += first(arg1),
-                  first(var(result)) += bind(&TypeMapped::op)(var(mappedOp)),
-                  second(var(result)) = bind(&TypeMapped::get)(var(mappedOp), second(var(result)), second(arg1))
-                ]
+          >> *(   op_table_
+                  [
+                    var(mappedOp) = bind(&boost::reference_wrapper<TypeMapped const>::get_pointer)(arg1)
+                  ]
+              >>  term_
+                  [
+                    first(var(result)) += first(arg1),
+                    bind(&TypeMapped::AccumulateCode)(var(mappedOp), var(result), second(arg1))
+                  ]
               )                              
           ).parse(scan);
 

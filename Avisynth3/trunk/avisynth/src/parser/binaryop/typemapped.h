@@ -48,21 +48,22 @@ class TypeMapped
   typedef std::map<std::pair<char, char>, char> TypeMap;
    
   TypeMap map_;
-  VMOperation<void> op_;
+  ElementalOperation op_;
   std::string opName_;
 
 
 public:  //structors
 
-  TypeMapped(std::string const& opName, VMOperation<void> const& op, std::string const types);
+  TypeMapped(std::string const& opName, ElementalOperation const& op, std::string const types);
 
   //generated copy constructor and destructor are fine
 
 
 public:  //interface
 
-  //returns operation and return type given types of left and right args
-  TypedOp Get(char left, char right) const;
+  //given types of left of right arg, add op to passed code and update its type
+  //NB: left type is target type  
+  void AccumulateCode(TypedCode& target, char rightType) const;
 
 };
 

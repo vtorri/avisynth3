@@ -22,6 +22,7 @@
 
 
 //avisynth includes
+#include "../vmcode.h"
 #include "typemapped.h"
 #include "../../core/exception/generic.h"
 
@@ -30,7 +31,7 @@ namespace avs { namespace parser { namespace binaryop {
 
 
 
-TypeMapped::TypeMapped(std::string const& opName, VMOperation<void> const& op, std::string const types)
+TypeMapped::TypeMapped(std::string const& opName, ElementalOperation const& op, std::string const types)
   : opName_( opName )
   , op_( op )
 {
@@ -42,13 +43,14 @@ TypeMapped::TypeMapped(std::string const& opName, VMOperation<void> const& op, s
 }
 
 
-TypedOp TypeMapped::Get(char left, char right) const
+void TypeMapped::AccumulateCode(TypedCode& target, char rightType) const
 {
-  TypeMap::const_iterator it = map_.find(std::make_pair(left, right));
+  TypeMap::const_iterator it = map_.find(std::make_pair(target.get<1>(), rightType));
   if ( it == map_.end() )
     throw exception::Generic("parsing failed");
   
-  return TypedOp(op_, it->second);
+  target.get<0>() += op_;
+  target.get<1>() = it->second;
 }
 
 

@@ -40,7 +40,7 @@ namespace avs { namespace bw {
 //  since there are no default implementation, this one declares nothing
 //  see the two specialisations below
 //
-template <int bps> struct blender { };
+template <int bps> class blender { };
 
 
 
@@ -49,10 +49,24 @@ template <int bps> struct blender { };
 //
 //  Do the blending considering the data from each buffer is one byte per sample
 //
-template <> struct blender<1>
+template <> class blender<1>
 {
 
-  void operator()(BufferWindow& blendIn, BufferWindow const& blendFrom, float factor) const;
+  __int64 weight64_;
+  bool noBlend_;       //true if the blend is a no op
+  bool fullBlend_;     //true if the blend is a copy from blendFrom to blendIn
+
+
+public:  //structors
+
+  blender<1>(float factor);
+
+  //generated copy constructor and destructor are fine
+
+
+public:
+
+  void operator()(BufferWindow& blendIn, BufferWindow const& blendFrom) const;
 
 };
 
@@ -64,10 +78,19 @@ template <> struct blender<1>
 //
 //  TODO: code me
 //
-template <> struct blender<2>
+template <> class blender<2>
 {
 
-  void operator()(BufferWindow& blendIn, BufferWindow const& blendFrom, float factor) const { }
+public:  //structors
+
+  blender<2>(float factor) { }
+
+  //generated copy constructor and destructor are fine
+
+
+public:
+
+  void operator()(BufferWindow& blendIn, BufferWindow const& blendFrom) const { }
 
 };
 

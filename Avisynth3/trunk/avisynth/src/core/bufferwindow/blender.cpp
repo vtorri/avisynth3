@@ -28,28 +28,40 @@
 namespace avs { namespace bw {
 
 
-void blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom, float factor) const
+blender<1>::blender<1>(float factor)
+{
+  int weight = int( factor * 32767.0f );        //that is the weight of the blendFrom window
+
+  if ( weight <= 0 )
+    noBlend_ = true;
+  if ( weight >= 32767 )
+    fullBlend_ = true;
+
+  weight = (weight << 16) + 32767 - weight;     //aka weight-other | weight-this
+
+  weight64_ = __int64(weight) | (__int64(weight) << 32); //WO | WT | WO | WT
+}
+
+
+
+void blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom) const
 {
 
-  int weight = int(factor * 32767.0f);            //NB: it is the weight for other (plane)
-
-  if ( blendIn == blendFrom || weight <= 0 )      //if true nothing to do
+  if ( blendIn == blendFrom || noBlend_ )
     return;
   
-  if ( weight >= 32767 )                        //full blend of the other window
+  if ( fullBlend_ )
   {
-    blendIn = blendFrom;                        //we replace by the other one
+    blendIn = blendFrom;
     return;
   }
+
+  static __int64 const rounder = 0x0000400000004000;		         //(0.5)<<15 in each dword
                                      
   //we have to work     
   WindowPtr dst = blendIn.Write();
   CWindowPtr src = blendFrom.Read();
-  
-  weight = (weight << 16) + 32767 - weight;   //aka weight-other | weight-this
-  __int64 weight64  = __int64(weight) | (__int64(weight) << 32); //WO | WT | WO | WT
-
-  static __int64 const rounder = 0x0000400000004000;		         //(0.5)<<15 in each dword
+  __int64 weight64 = weight64_;
 
   /////////////////////
   // Blends two planes.

@@ -22,27 +22,27 @@
 
 
 //avisynth includes
-#include "../yuy2videoframe.h"
-#include "../yv12videoframe.h"
-#include "../../colorspace/yuy2.h"
+#include "../vframe_yuy2.h"
+#include "../vframe_yv12.h"
+#include "../../colorspace.h"
 
 
 namespace avs {
 
 
-YUY2VideoFrame::YUY2VideoFrame(const YV12VideoFrame& other)
-  : InterleavedVideoFrame( CS::YUY2::instance(), other )
+VideoFrame::YUY2::YUY2(YV12 const& source)
+  : Interleaved( ColorSpace::yuy2(), source )
 {
 
-  CWindowPtr y = other.GetY().GetReadPtr();
-  CWindowPtr u = other.GetU().GetReadPtr();
-  CWindowPtr v = other.GetV().GetReadPtr();
-  WindowPtr dst = GetMain().GetWritePtr();
+  CWindowPtr y = source.GetY().GetReadPtr();
+  CWindowPtr u = source.GetU().GetReadPtr();
+  CWindowPtr v = source.GetV().GetReadPtr();
+  WindowPtr yuy2 = GetMain().GetWritePtr();
 
-  const Dimension dim = GetDimension();
 
   //calling conversion method from XVID
-  yv12_to_yuyv_mmx( dst.ptr, dst.pitch/2, y.ptr, u.ptr, v.ptr, y.pitch, u.pitch, dim.GetWidth(), dim.GetHeight() );
+  //TODO: make own version taking interlacing into account
+  yv12_to_yuyv_mmx( yuy2.ptr, yuy2.pitch/2, y.ptr, u.ptr, v.ptr, y.pitch, u.pitch, y.width, y.height );
 
   /*
     const BYTE* yp = src->GetReadPtr(PLANAR_Y);
@@ -100,11 +100,9 @@ YUY2VideoFrame::YUY2VideoFrame(const YV12VideoFrame& other)
       yuv += dst_pitch*4;
     }
   }
-    return dst;
+
     */
-
-
 }
 
 
-}; //namespace avs
+} //namespace avs

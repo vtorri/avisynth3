@@ -22,23 +22,23 @@
 
 
 //avisynth includes
-#include "../rgb24videoframe.h"
-#include "../rgb32videoframe.h"
-#include "../../colorspace/rgb24.h"
+#include "../vframe_rgb24.h"
+#include "../vframe_rgb32.h"
+#include "../../colorspace.h"
 
 
 namespace avs {
 
 
 
-RGB24VideoFrame::RGB24VideoFrame(const RGB32VideoFrame other)
-  : InterleavedVideoFarme( CS::RGB24::instance(), other )
+VideoFrame::RGB24::RGB24(RGB32 const& other)
+  : RGB( ColorSpace::rgb24(), other )
 {
 
   CWindowPtr src = other.GetMain().GetReadPtr();
   WindowPtr dst = GetMain().GetWritePtr();
 
-  const Dimension dim = GetDimension();
+  Dimension dim = GetDimension();
   const int h = dim.GetHeight();
   const int x_left = dim.GetWidth() % 4;
 

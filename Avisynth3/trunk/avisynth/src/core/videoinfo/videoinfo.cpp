@@ -28,6 +28,8 @@
 #include "../exception/noaudio.h"
 #include "../exception/novideo.h"
 #include "../exception/nosuchframe.h"
+#include "../exception/collision/colorspace.h"
+#include "../exception/collision/dimension.h"
 
 
 namespace avs {
@@ -100,6 +102,19 @@ void VideoInfo::CheckHasFrame(int n) const
     throw exception::NoSuchFrame(n);
 }
 
+
+void VideoInfo::CheckColorSpaceMatch(VideoInfo const& other) const
+{
+  if ( GetColorSpace() != other.GetColorSpace() )
+    throw exception::collision::ColorSpace( GetColorSpace(), other.GetColorSpace() );
+}
+
+
+void VideoInfo::CheckDimensionMatch(VideoInfo const& other) const
+{
+  if ( GetDimension() != other.GetDimension() )
+    throw exception::collision::Dimension( GetDimension(), other.GetDimension() );
+}
 
 
 } //namespace avs

@@ -80,6 +80,7 @@ public:  //video methods
 
   int GetFPSNumerator() const { return GetFPS().numerator(); }
   int GetFPSDenominator() const { return GetFPS().denominator(); }
+  float GetFloatFPS() const { return boost::rational_cast<float>(GetFPS()); }
 
   //write access
 
@@ -163,6 +164,20 @@ public:  //various check methods (failure means proper exception)
   virtual void CheckHasAudio() const;
 
   virtual void CheckHasFrame(int n) const;
+
+  virtual void CheckColorSpaceMatch(VideoInfo const& other) const;
+  virtual void CheckDimensionMatch(VideoInfo const& other) const;
+  virtual void CheckFPSMatch(VideoInfo const& other) const { }
+  virtual void CheckFrameFlagMatch(VideoInfo const& other) const { }
+
+  //same as calling the 4 above, ie checks everything but frame count
+  virtual void CheckVideoMatch(VideoInfo const& other) const { }
+
+  virtual void CheckFrameCountMatch(VideoInfo const& other) const { }
+
+
+  //check that self and other have same (non-length) properties
+  virtual void CheckAudioMatch(VideoInfo const& other) const { }
 
 };//VideoInfo
 

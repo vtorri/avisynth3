@@ -44,7 +44,7 @@ code      { font-family: Courier, mono; font-size: 12px; letter-spacing: 1px; co
 var       { font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: normal; font-size: 12px;
             font-style: italic; letter-spacing: 1px; color: #660033}
 tt        { font-family: Courier, mono; font-size: 12px}
-em        { font-family: Courier, mono; font-weight: normal; color: #FFFFFF; font-style: normal}
+em        { font-family: verdana, arial, helvetica, sans-serif; font-style: italic; font-size: 12px}
 strong    { font-family: Courier, mono; font-weight: bold; color: #FFFF66; font-style: normal}
 cite      { border: 1px #3030A0 dotted; padding-left: 2px; padding-right: 2px; padding-top: 1px; padding-bottom: 1px}
 kbd       { color: #808000; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: normal; font-size: 10px; font-style: normal}

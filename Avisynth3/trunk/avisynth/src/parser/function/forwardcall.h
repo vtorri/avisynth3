@@ -50,7 +50,7 @@ struct ForwardCall
 
   void operator()(VMState& state) const
   {
-    if ( ! funct_->defined_ )
+    if ( funct_->op_.empty() )
       throw exception::Generic("Use of undefined function");
 
     funct_->op_(state);

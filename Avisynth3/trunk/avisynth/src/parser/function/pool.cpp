@@ -38,8 +38,7 @@ void Pool::Resolve(std::string const& prototype, TypedCode& target) const
   for(FunctionVector::const_iterator it = functionList_.begin(); it != functionList_.end(); ++it)
     if ( prototype == (*it)->GetPrototype() )
     {
-      target.get<0>() += (*it)->GetOperation();
-      target.get<1>() = (*it)->GetReturnType();
+      (*it)->AppendOperation(target);
       return;
     }
 

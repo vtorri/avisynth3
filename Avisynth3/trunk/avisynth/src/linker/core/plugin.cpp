@@ -27,6 +27,7 @@
 #include "../../functions/audio.h"
 #include "../../functions/combine.h"
 #include "../../functions/convert.h"
+#include "../../functions/levels.h"
 #include "../../functions/script.h"
 #include "../../functions/source.h"
 
@@ -44,6 +45,7 @@ Plugin::Plugin()
   functions::Audio::RegisterAll(*this);
   functions::Combine::RegisterAll(*this);
   functions::Convert::RegisterAll(*this);
+  functions::Levels::RegisterAll(*this);
   functions::Script::RegisterAll(*this);
   functions::Source::RegisterAll(*this);
 }

@@ -77,6 +77,8 @@ all: $(STATIC_LIB) $(SHARED_LIB)
 	@echo "   as root."
 	@echo "---------------------------------------------------------------"
 	@echo
+	@echo " * Install path......: $(prefix)"
+	@echo
 
 $(OBJECTS): platform.inc
 
@@ -92,6 +94,14 @@ $(BUILD_DIR):
 	@echo "  A: $(@D)/$(<F)"
 	@$(INSTALL) -d $(BUILD_DIR)/$(@D)
 	@$(AS) $(AFLAGS) $< -o $(BUILD_DIR)/$@
+
+#-----------------------------------------------------------------------------
+# Test
+#-----------------------------------------------------------------------------
+test: $(OBJECTS)
+	@echo "  Test"
+	@$(CXX) $(STLPORT_CFLAGS) $(BOOST_CFLAGS) $(FREETYPE_CFLAGS) $(CXXFLAGS) -L$(BUILD_DIR) -lavisynth $(STLPORT_LIBS) $(BOOST_LIBS) $(FREETYPE_LIBS) -o $(BUILD_DIR)/test ../../test/test.cpp
+	@cd $(BUILD_DIR) && chmod u+x test
 
 #-----------------------------------------------------------------------------
 # Generic C rule
@@ -143,6 +153,10 @@ install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB)
 	@$(INSTALL) -m 755 $(BUILD_DIR)/$(STATIC_LIB) $(libdir)/$(STATIC_LIB)
 	@echo "  D: $(includedir)"
 	@$(INSTALL) -d $(includedir)
+	@echo "  D: $(pkgconfigdir)"
+	@$(INSTALL) -d $(pkgconfigdir)
+	@echo "  I: $(pkgconfigdir)/$(AVS_PC)"
+	@$(INSTALL) -m 755 $(SRC_DIR)/$(AVS_PC) $(pkgconfigdir)
 
 #-----------------------------------------------------------------------------
 # Platorm specific file -- dumb rules for people executing make before
@@ -168,7 +182,10 @@ clean:
 
 distclean: clean
 	@echo "  Cl: Generated build files"
+	@$(RM) sources.inc
 	@$(RM) platform.inc
+	@$(RM) avs.pc
+	@$(RM) gen_sources.sh
 	@$(RM) config.log
 	@$(RM) config.status
 	@$(RM) autom4te.cache

@@ -31,10 +31,10 @@ namespace avs { namespace parser { namespace grammar {
 
 
 
-void Action::AppendSubscriptOperation(TypedCode& appendTo, bool firstArgOnly)
+ElementalOperation const& Action::GetSubscriptOperation(char type, bool firstArgOnly)
 {
 
-  switch( appendTo.get<1>() )
+  switch( type )
   {
   case 's':
 
@@ -44,19 +44,16 @@ void Action::AppendSubscriptOperation(TypedCode& appendTo, bool firstArgOnly)
 }
 
 
-void Action::AppendEqualityOperation(TypedCode& appendTo, TypedCode const& rightExpr, bool isEqual)
+ElementalOperation const& Action::GetEqualityOperation(char& leftType, char rightType, bool isEqual)
 {
-  char type = appendTo.get<1>();
-
-  if ( type != rightExpr.get<1>() )
+  if ( leftType != rightType )
     throw exception::Generic("Cannot compare expression of different types");
-  if ( type == 'v' )
+  if ( leftType == 'v' )
     throw exception::Generic("Cannot do comparison on void");
 
-  appendTo.get<0>() += rightExpr.get<0>();                                     //appends right expr generating code
-  appendTo.get<0>() += (isEqual ? equal_op : differ_op)[ TypeToIndex(type) ];  //appends comparison op
-  appendTo.get<1>() = 'b';                                                     //set final type to bool
-
+  leftType = 'b';                                                    //set final type to bool
+  
+  return (isEqual ? equal_op : differ_op)[ TypeToIndex(leftType) ];  //returns comparison op
 }
 
 

@@ -33,11 +33,11 @@ namespace avs { namespace parser { namespace grammar {
 struct Action
 {
 
-  //append appropriate version of the operator[]
-  static void AppendSubscriptOperation(TypedCode& appendTo, bool firstArgOnly);
+  //get appropriate version of the operator[]
+  static ElementalOperation const& GetSubscriptOperation(char type, bool firstArgOnly);
 
-  //append operation for operator== or operator!=, or throw if types don't allow comparison 
-  static void AppendEqualityOperation(TypedCode& appendTo, TypedCode const& rightExpr, bool isEqual);
+  //get operation for operator== or operator!=, or throw if types don't allow comparison 
+  static ElementalOperation const& GetEqualityOperation(char& leftType, char rightType, bool isEqual);
 
 
 private:

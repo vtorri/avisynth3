@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,8 @@
 #include "waveformatex.h"
 #include "../core/videoinfo.h"
 
-//windows include
-#include "Mmreg.h"
+//normally in Mmreg.h but mingw doesn't has it :p
+#define  WAVE_FORMAT_MPEGLAYER3   0x0055   //ISO/MPEG Layer3 Format Tag 
 
 
 namespace avs { namespace vfw {

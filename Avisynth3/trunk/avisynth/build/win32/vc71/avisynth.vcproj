@@ -1290,6 +1290,11 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			</File>
 			<File
 				RelativePath="..\..\..\src\parser\parser.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\src\parser\parser.h">
@@ -1577,6 +1582,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			</File>
 			<File
 				RelativePath="..\..\..\src\vfw\avistream.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\vfw\avistreaminfo.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\vfw\avistreaminfo.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\vfw\bitmapinfoheader.cpp">

@@ -33,43 +33,43 @@ namespace avs {
 
 
 ////////////////////////////////////////////////////////////////////////////////////
-//  RoundUp<int Round, T>
+//  RoundUp<int Rounder, T>
 //
 //  small template helper function to Round up values (to powers of 2)
 //
-template <int Round, typename T> 
-inline typename boost::enable_if_c<(Round & -Round) == Round, T>::type
+template <int Rounder, typename T> 
+inline typename boost::enable_if_c<(Rounder & -Rounder) == Rounder, T>::type
 RoundUp(T value)
 {
-  return (value + Round - 1) & -Round;
+  return (value + Rounder - 1) & -Rounder;
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////
-//  Round<int Round, T>
+//  Round<int Rounder, T>
 //
 //  small template helper function to Round values (to powers of 2)
 //
 //  NB: note that Round / 2 is rounded up
 //
-template <int Round, typename T>
-inline typename boost::enable_if_c<(Round & -Round) == Round, T>::type
+template <int Rounder, typename T>
+inline typename boost::enable_if_c<(Rounder & -Rounder) == Rounder, T>::type
 Round(T value)
 {
-  return (value + (Round >> 1)) & -Round;
+  return (value + (Rounder >> 1)) & -Rounder;
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////
-//  Round<int Round, T>
+//  Round<int Rounder, T>
 //
 //  small template helper function to Round down values (to powers of 2)
 //
-template <int Round, typename T>
-inline typename boost::enable_if_c<(Round & -Round) == Round, T>::type
+template <int Rounder, typename T>
+inline typename boost::enable_if_c<(Rounder & -Rounder) == Rounder, T>::type
 RoundDown(T value)
 {
-  return value & -Round;
+  return value & -Rounder;
 }
 
 

@@ -27,6 +27,7 @@
 //avisynth includes
 #include "base.h"
 #include "../colorspace.h"
+#include "../ownedblock.h"
 #include "../bufferwindow.h"
 #include "../exception/nosuchplane.h"
 

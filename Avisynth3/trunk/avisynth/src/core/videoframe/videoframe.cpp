@@ -23,6 +23,7 @@
 
 //avisynth includes
 #include "../videoframe.h"
+#include "../ownedblock.h"
 #include "../bufferwindow.h"
 
 

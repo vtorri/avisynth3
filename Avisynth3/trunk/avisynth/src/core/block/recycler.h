@@ -53,7 +53,7 @@ class Recycler : public boost::noncopyable
   typedef unsigned char BYTE;
   typedef boost::mutex Mutex;
   typedef Mutex::scoped_lock Lock;
-  typedef std::multimap<int, void *> RecycleMap; //maps size to memory blocks of that size
+  typedef std::multimap<int, BYTE *> RecycleMap; //maps size to memory blocks of that size
 
   Mutex mutex_;  
   RecycleMap map_;  
@@ -68,7 +68,7 @@ private:  //structors
 public:  //Recycler interface
 
   //returns memory to the recycling pool
-  void Return(void * ptr, int size, bool recycle);
+  void Return(BYTE * ptr, int size, bool recycle);
 
   //acquires memory from the recycling pool (eventually newly allocated)
   BYTE * Acquire(int size); 
@@ -79,8 +79,8 @@ public:  //Recycler interface
 
 private:  //aligned mem alloc/dealloc
 
-  static void * mem_alloc(int size);
-  static void mem_free(void * ptr);
+  static BYTE * mem_alloc(int size);
+  static void mem_free(BYTE * ptr);
 
 
 public:  //sole instance

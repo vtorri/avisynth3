@@ -33,7 +33,7 @@ namespace avs { namespace block {
 
 
 
-void Recycler::Return(void * ptr, int size, bool recycle)
+void Recycler::Return(BYTE * ptr, int size, bool recycle)
 { 
   Lock lock(mutex_);
 
@@ -73,10 +73,10 @@ void Recycler::Clear()
 }
 
 
-void * Recycler::mem_alloc(int size)
+Recycler::BYTE * Recycler::mem_alloc(int size)
 {
 #ifdef _MSC_VER
-  void * result = _aligned_malloc(size, block::Align);
+  BYTE * result = (BYTE *)_aligned_malloc(size, block::Align);
 
   if ( result == NULL )
     throw std::bad_alloc();
@@ -95,12 +95,12 @@ void * Recycler::mem_alloc(int size)
 }
 
 
-void Recycler::mem_free(void * ptr)
+void Recycler::mem_free(BYTE * ptr)
 {
 #ifdef _MSC_VER
   _aligned_free(ptr);
 #else
-  free( (BYTE *)ptr - *((BYTE *)ptr - 1) );
+  free( ptr - *(ptr - 1) );
 #endif //_MSC_VER
 }
 

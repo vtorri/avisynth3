@@ -58,7 +58,7 @@ public:  //diagnostic message
 
   virtual std::string msg() const
   {
-    return str( boost::format("File %s is borken or in an invalid format") % fileName_ );
+    return str( boost::format("File %s is broken or in an invalid format") % fileName_ );
   }
 
   virtual char const * what() const throw() { return "File is broken or in an invalid fomat"; }

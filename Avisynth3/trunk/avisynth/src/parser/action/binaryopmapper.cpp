@@ -24,6 +24,7 @@
 #include "../adapt.h"
 #include "binaryopmapper.h"
 #include "../exception/failure.h"
+#include "../../filters/edit/splice.h"
 #include "../../core/exception/generic.h"
 
 
@@ -60,6 +61,7 @@ struct divides
 BinaryOpMapper::BinaryOpMapper()
 {
 
+  Add(  plusMap_, 'c', 'c', 'c', adapt( filters::Splice::AlignedCreator() )  );
   Add(  plusMap_, 'i', 'i', 'i', adapt( plus<int, int, int>() )  );
   Add(  plusMap_, 'd', 'd', 'd', adapt( plus<double, double, double>() )  );
   Add(  plusMap_, 'd', 'i', 'd', adapt( plus<double, int, double>() )  );
@@ -102,7 +104,7 @@ ElementalOperation const& BinaryOpMapper::Get(char& leftType, char rightType, ch
 
 BinaryOpMapper::TypedOpMap const& BinaryOpMapper::ChooseMap(char opSymbol) const
 {
-  switch(opSymbol)
+  switch( opSymbol )
   {
   case '+': return plusMap_;
   case '-': return minusMap_;

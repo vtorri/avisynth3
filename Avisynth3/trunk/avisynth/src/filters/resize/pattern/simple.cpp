@@ -30,20 +30,21 @@ namespace avs { namespace filters { namespace resize { namespace pattern {
 
 
 
-Simple::Simple(Filter const& filter, SubRange const& subrange, int size)
+Simple::Simple(PEnvironment const& env, Filter const& filter, SubRange const& subrange, int size)
+  : Base( env )
 {
   Maker make(filter, subrange, size);
 
-  count_ = make.count();
-  
-  pattern.reset( new int[ size * (1 + count_) ] );   //naturally provides int alignement
-  int * ptr = pattern.get();
+  int count = make.count();  
+  init( count, size * (1 + count) );
+
+  int * ptr = get();
 
   for ( int i = size; i-- > 0; )
   {
     *ptr++ = make.offset();
             
-    for ( int k = count_; k-- > 0; )
+    for ( int k = count; k-- > 0; )
       *ptr++ = make.coeff();
   }
 

@@ -47,7 +47,7 @@ class Simple : public Base
 
 public:  //constructor
 
-  Simple(Filter const& filter, SubRange const& subrange, int size);
+  Simple(PEnvironment const& env, Filter const& filter, SubRange const& subrange, int size);
 
 };
 

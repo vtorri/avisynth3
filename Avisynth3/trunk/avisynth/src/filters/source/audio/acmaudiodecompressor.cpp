@@ -104,7 +104,7 @@ long ACMAudioDecompressor::operator()(BYTE *& buffer, long long start, long coun
 
   long long advance = start * bps - current_;  
   if ( 0 <= advance && advance <= ash_.cbDstLengthUsed )  //if the data start is in the output buffer
-    SkipFromBuffer( static_cast<long>(advance) );         //skip to that point
+    SkipFromBuffer(advance);                              //skip to that point
   else
     Seek( start * bps );                                  //else we must seek :(
 

@@ -45,7 +45,7 @@ struct LocalVar
   LocalVar(int pos)
     : pos_( pos ) { }
 
-  AVSValue& operator()(VMState& state) const { return state[index_]; }
+  AVSValue& operator()(VMState& state) const { return state[pos_]; }
 
 };
 

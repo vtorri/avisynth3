@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,9 +25,10 @@
 #define __AVS_VIDEOINFO_H__
 
 //avisynth includes
-#include "forward.h"
-#include "../define.h"
+#include "forward.h"              //for PVideoInfo, CPVideoInfo typedefs
+#include "../define.h"            //for AVS_NOVTABLE
 #include "sampletype.h"
+#include "cow_shared_ptr.h"       //so PVideoInfo and CPVideoInfo are defined
 
 
 namespace avs {
@@ -39,7 +40,7 @@ namespace avs {
 //
 //  The VideoInfo class holds global information about a clip 
 //  (i.e. information that does not depend on the frame number).  
-//  The GetVideoInfo method in Clip returns this class.
+//  The GetVideoInfo method in Clip returns this class (a ptr to)
 //
 //  As of 3.0 VideoInfo becomes a polymorphic class 
 //  which is responsible of checking all clip constraints.

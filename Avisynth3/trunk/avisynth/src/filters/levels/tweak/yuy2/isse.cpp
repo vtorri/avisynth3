@@ -30,7 +30,8 @@ namespace avs { namespace filters { namespace tweak { namespace yuy2 {
 
 
 //equivalent nasm code of the inline asm below
-extern "C" void tweak_yuy2_isse_nasm(BYTE * ptr, int x, int y, int modulo, int64 hue64, int64 satcont64, int64 bright64);
+extern "C" void tweak_yuy2_isse_nasm
+    (BYTE * ptr, int x, int y, int modulo, long long hue64, long long satcont64, long long bright64);
 
 
 
@@ -40,14 +41,14 @@ CPVideoFrame ISSE::MakeFrame(CPVideoFrame const& source) const
   PVideoFrame frame = source;
   WindowPtr wp = frame->WriteTo(NOT_PLANAR);
   
-  int64 hue64 = (int64(Cos)<<48) + (int64(-Sin)<<32) + (int64(Sin)<<16) + int64(Cos);
-  int64 satcont64 = (int64(Sat)<<48) + (int64(Cont)<<32) + (int64(Sat)<<16) + int64(Cont);
-  int64 bright64 = (int64(Bright_p16)<<32) + int64(Bright_p16);
+  long long hue64 = (long long(Cos) << 48) + (long long(-Sin) << 32) + (long long(Sin) << 16) + long long(Cos);
+  long long satcont64 = (long long(Sat) << 48) + (long long(Cont) << 32) + (long long(Sat) << 16) + long long(Cont);
+  long long bright64 = (long long(Bright_p16) << 32) + long long(Bright_p16);
 
 
 #if defined(_INTEL_ASM) && ! defined(_FORCE_NASM)
 
-  static int64 const norm = 0x0080000000800000LL;
+  static long long const norm = 0x0080000000800000LL;
 
   int y = wp.height;
   int x = wp.width >> 2;          //2 pixels (4 bytes) per x loop

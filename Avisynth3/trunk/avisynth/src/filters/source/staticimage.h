@@ -68,7 +68,7 @@ public:  //clip general interface
   virtual CPVideoInfo GetVideoInfo() const { return vi_; }
 
   virtual CPVideoFrame GetFrame(int /*n*/) const { return frame_; }
-  virtual void GetAudio(void * buffer, int64 start, int count) const;
+  virtual void GetAudio(void * buffer, long long start, int count) const;
 
 
 public:  //factory methods

@@ -42,7 +42,7 @@ CPVideoFrame VoidClip::GetFrame(int /*n*/) const
   throw exception::NoVideo();
 }
 
-void VoidClip::GetAudio(void * /*buffer*/, int64 /*start*/, int /*count*/) const
+void VoidClip::GetAudio(void * /*buffer*/, long long /*start*/, int /*count*/) const
 {
   throw exception::NoAudio();
 }

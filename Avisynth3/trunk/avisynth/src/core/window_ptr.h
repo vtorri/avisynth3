@@ -101,7 +101,9 @@ struct window_ptr
   //using Vecteur
   template <class Vect> Data * at(Vect const& vect) const { return at(vect.x, vect.y); }
   template <class Vect> window_ptr<Data>& operator+=(Vect const& vect) { to(vect.x, vect.y); return *this; }
-  
+
+  window_ptr<Data>& operator+=(int x) { ptr += x; return *this; }
+
 };
 
 

@@ -65,7 +65,7 @@ void Blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom
   int64 weight64 = weight64_;
 
 
-#ifdef _MSC_VER
+#ifdef _INTEL_ASM
 
   /////////////////////
   // Blends two planes.
@@ -130,7 +130,9 @@ void Blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom
 
     emms
   }
-#endif //_MSC_VER
+#else
+#error "Blender : missing code path
+#endif //_INTEL_ASM
 
 }
 

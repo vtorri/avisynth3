@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -83,14 +83,14 @@ template <> class Blender<2>
 
 public:  //structors
 
-  Blender<2>(float factor) { }
+  Blender<2>(float /*factor*/) { }
 
   //generated copy constructor and destructor are fine
 
 
 public:
 
-  void operator()(BufferWindow& blendIn, BufferWindow const& blendFrom) const { }
+  void operator()(BufferWindow& /*blendIn*/, BufferWindow const& /*blendFrom*/) const { }
 
 };
 

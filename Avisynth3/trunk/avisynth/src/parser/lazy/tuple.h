@@ -27,8 +27,11 @@
 //boost includes
 #include <boost/ref.hpp>
 #include <boost/tuple/tuple.hpp>
-#include <boost/spirit/phoenix/functions.hpp>
 #include <boost/type_traits/add_reference.hpp>
+
+//spirit includes
+#define PHOENIX_LIMIT 6
+#include <boost/spirit/phoenix/functions.hpp>
 
 
 namespace avs { namespace parser { namespace lazy {
@@ -50,21 +53,21 @@ template <int n> struct Attribute
     typedef typename boost::add_reference<typename boost::tuples::element<n, T>::type>::type type;
   };
 
-  template <typename T>
-  struct result<boost::reference_wrapper<T>, Attribute<n> >
+  template <typename T, typename D>
+  struct result<boost::reference_wrapper<T>, D>
   {
     typedef typename result<T>::type type;
   };
 
-  template <typename T>
-  struct result<boost::reference_wrapper<T> const, Attribute<n> >
+  template <typename T, typename D>
+  struct result<boost::reference_wrapper<T> const, D>
   {
     typedef typename result<T>::type type;
   };
 
   //deflect phoenix::nil_t... no idea why it's necessary
-  template <int d>
-  struct result<phoenix::nil_t, Attribute<d> >
+  template <typename D>
+  struct result<phoenix::nil_t, D>
   {
     typedef phoenix::nil_t type;
   };

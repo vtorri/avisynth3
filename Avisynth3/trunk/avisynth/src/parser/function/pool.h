@@ -49,7 +49,7 @@ public:
 
   void Add(linker::PFunction const& funct) { functionList_.push_back(funct); }
 
-  void Resolve(std::string const& prototype, TypedCode& target) const;
+  char Resolve(std::string const& prototype, ElementalCode& target) const;
 
 };
 

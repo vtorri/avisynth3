@@ -24,10 +24,10 @@
 #ifndef __AVS_FOLDER_H__
 #define __AVS_FOLDER_H__
 
-
+#ifdef _MSC_VER
 #pragma warning ( push )           //push warning state
 #pragma warning (disable : 4275)   //non dll-interface class 'boost::noncopyable' used as base for dll-interface class 'boost::mutex'
-
+#endif 
 
 //boost include
 #include <boost/thread/mutex.hpp>
@@ -54,11 +54,11 @@ template <class Key, class Value, class Expired> class folder
   typedef boost::mutex Mutex;
   typedef boost::mutex::scoped_lock Lock;
 
-  Mutex mutex_;
-  InstanceMap map_;
-  unsigned op_count_;
+  Mutex mutex_;          //provides synchronisation
+  InstanceMap map_;      //underlying map
+  unsigned op_count_;    //used to regularly clean up the map of obsolete entries
 
-  Expired expired;
+  Expired expired;       //functor used to detect obsolete entries
 
 
 public:  //structors
@@ -92,8 +92,9 @@ public:  //assignment
   {
     if ( &other != this )
     {
-      Lock(mutex_);
-      Lock(other.mutex_);
+      //ensure mutex are always locked in same order, to avoid deadlocks
+      Lock( &other < this ? mutex_ : other.mutex_ );
+      Lock( &other < this ? other.mutex_ : mutex_ );
 
       map_.swap(other.map_);
       std::swap(op_count_, other.op_count_);
@@ -105,6 +106,8 @@ public:  //Proxy inner class
 
   ///////////////////////////////////////////////////////////////////////////////
   //  Proxy
+  //
+  //  helps provide map-like access to the underlying map
   //
   class Proxy
   {
@@ -125,6 +128,8 @@ public:  //Proxy inner class
 
   public:  //Proxy interface
 
+    //associates passed value to its key into underlying map
+    //and replace it by folded value if key was already known
     Value operator=(Value const& value)
     {
       Lock lock( parent_.mutex_ );
@@ -137,6 +142,7 @@ public:  //Proxy inner class
       return value;
     }
 
+    //retrieve value associated to key
     operator Value ()
     {
       Lock lock( parent_.mutex_ );
@@ -188,6 +194,8 @@ private:  //implementation detail
 
 } //namespace avs
 
+#ifdef _MSC_VER
 #pragma warning ( pop )
+#endif 
 
 #endif //__AVS_FOLDER_H__

@@ -21,7 +21,7 @@
 // General Public License cover the whole combination.
 
 
-//avisynth include
+//avisynth includes
 #include "align.h"
 #include "recycler.h"
 
@@ -41,7 +41,7 @@ void Recycler::Return(void * ptr, int size, bool recycle)
 { 
   if ( recycle )
     map_.insert( std::make_pair(size, ptr) ); 
-  else _aligned_free(ptr);
+  else mem_free( ptr);
 }
 
 
@@ -56,15 +56,41 @@ Recycler::BYTE * Recycler::Acquire(int size)
     result = it->second;
     map_.erase(it);
   }     
-  else 
-  {
-    result = _aligned_malloc(size, block::Align);
-
-    if ( result == NULL )
-      throw std::bad_alloc();
-  }
+  else result = mem_alloc(size);
 
   return (BYTE *)result;
+}
+
+
+void * Recycler::mem_alloc(int size)
+{
+#ifdef _MSC_VER
+  void * result = _aligned_malloc(size, block::Align);
+
+  if ( result == NULL )
+    throw std::bad_alloc();
+#else
+   BYTE * raw = (BYTE *)malloc(size + block::Align);
+
+  if ( raw == NULL )
+    throw std::bad_alloc();
+
+  BYTE * result = (BYTE *)AlignValue(int(value));
+
+  *(result - 1) = result - raw;
+#endif
+
+  return result;
+}
+
+
+void Recycler::mem_free(void * ptr)
+{
+#ifdef _MSC_VER
+  _aligned_free(ptr);
+#else
+  free( (BYTE *)ptr - *((BYTE *)ptr - 1) );
+#endif
 }
 
 

@@ -67,7 +67,7 @@ public:  //constructor
     : lock_( mutex_ ) { }
 
 
-public:
+public:  //Recycler interface
 
   //returns memory to the recycling pool
   void Return(void * ptr, int size, bool recycle);
@@ -75,7 +75,13 @@ public:
   //acquires memory from the recycling pool (eventually newly allocated)
   BYTE * Acquire(int size); 
 
-};//Recycler
+
+private:  //mem alloc/dealloc
+
+  static BYTE * mem_alloc(int size);
+  static void mem_free(BYTE * ptr);
+
+};
 
 
 

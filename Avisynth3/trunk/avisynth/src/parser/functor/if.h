@@ -24,8 +24,9 @@
 #ifndef __AVS_PARSER_FUNCTOR_IF_H__
 #define __AVS_PARSER_FUNCTOR_IF_H__
 
-//avisynth include
+//avisynth includes
 #include "../vmcode.h"
+#include "../scopeenforcer.h"
 
 //boost include
 #include <boost/variant/get.hpp>
@@ -35,6 +36,11 @@ namespace avs { namespace parser { namespace functor {
 
 
 
+//////////////////////////////////////////////////////////////////////////
+//  IfThen
+//
+//  pops a bool from the stack, if true executes then code path
+//
 struct IfThen
 {
 
@@ -49,7 +55,41 @@ struct IfThen
     state.pop();
 
     if ( cond )
+    {
+      ScopeEnforcer enforcer(state);
+
       then_(state);
+    }
+  }
+
+};
+
+
+/////////////////////////////////////////////////////////////////////////
+//  IfThenElse
+//
+//  pops a bool from the stack, executes then or else code path
+//  following its value
+//
+struct IfThenElse
+{
+
+  VMCode then_, else_;
+
+  IfThenElse(VMCode const& then, VMCode const& els)
+    : then_( then )
+    , else_( els ) { }
+
+  void operator()(VMState& state) const
+  {
+    bool cond = boost::get<bool>(state.top());
+    state.pop();
+
+    ScopeEnforcer enforcer(state);
+
+    if ( cond )
+      then_(state);
+    else else_(state);
   }
 
 };

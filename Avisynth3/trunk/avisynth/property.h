@@ -28,6 +28,8 @@
 #include <vector>
 using namespace std;
 
+#pragma warning( disable : 4290 )
+
 //class used as a name/type for properties
 class PropertyKey {
 

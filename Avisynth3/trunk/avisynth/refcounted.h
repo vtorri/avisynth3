@@ -30,13 +30,13 @@
 
 class Counter {
 
-  mutable unsigned long count;
+  unsigned long count;
 
 public:
   Counter() : count(1) { }
 
-  unsigned long AddRef() const { return ++count; }
-  unsigned long Release() const { return --count; }
+  unsigned long AddRef() { return ++count; }
+  unsigned long Release() { return --count; }
 
   bool IsShared() const { return count > 1; }
 };
@@ -70,7 +70,7 @@ public:
 
 class RefCounted {
 
-  Counter counter;
+  mutable Counter counter;
 
 public:
   RefCounted() { }   
@@ -132,7 +132,7 @@ public:
   inline T * Get() const { if (ptr) ptr->AddRef(); return ptr; }  
   inline T * Release() { T * result = ptr; ptr = NULL; return result; } 
 
-  operator bool() const { return ptr; }  //useful in boolean expressions
+  operator bool() const { return ptr != NULL; }  //useful in boolean expressions
 
   ~smart_ptr_base() { if (ptr) ptr->Release(); }
 

@@ -69,18 +69,20 @@ AlphaVideoFrameBuffer::AlphaVideoFrameBuffer(int row_size, int height, int _alig
 /**********************************************************************************************/
 
 
-BYTE* BufferWindow::GetWritePtr() {
-  try {
-    return vfb->GetWritePtr() + offset;
-  }
-  catch(const IllegalState& ) {
+BYTE* BufferWindow::GetWritePtr()
+{  
+  BYTE * result = vfb->GetWritePtr(); 
+  //returns NULL if we are not allowed to write
+  if (result == NULL)
+  {
     VideoFrameBuffer * new_vfb = new VideoFrameBuffer(row_size, height, -vfb->GetAlign());
     int new_offset = new_vfb->FirstOffset();
     IScriptEnvironment::BitBlt(new_vfb->GetWritePtr() + new_offset, new_vfb->GetPitch(), vfb->GetReadPtr() + offset, vfb->GetPitch(), row_size, height);
     vfb = new_vfb;
     offset = new_offset;
   }
-  return vfb->GetWritePtr() + offset;
+
+  return result + offset;
 } 
 
 

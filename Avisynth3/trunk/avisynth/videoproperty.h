@@ -52,41 +52,21 @@ public:
 typedef smart_ptr_to_cst<ColorSpaceProperty> CPColorSpaceProperty;
 
 
-class IntProperty : public ProtectedProperty {
+
+class DimensionProperty : public ProtectedProperty {
 
 protected:
-  //don't test the set, just ensure value is > 0
-  //need a way to throw the appropriate error msg
+  //don't test the set, just ensure values are > 0  
   virtual void IntegrityCheck(const PropertySet& set) const throw(ConstraintViolation);
 
 public:
-  IntProperty(int _value) : value(_value) { }
+  DimensionProperty(int _width, int _height) : width(_width), height(_height) { }
 
-  const int value;
-};
-
-typedef smart_ptr_to_cst<IntProperty> CPIntProperty;
-
-class WidthProperty : public IntProperty {
-
-public:
-  WidthProperty(int _width) : IntProperty(_width) { }
+  const int width, height;
 
   static const InternalPropertyKey KEY;
 
   virtual PPropertyKey GetKey() const { return &KEY; }
-};
-
-
-class HeightProperty : public IntProperty {
-
-public:
-  HeightProperty(int _height) : IntProperty(_height) { }
-
-  static const InternalPropertyKey KEY;
-
-  virtual PPropertyKey GetKey() const { return &KEY; }
-
 };
 
 

@@ -61,8 +61,7 @@ TaggedVideoFrame::TaggedVideoFrame(const ColorSpace& space, int width, int heigh
 {
   PPropertySet _prop = new PropertySet();
   _prop->Set(ColorSpaceProperty::GetInstance(space));  //colorspace property set
-  _prop->Set(new WidthProperty(width));                //width set
-  _prop->Set(new HeightProperty(height));              //height set
+  _prop->Set(new DimensionProperty(width, height));    //width and height set
 
   _prop->Set(new FrameTypeProperty(space, IsField));   //Frame type set
 
@@ -76,17 +75,7 @@ const ColorSpace& TaggedVideoFrame::GetColorSpace() const
   return prop->space;
 }
 
-int TaggedVideoFrame::GetVideoWidth() const
-{
-  CPIntProperty prop = propSet->Get(&WidthProperty::KEY);
-  return prop->value;
-}
 
-int TaggedVideoFrame::GetVideoHeight() const
-{
-  CPIntProperty prop = propSet->Get(&HeightProperty::KEY);
-  return prop->value;
-}
 
 void TaggedVideoFrame::SizeChange(int left, int right, int top, int bottom) //args in pixels
 {
@@ -97,10 +86,8 @@ void TaggedVideoFrame::SizeChange(int left, int right, int top, int bottom) //ar
   space.IsLegalHeightShift(top, IsInterlaced());
   //now we do the full change in the prop set, if it works, args are legal
   PPropertySet temp = propSet;
-  //update width
-  temp->Set(new WidthProperty(GetVideoWidth() - left - right)); 
-  //update height
-  temp->Set(new HeightProperty(GetVideoHeight() - top - bottom));  
+  //update width and height
+  temp->Set(new DimensionProperty(GetVideoWidth() - left - right, GetVideoHeight() - top - bottom)); 
   //try committing
   propSet = temp;  //constraintviolation thrown if bad args 
 

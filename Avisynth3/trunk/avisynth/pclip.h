@@ -35,6 +35,7 @@ enum { AVISYNTH_INTERFACE_VERSION = 3 };
 
 #define FRAME_ALIGN 16 
 // Default frame alignment is 16 bytes, to help P4, when using SSE2
+#pragma warning( disable : 4290 )
 
 
 
@@ -89,7 +90,7 @@ public:
   virtual const ColorSpace& GetColorSpace() const = 0;
   bool IsPlanar() const { return GetColorSpace().HasProperty(ColorSpace::PLANAR); }  
 
-  //method to get Video width and height, default implementation: not planar case
+  //method to get Video width and height
   virtual int GetVideoHeight() const = 0; 
   virtual int GetVideoWidth() const = 0; 
 
@@ -136,7 +137,6 @@ public:
 
   virtual CPProperty GetProperty(PPropertyKey key) const = 0;
   virtual void SetProperty(CPProperty prop) = 0;
-  void SetProperty(PProperty prop) { SetProperty(CPProperty(prop)); }  //exists so outside PProperty won't be casted to CPProperty by the call of the above and loses its ref
   virtual void RemoveProperty(PPropertyKey key) = 0;
 
 };
@@ -180,7 +180,39 @@ typedef smart_ptr<IClip> PClip;  // smart pointer to IClip
 
 
 
+// instanciable null filter that forwards all requests to child
+// use for filter who don't change VideoInfo
+class StableVideoFilter : public IClip {
 
+protected:
+  PClip child;
+
+  //protected constructor
+  StableVideoFilter(PClip _child) : child(_child) { }
+
+public:
+  CPVideoFrame __stdcall GetFrame(int n) { return child->GetFrame(n); }
+  void __stdcall GetAudio(void* buf, __int64 start, __int64 count) { child->GetAudio(buf, start, count); }
+  const VideoInfo& __stdcall GetVideoInfo() { return child->GetVideoInfo(); }
+  bool __stdcall GetParity(int n) { return child->GetParity(n); }
+};
+
+
+// instance null filter
+// use when VideoInfo is changed
+class GenericVideoFilter : public StableVideoFilter {
+
+protected:
+  VideoInfo vi;
+
+  //protected constructor
+  GenericVideoFilter(PClip _child, const VideoInfo& _vi) : StableVideoFilter(_child), vi(_vi) { }
+
+    
+public:
+  const VideoInfo& __stdcall GetVideoInfo() { return vi; }
+
+};
 
 
 

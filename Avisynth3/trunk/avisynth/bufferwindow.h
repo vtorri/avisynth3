@@ -57,8 +57,7 @@ public:
 
 }; 
 
-//TODO later: make it part of the avisynth errors hierarchy
-class IllegalState { };
+
 
 class AbstractVideoFrameBuffer : public RefCounted {
 
@@ -74,7 +73,7 @@ public:
 
   //virtual methods to be implented by subclasses
   virtual const BYTE * GetReadPtr() const = 0;
-  virtual BYTE * GetWritePtr() throw(IllegalState) { throw IllegalState(); }
+  virtual BYTE * GetWritePtr() { return NULL; }
   virtual int GetSize() const = 0;
 
   int GetPitch() const { return pitch; }
@@ -116,7 +115,7 @@ public:
   ~VideoFrameBuffer() { MemoryPiece::alloc.push_back(buffer); }
 
   const BYTE * GetReadPtr() const { return buffer.data.get(); }
-  BYTE * GetWritePtr() throw(IllegalState) { if (IsShared())  throw IllegalState(); return buffer.data.get(); }
+  BYTE * GetWritePtr()  { return IsShared()? NULL : buffer.data.get(); }
 
   int GetSize() const { return buffer.size; }
 
@@ -127,7 +126,6 @@ public:
 typedef smart_ptr<VideoFrameBuffer> PVideoFrameBuffer;  
 
 //framebuffer for the dummy alpha planes (init to 255)
-//throw IllegalState on write requests,
 //so BufferWindow will correctly reallocate the buffer 
 class AlphaVideoFrameBuffer : public AbstractVideoFrameBuffer {
 
@@ -171,12 +169,18 @@ public:
   int GetHeight()  const { return height; }
   int GetAlign() const { return vfb->GetAlign(); }
   
-  const BYTE* GetReadPtr() const { return vfb->GetReadPtr() + offset; }
-  BYTE* GetWritePtr();  
+  const BYTE * GetReadPtr() const { return vfb->GetReadPtr() + offset; }
+  BYTE * GetWritePtr();  
+
+  bool IsInWindow(int x, int y) const { return x >= 0 && x < row_size && y >= 0 && y < height; }
+  int VectorToWindowOffset(int x, int y) const { return y * GetPitch() + x; }
+
+  const BYTE * GetReadPtr(int x, int y) const { return IsInWindow(x, y) ? GetReadPtr() + VectorToWindowOffset(x, y) : NULL; }
+  BYTE * GetWritePtr(int x, int y) { return IsInWindow(x, y) ? GetWritePtr() + VectorToWindowOffset(x, y) : NULL; }
 
   //copy other into self at the given coords (which can be negatives)
   //only overlap is copied, no effect if there is none
-  void Copy(const BufferWindow& other, int left, int top); 
+  void Copy(const BufferWindow& other, int x, int y); 
   
   void Blend(const BufferWindow& other, float factor);
 

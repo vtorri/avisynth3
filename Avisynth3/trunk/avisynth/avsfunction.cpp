@@ -19,44 +19,6 @@
 
 #include "avsfunction.h"
 
-AVSValue AVSFunction::operator() (const NamedArgVector& args) const
-{
-  //the error we throw when args are not what they should
-  static InternalError PARSER_ERR = "Parser Error: passed arguments does not match function prototype";
-
-  const Prototype& prototype = GetPrototype();
-
-  int argCount = prototype.size();
-  //build a vector of the goood size to order values into
-  ArgVector sortedArgs(argCount);  
-  //fill it with default values
-  for(int i = 0; i < argCount; ++i)
-    sortedArgs.push_back(prototype[i]);
-
-  //now the ugly part: check that args fits the job :/
-  i = 0;  //stupid VC6 keeps i defined from the for :'(
-  //while it matches we copy in
-  while( i < args.size() && prototype[i].Match(args[i]) )
-  { 
-    sortedArgs[i] = args[i];
-    ++i;
-  }
-  //now we test the stop condition of the while
-  if (i != args.size()) //if == it's finished and totally matched 
-  {
-    if (! prototype[i].IsOptional() ) //if not stopped on optional: no match
-      throw PARSER_ERR;
-    //now we have to reorder named optional args
-    while (i < args.size())
-    {
-      int pos = prototype.IndexOf(args[i]);
-      if (pos == -1 || ! prototype[pos].Match(args[i]))  //ie not found or not matching
-        throw PARSER_ERR;
-      sortedArgs[pos] = args[i];  //we place it at the good place
-    }
-  }
-  return Process(sortedArgs);  //and finally we pass the job to Process
-}
 
 
 

@@ -20,7 +20,9 @@
 #ifndef __AVSFUNCTION_H__
 #define __AVSFUNCTION_H__
 
-#include "prototype.h" 
+#include "prototype.h"
+#include "colorspace.h"
+#include "pclip.h" 
 #include <functional>
 
 
@@ -31,40 +33,47 @@ class Plugin;
 //(except some special functions who are done by the parser)
 class AVSFunction {
 
-  const AVSType returnType;
   const string name;
 
 public:
-  AVSFunction(AVSType retType, const string& _name) : returnType(retType), name(_name) { }
-
-  AVSType GetReturnType() const { return returnType; }
+  AVSFunction(const string& _name) : name(_name) { }
+  
   const string& GetName() const { return name; }
-  virtual const Prototype& GetPrototype() const = 0;
+  virtual const type_info& GetReturnType() const = 0;
+  virtual const DescriptionPrototype& GetPrototype() const = 0;
 
   //return the plugin this function depends
   //(for internals, there is a special plugin representing the core)
+  virtual const Plugin * GetMotherPlugin() const = 0;
   virtual Plugin * GetMotherPlugin() = 0;  
   
   //small useful test
-  bool IsFilter() const { return returnType == CLIP_T; }
+  bool IsFilter() const { return GetReturnType() == typeid(PClip); }
+  //type_info::operator== returns int in microsoft world....  :/
 
   //useful for determining priority in overload resolution
   virtual bool IsUserFunction() const { return false; }
   virtual bool IsCoreFunction() const { return false; }
 
   //method used to list accepted colorspaces
-  virtual bool AcceptColorSpace(VideoInfo::ColorSpace) const = 0;
+  virtual bool AcceptColorSpace(const ColorSpace& space) const = 0;
 
-  //does all type checking, reorder, replace by defaults
-  //and throw errors if args doesn't fit in
-  AVSValue operator() (const NamedArgVector& args) const;
 
 protected:
-  //called by the above, quaranteed to have args according to specified prototype
-  virtual AVSValue Process(const ArgVector& args) const = 0;
+  virtual AVSValue operator() (const vector<AVSValue>& args) const = 0;
+
+  friend class Linker;
 
 };
 
+template <typename ReturnType> class TypedAVSFunction : public AVSFunction {
+
+public:
+  TypedAVSFunction(const string& name) : AVSFunction(name) { }
+
+  virtual const type_info& GetReturnType() const { return typeid(ReturnType); }
+
+};
 
 //base class for plugins
 class Plugin {
@@ -115,22 +124,20 @@ public:
 /***************************** CorePlugin and CoreFunction *********************************/
 /*******************************************************************************************/
 
-class InternalFunction;
+template <typename ReturnType> class InternalFunction;
 
 class CorePlugin : public Plugin {
 
   //private contructor 
   CorePlugin() { }
 
+public:
   //returns the sole instance of the core
   static CorePlugin * GetCore();
     
   //method called by InternalFunction to register themselves as a part of the core
-  void RegisterFunction(InternalFunction * funct) { functionVector.push_back(auto_ptr<AVSFunction>((AVSFunction *)funct)); }
+  void RegisterFunction(AVSFunction * funct);
 
-  friend InternalFunction;
-
-public:
   virtual const string& GetName() const;
   virtual const string& GetAuthor() const;
   virtual const string& GetDescription() const;
@@ -144,12 +151,12 @@ public:
 };
 
 //common superclass for user-defined function and core function
-class InternalFunction : public AVSFunction {  
+template <typename ReturnType> class InternalFunction : public TypedAVSFunction<ReturnType> {  
   
 public:
   //construct and register itself at the core
-  InternalFunction(AVSType retType, const string& _name)
-    : AVSFunction(retType, _name) { CorePlugin::GetCore()->RegisterFunction(this); }
+  InternalFunction(const string& name)
+    : TypedAVSFunction<ReturnType>(name) { CorePlugin::GetCore()->RegisterFunction(this); }
 
   virtual Plugin * GetMotherPlugin() { return CorePlugin::GetCore(); }
  
@@ -157,35 +164,35 @@ public:
 
 //function defined by user
 //how they work has yet to be determined
-class UserFunction : public InternalFunction {
+template <typename ReturnType> class UserFunction : public InternalFunction<ReturnType> {
 
 public:
-  UserFunction(AVSType retType, const string& _name) : InternalFunction(retType, _name) { }
+  UserFunction(const string& name) : InternalFunction<ReturnType>(name) { }
     
   virtual bool IsUserFunction() const { return true; }
 
   //user defined function have not the possibility to select colorspace
   //they accept everything (and eventually complain after)
-  virtual bool AcceptColorSpace(VideoInfo::ColorSpace) const { return true; }
+  virtual bool AcceptColorSpace(const ColorSpace& space) const { return true; }
 
 };
 
 //function of the core
 //for each function of the core, there should be one instance of it
-class CoreFunction : public InternalFunction {
+template <typename ReturnType> class CoreFunction : public InternalFunction<ReturnType> {
 
 public:
-  CoreFunction(AVSType retType, const string& _name) : InternalFunction(retType, _name) { }
+  CoreFunction(const string& name) : InternalFunction<ReturnType>(name) { }
 
   virtual bool IsCoreFunction() const { return true; }
 
 };
 
 //convenience subclass of the above (economize writing CLIP_T all the time)
-class CoreFilter : public CoreFunction {
+class CoreFilter : public CoreFunction<PClip> {
 
 public:
-  CoreFilter(const string& _name) : CoreFunction(CLIP_T, _name) { }
+  CoreFilter(const string& name) : CoreFunction<PClip>(name) { }
 
 };
 
@@ -195,7 +202,7 @@ public:
 /************************** NativePlugin and PluginFunction **********************************/
 /*********************************************************************************************/
 
-class PluginFunction;
+template <typename ReturnType> class PluginFunction;
 
 class NativePlugin : public Plugin {
 
@@ -225,10 +232,10 @@ public:
 
 typedef AVSValue (* ProcessFunction)(const ArgVector& args);
 
-class PluginFunction : public AVSFunction {
+template <typename ReturnType> class PluginFunction : public TypedAVSFunction<ReturnType> {
 
   NativePlugin * mother;
-  Prototype prototype;
+  const DescriptionPrototype prototype;
 
   ProcessFunction pf;
 
@@ -238,24 +245,13 @@ class PluginFunction : public AVSFunction {
 
 public:
   //register the self as a function of mother
-  PluginFunction(NativePlugin * _mother, AVSType retType, const string& _name, const Prototype& _prototype);
+  PluginFunction(NativePlugin * _mother, const string& _name, const DescriptionPrototype& _prototype);
 
-  virtual const Prototype& GetPrototype() const { return prototype; }
+  virtual const DescriptionPrototype& GetPrototype() const { return prototype; }
 
   virtual const Plugin * GetMotherPlugin() const { return mother; }
   virtual Plugin * GetMotherPlugin() { return mother; }
 
-protected:
-  virtual AVSValue Process(const ArgVector& args) const { if (! mother->IsLoaded()) mother->Load(); return pf(args); }
-   
-};
-
-//exist just for convenience of not repeating CLIP_T all the time
-class PluginFilter : public PluginFunction {
-
-public:
-  PluginFilter(NativePlugin * _mother, const string& _name, const Prototype& _prototype)
-    : PluginFunction(_mother, CLIP_T, _name, _prototype) { }
 
 };
 

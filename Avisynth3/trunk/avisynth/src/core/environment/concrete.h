@@ -90,8 +90,6 @@ public:  //TimerStackMap struct
 
   };
 
-  friend struct TimerStackMap;   //so can access member timerStack_
-
 };
 
 

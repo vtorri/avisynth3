@@ -38,14 +38,16 @@ namespace avs { namespace parser {
 
 
 /////////////////////////////////////////////////////////////////////////////
-//  VMCode<Result>
+//  VMCode<Operation>
 //
 //  code for the virtual machine
 //
-template <typename Result> class VMCode
+template <typename Operation> class VMCode
 {
 
-  typedef std::vector<VMOperation<Result> > OperationVector;
+  typedef VMCode<Operation> ThisType;
+  typedef std::vector<Operation> OperationVector;
+  typedef typename Operation::result_type ResultType;
 
   OperationVector code_;
 
@@ -57,14 +59,14 @@ public:  //structors
 
 public:  //code accumulation methods
 
-  VMCode<Result>& operator+=(VMOperation<Result> const& op) 
+  ThisType& operator+=(Operation const& op) 
   { 
     assert( ! op.empty() );
     code_.push_back(op); 
     return *this; 
   }
 
-  VMCode<Result>& operator+=(VMCode<Result> const& other)
+  ThisType& operator+=(ThisType const& other)
   {
     code_.insert(code_.end(), other.code_.begin(), other.code_.end());
     return *this;
@@ -73,7 +75,7 @@ public:  //code accumulation methods
 
 public:  //stack functor method
 
-  Result operator()(VMState& state) const;
+  ResultType operator()(VMState& state) const;
 
 
 public:  //misc
@@ -86,10 +88,10 @@ public:  //misc
 
 
 template <>
-void VMCode<void>::operator()(VMState& state) const;
+void VMCode<ElementalOperation>::operator()(VMState& state) const;
 
 template <>
-OpType VMCode<OpType>::operator()(VMState& state) const;
+OpType VMCode<StatementOperation>::operator()(VMState& state) const;
 
 
 

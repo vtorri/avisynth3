@@ -30,17 +30,13 @@
 #include "forward.h"                          //for ColorSpace, Dimension, Blitter, PVideoFrame
 #include "frametype.h"
 #include "ownedblock.h"
+#include "cow_shared_ptr.h"                   //so PVideoFrame, PVideoInfo are defined
 
 //boost include
 #include <boost/enable_shared_from_this.hpp>  //for enable_shared_from_this
 
 
 namespace avs {
-
-
-//declarations
-class Cache;                //in cache.h
-namespace clip { class Caching; }
 
 
 
@@ -81,15 +77,10 @@ public:  //memory stuff
   virtual void MemoryVirtuallyAllocated(int size) = 0;  //no throw
 
 
-public:  //typedef
-
-  typedef clip::Caching Caching;
-
-
 public:  //various Create or access methods
 
-  //create a cache for the source caching clip
-  virtual Cache * CreateCache(Caching const& source) = 0;
+  //create a cache based on the passed FrameMaker
+  virtual Cache * CreateCache(FrameMaker const& maker) = 0;
 
   virtual PVideoInfo CreateVideoInfo() const;
 

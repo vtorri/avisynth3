@@ -43,7 +43,7 @@ class Base : public Cache
 {
 
   PEnvironment env_;           //owning environment
-  Caching const& owner_;       //back reference to owning clip
+  FrameMaker const& maker_;
 
 protected:
   
@@ -52,9 +52,9 @@ protected:
 
 public:  //structors
 
-  Base(boost::shared_ptr<environment::Base> const& env, Caching const& owner)
+  Base(boost::shared_ptr<environment::Base> const& env, FrameMaker const& maker)
     : env_( env )
-    , owner_( owner )
+    , maker_( maker )
     , dropPriority_( 0.0 )
   {
     env->RegisterCache( this );
@@ -88,7 +88,7 @@ private:  //reserved to the env
 
 protected:  //implementation helpers
 
-  CPVideoFrame MakeFrame(int n) const { return owner_.MakeFrame(n); }
+  CPVideoFrame MakeFrame(long n) const { return Cache::MakeFrame(maker_, n); }
 
 };
 

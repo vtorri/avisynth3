@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -55,8 +55,8 @@ class concrete : public Base
 
 public:  //structors
 
-  concrete(PEnv const& env, Caching const& owner)
-    : Base( env, owner )
+  concrete(PEnv const& env, FrameMaker const& maker)
+    : Base( env, maker )
     , timer_( env ) { }
 
   //generated destructor is fine
@@ -64,7 +64,7 @@ public:  //structors
 
 public:  //Cache interface
 
-  virtual CPVideoFrame GetFrame(int n)
+  virtual CPVideoFrame GetFrame(long n)
   {
     if ( CPVideoFrame cached = cacheLogic_.GetCachedFrame(n) )
       return cached;

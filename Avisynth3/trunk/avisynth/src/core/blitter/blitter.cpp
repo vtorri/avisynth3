@@ -29,15 +29,6 @@ namespace avs {
 
 
 
-void Blitter::operator()(BufferWindow const& src, BufferWindow& dst) const
-{
-  Dimension dim = src.GetDimension();
-  dim >>= dst.GetDimension();
-
-  return operator()(src.Read(), dst.Write(), dim);
-}
-
-
 Blitter const& Blitter::Get()
 {
   return blitter::MemCopy::instance;

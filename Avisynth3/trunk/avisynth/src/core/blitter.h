@@ -25,15 +25,12 @@
 #define __AVS_BLITTER_H__
 
 //avisynth includes
-#include "window_ptr.h"
+#include "forward.h"
 #include "dimension.h"
+#include "window_ptr.h"
 
 
 namespace avs {
-
-
-//declaration
-class BufferWindow;
 
 
 
@@ -45,15 +42,10 @@ class BufferWindow;
 class Blitter
 {
 
-public:  
+public:  //Blit methods
 
   //others are implemented in terms of this version
   virtual void operator()(BYTE const * srcp, int srcPitch, BYTE * dstp, int dstPitch, Dimension const& dim) const = 0;
-
-  //if src and dst are not of same Dimension, blits common part only
-  //potentially make take advantage of BufferWindow alignment
-  virtual void operator()(BufferWindow const& src, BufferWindow& dst) const;
-
 
   void operator()(BYTE const * srcp, int srcPitch, BYTE * dstp, int dstPitch, int width, int height) const
   {

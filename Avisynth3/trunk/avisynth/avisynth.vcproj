@@ -50,10 +50,11 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="msacm32.lib quartz.lib ddraw.lib amstrmid.lib vfw32.lib version.lib winmm.lib"
+				AdditionalDependencies="msacm32.lib quartz.lib ddraw.lib amstrmid.lib vfw32.lib version.lib winmm.lib freetype214.lib"
 				OutputFile=".\Debug/avisynth.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
+				IgnoreDefaultLibraryNames="MSVCRT"
 				ModuleDefinitionFile=".\avisynth.def"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/avisynth.pdb"
@@ -1646,6 +1647,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			</File>
 			<File
 				RelativePath=".\src\freetype\glyph.h">
+			</File>
+			<File
+				RelativePath=".\src\freetype\library.cpp">
 			</File>
 			<File
 				RelativePath=".\src\freetype\library.h">

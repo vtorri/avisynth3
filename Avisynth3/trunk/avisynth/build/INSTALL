@@ -1,0 +1,23 @@
+
+Supported platform 
+------------------
+
+Linux (g++)
+Windows (VC7.1)
+
+Requested libraries
+-------------------
+
+STL   : http://www.stlport.org/
+Boost : http://www.boost.org/
+
+Linux Build
+-----------
+
+./bootstrap.sh
+./configure
+./gen-sources.sh
+make
+make install
+
+type ./configure --help to see all the options

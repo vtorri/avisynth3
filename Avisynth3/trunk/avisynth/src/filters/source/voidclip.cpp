@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,9 +24,12 @@
 //avisynth includes
 #include "voidclip.h"
 #include "../../core/videoinfo.h"
+#include "../../core/exception/novideo.h"
+#include "../../core/exception/noaudio.h"
 
 
 namespace avs { namespace filters {
+
 
 
 CPVideoInfo VoidClip::GetVideoInfo() const
@@ -36,12 +39,12 @@ CPVideoInfo VoidClip::GetVideoInfo() const
 
 CPVideoFrame VoidClip::GetFrame(int n) const
 {
-  VideoInfo::ThrowNoVideoException();
+  throw exception::NoVideo();
 }
 
 void VoidClip::GetAudio(void * buf, __int64 start, int count) const
 {
-  VideoInfo::ThrowNoAudioException();
+  throw exception::NoAudio();
 }
 
 

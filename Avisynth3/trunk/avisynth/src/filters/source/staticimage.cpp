@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -27,12 +27,14 @@
 #include "../../core/colorspace.h"
 #include "../../core/videoframe.h"
 #include "../../text/antialiaser.h"
-#include "../../core/cow_shared_ptr.h"
-#include "../../core/runtime_environment.h"
 #include "../../core/bufferwindow.h"
+#include "../../core/cow_shared_ptr.h"
+#include "../../core/exception/noaudio.h"
+#include "../../core/runtime_environment.h"
 
 
 namespace avs { namespace filters {
+
 
 
 StaticImage::StaticImage(CPVideoFrame const& frame)
@@ -51,7 +53,7 @@ PEnvironment const& StaticImage::GetEnvironment() const { return frame_->GetEnvi
 
 void StaticImage::GetAudio(void * buffer, __int64 start, int count) const
 {
-  VideoInfo::ThrowNoAudioException();
+  throw exception::NoAudio();
 }
 
 
@@ -63,7 +65,7 @@ PClip StaticImage::CreateBlankClip(ColorSpace& space, Dimension const& dim, PEnv
 
 PClip StaticImage::CreateMessageClip(std::string const& msg, PEnvironment const& env)
 {
-  text::Font font("Arial", 50, false, false);
+  text::Font font("Arial", 28, false, false);
   Dimension dim = font.GetTextBoundingBox(msg).Shift<4, 4>();
 
   PVideoFrame frame = env->CreateFrame(ColorSpace::rgb32(), dim, PROGRESSIVE);

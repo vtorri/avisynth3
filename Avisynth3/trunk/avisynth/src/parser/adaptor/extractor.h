@@ -24,10 +24,10 @@
 #ifndef __AVS_PARSER_ADAPTOR_EXTRACTOR_H__
 #define __AVS_PARSER_ADAPTOR_EXTRACTOR_H__
 
-//avisynth include
+//avisynth includes
 #include "../vmstate.h"
-#include "../../core/dimension.h"
 #include "../../core/colorspace.h"
+#include "../../core/geometry/dimension.h"
 
 //boost includes
 #include <boost/variant/get.hpp>

@@ -26,9 +26,9 @@
 #include "horizontal/rgb24.h"
 #include "horizontal/rgb32.h"
 #include "horizontal/yuy2.h"
-#include "../../core/dimension.h"
 #include "../../core/videoinfo.h"
-#include "../../core/exception/unsupportedcolorspace.h"
+#include "../../core/geometry/dimension.h"
+#include "../../core/exception/colorspace/unsupported.h"
 
 
 //stl include
@@ -63,7 +63,7 @@ PClip Horizontal::Create(PClip const& child, PFilter const& filter, int width, S
   case ColorSpace::I_RGB32: return horizontal::RGB32::Create(child, filter, width, subrange);
   case ColorSpace::I_YUY2:  return horizontal::YUY2::Create(child, filter, width, subrange);
 
-  default: throw exception::UnsupportedColorSpace( space );
+  default: throw exception::cspace::Unsupported( space );
   }
 }
 

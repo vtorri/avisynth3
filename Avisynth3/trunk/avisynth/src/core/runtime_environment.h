@@ -91,6 +91,8 @@ public:  //various Create or access methods
   //create a cache for the source caching clip
   virtual Cache * CreateCache(Caching const& source) = 0;
 
+  virtual PVideoInfo CreateVideoInfo() const;
+
   virtual PVideoFrame CreateFrame(ColorSpace& space, Dimension const& dim, FrameType type);
   virtual PVideoFrame CreateFrame(VideoInfo const& vi, FrameType type);
 

@@ -2343,7 +2343,10 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				RelativePath="..\..\..\src\text\font.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\text\gethfont.h">
+				RelativePath="..\..\..\src\text\forward.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\text\rasterizer.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\text\rasterizer.h">
@@ -2433,6 +2436,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 				<File
 					RelativePath="..\..\..\src\text\gdi\font.h">
+				</File>
+				<File
+					RelativePath="..\..\..\src\text\gethfont.h">
 				</File>
 			</Filter>
 			<Filter

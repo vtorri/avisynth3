@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -37,13 +37,14 @@ namespace avs { namespace parser {
 enum OpType
 {
   NORMAL,    //normal operation
-  RETURN     //return operation : stop code execution until exiting function context
+  RETURN,    //return operation : stop code execution until exiting function context
+  RECURSE    //initiate terminal recursivity optimisation
 };
 
 
 //replace plain type == RETURN test so terminal recursivity case
 //may be added later with less changes
-inline bool IsReturning(OpType type) { return type == RETURN; }
+inline bool IsReturning(OpType type) { return type == RETURN || type == RECURSE; }
 
 
 } } //namespace avs::parser

@@ -113,6 +113,8 @@ public:  //others
   template <int xFactor, int yFactor> Dimension Multiply() const { return Dimension(x_ * xFactor, y_ * yFactor); }
   template <int xFactor, int yFactor> Dimension Divide() const { return Dimension(x_ / xFactor, y_ / yFactor); }
 
+  template <int xShift, int yShift> Dimension Shift() const { return Dimension(x_ + xShift, y_ + yShift); }
+
 };//Dimension
 
 

@@ -63,7 +63,8 @@ class block_ : public block::base<block::Holder, align>
 public:  //typedefs
 
   typedef block_<align> BlockType;
-  typedef typename boost::enable_if<block::align_compatible<block::Align, Align>, block::Creator>::type Creator;
+  typedef block::base<block::Holder, align> BaseBlockType;
+  typedef typename boost::enable_if<block::align_compatible<block::Align, align>, block::Creator>::type Creator;
 
 
 public:  //structors

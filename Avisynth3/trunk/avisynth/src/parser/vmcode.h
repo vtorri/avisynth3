@@ -24,7 +24,8 @@
 #ifndef __AVS_PARSER_VMCODE_H__
 #define __AVS_PARSER_VMCODE_H__
 
-//avisynth include
+//avisynth includes
+#include "optype.h"
 #include "vmoperation.h"
 
 //stl include
@@ -41,10 +42,10 @@ namespace avs { namespace parser {
 //
 //  code for the virtual machine
 //
-class VMCode
+template <typename Result> class VMCode
 {
 
-  typedef std::vector<VMOperation> OperationVector;
+  typedef std::vector<VMOperation<Result> > OperationVector;
 
   OperationVector code_;
 
@@ -53,7 +54,7 @@ public:  //structors
 
   VMCode() { }
 
-  VMCode(VMOperation const& op) 
+  VMCode(VMOperation<Result> const& op) 
   {
     assert( ! op.empty() );
     code_.push_back(op);
@@ -64,14 +65,14 @@ public:  //structors
 
 public:  //code accumulation methods
 
-  VMCode& operator+=(VMOperation const& op) 
+  VMCode<Result>& operator+=(VMOperation<Result> const& op) 
   { 
     assert( ! op.empty() );
     code_.push_back(op); 
     return *this; 
   }
 
-  VMCode& operator+=(VMCode const& other)
+  VMCode<Result>& operator+=(VMCode<Result> const& other)
   {
     code_.insert(code_.end(), other.code_.begin(), other.code_.end());
     return *this;
@@ -80,7 +81,7 @@ public:  //code accumulation methods
 
 public:  //stack functor method
 
-  OpType operator()(VMState& state) const;
+  Result operator()(VMState& state) const;
 
 
 public:  //misc
@@ -90,7 +91,12 @@ public:  //misc
 };
 
 
-typedef boost::tuples::tuple<VMCode, char> TypedCode;
+template <>
+void VMCode<void>::operator()(VMState& state) const;
+
+template <>
+OpType VMCode<OpType>::operator()(VMState& state) const;
+
 
 
 } } //namespace avs::parser

@@ -29,7 +29,14 @@ namespace avs { namespace parser {
 
 
 
-OpType VMCode::operator()(VMState& state) const
+void VMCode<void>::operator()(VMState& state) const
+{
+  for( OperationVector::const_iterator it = code_.begin(); it != code_.end(); ++it )
+    (*it)(state);
+}
+
+
+OpType VMCode<OpType>::operator()(VMState& state) const
 {
   OpType result = NORMAL;
   OperationVector::const_iterator it = code_.begin();
@@ -40,8 +47,6 @@ OpType VMCode::operator()(VMState& state) const
 
   return result;
 }
-
-
 
 
 } } //namespace avs::parser

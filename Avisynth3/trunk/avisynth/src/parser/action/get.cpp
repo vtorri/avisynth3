@@ -60,15 +60,31 @@ struct StringSubscript
   }
 };
 
-ElementalOperation const subscript_op = adapt( StringSubscript() );
+
+struct StringSubscriptOneArg
+{
+  std::string operator()(std::string const& val, int begin) const
+  {
+    if ( begin < 0 )
+      begin = 0;
+    return val.substr(begin);
+  }
+};
+
+
+ElementalOperation const Get::subscript_op[2] =
+    { adapt( StringSubscript() )
+    , adapt( StringSubscriptOneArg() )
+    };
+
+
 
 ElementalOperation const& Get::SubscriptOperation(char type, bool firstArgOnly)
 {
 
   switch( type )
   {
-  case 's': if ( ! firstArgOnly )
-              return subscript_op;
+  case 's': return subscript_op[ firstArgOnly ? 1 : 0 ];
 
   default: throw exception::Generic("Illegal use of operator[]");
   }
@@ -86,7 +102,8 @@ ElementalOperation const& Get::EqualityOperation(char& leftType, char rightType,
   char type = leftType;
   leftType = 'b';                                                //set result type to bool
 
-  return (isEqual ? equal_op : not_equal_op)[ TypeToIndex(type) ];  //returns comparison op
+  return isEqual ? equal_op[ TypeToIndex(type) ] 
+                 : not_equal_op[ TypeToIndex(type) ];            //returns comparison op
 }
 
 

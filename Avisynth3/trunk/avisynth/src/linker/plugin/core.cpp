@@ -24,11 +24,27 @@
 //avisynth include
 #include "core.h"
 
+//stl include
+#include <functional>   //for identity
+
 
 namespace avs { namespace linker { namespace plugin {
 
 
+
+FunctionList Core::GetFunctionList() const
+{
+  FunctionList result;
+
+  for( CoreFunctionList::const_iterator it = list_.begin(); it != list_.end(); ++it )
+    result.push_back( PFunction(*it, std::identity<void *>()) );
+
+  return result;
+}
+
+
 Core Core::instance;
+
 
 
 } } } //namespace avs::linker::plugin

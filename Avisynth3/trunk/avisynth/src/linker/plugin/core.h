@@ -36,7 +36,9 @@ namespace avs { namespace linker { namespace plugin {
 class Core : public Plugin
 {
 
-  std::vector<function::Core *> functions_;
+  typedef std::vector<function::Core *> CoreFunctionList;
+
+  CoreFunctionList list_;
 
 
 private:  //structors
@@ -54,7 +56,7 @@ public:  //plugin interface
 
 private:
 
-  void Register(function::Core * funct) { functions_.push_back( funct ); }
+  void Register(function::Core * funct) { list_.push_back( funct ); }
 
 
 private:  //sole instance

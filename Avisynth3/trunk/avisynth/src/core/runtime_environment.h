@@ -94,9 +94,8 @@ public:  //various Create or access methods
   virtual PVideoInfo CreateVideoInfo() const;
 
   virtual PVideoFrame CreateFrame(ColorSpace& space, Dimension const& dim, FrameType type);
-  //fetch info from VideoInfo to call the above
-  //type is chosen PROGRESSIVE if frame clip, FIELD_TOP if field clip
-  virtual PVideoFrame CreateFrame(VideoInfo const& vi);
+  //fetch infos from VideoInfo to call the above
+  virtual PVideoFrame CreateFrame(VideoInfo const& vi, FrameType type);
 
   //fetch avisynth blitter
   virtual Blitter const& GetBlitter();

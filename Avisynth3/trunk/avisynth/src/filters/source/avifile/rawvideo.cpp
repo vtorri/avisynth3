@@ -33,7 +33,9 @@
 #include "../../../core/exception/generic.h"
 
 //windows includes
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif //NOMINMAX
 #include <windows.h>
 #include <vfw.h>
 

@@ -24,10 +24,8 @@
 #ifndef __AVS_DIMENSION_H__
 #define __AVS_DIMENSION_H__
 
-
-//stl include
-#include <string>      //needed or invalid_argument won't work
-#include <stdexcept>   //for invalid_argument
+//avisynth include
+#include "exception/baddimension.h"
 
 
 namespace avs {
@@ -36,23 +34,6 @@ namespace avs {
 //class declaration
 struct Vecteur;
 
-
-
-//////////////////////////////////////////////////////////////////////////////////
-//  bad_dimension
-//
-//  exception class for bad Dimensions (negative width or height)
-//
-class bad_dimension : public std::invalid_argument
-{
-
-public:  
-  bad_dimension() : std::invalid_argument("") { }
-
-
-  virtual const char * what() const { return "Bad Dimension"; }
-
-};
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -67,8 +48,8 @@ class Dimension
 
   static int CheckSign(int val)
   {
-    if (val < 0)
-      throw bad_dimension();
+    if ( val < 0 )
+      throw BadDimension();
     return val;
   }
 
@@ -108,10 +89,26 @@ public:  //operators
 
   Dimension& operator+=(const Vecteur vect);
 
+
   bool operator==(Dimension const& other) const { return x_ == other.x_ && y_ == other.y_; }
   bool operator!=(Dimension const& other) const { return x_ != other.x_ || y_ != other.y_; }
   
+  //special effect operator: inclusion
+  Dimension& operator >>=(Dimension const& other)
+  {
+    if ( x_ > other.x_ )
+      x_ = other.x_;
+    if ( y_ > other.y_ )
+      y_ = other.y_;
+    return *this;
+  }
+
+
+public:  //others
+
   bool empty() const { return x_ == 0 || y_ == 0; }
+
+  template <int bps> Dimension Turn() const { return Dimension(y_ * bps, x_ / bps); }
 
 };//Dimension
 

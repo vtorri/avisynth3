@@ -15,48 +15,20 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA, or visit
 // http://www.gnu.org/copyleft/gpl.html .
+//
+// Linking Avisynth statically or dynamically with other modules is making a
+// combined work based on Avisynth.  Thus, the terms and conditions of the GNU
+// General Public License cover the whole combination.
 
 
-//avisynth includes
-#include "ownedblock.h"
-#include "block_recycler.h"
-#include "runtime_environment.h"
+//avisynth include
+#include "yuy2.h"
 
 
-namespace avs { namespace block {
-
-
-OwnedDeleter::OwnedDeleter(PEnvironment env, int size, bool recycle)
-  : env_( env )
-  , size_( size )
-  , recycle_( recycle )
-{
-  env->MemoryAllocated( size );
-}
-
-
-OwnedDeleter::~OwnedDeleter()
-{
-  env_->MemoryFreed( size_ );
-}
-
-
-void OwnedDeleter::operator ()(void * ptr) const
-{
-  Recycler().Return(ptr, size_, recycle_);
-}
-
-
-} //namespace block
+namespace avs { namespace vframe {
 
 
 
 
-  
-OwnedBlock::OwnedBlock(PEnvironment env, int size, bool recycle)
-: block::base<block::OwnedDeleter>( block::OwnedDeleter(env, size, recycle) ) { }
 
-
-
-
-} //namespace avs
+} } //namespace avs::vframe

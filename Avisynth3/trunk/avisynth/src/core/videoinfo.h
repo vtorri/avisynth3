@@ -21,17 +21,15 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __VIDEOINFO_H__
-#define __VIDEOINFO_H__
+#ifndef __AVS_VIDEOINFO_H__
+#define __AVS_VIDEOINFO_H__
 
-
-//avisynth include
+//avisynth includes
 #include "sampletype.h"
+#include "smart_ptr_fwd.h"
 
-//boost include
+//boost includes
 #include <boost/rational.hpp>    //for rational
-#include <boost/utility.hpp>     //for noncopyable
-#include <boost/shared_ptr.hpp>  //for shared_ptr
 
 
 namespace avs {
@@ -39,10 +37,9 @@ namespace avs {
 
 //declarations and typedef
 class Dimension;                 //in dimension.h
-class ColorSpace;                //defined here
+class ColorSpace;                //in colorspace.h
 
-typedef boost::rational<unsigned> FPS;
-
+typedef boost::rational<int> FPS;
 
 
 // The VideoInfo class holds global information about a clip 
@@ -51,13 +48,13 @@ typedef boost::rational<unsigned> FPS;
 
 // As of 3.0 VideoInfo becomes a class and is now responsible of checking all clip constraints.
 // ie all tests are the responsability of VideoInfo, you try it and if illegal it will throw the appropriate error)
-class VideoInfo : public boost::noncopyable
+class VideoInfo
 {
   
 public:  //structors
 
   VideoInfo() { }
-  ~VideoInfo() { }
+  virtual ~VideoInfo() { }
 
 
 public:  //clone method
@@ -65,23 +62,9 @@ public:  //clone method
   virtual CPVideoInfo clone() const = 0;
 
 
-public:  //various check methods (failure means proper exception)
+public:  //factory method
 
-  virtual void CheckHasVideo() const = 0;
-  virtual void CheckHasAudio() const = 0;
-
-  virtual void CheckHasFrame(int n) const = 0;
-  virtual void CheckHasFrameRange(int begin, int end) const = 0;
-
-
-  void CheckIsRGB24() const;
-  void CheckIsRGB32() const;
-  void CheckIsRGB45() const;
-  void CheckIsYUY2() const;
-  void CheckIsYV12() const;
-  void CheckIsYV24() const;
-  void CheckIsYV45() const;
-
+  static CPVideoInfo Create();
 
 
 public:  //video methods
@@ -97,8 +80,8 @@ public:  //video methods
   virtual int GetWidth() const;
   virtual int GetHeight() const;
 
-  unsigned GetNumerator() const { return GetFPS().numerator(); }
-  unsigned GetDenominator() const { return GetFPS().denominator(); }
+  int GetFPSNumerator() const { return GetFPS().numerator(); }
+  int GetFPSDenominator() const { return GetFPS().denominator(); }
 
   //write access
 
@@ -111,7 +94,7 @@ public:  //video methods
   virtual void SetWidth(int width);
   virtual void SetHeight(int height);
 
-  virtual void SetFPS(unsigned numerator, unsigned denominator);
+  void SetFPS(int numerator, int denominator) { SetFPS( FPS(numerator, denominator) ); }
 
   void AddToFrameCount(int shift) { SetFrameCount(GetFrameCount() + shift); }
 
@@ -122,7 +105,7 @@ public:  //video methods
   virtual bool IsPlanar() const;
   virtual bool IsInterLeaved() const;
 
-  virtual bool IsColorSpace(ColorSpace& space) = 0;
+  virtual bool IsColorSpace(ColorSpace& space);
   
   virtual bool IsRGB24() const;
   virtual bool IsRGB32() const;
@@ -133,7 +116,7 @@ public:  //video methods
   virtual bool IsYV45() const;
 
 
-  virtual void AddVideo();
+  //virtual void AddVideo();
   virtual void AddVideo(ColorSpace& space, Dimension const& dim, int frameCount, FPS const& fps = 25, bool frameClip = true) = 0;
 
   virtual void KillVideo() = 0;
@@ -158,10 +141,37 @@ public:  //audio methods
   void AddToSampleCount(__int64 shift) { SetSampleCount(GetSampleCount() + shift); }
 
 
-  virtual void AddAudio();
+  //virtual void AddAudio();
   virtual void AddAudio(SampleType sampleType, int sampleRate, __int64 sampleCount, int channelCount) = 0;
 
   virtual void KillAudio() = 0;
+
+  virtual void MergeAudio(VideoInfo const& other) = 0;
+
+
+public:  
+
+  virtual int BitsPerPixel() const;
+
+  int BytesPerAudioSample() const { return BytesPerChannelSample() * GetChannelCount(); }
+  virtual int BytesPerChannelSample() const;
+
+  virtual int AudioSamplesFromFrames(int frames) const;
+
+
+public:  //various check methods (failure means proper exception)
+
+  virtual void CheckHasVideo() const;
+  virtual void CheckHasAudio() const;
+
+  virtual void CheckHasFrame(int n) const;
+
+
+public:  
+
+  __declspec(noreturn) static void ThrowNoVideoException();
+  __declspec(noreturn) static void ThrowNoAudioException();
+  __declspec(noreturn) static void ThrowNoSuchFrameException(int n);
 
 
 };//VideoInfo
@@ -170,4 +180,4 @@ public:  //audio methods
 
 } //namespace avs
 
-#endif  //#ifndef __VIDEOINFO_H__
+#endif  //#ifndef __AVS_VIDEOINFO_H__

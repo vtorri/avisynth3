@@ -34,31 +34,27 @@ namespace avs { namespace cspace {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
-//  Interleaved
+//  interleaved<bpp, depth8>
 //
 //
 //
-class Interleaved : public ColorSpace
+template <int bpp_, bool depth8> class interleaved : public ColorSpace
 {
 
 public:  //ColorSpace interface
 
   virtual bool HasPlane(Plane plane) const { return plane == NOT_PLANAR; }
 
-  virtual void ToPlaneCoordinates(int& x, int& y, Plane plane) const
+  virtual void ToPlane(int& x, int& y, Plane plane) const
   {
     if ( plane != NOT_PLANAR )
-      ThrowInvalidPlaneException(plane);
-    x *= BytesPerPixel();
+      ThrowNoSuchPlaneException(plane);
+    x *= bpp_;
   }
 
+public:
 
-public:  //Interleaved interface
-
-  //hereby assuming strange colorspaces where it's not an int won't come up
-  //now you know it : I am against it.
-  virtual int BytesPerPixel() const = 0;
-
+  enum { bpp = bpp_, bps = depth8 ? 1 : 2 };
 
 };//Interleaved
 

@@ -29,10 +29,12 @@
 namespace avs {
 
 
-//helper struct declaration
+//declarations
+struct Vecteur;
 template <class Data> struct window_ptr;
 
 //typedefs
+typedef unsigned char BYTE;
 typedef window_ptr<BYTE> WindowPtr;
 typedef window_ptr<const BYTE> CWindowPtr;
 
@@ -64,13 +66,17 @@ struct window_ptr
 
   //compiler generated copy constructor and operator= are fine
 
-
   Data * at(int x, int y) const { return ptr + x + y * pitch; }
   Data & operator()(int x, int y) { return *at(x, y); }
   Data & operator[](int x) { return ptr[x]; }
 
   void to(int x, int y) { ptr += x + y * pitch; }
-  void pad() { ptr += pitch - width; }
+  void pad() { ptr += padValue(); }
+  
+  int padValue() const { return pitch - width; }
+
+
+  window_ptr<Data>& operator+=(Vecteur const& vect) { to(vect.x, vect.y); return *this; }
   
 };//window_ptr<Data>
 

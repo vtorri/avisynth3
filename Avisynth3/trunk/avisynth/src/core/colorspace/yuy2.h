@@ -24,9 +24,9 @@
 #ifndef __AVS_CS_YUY2_H__
 #define __AVS_CS_YUY2_H__
 
-
 //avisynh include
 #include "interleaved.h"
+#include "../videoframe/yuy2.h"
 
 
 namespace avs { namespace cspace {
@@ -38,7 +38,7 @@ namespace avs { namespace cspace {
 //
 //  YUY2 ColorSpace subclass
 //
-class YUY2 : public Interleaved
+class YUY2 : public interleaved<2, true>
 {
 
 private:  //constructor
@@ -56,11 +56,16 @@ public:  //ColorSpace interface
     return prop == YUV || prop == INTERLEAVED || prop == DEPTH8;
   }
 
-  virtual  void CheckCoordinates(int x, int y, bool interlaced = false) const 
+  virtual void Check(int x, int y, bool interlaced = false) const 
   {
-    Interleaved::CheckCoordinates(x, y, interlaced);
+    interleaved<2, true>::Check(x, y, interlaced);
     if ( x & 1 )                                      //if x is not even
       ThrowInvalidWidthException(2, x);               //exception
+  }
+
+  virtual CPVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
+  {
+    return CPVideoFrame( (VideoFrame *)new vframe::YUY2(dim, type, env) );
   }
 
 
@@ -69,7 +74,7 @@ public:  //Interleaved interface
   virtual BytesPerPixel() const { return 2; }
 
 
-public:  //instance
+public: 
 
   static YUY2 instance;
 

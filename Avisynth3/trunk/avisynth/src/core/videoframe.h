@@ -27,27 +27,23 @@
 //avisynth includes
 #include "plane.h"
 #include "property.h"
+#include "frametype.h"
 #include "window_ptr.h"
+#include "smart_ptr_fwd.h"
 
-//boost include
-#include <boost/shared_ptr.hpp>
+//stl include
+#include <vector>
 
 
 namespace avs {
 
 
-//class declarations
+//declarations
 struct Vecteur;
 class Dimension;
-class VideoFrame;                                     //defined here
 class ColorSpace;
 class BufferWindow;
-class RuntimeEnvironment;
 
-
-//typedefs
-typedef boost::shared_ptr<VideoFrame const> CPVideoFrame;
-typedef boost::shared_ptr<RuntimeEnvironment> PEnvironment;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -66,49 +62,36 @@ public:  //structors
 
 public:  //clone method 
 
-  virtual VideoFrame * clone() const = 0; 
-
-
-public:  //Type enum
-
-  enum Type
-  {
-    FIELD_TOP,
-    FIELD_BOTTOM,
-    PROGRESSIVE,
-    INTERLACED_TFF,
-    INTERLACED_BFF,
-    UNKNOWN  
-  };
+  virtual CPVideoFrame clone() const = 0; 
 
 
 public:  //general frame info
   
+  //queries
+  virtual FrameType GetType() const = 0;
   virtual ColorSpace& GetColorSpace() const = 0;
-
   virtual Dimension const& GetDimension() const = 0;
-  virtual Type GetType() const = 0;
 
-  virtual void SetType(Type type);
-
+  //helper
   bool IsField() const { return GetType() < PROGRESSIVE; }
   bool IsFrame() const { return GetType() >= PROGRESSIVE; }
 
-
-  static bool MaybeInterlaced(Type type) { return type > PROGRESSIVE; }
-
   bool MaybeInterlaced() const { return MaybeInterlaced(GetType()); }
+  static bool MaybeInterlaced(FrameType type) { return type > PROGRESSIVE; }
+
+  //write access
+  virtual void SetType(FrameType type) = 0;
 
 
 public:  //fetch environment method
 
-  virtual PEnvironment GetEnvironment() const = 0;
+  virtual PEnvironment const& GetEnvironment() const = 0;
 
 
 public:  //plane data access
 
-  virtual WindowPtr WriteTo(Plane plane) = 0;
-  virtual CWindowPtr ReadFrom(Plane plane) const = 0;
+  virtual WindowPtr WriteTo(Plane plane);
+  virtual CWindowPtr ReadFrom(Plane plane) const;
 
 
 public:  //plane access (can do more with them than with the above)
@@ -119,59 +102,38 @@ public:  //plane access (can do more with them than with the above)
 
 public:  //toolbox methods
 
-  //ColorSpace conversion method
-  virtual CPVideoFrame ConvertTo(ColorSpace& space) const = 0;
-
   //Please Note that shift vecteurs are in PIXELS
   //buffers won't be reallocated if possible
   //if reallocation has to be done, original data is copied at the right place
   //new data, if there is any, is not initialized 
-  virtual void SizeChange(Vecteur const& topLeft, Vecteur const& bottomRight) = 0;
+  virtual void ChangeSize(Vecteur const& topLeft, Vecteur const& bottomRight) = 0;
 
   //Copy other into self at the specified coords (in Pixels)
   //Only the overlapping part is copied
-  virtual void Copy(CPVideoFrame other, Vecteur const& coords) = 0;
-
+  virtual void Copy(VideoFrame const& other, Vecteur const& coords) = 0;
   
   virtual void FlipVertical() = 0;
   virtual void FlipHorizontal() = 0;
 
-  virtual void TurnLeft() = 0;  //how do we turn a YUY2 frame !?...
+  virtual void TurnLeft() = 0;
   virtual void TurnRight() = 0;
 
-  virtual void Blend(CPVideoFrame other, float factor) = 0;
+  virtual void Blend(VideoFrame const& other, float factor) = 0; 
 
 
 public:  //property system
 
-  virtual void SetProperty(CPProperty prop) = 0;
-  virtual void RemoveProperty(Property::Key const& key) = 0;
+  typedef Property::PKey PKey;
+  typedef std::vector<CPProperty> PropertyVector;
 
-  virtual CPProperty GetProperty(Property::Key const& key) const = 0;
+  virtual void SetProperty(CPProperty const& prop) = 0;
+  //no effect if prop is not a static property
+  virtual void SetStaticProperty(CPProperty const& prop) const = 0;
 
+  virtual CPProperty GetStaticProperty(PKey const& key) const = 0;
+  virtual void GetFlowProperties(PKey const& key, PropertyVector& propVector) const = 0;
 
-
-public:  //inner implementation subclasses
-
-  class Base;          //: public VideoFrame
-
-  class Interleaved;   //: public Base
-
-  class RGB;           //: public Interleaved
-  class RGB24;         //: public RGB
-  class RGB32;         //: public RGB
-  class RGB45;         //: public RGB
-
-  class YUY2;          //: public Interleaved
-
-  struct Planar
-  {
-    class YUV;         //: public Base
-  };
-
-  class YV12;          //: public Planar::YUV
-  class YV24;          //: public Planar::YUV
-  class YV45;          //: public Planar::YUV
+  virtual void RemoveFlowProperties(PKey const& key) = 0;
 
 };//VideoFrame
 

@@ -25,54 +25,72 @@
 #ifndef __AVS_RUNTIME_ENVIRONMENT_H__
 #define __AVS_RUNTIME_ENVIRONMENT_H__
 
-
-//avisynth include
+//avisynth includes
 #include "block.h"
+#include "frametype.h"
+#include "ownedblock.h"
 
 //boost include
-#include <boost/shared_ptr.hpp>
+#include <boost/shared_ptr.hpp>               //for shared_ptr
+#include <boost/enable_shared_from_this.hpp>  //for enable_shared_from_this
 
 
 namespace avs {
 
 
+//declarations
+class Cache;                //in cache.h
+class Dimension;
+class ColorSpace;
+namespace clip { class Caching; }
+
+
 
 //////////////////////////////////////////////////////////////////////////////////
-// RuntimeEnvironment
+//  RuntimeEnvironment
 //
 //
-class RuntimeEnvironment
+//
+class RuntimeEnvironment : public boost::enable_shared_from_this<RuntimeEnvironment>
 {
 
-  Block temp;
-  int memoryUsed;
+public:  //memory stuff
+
+  //lend you a (internal) memory block to use as temporary buffer
+  //since the same buffer is always reused (when only one of those at once)
+  //if you want to keep one for yourself, you must adjust memory usage yourself
+  virtual Block TempBlock(int size) = 0;
+
+  //create and return a new OwnedBlock
+  //that's how plugin can create owned blocks
+  virtual OwnedBlock NewOwnedBlock(int size, bool recycle);
+
+  //methods to update memory usage
+  //NB: owned blocks already use them for you
+  virtual void MemoryAllocated(int size) = 0;  //no throw
+  virtual void MemoryFreed(int size) = 0;      //no throw
+
+  //same as MemoryAllocated but don't trigger mem cleanup
+  //instead it considers the increase an unwanted side effect, 
+  //the memory not really allocated and expects the reverse decrease soon
+  virtual void MemoryVirtuallyAllocated(int size) = 0;  //no throw
 
 
-public:  //constructor
+public:  //NewCache method
 
-  RuntimeEnvironment()
-    : temp( 1024 )
-    , memoryUsed( temp.size() ) { }
+  typedef clip::Caching Caching;
 
+  //create a cache for the source caching clip
+  virtual Cache * CreateCache(Caching const& source) = 0;
 
-public:  //memory management stuff  
-
-  //methods used to update memory usage
-  void MemoryAllocated(int size) { memoryUsed += size; }
-  void MemoryFreed(int size) { memoryUsed -= size; }
+  virtual CPVideoFrame CreateFrame(ColorSpace& space, Dimension const& dim, FrameType type);
 
 
-  //fetch an aligned temporary buffer of (at least) the given size
-  //each call invalidate the previous one
-  BYTE * TempBuffer(int size);
+public:  //factory method
 
+  static PEnvironment Create(int memMax);
 
-};//RuntimeEnvironment
-
-
-
-//typedef
-typedef boost::shared_ptr<RuntimeEnvironment> PEnvironment;
+};
 
 
 

@@ -25,25 +25,14 @@
 #define __AVS_CLIP_H__
 
 
+//avisynth include
+#include "smart_ptr_fwd.h"
+
 //boost include
-#include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
 
 namespace avs {
-
-
-//class declarations
-class Clip;
-class VideoInfo;
-class VideoFrame;
-class RuntimeEnvironment;
-
-//typedefs
-typedef boost::shared_ptr<Clip const> PClip;
-typedef boost::shared_ptr<VideoInfo const> CPVideoInfo;
-typedef boost::shared_ptr<VideoFrame const> CPVideoFrame;
-typedef boost::shared_ptr<RuntimeEnvironment> PEnvironment;
 
 
 
@@ -64,7 +53,7 @@ public:  //structors
 public:  //clip general interface
   
   //get owning environment
-  virtual PEnvironment GetEnvironment() const = 0;
+  virtual PEnvironment const& GetEnvironment() const = 0;
   //get info about the clip
   virtual CPVideoInfo GetVideoInfo() const = 0;
  
@@ -83,15 +72,6 @@ public:  //filter chain simplication method
   //into a more compact filter chain
   //a default version is provided (with no refactoring)
   virtual PClip Simplify() const { return shared_from_this(); }
-
-
-/*protected:  //implementation helpers
-
-  //fill a buffer with blank noise (of the appropriate sample-type/channels)
-  void FillWithBlank(BYTE * buffer, int count) const;
-
-  void ThrowNoSuchFrameException(int n) const;
-  void ThrowNoAudioException() const;*/
 
 };//Clip
 

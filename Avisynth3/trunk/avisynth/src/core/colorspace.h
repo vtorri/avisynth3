@@ -24,9 +24,12 @@
 #ifndef __AVS_COLORSPACE_H__
 #define __AVS_COLORSPACE_H__
 
-
-//avisynth include
+//avisynth includes
 #include "plane.h"
+#include "vecteur.h"
+#include "dimension.h"
+#include "frametype.h"
+#include "smart_ptr_fwd.h"
 
 //boost include
 #include <boost/utility.hpp>    //for noncopyable
@@ -35,12 +38,13 @@
 namespace avs {
 
 
+
 //////////////////////////////////////////////////////////////////////////////
 //  ColorSpace
 //
 //  polymorphic class representing a video color space
 //
-class ColorSpace : public boost::noncopyable
+class ColorSpace : private boost::noncopyable
 {
 
 public:
@@ -82,17 +86,25 @@ public:  //ColorSpace interface
   virtual bool HasProperty(Property prop) const = 0;
   virtual bool HasPlane(Plane plane) const = 0;
 
-  virtual void CheckCoordinates(int x, int y, bool interlaced = false) const
+  virtual void Check(int x, int y, bool interlaced = false) const
   {
     if ( interlaced && (y & 1) )
       ThrowInvalidInterlacedHeightException(2, y);
   }
 
+  virtual void CheckDim(Dimension const& dim, bool interlaced = false) const;
+  virtual void CheckVect(Vecteur const& vect, bool interlaced = false) const;
+
 
   //method to convert frame coords into to plane coords
   //unlike the above, it does not check validity, but just perform the operation   
-  virtual void ToPlaneCoordinates(int& x, int& y, Plane plane) const = 0;
+  virtual void ToPlane(int& x, int& y, Plane plane) const = 0;
+  
+  virtual Dimension ToPlaneDim(Dimension const& dim, Plane plane) const;
+  virtual Vecteur ToPlaneVect(Vecteur const& vect, Plane plane) const;
 
+  //method to create a frame of the given colorspace
+  virtual CPVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const = 0;
 
   bool operator== (const ColorSpace& other) const { return this == &other; }
   bool operator!= (const ColorSpace& other) const { return this != &other; }
@@ -117,23 +129,6 @@ public:  //helper queries
   bool IsDepth15() const { return HasProperty(DEPTH15); }
 
 
-public:  //implementation inner subclasses
-
-  class Interleaved;  //: public ColorSpace
-
-private:
-
-  class RGB24;        //: public Interleaved
-  class RGB32;        //: public Interleaved
-  class RGB45;        //: public Interleaved
- 
-  class YUY2;         //: public Interleaved
-
-  class YV12;         //: public ColorSpace
-  class YV24;         //: public ColorSpace
-  class YV45;         //: public ColorSpace
-
-
 public:  //access to relevant instances
 
   static ColorSpace & rgb24();
@@ -147,8 +142,8 @@ public:  //access to relevant instances
 
 public:  //exception helper methods
 
-  __declspec(noreturn) void ThrowUnsupportedColorSpaceException()  const;
-  __declspec(noreturn) void ThrowInvalidPlaneException(Plane plane) const;
+  __declspec(noreturn) void ThrowUnsupportedColorSpaceException() const;
+  __declspec(noreturn) void ThrowNoSuchPlaneException(Plane plane) const;
 
   __declspec(noreturn) void ThrowInvalidInterlacedHeightException(int modulo, int height) const;
   __declspec(noreturn) void ThrowInvalidHeightException(int modulo, int height) const;

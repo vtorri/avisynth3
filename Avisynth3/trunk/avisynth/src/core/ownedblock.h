@@ -24,45 +24,14 @@
 #ifndef __AVS_OWNEDBLOCK_H__
 #define __AVS_OWNEDBLOCK_H__
 
-
 //avisynth includes
-#include "block_base.h"
+#include "block/base.h"
+#include "block/owneddeleter.h"
 
 
 namespace avs { 
 
   
-//declaration and typedef
-class RuntimeEnvironment;
-typedef boost::shared_ptr<RuntimeEnvironment> PEnvironment;
-
-
-namespace block {
-
-
-////////////////////////////////////////////////////////////////////////////////////////
-//  OwnedDeleter
-//
-//  custom deleter used by OwnedBlock
-//
-struct OwnedDeleter
-{
-
-  PEnvironment env_;
-  int size_;
-  bool recycle_;
-
-  OwnedDeleter(PEnvironment env, int size, bool recycle);
-  ~OwnedDeleter();
-
-  void operator()(void * ptr) const;
-
-};
-
-
-} //namespace block
-
-
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //  OwnedBlock
@@ -79,7 +48,7 @@ public:  //structors
   //normal constructor
   OwnedBlock(PEnvironment env, int size, bool recycle);
 
-  //generated copy constructor is fine
+  //generated copy constructor and destructor are fine
 
 
 public:  //reset methods
@@ -92,7 +61,7 @@ public:  //reset methods
 
 public:  //read access
 
-  PEnvironment GetEnvironment() const { return GetDeleter().env_; }
+  PEnvironment const& GetEnvironment() const { return GetDeleter().GetEnvironment(); }
 
 
 };//OwnedBlock

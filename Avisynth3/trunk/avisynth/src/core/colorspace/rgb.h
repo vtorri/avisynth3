@@ -24,9 +24,9 @@
 #ifndef __AVS_CS_RGB_H__
 #define __AVS_CS_RGB_H__
 
-
 //avisynth include
 #include "interleaved.h"
+#include "../videoframe/rgb.h"
 
 
 namespace avs { namespace cspace {
@@ -38,7 +38,7 @@ namespace avs { namespace cspace {
 //
 //  RGB24 ColorSpace subclass
 //
-class RGB24 : public Interleaved
+class RGB24 : public interleaved<3, true>
 {
 
 private:  //constructor
@@ -56,10 +56,10 @@ public:  //ColorSpace interface
     return prop == INTERLEAVED || prop == RGB || prop == DEPTH8;
   }
 
-
-public:  //Interleaved interface
-
-  virtual int BytesPerPixel() const { return 3; }
+  virtual CPVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
+  {
+    return CPVideoFrame( (VideoFrame *)new vframe::RGB24(dim, type, env) );
+  }
 
 
 public:  //instance
@@ -75,7 +75,7 @@ public:  //instance
 //
 //  RGB32 ColorSpace subclass
 //
-class RGB32 : public Interleaved
+class RGB32 : public interleaved<3, true>
 {
 
 private:  //constructor
@@ -93,10 +93,10 @@ public:  //ColorSpace interface
     return prop == INTERLEAVED || prop == RGB || prop == DEPTH8;
   }
 
-
-public:  //Interleaved interface
-
-  virtual int BytesPerPixel() const { return 4; }
+  virtual CPVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
+  {
+    return CPVideoFrame( (VideoFrame *)new vframe::RGB32(dim, type, env) );
+  }
 
 
 public:  //instance
@@ -112,7 +112,7 @@ public:  //instance
 //
 //  RGB32 ColorSpace subclass
 //
-class RGB45 : public Interleaved
+class RGB45 : public interleaved<6, false>
 {
 
 private:  //constructor
@@ -130,10 +130,10 @@ public:  //ColorSpace interface
     return prop == INTERLEAVED || prop == RGB || prop == DEPTH15;
   }
 
-
-public:  //Interleaved interface
-
-  virtual int BytesPerPixel() const { return 8; }
+  virtual CPVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
+  {
+    return CPVideoFrame( (VideoFrame *)new vframe::RGB32(dim, type, env) );
+  }
 
 
 public:  //instance

@@ -23,32 +23,13 @@
 #ifndef __AVS_BLOCK_H__
 #define __AVS_BLOCK_H__
 
-
-//avisynth include
-#include "block_base.h"
+//avisynth includes
+#include "block/base.h"
+#include "block/deleter.h"
 
 
 namespace avs {
 
-
-
-namespace block {
-
-
-struct Deleter
-{
-
-  int size_;  
-  bool recycle_;
-  
-  Deleter(int size, bool recycle) : size_( size ), recycle_( recycle ) { }
-  
-  void operator()(void * ptr) const;
-
-};
-
-
-} //namespace block
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -73,12 +54,18 @@ struct Deleter
 class Block : public block::base<block::Deleter>
 {
 
-
-public:  //constructor
+public:  //structors
   
   explicit Block(int size, bool recycle = false);
 
   //generated copy constructor and destructor are fine
+
+
+public:  //assignemnt
+
+  //generated operator= is fine
+
+  //swap inherited from superclass
 
 
 public:  //reset method
@@ -86,8 +73,6 @@ public:  //reset method
   void reset(int size, bool recycle = false) { Block(size, recycle).swap(*this); }
 
 };//Block
-
-
 
 
 

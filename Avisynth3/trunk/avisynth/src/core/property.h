@@ -25,18 +25,11 @@
 #define __AVS_PROPERTY_H__
 
 
-//boost include
-#include <boost/shared_ptr.hpp>
+//avisynth include
+#include "smart_ptr_fwd.h"
 
 
 namespace avs {
-
-
-//class declaration
-class Property;
-
-//typedef
-typedef boost::shared_ptr<Property const> CPProperty;
 
 
 

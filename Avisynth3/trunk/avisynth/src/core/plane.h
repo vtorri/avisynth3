@@ -43,6 +43,19 @@ enum Plane
 };
 
 
+inline char const * NameOf(Plane plane)
+{
+  switch( plane )
+  {
+  case NOT_PLANAR: return "Interleaved";
+  case PLANAR_Y: return "Y";
+  case PLANAR_U: return "U";
+  case PLANAR_V: return "V";
+  }
+  return "Unknown";
+}
+
+
 
 } //namespace avs
 

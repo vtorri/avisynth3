@@ -24,9 +24,9 @@
 #ifndef __AVS_CS_PLANAR_YUV_H__
 #define __AVS_CS_PLANAR_YUV_H__
 
-
-//avisynh include
+//avisynh includes
 #include "../colorspace.h"
+#include "../videoframe/planar_yuv.h"
 
 
 namespace avs { namespace cspace {
@@ -62,7 +62,7 @@ public:  //ColorSpace interface
   }
 
 
-  virtual void CheckCoordinates(int x, int y, bool interlaced = false) const
+  virtual void Check(int x, int y, bool interlaced = false) const
   {
     if ( x & 1 )                          //x must be mod 2
       ThrowInvalidWidthException(2, x);
@@ -72,7 +72,7 @@ public:  //ColorSpace interface
       ThrowInvalidHeightException(2, y);
   }
 
-  virtual void ToPlaneCoordinates(int& x, int& y, Plane plane) const
+  virtual void ToPlane(int& x, int& y, Plane plane) const
   {
     switch(plane)
     {
@@ -81,8 +81,13 @@ public:  //ColorSpace interface
     case PLANAR_V: x >>= 1; y >>= 1; break;
 
     default:
-      ThrowInvalidPlaneException(plane);
+      ThrowNoSuchPlaneException(plane);
     }
+  }
+
+  virtual CPVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
+  {
+    return CPVideoFrame( (VideoFrame *)new vframe::YV12(dim, type, env) );
   }
 
 
@@ -123,16 +128,21 @@ public:  //ColorSpace interface
   }
 
 
-  virtual void ToPlaneCoordinates(int& x, int& y, Plane plane) const
+  virtual void ToPlane(int& x, int& y, Plane plane) const
   {
     if ( ! HasPlane(plane) )
-      ThrowInvalidPlaneException(plane);
+      ThrowNoSuchPlaneException(plane);
+  }
+
+  virtual CPVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
+  {
+    return CPVideoFrame( (VideoFrame *)new vframe::YV24(dim, type, env) );
   }
 
 
 public:  //instance
 
-  static YV12 instance;
+  static YV24 instance;
 
 };
 
@@ -166,18 +176,23 @@ public:  //ColorSpace interface
   }
 
 
-  virtual void ToPlaneCoordinates(int& x, int& y, Plane plane) const
+  virtual void ToPlane(int& x, int& y, Plane plane) const
   {
     if ( ! HasPlane(plane) )
-      ThrowInvalidPlaneException(plane);
+      ThrowNoSuchPlaneException(plane);
 
     x <<= 1;
+  }
+
+  virtual CPVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
+  {
+    return CPVideoFrame( (VideoFrame *)new vframe::YV45(dim, type, env) );
   }
 
 
 public:  //instance
 
-  static YV12 instance;
+  static YV45 instance;
 
 };
 

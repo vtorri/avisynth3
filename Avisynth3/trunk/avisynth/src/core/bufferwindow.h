@@ -42,35 +42,34 @@ namespace avs {
 //
 class BufferWindow
 {
-  
+
   Dimension dimension_;        //dimension of the window
   int pitch_;
-  int offset;                  //offset from buffer start to window start
-  OwnedBlock buffer;
+  int offset_;                 //offset from buffer start to window start
+  OwnedBlock buffer_;
 
 
-public:  //constructors
+public:  //sstructors
 
   //normal constructor
-  BufferWindow(Dimension const& dimension, PEnvironment env);
+  BufferWindow(Dimension const& dimension, PEnvironment const& env);
  
-  //copy constructor
-  BufferWindow(BufferWindow const& other);
+  //generated copy constructor and destructor are fine
   
 
 public:  //assignment
 
-  BufferWindow& operator=(BufferWindow const& other);
+  //generated operator= is fine
 
-  void swap(BufferWindow& other);
+  void swap(BufferWindow& other);  //no throw
 
 
 public:  //access
 
-  PEnvironment GetEnvironment() const { return buffer.GetEnvironment(); }
+  PEnvironment const& GetEnvironment() const { return buffer_.GetEnvironment(); }
   Dimension const& GetDimension() const { return dimension_; }
 
-  BYTE const * read() const { return buffer.get() + offset; }
+  BYTE const * read() const { return buffer_.get() + offset_; }
   BYTE * write();
 
   int pitch() const { return pitch_; }
@@ -79,7 +78,11 @@ public:  //access
 
 
   CWindowPtr Read() const { return CWindowPtr( read(), pitch(), width(), height() ); }
-  WindowPtr Write() { return WindowPtr( write(), pitch(), width(), height() ); }
+  WindowPtr Write()
+  { 
+    BYTE * ptr = write();
+    return WindowPtr( ptr, pitch(), width(), height() ); 
+  }
 
 
 public:  
@@ -90,17 +93,45 @@ public:
 
   //copy other into self at the given coords (which can be negatives)
   //only overlap is copied, no effect if there is none
-  void Copy(BufferWindow const& other, Vecteur const& coords); 
+  void Copy(BufferWindow other, Vecteur const& coords); 
   
+
+  BufferWindow FlipVertical() const;
+  template <int grain> BufferWindow FlipHorizontal() const
+  {
+    BufferWindow result( GetDimension(), GetEnvironment() );
+
+    //...
+
+    return result;
+  }
+
+  template <int grain> BufferWindow TurnLeft() const
+  {
+    BufferWindow result( GetDimension().Turn<grain>(), GetEnvironment() );
+
+    //...
+
+    return result;
+  }
+  template <int grain> BufferWindow TurnRight() const
+  {
+    BufferWindow result( GetDimension().Turn<grain>(), GetEnvironment() );
+
+    //...
+
+    return result;
+  }
+
   //blend other into self at the given factor
   //unspecified behavior if dimensions don't match
-  void Blend(BufferWindow const& other, float factor);
+  template <int bps> void Blend(BufferWindow const& other, float factor);
 
-  void FlipVertical();
-  void FlipHorizontal(int grain = 1);
+  template <> void Blend<1>(BufferWindow const& other, float factor) { Blend8(other, factor); }
+  template <> void Blend<2>(BufferWindow const& other, float factor) { Blend15(other, factor); }
 
-  void TurnLeft(int grain = 1);
-  void TurnRight(int grain = 1);
+  void Blend8(BufferWindow const& other, float factor);
+  void Blend15(BufferWindow const& other, float factor) { }  //TODO:code me
 
 };//BufferWindow
 

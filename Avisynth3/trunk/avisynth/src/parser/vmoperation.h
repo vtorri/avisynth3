@@ -26,6 +26,7 @@
 
 //boost include
 #include <boost/shared_ptr.hpp>
+#include <boost/tuple/tuple.hpp>  //for tuple
 
 
 namespace avs { namespace parser {
@@ -81,7 +82,7 @@ public:  //function-like interface
 };
 
 
-typedef std::pair<VMOperation, char> TypedOp;
+typedef boost::tuples::tuple<VMOperation, char> TypedOp;
 
 
 } } //namespace avs::parser

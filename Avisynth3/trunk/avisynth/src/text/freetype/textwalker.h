@@ -55,8 +55,8 @@ public:  //structors
 
 public:  //interface
 
-  POutline Reset(unsigned charCode);
-  POutline LoadChar(unsigned charCode);
+  Outline const& Reset(unsigned charCode);
+  Outline const& LoadChar(unsigned charCode);
 
 
 public:  

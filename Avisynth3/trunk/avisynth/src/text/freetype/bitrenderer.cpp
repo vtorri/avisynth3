@@ -80,17 +80,17 @@ void BitRenderer::Draw(std::string::const_iterator begin, std::string::const_ite
 {
   assert( begin != end );    //method shouldn't be called for naught
 
-  POutline outline = walker.Reset(*begin++);
+  Outline outline = walker.Reset(*begin++);
     
-  outline->Translate(walker.pen);    
-  outline->Draw(bitmap);
+  outline.Translate(walker.pen);    
+  outline.Draw(bitmap);
 
   while ( begin != end )
   {
     outline = walker.LoadChar(*begin++);
 
-    outline->Translate(walker.pen);
-    outline->Draw(bitmap);
+    outline.Translate(walker.pen);
+    outline.Draw(bitmap);
   }  
 }
 

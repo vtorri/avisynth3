@@ -68,7 +68,7 @@ public:  //GlyphSlot interface
   VecteurFP6 GetAdvance() const;
 
   //fetchs glyph outline
-  POutline GetOutline() const;
+  Outline const& GetOutline() const;
 
 
 public:  //access

@@ -55,9 +55,9 @@ VecteurFP6 GlyphSlot::GetAdvance() const
 }
 
 
-POutline GlyphSlot::GetOutline() const
+Outline const& GlyphSlot::GetOutline() const
 {
-  return POutline( new Outline(static_cast<Outline&>(glyphslot_->outline)) );
+  return static_cast<Outline&>(glyphslot_->outline);
 }
 
 

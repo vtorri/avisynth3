@@ -58,12 +58,12 @@ BoxFP6 Font::GetTextLineBoundingBox(std::string::const_iterator begin, std::stri
 
   if ( begin != end )
   {
-    result = walker.Reset(*begin++)->GetControlBox();
+    result = walker.Reset(*begin++).GetControlBox();
 
     while ( begin != end )
     {
-      POutline outline = walker.LoadChar(*begin++);
-      result |= outline->GetControlBox() + walker.pen;
+      Outline const& outline = walker.LoadChar(*begin++);  //NB: extra line coz LoadChar must be done before reading pen
+      result |= outline.GetControlBox() + walker.pen;
     }
   }
 

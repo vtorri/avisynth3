@@ -36,7 +36,7 @@ TextWalker::TextWalker(PFace const& face, VecteurFP6 const& pen_)
   , pen( pen_ ) { }
 
 
-POutline TextWalker::Reset(unsigned charCode)
+Outline const& TextWalker::Reset(unsigned charCode)
 {
   slot_.LoadGlyph( glyphIndex_ = slot_.GetFace()->GetCharIndex(charCode) );
 
@@ -44,7 +44,7 @@ POutline TextWalker::Reset(unsigned charCode)
 }
 
 
-POutline TextWalker::LoadChar(unsigned charCode)
+Outline const& TextWalker::LoadChar(unsigned charCode)
 {
   unsigned index = slot_.GetFace()->GetCharIndex(charCode);
 

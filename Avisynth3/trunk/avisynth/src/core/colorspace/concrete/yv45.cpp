@@ -23,8 +23,8 @@
 
 //avisynth includes
 #include "yv45.h"
-#include "../../videoframe/planar_yuv.h"
 #include "../../exception/nosuchplane.h"
+#include "../../videoframe/concrete/yv45.h"
 #include "../../exception/colorspace/unsupported.h"
 #include "../../exception/colorspace/invalidheight.h"
 
@@ -71,13 +71,13 @@ void YV45::ToPlane(long& x, long& /*y*/, Plane plane) const
 
 PVideoFrame YV45::CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
 {
-  return CPVideoFrame( static_cast<VideoFrame *>(new vframe::YV45(dim, type, env)) );
+  return CPVideoFrame( static_cast<VideoFrame *>(new vframe::concrete::YV45(dim, type, env)) );
 }
 
 
 PVideoFrame YV45::CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& y , BufferWindow const& u, BufferWindow const& v) const
 {
-  return CPVideoFrame( static_cast<VideoFrame *>(new vframe::YV45(dim, type, y, u, v)) );
+  return CPVideoFrame( static_cast<VideoFrame *>(new vframe::concrete::YV45(dim, type, y, u, v)) );
 }
 
 

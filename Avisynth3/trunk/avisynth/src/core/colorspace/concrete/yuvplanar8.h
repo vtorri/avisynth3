@@ -47,11 +47,6 @@ public:  //ColorSpace interface
   virtual bool HasProperty(Property prop) const;
 
 
-public:  //yuv::Depth8 interface
-
-  virtual void Count(VideoFrame const& frame, ByteCounter& y, ByteCounter& u, ByteCounter& v) const;
-
-  virtual void Apply(VideoFrame& frame, ByteMap const& y, ByteMap const& u, ByteMap const& v) const;
 
 };
 

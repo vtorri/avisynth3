@@ -23,8 +23,6 @@
 
 //avisynth includes
 #include "yuy2.h"
-#include "../../../utility/bytemap.h"
-#include "../../../utility/bytecounter.h"
 #include "../../exception/colorspace/invalidwidth.h"
 
 
@@ -43,35 +41,6 @@ void YUY2::Check(int x, int y, bool interlaced) const
   InterleavedType::Check(x, y, interlaced);
   if ( x & 1 )                                                        //if x is not even
     throw exception::cspace::InvalidWidth(shared_from_this(), x, 2);  //exception
-}
-
-
-
-void YUY2::Count(VideoFrame const& frame, ByteCounter& y, ByteCounter& u, ByteCounter& v) const
-{
-  CWindowPtr wp = frame.ReadFrom(NOT_PLANAR);
-
-  y.Count<2>(wp);            //counts Y values
-
-  wp.to(1, 0);
-  y.Count<4>(wp);            //counts U values
-
-  wp.to(2, 0);
-  v.Count<4>(wp);            //counts V values
-}
-
-
-void YUY2::Apply(VideoFrame& frame, ByteMap const& y, ByteMap const& u, ByteMap const& v) const
-{
-  WindowPtr wp = frame.WriteTo(NOT_PLANAR);
-
-  y.ApplyTo<2>(wp);          //looks up Y values 
-
-  wp.to(1, 0);
-  u.ApplyTo<4>(wp);          //looks up U values
-
-  wp.to(2, 0);
-  v.ApplyTo<4>(wp);          //looks up V values
 }
 
 

@@ -39,22 +39,5 @@ bool YuvPlanar8::HasProperty(Property prop) const
 
 
 
-void YuvPlanar8::Count(VideoFrame const& frame, ByteCounter& y, ByteCounter& u, ByteCounter& v) const
-{
-  y.Count<1>(frame.ReadFrom(PLANAR_Y));            //counts Y values
-  u.Count<1>(frame.ReadFrom(PLANAR_U));            //counts U values
-  v.Count<1>(frame.ReadFrom(PLANAR_V));            //counts V values
- 
-}
-
-
-void YuvPlanar8::Apply(VideoFrame& frame, ByteMap const& y, ByteMap const& u, ByteMap const& v) const
-{
-  y.ApplyTo<1>(frame.ReadFrom(PLANAR_Y));          //looks up Y values 
-  u.ApplyTo<1>(frame.ReadFrom(PLANAR_U));          //looks up U values
-  v.ApplyTo<1>(frame.ReadFrom(PLANAR_V));          //looks up V values
-}
-
-
 
 } } } //namespace avs::cspace::concrete

@@ -23,8 +23,8 @@
 
 //avisynth includes
 #include "yv24.h"
-#include "../../videoframe/planar_yuv.h"
 #include "../../exception/nosuchplane.h"
+#include "../../videoframe/concrete/yv24.h"
 #include "../../exception/colorspace/unsupported.h"
 #include "../../exception/colorspace/invalidheight.h"
 
@@ -62,13 +62,13 @@ void YV24::ToPlane(long& x, long& y, Plane plane) const
 
 PVideoFrame YV24::CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
 {
-  return CPVideoFrame( static_cast<VideoFrame *>(new vframe::YV24(dim, type, env)) );
+  return CPVideoFrame( static_cast<VideoFrame *>(new vframe::concrete::YV24(dim, type, env)) );
 }
 
 
 PVideoFrame YV24::CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& y , BufferWindow const& u, BufferWindow const& v) const
 {
-  return CPVideoFrame( static_cast<VideoFrame *>(new vframe::YV24(dim, type, y, u, v)) );
+  return CPVideoFrame( static_cast<VideoFrame *>(new vframe::concrete::YV24(dim, type, y, u, v)) );
 }
 
 } } } //namespace avs::cspace::concrete

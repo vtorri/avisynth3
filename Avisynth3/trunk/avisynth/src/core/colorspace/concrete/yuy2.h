@@ -27,7 +27,7 @@
 //avisynth includes
 #include "interleaved.h"
 #include "../yuv/depth8.h"
-#include "../../videoframe/yuy2.h"
+#include "../../videoframe/concrete/yuy2.h"
 
 
 namespace avs { namespace cspace { namespace concrete {
@@ -39,7 +39,7 @@ namespace avs { namespace cspace { namespace concrete {
 //
 //  YUY2 ColorSpace subclass
 //
-class YUY2 : public interleaved<2, 1, vframe::YUY2>
+class YUY2 : public interleaved<2, 1, vframe::concrete::YUY2>
            , public yuv::Depth8
 {
 
@@ -52,13 +52,6 @@ public:  //ColorSpace interface
   virtual bool HasProperty(Property prop) const;
 
   virtual void Check(int x, int y, bool interlaced = false) const;
-
-
-public:  //yuv::Depth8 interface
-
-  virtual void Count(VideoFrame const& frame, ByteCounter& y, ByteCounter& u, ByteCounter& v) const;
-
-  virtual void Apply(VideoFrame& frame, ByteMap const& y, ByteMap const& u, ByteMap const& v) const;
 
 };
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,6 @@
 
 #ifndef __AVS_VIDEOFRAME_BASE_H__
 #define __AVS_VIDEOFRAME_BASE_H__
-
 
 //avisynth includes
 #include "../dimension.h"
@@ -62,7 +61,7 @@ private:  //declarations and typedefs
 
 private:  //members
 
-  FrameType type_;                    //type of the frame
+  FrameType type_;               //type of the frame
   Dimension dim_;                //dimension of the frame
 
   PropertyMultiMap flows_;       //holds flow properties
@@ -107,7 +106,7 @@ public:  //properties methods
   virtual void RemoveFlowProperties(PKey const& key);
 
 
-protected:  //helper methods
+protected:  //helper method
 
   void ClearStaticProperties() { statics_.clear(); }
 

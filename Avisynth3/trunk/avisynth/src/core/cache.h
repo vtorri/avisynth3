@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 #define __AVS_CACHE_H__
 
 //avisynth include
-#include "forward.h"
+#include "forward.h"              //for PEnvironment, CPVideoFrame
 
 //boost includes
 #include <boost/utility.hpp>      //for noncopyable
@@ -64,10 +64,10 @@ public:  //Cache interface
   virtual PEnvironment const& GetEnvironment() const = 0;
 
   //search the frame in the cache
-  //if not found, it has the source clip make it
+  //if not found, it use the source clip to make it
   virtual CPVideoFrame GetFrame(int n) = 0;
 
-};//Cache
+};
 
 
 

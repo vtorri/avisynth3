@@ -106,4 +106,4 @@ public:  //factory method and functor
 
 } } //namespace avs::filters
 
-#endif __AVS_FILTERS_AVIFILESOURCE_H__
+#endif //__AVS_FILTERS_AVIFILESOURCE_H__

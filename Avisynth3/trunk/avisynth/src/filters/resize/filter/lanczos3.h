@@ -39,7 +39,7 @@ namespace avs { namespace filters { namespace resize { namespace filter {
 //
 //  09-14-2002 - Vlad59 - Lanczos3Resize
 //
-class Triangle : public Filter
+class Lanczos3 : public Filter
 {
 
 public:  //Filter interface

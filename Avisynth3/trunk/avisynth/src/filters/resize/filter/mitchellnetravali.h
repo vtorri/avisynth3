@@ -37,7 +37,7 @@ namespace avs { namespace filters { namespace resize { namespace filter {
 //
 //  Mitchell-Netraveli filter, used in BicubicResize
 //
-class Triangle : public Filter
+class MitchellNetravali : public Filter
 {
 
   double p0, p2, p3, q0, q1, q2, q3;

@@ -33,8 +33,10 @@ typedef unsigned char BYTE;
 
 class Blitter {
 
+  static void ASMBlit(BYTE* dstp, int dst_pitch, const BYTE* srcp, int src_pitch, int row_size, int height);
+
 public:
-  static void Blit(BYTE * dst_ptr, int dst_pitch, const BYTE * src_ptr, int src_pitch, const Dimension& toCopy);
+  static void Blit(BYTE * dstp, int dst_pitch, const BYTE * srcp, int src_pitch, const Dimension& toCopy);
 
 };
 

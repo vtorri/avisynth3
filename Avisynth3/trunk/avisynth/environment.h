@@ -36,6 +36,7 @@ typedef smart_ptr<LinkedFunction> PAVSFunction;
 //pair to describe a full link result, the bool says if last is expected by the AVSFunction 
 typedef pair<PAVSFunction, bool> LinkResult;  
 
+class MemoryBuffer;
 
 class ScriptEnvironment : public RefCounted {
 
@@ -43,6 +44,14 @@ class ScriptEnvironment : public RefCounted {
 
   PluginVector pluginVector;
   
+
+  int MemoryMax;
+  mutable int MemoryUsed;
+
+  void RegisterMemory(int size) const;
+  void FreeMemory(int size) const;
+
+  friend class MemoryBuffer;  //so it can use the two above
 
 public:
   ScriptEnvironment();
@@ -55,7 +64,6 @@ public:
   AVSValue Parse(const string& script);
 
   static long __stdcall GetCPUFlags();
-//  static void __stdcall BitBlt(BYTE* dstp, int dst_pitch, const BYTE* srcp, int src_pitch, int row_size, int height);
 
 
   LinkResult Link(const string& name, const LinkagePrototype& link, bool ImplictLastAllowed);
@@ -64,6 +72,7 @@ public:
 
 
   PAVSFunction Bind(PAVSFunction toBind, const ArgVector& bindedArgs);
+
 
 
 };

@@ -107,14 +107,11 @@ enum FrameType {
 
 
 
-#include "environment.h"
 
 //class holding video properties for VideoFrame (so can be shared)
-//the owning env is considered a property
 class FrameVideoProperties : public VideoProperties {
 
   FrameType frameType;
-  PEnvironment env;
 
   static bool MaybeInterlaced(FrameType frameType) { return frameType > PROGRESSIVE; }
 
@@ -122,7 +119,7 @@ protected:
   virtual bool MaybeInterlaced() const { return MaybeInterlaced(frameType); } 
 
 public:
-  FrameVideoProperties(const ClipVideoProperties& cvp, PEnvironment _env) : VideoProperties(cvp), env(_env)
+  FrameVideoProperties(const ClipVideoProperties& cvp) : VideoProperties(cvp)
   {
     if (! cvp.IsFrameClip() )
       frameType = FIELD_TOP;
@@ -134,6 +131,7 @@ public:
       catch(invalid_argument&) { frameType = PROGRESSIVE; }  //can't be interlaced so progressive
     }
   } 
+  FrameVideoProperties(const FrameVideoProperties& other) : VideoProperties(other), frameType(other.frameType) { }
 
   bool IsField() const { return frameType < PROGRESSIVE; }
   bool IsFrame() const { return frameType >= PROGRESSIVE; }
@@ -152,6 +150,8 @@ public:
     Vecteur v = (GetColorSpace().ToPlaneCoords(GetDimension(), plane));
     return Dimension(v.GetX(), v.GetY());
   }
+
+  FrameVideoProperties * clone() const { return new FrameVideoProperties(*this); }
 };
 
 typedef smart_ptr<FrameVideoProperties> PFrameVidProps;

@@ -33,15 +33,15 @@
 
 
 
-VideoFrameBuffer::MemoryPiece::MemoryPiece(int _size, int& offset) : size(_size + FRAME_ALIGN)
+MemoryBuffer::MemoryPiece::MemoryPiece(int _size, int& offset) : size(_size + FRAME_ALIGN)
 {
-  AllocationVector::iterator it = alloc.begin();
-  while( it != alloc.end() && it->size != size ) { ++it; }
-  if (it == alloc.end() )
+  AllocationVector::iterator it = recycle.begin();
+  while( it != recycle.end() && it->size != size ) { ++it; }
+  if (it == recycle.end() )
     data.reset( new BYTE[size] );
   else {
     data = it->data;
-    alloc.erase(it);
+    recycle.erase(it);
   }
   offset = ( -int(data.get()) ) & ( -FRAME_ALIGN );
 }
@@ -72,20 +72,15 @@ AlphaForwardingBuffer::AlphaForwardingBuffer(int row_size, int height)
 
 
 BYTE* BufferWindow::GetWritePtr()
-{  
-  BYTE * result = vfb->GetWritePtr(); 
-  //returns NULL if we are not allowed to write
-  if (result != NULL)
-    return result + offset;
-  else {  
-    BufferWindow temp(dimension); //creates a buffer who can accomodates self
-
-    result = temp.GetWritePtr();
-    Blitter::Blit(result, temp.GetPitch(), GetReadPtr(), GetPitch(), dimension);
+{ 
+  try { return vfb->GetWritePtr() + offset; }  
+  catch(shared_buffer&)
+  {
+    BufferWindow temp(dimension, GetEnvironment()); //creates a buffer who can accomodates self
+    Blitter::Blit(temp.GetWritePtr(), temp.GetPitch(), GetReadPtr(), GetPitch(), dimension);
     *this = temp;
-
-    return result;
   }
+  return vfb->GetWritePtr() + offset;  //shared_buffer can't occur  
 } 
 
 
@@ -117,7 +112,7 @@ void BufferWindow::SizeChange(const Vecteur& topLeft, const Vecteur& bottomRight
   int pitch = GetPitch();
   if ( GetWidth() > pitch || offset < 0 || offset + GetHeight() * pitch > vfb->GetSize() )
   {
-    BufferWindow resized(dimension);  //new buffer
+    BufferWindow resized(dimension, GetEnvironment());  //new buffer
     resized.Copy(saved, -topLeft);    //copy saved data at the right place
     *this = resized;                  //replace self by resized                      
   }
@@ -135,7 +130,7 @@ void BufferWindow::Blend(const BufferWindow& other, float factor)
 
 void BufferWindow::FlipVertical()
 {
-  BufferWindow result(dimension);
+  BufferWindow result(dimension, GetEnvironment());
 
   Blitter::Blit(result.GetWritePtr(), result.GetPitch(), 
                 GetReadPtr() + (GetHeight() - 1) * GetPitch(), -GetPitch(), dimension);

@@ -571,6 +571,10 @@ SOURCE=.\avsvalue.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\bitblit.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\bufferwindow.cpp
 # End Source File
 # Begin Source File
@@ -588,6 +592,10 @@ SOURCE=.\environment.cpp
 # Begin Source File
 
 SOURCE=.\environment.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\geometric.h
 # End Source File
 # Begin Source File
 
@@ -627,7 +635,15 @@ SOURCE=.\refcounted.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\statement.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\toto.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\vartable.h
 # End Source File
 # Begin Source File
 
@@ -644,6 +660,10 @@ SOURCE=.\videoinfo.cpp
 # Begin Source File
 
 SOURCE=.\videoinfo.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\videoproperties.h
 # End Source File
 # Begin Source File
 

@@ -32,77 +32,136 @@
 // which is not derived from or based on Avisynth, such as 3rd-party filters,
 // import and export plugins, or graphical user interfaces.
 
-#ifndef __Expression_H__
-#define __Expression_H__
+#ifndef __EXPRESSSION_H__
+#define __EXPRESSSION_H__
 
-#include "internal.h"
-#include "cache.h"
-
-
-/********************************************************************
-********************************************************************/
+#include "vartable.h"
+#include <boost/scoped_ptr.hpp>
 
 
+class ScriptEnvironment;
 
-
-
-/**** Base Classes ****/
 
 class Expression {
+
 public:
-  Expression() : refcnt(0) {}
-  virtual AVSValue Evaluate(IScriptEnvironment* env) = 0;
-  virtual const char* GetLvalue() { return 0; }
+  Expression() { }
   virtual ~Expression() {}
 
-private:
-  friend class PExpression;
-  int refcnt;
-  void AddRef() { ++refcnt; }
-  void Release() { if (--refcnt <= 0) delete this; }
+  virtual AVSValue Evaluate(VarTable& table, ScriptEnvironment& env) = 0;
+
+
 };
 
-class PExpression 
-{
+template <class Result> class TypedExpression : public Expression {
+
 public:
-  PExpression() { Init(0); }
-  PExpression(Expression* p) { Init(p); }
-  PExpression(const PExpression& p) { Init(p.e); }
-  void operator=(Expression* p) { Set(p); }
-  void operator=(const PExpression& p) { Set(p.e); }
-  operator!() const { return !e; }
-  operator void*() const { return e; }
-  Expression* operator->() const { return e; }
-  ~PExpression() { Release(); }
+  TypedExpression() { }
 
-private:
-  Expression* e;
-  void Init(Expression* p) { e=p; if (e) e->AddRef(); }
-  void Set(Expression* p) { if (p) p->AddRef(); if (e) e->Release(); e=p; }
-  void Release() { if (e) e->Release(); }
+  //default implementation using the new TypedEval method
+  virtual AVSValue Evaluate(VarTable& table, ScriptEnvironment& env) { return AVSValue(TypedEval(table, env)); }
+  virtual Result TypedEval(VarTable& table, ScriptEnvironment& env) = 0;
+
+};
+
+typedef TypedExpression<bool> Predicate;
+
+
+template <class Result> class ExpConstant : public TypedExpression<Result> {
+
+  Result result;
+
+public:
+  ExpConstant(Result _result) : result(_result) { }
+
+  virtual AVSValue Evaluate(VarTable& table, ScriptEnvironment& env) { return AVSValue(result); }
+  virtual Result TypedEval(VarTable& table, ScriptEnvironment& env) { return result; }
+
 };
 
 
 
+template <class Result, class Arg> class BinaryExp : public TypedExpression<Result> {
+
+protected:
+  typedef TypedExpression<Arg>  ExpBase;
+  typedef boost::scoped_ptr<ExpBase> ScopedExpBase;
+
+  ScopedExpBase left, right;
+
+public:
+  BinaryExp(ExpBase * _left, ExpBase * _right) : left(_left), right(_right) { }
+
+
+};
+
+//basic binaries operations
+
+template <class T> ExpPlus : public BinaryExp<T, T> {
+
+public:
+  ExpPlus(ExpBase * left, ExpBase * right) : BinaryExp<T, T>(left, right) { }
+
+  virtual T TypedEval(VarTable& table, ScriptEnvironment& env) { return left->TypedEval(table, env) + right->TypedEval(table, env); }
+};
+
+
+template <class T> ExpMinus : public BinaryExp<T, T> {
+
+public:
+  ExpMinus(ExpBase * left, ExpBase * right) : BinaryExp<T, T>(left, right) { }
+
+  virtual T TypedEval(VarTable& table, ScriptEnvironment& env) { return left->TypedEval(table, env) - right->TypedEval(table, env); }
+};
+
+template <class T> ExpMult : public BinaryExp<T, T> {
+
+public:
+  ExpMult(ExpBase * left, ExpBase * right) : BinaryExp<T, T>(left, right) { }
+
+  virtual T TypedEval(VarTable& table, ScriptEnvironment& env) { return left->TypedEval(table, env) * right->TypedEval(table, env); }
+};
+
+template <class T> ExpDiv : public BinaryExp<T, T> {
+
+public:
+  ExpDiv(ExpBase * left, ExpBase * right) : BinaryExp<T, T>(left, right) { }
+
+  virtual T TypedEval(VarTable& table, ScriptEnvironment& env) { return left->TypedEval(table, env) / right->TypedEval(table, env); }
+};
+
+template <class T> ExpModulo : public BinaryExp<T, T> {
+
+public:
+  ExpDiv(ExpBase * left, ExpBase * right) : BinaryExp<T, T>(left, right) { }
+
+  virtual T TypedEval(VarTable& table, ScriptEnvironment& env) { return left->TypedEval(table, env) % right->TypedEval(table, env); }
+};
+
+
+//binaries predicates
+
+template <class T> ExpEqual : public BinaryExp<bool, T> {
+
+public:
+  ExpEqual(ExpBase * left, ExpBase * right) : BinaryExp<bool, T>(left, right) { }
+
+  virtual bool TypedEval(VarTable& table, ScriptEnvironment& env) { return left->TypedEval(table, env) == right->TypedEval(table, env); }  
+};
+
+template <class T> ExpLess : public BinaryExp<bool, T> {
+
+public:
+  ExpLess(ExpBase * left, ExpBase * right) : BinaryExp<bool, T>(left, right) { }
+
+  virtual bool TypedEval(VarTable& table, ScriptEnvironment& env) { return left->TypedEval(table, env) < right->TypedEval(table, env); }  
+};
 
 
 
 
 /**** Object classes ****/
 
-class ExpConstant : public Expression 
-{
-public:
-  ExpConstant(AVSValue v) : val(v) {}
-  ExpConstant(int i) : val(i) {}
-  ExpConstant(float f) : val(f) {}
-  ExpConstant(const char* s) : val(s) {}
-  virtual AVSValue Evaluate(IScriptEnvironment* env) { return val; }
-
-private:
-  friend class ExpNegative;
-  const AVSValue val;
-};
 
 
 class ExpSequence : public Expression 
@@ -234,48 +293,10 @@ private:
 };
 
 
-class ExpMinus : public Expression 
-{
-public:
-  ExpMinus(const PExpression& _a, const PExpression& _b) : a(_a), b(_b) {}
-  virtual AVSValue Evaluate(IScriptEnvironment* env);
-  
-private:
-  const PExpression a, b;
-};
 
 
-class ExpMult : public Expression 
-{
-public:
-  ExpMult(const PExpression& _a, const PExpression& _b) : a(_a), b(_b) {}
-  virtual AVSValue Evaluate(IScriptEnvironment* env);
-
-private:
-  const PExpression a, b;
-};
 
 
-class ExpDiv : public Expression 
-{
-public:
-  ExpDiv(const PExpression& _a, const PExpression& _b) : a(_a), b(_b) {}
-  virtual AVSValue Evaluate(IScriptEnvironment* env);
-    
-private:
-  const PExpression a, b;
-};
-
-
-class ExpMod : public Expression 
-{
-public:
-  ExpMod(const PExpression& _a, const PExpression& _b) : a(_a), b(_b) {}
-  virtual AVSValue Evaluate(IScriptEnvironment* env);
-  
-private:
-  const PExpression a, b;
-};
 
 
 class ExpNegate : public Expression 
@@ -357,4 +378,4 @@ private:
 
 
 
-#endif  // __Expression_H_
+#endif  // __EXPRESSSION_H__

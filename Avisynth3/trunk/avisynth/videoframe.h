@@ -165,7 +165,15 @@ protected:
   virtual const BufferWindow& GetPlane(Plane plane) const throw(invalid_plane) = 0;
   virtual BufferWindow& GetPlane(Plane pane) throw(invalid_plane) = 0;
 
-
+  //check that self and other use same colorspace
+  //return this one for convenience (often u use it after those checks)
+  const ColorSpace& CheckCompatibleColorSpace(const VideoFrame& other)
+  {
+    const ColorSpace& space = GetColorSpace();
+    if ( space != other.GetColorSpace() )  
+      throw std::logic_error("Colorspaces don't match");
+    return space;
+  }
 };
 
 
@@ -196,7 +204,7 @@ protected:
   }
 
 public:
-  InterleavedVideoFrame(const FrameVideoProperties& vidProps) : VideoFrame(vidProps), main(vidProps, NOT_PLANAR) { }
+  InterleavedVideoFrame(const FrameVideoProperties& vidProps, ScriptEnvironment& env) : VideoFrame(vidProps), main(vidProps, NOT_PLANAR, env) { }
   //copy constructor
   InterleavedVideoFrame(const InterleavedVideoFrame& other) : VideoFrame(other), main(other.main) { }
 
@@ -214,7 +222,7 @@ public:
 class RGBVideoFrame : public InterleavedVideoFrame {
 
   //normal constructor, private to avoid construction with illegal colorspace props (unchecked)
-  RGBVideoFrame(const FrameVideoProperties& vidProps) : InterleavedVideoFrame(vidProps) { }
+  RGBVideoFrame(const FrameVideoProperties& vidProps, ScriptEnvironment& env) : InterleavedVideoFrame(vidProps, env) { }
 
 public:
   //copy constructor
@@ -231,7 +239,7 @@ public:
 
 class YUY2VideoFrame : public InterleavedVideoFrame {
          
-  YUY2VideoFrame(const FrameVideoProperties& vidProps) : InterleavedVideoFrame(vidProps) { }
+  YUY2VideoFrame(const FrameVideoProperties& vidProps, ScriptEnvironment& env) : InterleavedVideoFrame(vidProps, env) { }
   
 public:
   //copy constructor
@@ -279,8 +287,8 @@ protected:
   }
 
   //normal constructor
-  PlanarVideoFrame(const FrameVideoProperties& vidProps) : VideoFrame(vidProps),
-    y(vidProps, PLANAR_Y), u(vidProps, PLANAR_U), v(vidProps, PLANAR_V) { }
+  PlanarVideoFrame(const FrameVideoProperties& vidProps, ScriptEnvironment& env)
+    : VideoFrame(vidProps), y(vidProps, PLANAR_Y, env), u(vidProps, PLANAR_U, env), v(vidProps, PLANAR_V, env) { }
 
 public:
   //copy constructor
@@ -300,12 +308,12 @@ public:
   
 }; 
 
-
+/*
 class YV12VideoFrame : public PlanarVideoFrame {
 
 protected:
   //normal constructor
-  YV12VideoFrame(const FrameVideoProperties& vidProps) : PlanarVideoFrame(vidProps) { }
+  YV12VideoFrame(const FrameVideoProperties& vidProps, ScriptEnvironment& env) : PlanarVideoFrame(vidProps, env) { }
 
 public:
   //copy constructor
@@ -327,6 +335,6 @@ class VFWI420VideoFrame : public YV12VideoFrame {
 
   VFWI420VideoFrame(const FrameVideoProperties& vidProps) : YV12VideoFrame(vidProps) { std::swap(u, v); }
 };
-
+*/
 
 #endif  //ifndef __VIDEOFRAME_H__

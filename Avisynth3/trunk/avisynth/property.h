@@ -48,8 +48,6 @@ public:
   Property() { }
 
   virtual const PropertyKey& GetKey() const  = 0;
-
-  bool operator==(const PropertyKey& key) const { return key == GetKey(); }
 };
 
 typedef smart_ptr<Property> PProperty;
@@ -58,8 +56,7 @@ typedef smart_ptr_to_cst<Property> CPProperty;
 
 
 
-class PropertySet : private std::vector<CPProperty> {
-
+class PropertySet : private std::vector<CPProperty> {  
 
 public:
   PropertySet() { }
@@ -68,22 +65,32 @@ public:
   //mutations methods
   void Set(const Property& prop)
   { 
-    iterator it = find(begin(), end(), prop.GetKey());
-    if ( it != end() )
-      *it = prop;
-    else push_back(prop);
+    const PropertyKey& key = prop.GetKey();
+    for( iterator it = begin(); it != end(); ++it )    
+      if ( (*it)->GetKey() == key )
+      {
+        *it = prop;
+        return;
+      }
+    push_back(prop);  //case where we reach end without finiding it
   }
+
   void Remove(const PropertyKey& key)
   { 
-    iterator it = find(begin(), end(), key); 
-    if ( it != end() )
-      erase(it);
+    for(iterator it = begin(); it != end(); ++it )
+      if ( (*it)->GetKey() == key )
+      {
+        erase(it);
+        return;
+      }
   }
 
   CPProperty Get(const PropertyKey& key) const
   {
-    const_iterator it = find(begin(), end(), key);
-    return it != end() ? *it : CPProperty();
+    for(const_iterator it = begin(); it != end(); ++it )
+      if ( (*it)->GetKey() == key )
+        return *it;
+    return CPProperty();  //case when key not found
   }
 };
 

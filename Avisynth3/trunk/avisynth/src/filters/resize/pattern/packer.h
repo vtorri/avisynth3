@@ -38,7 +38,8 @@ namespace avs { namespace filters { namespace resize { namespace pattern {
 //  helper class to pack offset and coeffs into a pattern
 //
 //
-  template <int groupCoeffPairBy, int packerCount> class packer : private boost::noncopyable
+template <int groupCoeffPairBy, int packerCount> 
+class packer : private boost::noncopyable
 {
 
   short coeffs[groupCoeffPairBy * 2];
@@ -47,12 +48,14 @@ namespace avs { namespace filters { namespace resize { namespace pattern {
   int i;                      //current position into the coeffs array
 
 
-public:  //constructor
+public:  //structors
 
   packer<groupCoeffPairBy, packerCount>(int no, int * ptr)
     : ptr_( ptr )
     , toCoeffs( packerCount + no * (groupCoeffPairBy - 1)  )
     , i( 0 ) { }
+
+  //generated destructor is fine
 
 
 public:  //packer methods
@@ -66,13 +69,13 @@ public:  //packer methods
 
   void coeff(int value)
   {
-    coeffs[i++] = short(value);
+    coeffs[i++] = static_cast<short>(value);
 
     if ( i == groupCoeffPairBy * 2 )          //we have enough coeffs to pack them
     {
 
       for( int k = 0; k < groupCoeffPairBy; ++k)
-        ptr_[k] = ((int *)coeffs)[k];
+        ptr_[k] = static_cast<int *>(coeffs)[k];
 
       i = 0;                                  //reset i for next ones
       ptr_ += groupCoeffPairBy * packerCount; //move to next position

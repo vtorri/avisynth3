@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,8 @@
 
 //avisynth includes
 #include "yuy2.h"
+#include "../../../define.h"              //for AVS_HAS_INTEL_INLINE_ASM
+#include "../../../user_config.h"         //for AVS_ALWAYS_USE_NASM
 #include "../../../core/videoframe.h"
 #include "../../../core/runtime_environment.h"
 
@@ -62,7 +64,7 @@ void YUY2::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
   for( int y = dst.height; y-- > 0; src.to(0, 1), dst.to(0, 1) )
   {
 
-#if defined(_INTEL_ASM) && ! defined(_FORCE_NASM)
+#if defined(AVS_HAS_INTEL_INLINE_ASM) && ! defined(AVS_ALWAYS_USE_NASM)
 
     int x = dst.width;
     BYTE * dstp = dst.ptr;
@@ -211,12 +213,12 @@ void YUY2::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
   resize_horizontal_yuy2_mmx_nasm(src.ptr, dst.ptr, src.width, tempY, tempUV,
 			     pptrUV, pptrY, countY, countUV, dst.width);
 
-#endif // defined(_INTEL_ASM) && ! defined(_FORCE_NASM)
+#endif // defined(AVS_HAS_INTEL_INLINE_ASM) && ! defined(AVS_ALWAYS_USE_NASM)
 
   }//for
 
 
-#ifdef _INTEL_ASM
+#ifdef AVS_HAS_INTEL_INLINE_ASM
 
   __asm { emms }
 

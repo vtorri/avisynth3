@@ -23,6 +23,8 @@
 
 //avisynth includes
 #include "rgb32.h"
+#include "../../../define.h"              //for AVS_HAS_INTEL_INLINE_ASM
+#include "../../../user_config.h"         //for AVS_ALWAYS_USE_NASM
 #include "../../../core/videoframe.h"
 
 
@@ -45,7 +47,7 @@ void RGB32::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
   int const * pptr = GetPattern().get();  //pattern ptr
 
 
-#if defined(_INTEL_ASM) && ! defined(_FORCE_NASM)
+#if defined(AVS_HAS_INTEL_INLINE_ASM) && ! defined(AVS_ALWAYS_USE_NASM)
 
   int y = dst.height;                     //y loop counter
   int pad = dst.padValue();               //padding from end of dst row to start of next one
@@ -125,7 +127,7 @@ void RGB32::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
   //use nasm code
   resize_horizontal_rgb32_mmx_nasm(src.ptr, dst.ptr, dst.width, pptr, count, dst.height, src.pitch, dst.padValue());
 
-#endif //defined(_INTEL_ASM) && ! defined(_FORCE_NASM)
+#endif //defined(AVS_HAS_INTEL_INLINE_ASM) && ! defined(AVS_ALWAYS_USE_NASM)
 
 }
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -68,12 +68,12 @@ public:  //clip general interface
   virtual CPVideoInfo GetVideoInfo() const { return vi_; }
 
   virtual CPVideoFrame GetFrame(int n) const { return frame_; }
-  virtual void GetAudio(void * buffer, __int64 start, int count) const;
+  virtual void GetAudio(void * buffer, int64 start, int count) const;
 
 
 public:  //factory methods
 
-  static PClip Create(CPVideoFrame const& frame) { return PClip( (Clip *)new StaticImage(frame) ); }
+  static PClip Create(CPVideoFrame const& frame) { return PClip( static_cast<Clip *>(new StaticImage(frame)) ); }
 
   static PClip CreateBlankClip(ColorSpace& space, Dimension const& dim, PEnvironment const& env);
 

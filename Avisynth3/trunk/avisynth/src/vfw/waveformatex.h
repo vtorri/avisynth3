@@ -47,6 +47,11 @@ public:  //structors
 
   //generated destructor is fine
 
+
+public:  //WaveFormatEx interface
+
+  bool IsVBR() const;
+
 };
 
 

@@ -45,7 +45,7 @@ class ScopeEnforcer : public boost::noncopyable
 
   int size_;
   VMState& state_;
-  bool dismissed_;
+  bool dismissed_;   //if set, enforcer won't restore stack at destruction
 
 
 public:  //structors
@@ -64,9 +64,8 @@ public:  //structors
 
 public:  //interface
 
-  //Dismiss enforcer, ie it won't restore stack size at destruction
-  //is is used when a return statement is met
-  void Dismiss() { dismissed_ = true; }
+  //update dismissed flag
+  void SetDismiss(bool dismissed) { dismissed_ = dismissed; }
 
 };
 

@@ -28,9 +28,9 @@
 #include "avistream/audio.h"
 #include "avistream/interleaved.h"
 #include "../core/clip.h"
-#include "../core/exception.h"
 #include "../core/videoinfo.h"
 #include "../core/colorspace.h"
+#include "../core/exception/generic.h"
 #include "../core/runtime_environment.h"
 #include "../filters/source/staticimage.h"
 #include "../parser/parser.h"
@@ -152,9 +152,9 @@ bool AviFile::DelayedInit()
       // get information about the clip
       vi_ = clip_->GetVideoInfo();
       if ( vi_->IsYV12() && ( vi_->GetWidth() & 3 ) )
-        throw GenericException("Avisynth error: YV12 images for output must have a width divisible by 4 (use crop)!");
+        throw exception::Generic("Avisynth error: YV12 images for output must have a width divisible by 4 (use crop)!");
       if ( vi_->IsYUY2() && ( vi_->GetWidth() & 3 ) )
-        throw GenericException("Avisynth error: YUY2 images for output must have a width divisible by 4 (use crop)!");      
+        throw exception::Generic("Avisynth error: YUY2 images for output must have a width divisible by 4 (use crop)!");      
     }    
     catch (Exception& ex)
     {

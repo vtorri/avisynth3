@@ -51,7 +51,7 @@ public:  //structors
   BrokenFile(std::string const& fileName)
     : fileName_( fileName ) { }
 
-  //generated copy constructor and destructor are fine
+  virtual ~BrokenFile() throw() { }
 
 
 public:  //diagnostic message

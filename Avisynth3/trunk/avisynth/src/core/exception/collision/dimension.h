@@ -45,7 +45,7 @@ public:  //structors
 
   Dimension(avs::Dimension const& left, avs::Dimension const& right) { }
 
-  //generated destructor and copy constructor are fine
+  virtual ~Dimension() throw() { }
 
 
 public:  //diagnostic message

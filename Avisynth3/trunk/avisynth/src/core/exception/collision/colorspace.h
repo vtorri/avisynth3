@@ -44,7 +44,7 @@ public:  //structors
 
   ColorSpace(PColorSpace const& left, PColorSpace const& right) { }
 
-  //generated destructor and copy constructor are fine
+  virtual ~ColorSpace() throw() { }
 
 
 public:  //diagnostic message

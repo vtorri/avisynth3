@@ -35,16 +35,16 @@ namespace avs { namespace exception { namespace collision {
 ///////////////////////////////////////////////////////////////////////////////////////////
 //  collision::FrameCount
 //
-//  signals the failure of an operation expecting identical Dimensions
+//  signals the failure of an operation expecting identical frame counts
 //
 class FrameCount : public Exception
 {
 
 public:  //structors
 
-  FrameCount(int left, int right) { }
+  FrameCount(long left, long right) { }
 
-  //generated destructor and copy constructor are fine
+  virtual ~FrameCount() throw() { }
 
 
 public:  //diagnostic message

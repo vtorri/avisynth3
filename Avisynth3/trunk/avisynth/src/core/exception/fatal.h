@@ -40,6 +40,12 @@ namespace avs { namespace exception {
 class Fatal : public Exception
 {
 
+public:  //structors
+
+  Fatal() { }
+  virtual ~Fatal() throw() { }
+
+
 public:  //diagnostic message
 
   virtual char const * what() const throw() { return "Internal Error"; }

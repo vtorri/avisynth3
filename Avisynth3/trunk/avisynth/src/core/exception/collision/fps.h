@@ -44,7 +44,7 @@ public:  //structors
 
   FPS(Fraction const& left, Fraction const& right) { }
 
-  //generated destructor and copy constructor are fine
+  virtual ~FPS throw() { }
 
 
 public:  //diagnostic message

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -120,8 +120,8 @@ void AviStream::ReadWrapper(void* lpBuffer, int lStart, int lSamples)
   // It's illegal to call GetExceptionInformation() inside an __except
   // block!  Hence this variable and the horrible hack below...
 
-  EXCEPTION_POINTERS* ei;
-  DWORD code;
+  EXCEPTION_POINTERS* ei = NULL;    
+  DWORD code = 0;          //both init to avoid warning about may be not initialized
 
   __try { Read(lpBuffer, lStart, lSamples); }
   __except ( ei = GetExceptionInformation(), code = GetExceptionCode(), (code >> 28) == 0xC) 

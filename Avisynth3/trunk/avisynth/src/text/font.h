@@ -33,18 +33,26 @@
 //stl include
 #include <string>
 
-//windows includes
-#include <windows.h>
-#include <wingdi.h>               //for HFONT, CreateFont
 
 
 namespace avs { namespace text {
 
 
+//declaration
+namespace detail { struct GetHFONT; }  //struct to retrieve the win HFONT from a Font object
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//  Font
+//
+//
+//
 class Font
 {
 
-  boost::shared_ptr<HFONT> pFont_;
+  boost::shared_ptr<void> pFont_;
 
 
 public:  //structors
@@ -58,15 +66,16 @@ public:
 
   Dimension GetTextBoundingBox(std::string const& text);
 
-  HFONT operator*() const { return *pFont_; }
-
-
+  
 private:  //HFONTDeleter struct
 
   struct HFONTDeleter
   {
-    void operator()(void * pFont) const { DeleteObject( *(HFONT *)pFont ); }
+    void operator()(void * ptr) const; // { DeleteObject( *(HFONT *)pFont ); }
   };
+
+
+  friend struct detail::GetHFONT;
 
 };
 

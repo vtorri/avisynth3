@@ -49,20 +49,17 @@ BYTE * KillAudio::GetAudio(BYTE * /*buf*/, long long /*start*/, int /*count*/) c
 }
 
 
-PClip KillAudio::Simplify() const
-{
-  CPVideoInfo child_vi = GetChild()->GetVideoInfo();
-  if ( ! child_vi->HasVideo() )                             //if child has no video
-    return VoidClip::Create(GetEnvironment())->Simplify();  //this has nothing
-  if ( ! child_vi->HasAudio() )                             //if child has no audio
-    return GetChild();                                      //child is equivalent
-
-  return SimplifiableType::Simplify();
-}
 
 
 PClip KillAudio::Create(PClip const& child)
 { 
+  CPVideoInfo vi = child->GetVideoInfo();
+
+  if ( ! vi->HasVideo() )                              //if child has no video
+    return VoidClip::Create(child->GetEnvironment());  //this has nothing
+  if ( ! vi->HasAudio() )                              //if child has no audio
+    return child;                                      //child is equivalent
+
   return PClip( static_cast<Clip *>(new clip::folded::Make<KillAudio, WeakPClip>(child)) ); 
 }
 

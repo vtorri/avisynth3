@@ -38,7 +38,7 @@ namespace avs { namespace filters {
 //
 //  Removes the audio from its child
 //
-class KillAudio : public clip::onechild::Simplifiable<KillAudio>
+class KillAudio : public clip::onechild::FinalSimplifiable<KillAudio>
                 , public clip::onechild::Concrete
 {
 
@@ -59,9 +59,10 @@ public:  //clip general interface
   virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const;
 
 
-public:  //Simplify method
+public:  //Simplify methods
 
-  virtual PClip Simplify() const;
+  //Simplify inherited from Simplifiable is fine
+  //virtual PClip FinalSimplify() const;
 
 
 public:  //child changing clone

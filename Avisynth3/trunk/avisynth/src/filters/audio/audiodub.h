@@ -68,6 +68,11 @@ public:  //childs changing clone method
   virtual PClip clone(PClip const& left, PClip const& right) const { return Create(left, right); }
 
 
+public:  //FinalSimplify method
+
+  virtual PClip FinalSimplify() const;
+
+
 private:  //Refactor methods
 
   virtual PClip Refactor(KillAudio const& parent) const;

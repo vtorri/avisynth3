@@ -32,16 +32,7 @@ namespace avs { namespace filters {
 
 
 AudioDub::AudioDub(PClip const& video, PClip const& audio)
-  : Concrete( KillAudio::Create(video), KillVideo::Create(audio) )
-{
-  //absorbing KillAudio video child
-  if ( boost::shared_ptr<KillAudio const> ka = boost::dynamic_pointer_cast<KillAudio const>(GetVideoChild()) )
-    SetLeftChild( ka->GetChild() );
-
-  //absorbing KillVideo audio child
-  if ( boost::shared_ptr<KillVideo const> kv = boost::dynamic_pointer_cast<KillVideo const>(GetAudioChild()) )
-    SetRightChild( kv->GetChild() );
-}
+  : Concrete( KillAudio::Create(video), KillVideo::Create(audio) ) { }
 
 
 CPVideoInfo AudioDub::GetVideoInfo() const
@@ -51,6 +42,21 @@ CPVideoInfo AudioDub::GetVideoInfo() const
   return vi;
 }
   
+
+PClip AudioDub::FinalSimplify() const
+{
+  FinalSimplifyChilds();
+
+  //absorbing KillAudio video child
+  if ( boost::shared_ptr<KillAudio const> ka = boost::dynamic_pointer_cast<KillAudio const>(GetVideoChild()) )
+    SetLeftChild( ka->GetChild() );
+
+  //absorbing KillVideo audio child
+  if ( boost::shared_ptr<KillVideo const> kv = boost::dynamic_pointer_cast<KillVideo const>(GetAudioChild()) )
+    SetRightChild( kv->GetChild() );
+
+  return shared_from_this();
+}
 
 
 PClip AudioDub::Refactor(KillAudio const& /*parent*/) const

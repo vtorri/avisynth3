@@ -24,8 +24,7 @@
 #ifndef __AVS_PARSER_FUNCTOR_POPPER_H__
 #define __AVS_PARSER_FUNCTOR_POPPER_H__
 
-//avisynth includes
-#include "../optype.h"
+//avisynth include
 #include "../vmstate.h"
 
 
@@ -41,11 +40,10 @@ namespace avs { namespace parser { namespace functor {
 template <int n>
 struct popper 
 { 
-  OpType operator()(VMState& state) const
+  void operator()(VMState& state) const
   {
     state.pop();
     popper<n-1>()(state);
-    return NORMAL;
   }
 };
 
@@ -58,7 +56,7 @@ struct popper
 template <>
 struct popper<0>
 {
-  OpType operator()(VMState& state) const { return NORMAL; }
+  void operator()(VMState& state) const { }
 };
 
 
@@ -76,11 +74,10 @@ struct Popper
   Popper(int n)
     : n_( n ) { }
 
-  OpType operator()(VMState& state) const
+  void operator()(VMState& state) const
   {
     for(int i = n_; i-- > 0; )
       state.pop();
-    return NORMAL;
   }
 
 };

@@ -58,7 +58,7 @@ public:  //structors
   ~ScopeEnforcer()
   {
     if ( ! dismissed_ )
-      state_.restore(size_);
+      state_.restore(size_, 0);
   }
 
 

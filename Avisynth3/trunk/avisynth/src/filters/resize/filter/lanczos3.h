@@ -48,11 +48,6 @@ public:  //Filter interface
 
   virtual double support() const { return 3.0; }
 
-
-private:  //sinus cardinal function (sin(x)/x)
-
-  static double sinc(double x);
-
 };
 
 

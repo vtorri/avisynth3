@@ -24,6 +24,9 @@
 #ifndef __AVS_BYTEMAP_H__
 #define __AVS_BYTEMAP_H__
 
+//avisynth include
+#include "../core/window_ptr.h"
+
 //stl include
 #include <algorithm>  //for std::copy
 
@@ -83,6 +86,20 @@ protected:  //write access
 
   unsigned char * data() { return map_; }
   unsigned char & operator[](int i) { return map_[i]; }
+
+
+public:  //use method
+
+  //use the lookup table on all the passed data
+  template <long step>
+  void ApplyTo(WindowPtr wp) const
+  {
+    assert( wp.width % step == 0 );
+
+    for ( int y = wp.height; y-- > 0; wp.pad() )
+      for ( int x = wp.width /step; x-- > 0; wp.to(step, 0) )
+        *wp.ptr = map_[ *wp.ptr ];
+  }
 
 };
 

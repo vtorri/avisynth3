@@ -21,14 +21,14 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_BADDIMENSION_H__
-#define __AVS_BADDIMENSION_H__
+#ifndef __AVS_EXCEPTION_BADDIMENSION_H__
+#define __AVS_EXCEPTION_BADDIMENSION_H__
 
 //avisynth include
 #include "../Exception.h"
 
 
-namespace avs {
+namespace avs { namespace exception {
 
 
 
@@ -49,6 +49,6 @@ public:  //diagnotic message
 
 
 
-} //namespace avs
+} } //namespace avs::exception
 
-#endif //__AVS_BADDIMENSION_H__
+#endif //__AVS_EXCEPTION_BADDIMENSION_H__

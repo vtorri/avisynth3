@@ -83,7 +83,7 @@ public:  //stack behavior
 
 public:  //access to globals
 
-  AVSValue& global(int index) { globas_.reserve(index + 1); return globals_[index]; }
+  AVSValue& global(int index) { globals_.reserve(index + 1); return globals_[index]; }
 
 
 public:  //stack management

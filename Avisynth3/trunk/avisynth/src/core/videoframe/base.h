@@ -61,8 +61,8 @@ private:  //declarations and typedefs
 
 private:  //members
 
-  FrameType type_;               //type of the frame
   Dimension dim_;                //dimension of the frame
+  FrameType type_;               //type of the frame
 
   PropertyMultiMap flows_;       //holds flow properties
   mutable PropertyMap statics_;  //holds static properties

@@ -49,6 +49,12 @@ template <int align>
 class owned_block : public block::base<block::OwnedHolder, align>
 {
 
+public:  //typedefs
+
+  typedef owned_block<align> BlockType;
+  typedef typename boost::enable_if<block::align_compatible<block::Align, align>, block::OwnedCreator>::type Creator;
+
+
 public:  //structors
 
   template <class Holder>
@@ -60,7 +66,7 @@ public:  //structors
     : BaseBlockType( other ) { }
 
   //spawning constructor
-  owned_block(owned_block<align> const& other, int size)
+  owned_block(BlockType const& other, int size)
     : BaseBlockType( other, size ) { }
 
   //generated copy constructor and destructor are fine
@@ -69,9 +75,9 @@ public:  //structors
 public:  //assignment
 
   template <int alignOther>
-  owned_block<align>& operator=(owned_block<alignOther> const& other)
+  BlockType& operator=(owned_block<alignOther> const& other)
   {
-    return static_cast<owned_block<align>&>( BaseBlockType::operator=(other) );
+    return static_cast<BlockType&>( BaseBlockType::operator=(other) );
   }
 
   //generated operator= is fine
@@ -80,22 +86,16 @@ public:  //assignment
 
 public:  //misc
 
-  void reset(int size, bool recycle)
+  void reset(int size)
   { 
-    owned_block tmp(GetEnvironment(), size, recycle);
-    swap(tmp); 
+    spawn(size).swap(*this);
   }
 
   //spawn method, just calls the spawning constructor, but is more explicit
-  owned_block<align> spawn(int size) const 
+  BlockType spawn(int size) const 
   { 
-    return owned_block<align>(*this, size); 
+    return BlockType(*this, size); 
   }
-
-
-public:  //Creator typedef (helper for the buffer_window template)
-
-  typedef typename boost::enable_if<block::align_compatible<block::Align, Align>, block::OwnedCreator>::type Creator;
 
 };
 
@@ -113,6 +113,12 @@ template <>
 class owned_block<block::Align> : public block::base<block::OwnedHolder, block::Align>
 {
 
+public:  //typedefs
+
+  typedef owned_block<block::Align> BlockType;
+  typedef block::OwnedCreator Creator;
+
+
 public:  //structors
 
   explicit owned_block(PEnvironment const& env);
@@ -129,7 +135,7 @@ public:  //structors
     : BaseBlockType( other ) { }
 
   //spawning constructor
-  owned_block(owned_block<block::Align> const& other, int size)
+  owned_block(BlockType const& other, int size)
     : BaseBlockType( other, size ) { }
 
   //generated copy constructor and destructor are fine
@@ -138,9 +144,9 @@ public:  //structors
 public:  //assignment
 
   template <int alignOther>
-  owned_block<block::Align>& operator=(owned_block<alignOther> const& other)
+  BlockType& operator=(owned_block<alignOther> const& other)
   {
-    return static_cast<owned_block<align>&>( BaseBlockType::operator=(other) );
+    return static_cast<BlockType>( BaseBlockType::operator=(other) );
   }
 
   //generated operator= is fine
@@ -149,22 +155,16 @@ public:  //assignment
 
 public:  //misc
 
-  void reset(int size, bool recycle)
+  void reset(int size)
   { 
-    owned_block tmp(GetEnvironment(), size, recycle);
-    swap(tmp); 
+    spawn(size).swap(*this); 
   }
 
   //spawn method, just calls the spawning constructor, but is more explicit
-  owned_block<block::Align> spawn(int size) const 
+  BlockType spawn(int size) const 
   { 
-    return owned_block<block::Align>(*this, size); 
+    return BlockType(*this, size); 
   }
-
-
-public:  //Creator typedef (helper for the buffer_window template)
-
-  typedef block::OwnedCreator Creator;
 
 };
 

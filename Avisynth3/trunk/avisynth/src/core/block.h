@@ -60,9 +60,10 @@ template <int align>
 class block_ : public block::base<block::Holder, align>
 {
 
-public:  //typedef
+public:  //typedefs
 
   typedef block_<align> BlockType;
+  typedef typename boost::enable_if<block::align_compatible<block::Align, Align>, block::Creator>::type Creator;
 
 
 public:  //structors
@@ -106,12 +107,6 @@ public:  //misc
     return BlockType(*this, size);
   }
 
-
-
-public:  //Creator typedef (helper for the buffer_window template)
-
-  typedef typename boost::enable_if<block::align_compatible<block::Align, Align>, block::Creator>::type Creator;
-
 };
 
 
@@ -125,9 +120,10 @@ template <>
 class block_<block::Align> : public block::base<block::Holder, block::Align>
 {
 
-public:  //typedef
+public:  //typedefs
 
   typedef block_<block::Align> BlockType;
+  typedef block::Creator Creator;
 
 
 public:  //structors
@@ -172,11 +168,6 @@ public:  //misc
   { 
     return BlockType(*this, size); 
   }
-
-
-public:  //Creator typedef (helper for the buffer_window template)
-
-  typedef block::Creator Creator;
 
 };
 

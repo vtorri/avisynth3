@@ -43,7 +43,13 @@ template <typename T> class dimension;
 template <int fractionPart> class fixed_point;  
 
   
-namespace text { namespace freetype {
+namespace text { 
+  
+  
+namespace rasterizer { class OutlineSplitter; }  
+  
+
+namespace freetype {
 
 
 //more declarations

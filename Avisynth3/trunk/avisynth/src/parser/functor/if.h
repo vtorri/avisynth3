@@ -41,9 +41,9 @@ namespace avs { namespace parser { namespace functor {
 struct IfThen
 {
 
-  VMCode<OpType> then_;
+  StatementCode then_;
 
-  IfThen(VMCode<OpType> const& then)
+  IfThen(StatementCode const& then)
     : then_( then ) { }
 
   OpType operator()(VMState& state) const;
@@ -60,9 +60,9 @@ struct IfThen
 struct IfThenElse
 {
 
-  VMCode<OpType> then_, else_;
+  StatementCode then_, else_;
 
-  IfThenElse(VMCode<OpType> const& then, VMCode<OpType> const& els)
+  IfThenElse(StatementCode const& then, StatementCode const& els)
     : then_( then )
     , else_( els ) { }
 

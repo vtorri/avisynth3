@@ -69,6 +69,7 @@ fi
 ##############################################################################
 
 echo " + Creating ./configure"
+aclocal -I ./m4
 $AUTOCONF
 
 echo " + Copying files provided by automake"

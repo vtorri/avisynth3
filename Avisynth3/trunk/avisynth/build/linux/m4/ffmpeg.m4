@@ -88,14 +88,22 @@ AC_DEFUN([AM_CHECK_FFMPEG],
                   [main],
                   [],
                   [AC_MSG_WARN([FFMPEG library missing. Run configure --help])
+                   AC_MSG_WARN([to see how to configure the path of FFMPEG])
+                   AC_MSG_WARN([FFMPEG support disable])
                    ffmpeg_enable="no"])],
                [AC_MSG_WARN([FFMPEG library missing. Run configure --help])
+                AC_MSG_WARN([to see how to configure the path of FFMPEG])
+                AC_MSG_WARN([FFMPEG support disable])
                 ffmpeg_enable="no"])],
             [AC_MSG_WARN([FFMPEG library missing. Run configure --help])
+             AC_MSG_WARN([to see how to configure the path of FFMPEG])
+             AC_MSG_WARN([FFMPEG support disable])
              ffmpeg_enable="no"])
           FFMPEG_CFLAGS="-DAVS_HAS_FFMPEGSOURCE"
           FFMPEG_LIBS="-lavformat -lavcodec"],
          [AC_MSG_WARN([FFMPEG library missing. Run configure --help])
+          AC_MSG_WARN([to see how to configure the path of FFMPEG])
+          AC_MSG_WARN([FFMPEG support disable])
           ffmpeg_enable="no"])
     fi
     if test "x${ffmpeg_enable}" = "xyes" ; then

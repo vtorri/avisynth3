@@ -284,8 +284,8 @@ case "$target_os" in
 	AC_MSG_RESULT([ok])
 	STATIC_LIB="libavisynth.\$(STATIC_EXTENSION)"
 	SHARED_LIB="avisynth.\$(SHARED_EXTENSION)"
-	SPECIFIC_LDFLAGS="-lwinmm -lgdi32 -lvfw32 -luuid -lole32 -lmsacm32 -shared --enable-stdcall-fixup -Wl,--out-implib,\$@.a libavisynth.def"
-	SPECIFIC_CFLAGS="-Os -mno-cygwin -mthread"
+	SPECIFIC_LDFLAGS="-lgdi32 -lvfw32 -luuid -lole32 -lmsacm32 -shared -Wl,--out-implib,\$@.a libavisynth.def"
+	SPECIFIC_CFLAGS="-Os -mno-cygwin"
 	;;
      darwin*|raphsody*)
 	STATIC_LIB="libavisynth.\$(STATIC_EXTENSION)"

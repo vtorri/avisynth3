@@ -22,6 +22,7 @@
 
 
 //avisynth includes
+#include "map.h"
 #include "rgb.h"
 #include "yuy2.h"
 #include "planar_yuv.h"
@@ -68,6 +69,18 @@ ColorSpace& ColorSpace::yv12() { return cspace::YV12::instance; }
 ColorSpace& ColorSpace::yv24() { return cspace::YV24::instance; }
 ColorSpace& ColorSpace::yv45() { return cspace::YV45::instance; }
 
+
+ColorSpace& ColorSpace::FromString(std::string const& name)
+{
+  static Map map;
+
+  ColorSpace * result = map[name];
+
+  if ( result == NULL )
+    throw exception::Generic(str( boost::format("No such color space: %s") % name ));
+  
+  return *result;
+}
 
 
 void ColorSpace::ThrowInvalidInterlacedHeightException(int modulo, int /*height*/) const

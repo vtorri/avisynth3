@@ -42,13 +42,14 @@ class Get
 
   static ElementalOperation const equal_op[5];
   static ElementalOperation const not_equal_op[5];
-  static ElementalOperation const subscript_op[4];
 
 
 public:  //Get methods
 
   //get appropriate version of the operator[]
-  static ElementalOperation const& SubscriptOperation(char type, bool firstArgOnly);
+  static ElementalOperation SubscriptOperation(char type);
+  static ElementalOperation OneArgSubscriptOperation(char type);
+  static ElementalOperation NegEndSubscriptOperation(char type);
   
   //get operation for operator== or operator!=, or throw if types don't allow comparison 
   static ElementalOperation const& EqualityOperation(char& leftType, char rightType, bool isEqual);

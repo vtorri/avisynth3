@@ -245,8 +245,8 @@ public:  //definition nested class
               [
                 expression.implicit = val(false)   //deactivate implicit last for the following
               ]
-          >> *(   subscript_helper( false )
-              ||  infix_helper
+          >> *(   subscript_helper
+              |   infix_helper
               )
          ;
 
@@ -305,27 +305,32 @@ public:  //definition nested class
           ;
 
       subscript_helper
-          =  '['
-          >>  expression( char(), false )
-              [
-                bind(&action::Check::TypeIsExpected)(arg1, val('i'))
-              ]
+          =   spirit::ch_p('[')
+            /*  [
+                bind(&action::Check::SupportsSubscript)(atom_expr.value)
+              ]*/          
+          >>  fixed_type_expr( 'i' )
           >>  ','
           >>  (   spirit::str_p("end")
+              >>  (   '-'
+                  >>  fixed_type_expr( 'i' )
+                      [
+                        first(self.value) += bind(&action::Get::NegEndSubscriptOperation)(atom_expr.value),
+                        second(self.localCtxt) -= 2
+                      ]
+                  |   spirit::eps_p
+                      [
+                        first(self.value) += bind(&action::Get::OneArgSubscriptOperation)(atom_expr.value),
+                        --second(self.localCtxt)
+                      ]
+                  )
+              |   fixed_type_expr( 'i' )
                   [
-                    subscript_helper.value = val(true),
-                    --second(self.localCtxt)
-                  ]
-              |   expression( char(), false )
-                  [
-                    bind(&action::Check::TypeIsExpected)(arg1, val('i')),
+                    first(self.value) += bind(&action::Get::SubscriptOperation)(atom_expr.value),
                     second(self.localCtxt) -= 2
                   ]
               )
-          >>  spirit::ch_p(']')
-              [
-                first(self.value) += bind(&action::Get::SubscriptOperation)(atom_expr.value, subscript_helper.value)
-              ]
+          >>  ']'
           ;
 
 
@@ -337,6 +342,12 @@ public:  //definition nested class
               >>  call_expr( infix_helper.value )
           ;
  
+      fixed_type_expr
+          =   expression( char(), false )
+              [
+                bind(&action::Check::TypeIsExpected)(arg1, fixed_type_expr.value)
+              ]
+          ;
     }
 
     spirit::rule<ScannerT> const& start() const { return top; }
@@ -356,8 +367,9 @@ public:  //definition nested class
     spirit::rule<ScannerT> nested_expr, global_var_expr;
     spirit::rule<ScannerT, closure::Value<int>::context_t> local_var_expr;
     spirit::rule<ScannerT, closure::FunctionCall::context_t> call_expr;
-    spirit::rule<ScannerT, closure::Value<bool>::context_t> subscript_helper;
+    spirit::rule<ScannerT> subscript_helper;
     spirit::rule<ScannerT, closure::Value<std::string>::context_t> infix_helper;
+    spirit::rule<ScannerT, closure::Value<char>::context_t> fixed_type_expr;
 
     Literal literal;
 

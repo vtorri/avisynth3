@@ -73,25 +73,33 @@ struct StringSubscriptOneArg
 };
 
 
-ElementalOperation const Get::subscript_op[4] =
-    { adapt( filters::Trim::Creator() )
-    , adapt( filters::Trim::OneArgCreator() )
-    , adapt( StringSubscript() )
-    , adapt( StringSubscriptOneArg() )
-    };
-
-
-ElementalOperation const& Get::SubscriptOperation(char type, bool firstArgOnly)
+ElementalOperation Get::SubscriptOperation(char type)
 {
-
   switch( type )
   {
-  case 'c': return subscript_op[ firstArgOnly ? 1 : 0 ];
-  case 's': return subscript_op[ firstArgOnly ? 3 : 2 ];
-
-  default: throw exception::Generic("Illegal use of operator[]");
+  case 'a':
+  case 'c': return adapt( filters::Trim::Creator() );
+  default:  return adapt( StringSubscript() );
   }
+}
 
+ElementalOperation Get::OneArgSubscriptOperation(char type)
+{
+  switch( type )
+  {
+  case 'a':
+  case 'c': return adapt( filters::Trim::OneArgCreator() );
+  default:  return adapt( StringSubscriptOneArg() );
+  }
+}
+
+
+ElementalOperation Get::NegEndSubscriptOperation(char type)
+{
+  /*switch( type )
+  {
+  default:*/ return adapt( filters::Trim::NegEndCreator() );
+  //}
 }
 
 

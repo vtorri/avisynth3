@@ -136,7 +136,7 @@ bool AviFile::DelayedInit()
         throw AvisynthError("The returned video clip was nil (this is a bug)");  */
 
 
-      clip_ = filters::StaticImage::CreateMessageClip( "Avisynth 3.0 alpha", RuntimeEnvironment::Create(10000000) );
+      clip_ = filters::StaticImage::CreateVersionClip( RuntimeEnvironment::Create(10000000) );
 
       // get information about the clip
       vi_ = clip_->GetVideoInfo();
@@ -145,15 +145,12 @@ bool AviFile::DelayedInit()
       if ( vi_->IsYUY2() && ( vi_->GetWidth() & 3 ) )
         throw Exception("Avisynth error: YUY2 images for output must have a width divisible by 4 (use crop)!");      
     }    
-    /*catch (Exception& ex)
+    catch (Exception& ex)
     {
       error_msg_ = ex.msg();
-        
-      AVSValue args[2] = { error.msg, 0xff3333 };      
-      static const char* arg_names[2] = { 0, "text_color" };
-      filter_graph = env->Invoke("MessageClip", AVSValue(args, 2), arg_names).AsClip();
-      vi = &filter_graph->GetVideoInfo();
-    }*/    
+      clip_ = filters::StaticImage::CreateMessageClip( error_msg_, RuntimeEnvironment::Create(10000000) );        
+      vi_ = clip_->GetVideoInfo();
+    }    
     catch (...) { assert(false); return false; }    
   } 
 

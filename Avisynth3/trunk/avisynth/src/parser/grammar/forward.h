@@ -63,6 +63,17 @@ typedef boost::tuples::tuple<ElementalOperation> ElementalOpProxy;
 typedef boost::tuples::tuple<ElementalCode, char, bool> Expression;  
 
 
+//////////////////////////////////////////////////////////////////////////////////////////
+//  value::TRecurseInfo
+//
+//  info needed to initiate terminal recursivity
+//
+//  1st arg : ref prototype of outer function
+//  2nd arg : ref to bool where report it has been used
+//
+typedef boost::tuples::tuple<std::string const&, bool&> TRecurseInfo;
+
+
 } //namespace value
 
 

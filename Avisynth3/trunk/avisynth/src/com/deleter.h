@@ -30,14 +30,13 @@ namespace avs { namespace com {
 
 
 ////////////////////////////////////////////////////////////////////////////////////
-//  com::Deleter
+//  com::Deleter<T>
 //
 //  shared_ptr custom deleter for COM objects
 //
-struct Deleter
+template <typename T> struct Deleter
 {
 
-  template <typename T>
   void operator()(T * ptr) const { ptr->Release(); }
 
 };

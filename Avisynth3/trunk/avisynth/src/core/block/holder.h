@@ -51,6 +51,9 @@ public:  //Holder interface
   virtual int size() const = 0;
   virtual BYTE * get() const = 0;
 
+  //spawns a new holder of the same type holding mem of the asked size
+  virtual Holder * spawn(int size) const = 0;
+
 
 public:  //definition for subclasses
 

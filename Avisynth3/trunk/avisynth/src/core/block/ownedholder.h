@@ -25,19 +25,41 @@
 #define __AVS_BLOCK_OWNEDHOLDER_H__
 
 //avisynth include
-#include "holder.h"
+#include "../forward.h"          //for BYTE
 
 
 namespace avs { namespace block {
 
 
-
-class OwnedHolder : public Holder
+/////////////////////////////////////////////////////////////////////////////////////////
+//  OwnedHolder
+//
+//  polymorphic interface of the owned_block template memory holder
+//
+//  this is pretty much the same as Holder, but adds a method to fetch the owning env
+//
+class OwnedHolder
 {
 
-public:  //addition to the Holder interface
+public:  //structors
 
+  OwnedHolder() { }
+  virtual ~OwnedHolder() { }
+
+
+public:  //OwnedHolder interface
+
+  virtual int size() const = 0;
+  virtual BYTE * get() const = 0;
   virtual PEnvironment const& GetEnvironment() const = 0;
+
+  //spawns a new holder of the same type holding mem of the asked size
+  virtual OwnedHolder * spawn(int size) const = 0;
+
+
+public:  //definition for subclasses
+
+  enum { Align = 1 };               //default alignment guarantee (ie not aligned)
 
 };
 

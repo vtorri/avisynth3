@@ -36,10 +36,10 @@ template <typename Result> class VMCode;
 template <typename Result> class VMOperation;
 
 //typedefs
-typedef VMCode<void> ElementalCode;
-typedef VMCode<OpType> StatementCode;
 typedef VMOperation<void> ElementalOperation;
 typedef VMOperation<OpType> StatementOperation;
+typedef VMCode<ElementalOperation> ElementalCode;
+typedef VMCode<StatementOperation> StatementCode;
 
 
 } } //namespace avs::parser

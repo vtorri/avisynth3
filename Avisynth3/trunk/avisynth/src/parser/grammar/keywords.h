@@ -21,64 +21,40 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_PARSER_GRAMMAR_NAME_H__
-#define __AVS_PARSER_GRAMMAR_NAME_H__
+#ifndef __AVS_PARSER_GRAMMAR_KEYWORDS_H__
+#define __AVS_PARSER_GRAMMAR_KEYWORDS_H__
 
-//avisynth include
-#include "keywords.h"
-
-//boost includes
-#include <boost/spirit/core.hpp>
-
-
-namespace spirit = boost::spirit;
+//boost include
+#include <boost/spirit/symbols.hpp>
 
 
 namespace avs { namespace parser { namespace grammar {
 
 
 
-/////////////////////////////////////////////////////////////////////////////////
-//  Name
+////////////////////////////////////////////////////////////////////////////////
+//  KeyWords
 //
-//  grammar to parse valid names (for both variables and functions)
+//  symbol table holding avisynth reserved keywords
 //
-struct Name : public spirit::grammar<Name>
+class KeyWords : public boost::spirit::symbols<char>
 {
 
-public:  //definition nested class
+private:  //structors
 
-  template <typename ScannerT>
-  struct definition
-  {
-
-    definition(Name const& self)
-    {
-
-      using namespace spirit;
-
-      name
-          =   lexeme_d
-              [
-                ( (alpha_p | '_') >> *(alnum_p | '_') )
-              ]
-              - KeyWords::instance
-          ;
-
-    }
-
-    spirit::rule<ScannerT> const & start() const { return name; }
-
-
-  private:
+  KeyWords();
   
-    spirit::rule<ScannerT> name;
+  //generated destructor is fine
 
-  };
+
+public:  //sole instance
+
+  static KeyWords const instance;
 
 };
 
 
-} } } //namepace avs::parser::grammar
 
-#endif //__AVS_PARSER_GRAMMAR_NAME_H__
+} } } //namespace avs::parser::grammar
+
+#endif //__AVS_PARSER_GRAMMAR_KEYWORDS_H__

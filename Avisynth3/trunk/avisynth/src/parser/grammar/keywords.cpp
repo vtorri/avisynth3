@@ -22,13 +22,22 @@
 
 
 //avisynth include
-#include "name.h"
+#include "keywords.h"
 
 
 namespace avs { namespace parser { namespace grammar {
 
 
-spirit::symbols<char> const Name::keywords;
+
+KeyWords::KeyWords()
+{
+  //NB: the add member overloads operator,
+  add, "last", "if";
+}
+      
+
+KeyWords const KeyWords::instance;
+
 
 
 } } } //namespace avs::parser::grammar

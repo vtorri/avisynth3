@@ -25,50 +25,8 @@
 #define __VIDEOINFO_H__
 
 #include "error.h"  //which includes <string>
+#include "videoproperty.h"
 
-
-class VideoInfo;
-
-//ColorSpace ids
-enum CS_ID {
-  I_BGR24,
-  I_BGR32,
-  I_YUY2,
-  I_YV12,
-  I_I420
-};
-
-class ColorSpace {
-
-  static const int flagList[];  //used to associate flags to id
-
-  //properties flags, it's private so you would use HasFlag
-  //then if properties grow to get over 32 we can simply change it as __int64 or an array
-  int flags; 
-
-  ColorSpace(CS_ID _id) : id(_id), flags(flagList[id]) { } 
-  friend class VideoInfo;
-
-public:
-  CS_ID id;   //ColorSpace id, pincipally used to switch on ColorSpaces
-
-  bool operator== (const ColorSpace& other) const { return id == other.id; }
-  bool operator!= (const ColorSpace& other) const { return id != other.id; }
-  bool operator< (const ColorSpace& other) const { return id < other.id; } //may (or may not) be useful
-
-  operator CS_ID() const { return id; }
-
-  //ColorSpace properties
-  //they are not shifted (1<<..) so their number can grow over 32 
-  enum Property {
-    BGR,
-    YUV,
-    INTERLEAVED,
-    PLANAR,
-  };
-
-  bool HasFlag(Property prop) const { return (flags & (1<<prop)) != 0; }
-};
 
 
 // The VideoInfo class holds global information about a clip 
@@ -99,87 +57,7 @@ public:
     SAMPLE_FLOAT
   };  
 
-  //ColorSpace static consts
-  //those are the only ColorSpace instances that may exist
-public:
-  static const ColorSpace CS_BGR24;
-  static const ColorSpace CS_BGR32;
-  static const ColorSpace CS_YUY2;
-  static const ColorSpace CS_YV12;
-  static const ColorSpace CS_I420;
 
-
-
-
-  //methods used to check that clip dimensions respect ColorSpace contraints  
-  //for convenience reasons, they return their argument  
-  static dimension WidthParityCheckYV12(dimension width)
-  {
-    if ( width & 1)
-      throw InternalError("Attempted to request a YV12 VideoFrame with an odd width");
-    return width;
-  }
-  static dimension WidthParityCheckYUY2(dimension width)
-  {
-    if ( width & 1)
-      throw InternalError("Attempted to request a YUY2 VideoFrame with an odd width");
-    return width;
-  }
-  static dimension WidthParityCheck(dimension width, const ColorSpace& space) {
-    switch(space.id)
-    {
-      case I_YUY2: return WidthParityCheckYUY2(width);            
-      case I_YV12:
-      case I_I420: return WidthParityCheckYV12(width);
-      default:     return width;        
-    }
-  }
-  static WidthSignCheck(dimension width)
-  {
-    if (width <= 0)
-      throw InternalError("Attempted to request a negative or zero width VideoFrame");
-    return width;
-  }
-  static WidthCheck(dimension width, const ColorSpace& space)
-  {
-    WidthSignCheck(width);
-    return WidthParityCheck(width, space);
-  }
-
-  static dimension HeightParityCheckYV12(dimension height, bool fieldBased)
-  {
-    if (height & 1)
-      throw InternalError("Attempted to request a YV12 VideoFrame with an odd height");
-    if (fieldBased && (height & 3))
-      throw InternalError("Attempted to request a field based YV12 VideoFrame with a non mod 4 height");        
-    return height;
-  }
-  static dimension HeightParityCheck(dimension height, bool fieldBased)
-  {
-    if (fieldBased && (height & 1))
-      throw InternalError("Attempted to request a field based VideoFrame with an odd height");
-    return height;
-  }
-  static dimension HeightParityCheck(dimension height, bool fieldBased, const ColorSpace& space)
-  {
-    switch(space.id)
-    {
-      case I_YV12:
-      case I_I420: return HeightParityCheckYV12(height, fieldBased);        
-      default:     return HeightParityCheck(height, fieldBased);
-    }    
-  }
-  static dimension HeightSignCheck(dimension height)
-  {
-    if (height <= 0)
-      throw InternalError("Attempted to request a negative or zero height VideoFrame");
-    return height;
-  }
-  static dimension HeightCheck(dimension height, bool fieldBased, const ColorSpace& space)
-  {
-    HeightSignCheck(height);
-    return HeightParityCheck(height, fieldBased, space);
-  }
 
   //default constructor : no video, no audio
   VideoInfo();
@@ -191,7 +69,7 @@ public:
    */
 private:
 
-  const ColorSpace * pixel_type;  
+
   dimension width, height;    
   unsigned fps_numerator, fps_denominator;
   int frameCount;
@@ -204,20 +82,20 @@ private:
 public:
 
 
-  bool HasVideo() const { return pixel_type != NULL; }
+  bool HasVideo() const;
 
-  bool IsColorSpace(const ColorSpace& space) const { CheckHasVideo(); return *pixel_type == space; } 
-  bool HasProperty(ColorSpace::Property prop) const { CheckHasVideo(); return pixel_type->HasFlag(prop); }
+  bool IsColorSpace(const ColorSpace& space) const { return GetColorSpace() == space; } 
+  bool HasProperty(ColorSpace::Property prop) const { return GetColorSpace().HasProperty(prop); }
 
   bool IsPlanar() const { return HasProperty(ColorSpace::PLANAR); }
  
-  bool IsRGB() const { return HasProperty(ColorSpace::BGR); }      
-  bool IsRGB24() const { return IsColorSpace(CS_BGR24); } 
-  bool IsRGB32() const { return IsColorSpace(CS_BGR32); }
+  bool IsRGB() const { return HasProperty(ColorSpace::RGB); }      
+  bool IsRGB24() const { return IsColorSpace(RGB24::instance); } 
+  bool IsRGB32() const { return IsColorSpace(RGB32::instance); }
 
   bool IsYUV() const { return HasProperty(ColorSpace::YUV); }
-  bool IsYUY2() const { return IsColorSpace(CS_YUY2); }  
-  bool IsYV12() const { return IsColorSpace(CS_YV12) || IsColorSpace(CS_I420); }
+  bool IsYUY2() const { return IsColorSpace(YUY2::instance); }  
+  bool IsYV12() const { return IsColorSpace(YV12::instance); }
 
   bool IsVPlaneFirst() const { return IsYV12(); }  // Don't use this 
 
@@ -230,18 +108,18 @@ public:
   unsigned GetFPSDenominator() const { CheckHasVideo(); return fps_denominator; }
   double GetFPS() const { CheckHasVideo(); return fps_numerator/fps_denominator; }
 
-  const ColorSpace& GetColorSpace() const { return *pixel_type; }
+  const ColorSpace& GetColorSpace() const;
 
-  VideoInfo& RemoveVideo() { pixel_type = NULL; return *this; }
-  VideoInfo  RemoveVideo() const { return VideoInfo(*this).RemoveVideo(); }
+  VideoInfo& RemoveVideo();
+  VideoInfo  RemoveVideo() const; 
 
-  VideoInfo& SetColorSpace(const ColorSpace& space) { WidthCheck(width, space); HeightCheck(height, IsFieldBased(), space); pixel_type = &space; return *this; }
-  VideoInfo  SetColorSpace(const ColorSpace& space) const { return VideoInfo(*this).SetColorSpace(space); }
+  VideoInfo& SetColorSpace(const ColorSpace& space);
+  VideoInfo  SetColorSpace(const ColorSpace& space) const;
 
-  VideoInfo& SetWidth(dimension _width) { CheckHasVideo(); width = WidthCheck(_width, *pixel_type); return *this; }
-  VideoInfo  SetWidth(dimension _width) const { return VideoInfo(*this).SetWidth(_width); }
-  VideoInfo& SetHeight(dimension _height) { CheckHasVideo(); height = HeightCheck(_height, IsFieldBased(), *pixel_type); return *this; }
-  VideoInfo  SetHeight(dimension _height) const { return VideoInfo(*this).SetHeight(_height); }
+  VideoInfo& SetWidth(dimension _width);
+  VideoInfo  SetWidth(dimension _width) const;
+  VideoInfo& SetHeight(dimension _height);
+  VideoInfo  SetHeight(dimension _height) const;
 
   VideoInfo& Resize(dimension left, dimension right, dimension top, dimension bottom);
   VideoInfo  Resize(dimension left, dimension right, dimension top, dimension bottom) const { return VideoInfo(*this).Resize(left, right, top, bottom); }
@@ -269,15 +147,6 @@ public:
   VideoInfo  SetFPS(unsigned numerator, unsigned denominator) const { return VideoInfo(*this).SetFPS(numerator, denominator); }
 
 
-  int BytesFromPixels(int pixels) const { return pixels * (BitsPerPixel()>>3); }   // Will not work on planar images, but will return only luma planes
-  int RowSize() const { return BytesFromPixels(width); }  // Also only returns first plane on planar images
-  int BMPSize() const { if (IsPlanar()) {int p = height * ((RowSize()+3) & ~3); p+=p>>1; return p;  } return height * ((RowSize()+3) & ~3); }
-
-  int BitsPerPixel() const {
-    CheckHasVideo();
-    static int bits[] = { 0, 24, 32, 16, 12, 12 };
-    return bits[pixel_type->id];
-  }
 
 
   /*
@@ -327,37 +196,6 @@ public:
 
 
  
-  /*
-   * Field based stuff
-   */
-private:
-
-  int image_type;
-
-  enum {
-    IT_BFF = 1<<0,
-    IT_TFF = 1<<1,
-    IT_FIELDBASED = 1<<2
-  };
-
-public:
-  bool IsFieldBased() const { return image_type & IT_FIELDBASED != 0; }
-  bool IsBFF() const { return image_type & IT_BFF != 0; }
-  bool IsTFF() const { return image_type & IT_TFF != 0; }
-  bool IsParityKnown() const { return IsFieldBased() && (IsBFF() || IsTFF()); }
-  
-  void SetFieldBased(bool isfieldbased)  { 
-    if (isfieldbased) {
-      HeightCheck(height, true, *pixel_type);
-      image_type |= IT_FIELDBASED;
-    } else 
-        image_type &= ~IT_FIELDBASED;
-  }
-  void SetBFF() { image_type |= (IT_FIELDBASED | IT_BFF); image_type &= ~IT_TFF; }
-  void SetTFF() { image_type |= (IT_FIELDBASED | IT_TFF); image_type &= ~IT_BFF; }
-
 };
-
-
 
 #endif  //#ifndef __VIDEOINFO_H__

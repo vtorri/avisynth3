@@ -21,46 +21,34 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __ERROR_H__
-#define __ERROR_H__
+#include "videoproperty.h"
+#include <map>
 
 
-#include <string>
-using namespace std;
+typedef smart_ptr<WidthProperty> CPWidthProperty;
+
+void ColorSpaceProperty::IntegrityCheck(const PropertySet& set) const throw(ConstraintViolation)
+{
+  CPWidthProperty propWidth = set.Get(&WidthProperty::KEY);
+//  if (! propWidth)
+  //  throw ConstraintViolation("Width Property missing");
+
+  space.IsLegalWidth(propWidth->width);
 
 
-
-//internal exception class
-//those are not supposed to reach top level
-class InternalError {
-public: 
-  const string err_msg;
-  InternalError(const string& _err_msg) : err_msg(_err_msg) { }
-};
-
-
-//exception class (who may reach top level)
-class AvisynthError  {
-public:
-  const string err_msg;
-  AvisynthError(const string& _err_msg) : err_msg(_err_msg) { }
-};
+}
 
 
 
-//exception class for errors in parsed scripts
-class ScriptError : public AvisynthError {
-public: 
-  ScriptError(const string& err_msg) : AvisynthError("Script Error: " + err_msg) { }
-};
 
+CPProperty ColorSpaceProperty::GetColorSpaceProperty(const ColorSpace& space)
+{
+  static std::map<CS_ID, CPProperty> CSPropertyMap;
 
+  CPProperty & prop = CSPropertyMap[space.id];
+  if (! prop)
+    prop = new ColorSpaceProperty(space);
 
-// the code for this is in AVIReadHandler.cpp
-
-//AvisynthError MyWin32Error(const char *format, DWORD err, ...);
-
-
-#endif  //#ifndef __ERROR_H__
-
+  return prop;
+}
 

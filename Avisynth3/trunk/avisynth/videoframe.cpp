@@ -18,6 +18,7 @@
 
 
 #include "videoframe.h"
+#include "videoproperty.h"
 #include <functional>   //for unary_function 
 #include <algorithm>    //for remove_if()  
 #pragma warning(disable:4786)
@@ -30,219 +31,118 @@
 
 
 
-
-
-
-const string UNMATCHING_CLR_SPACE("ColorSpace don't match");
-
-const string FB_DONT_MATCH = "Cannot stack an field based frame with a plain one";
-
 void VideoFrame::StackHorizontal(CPVideoFrame other)
 {  
-  static const string STACK_HZ_ERR = "StackHorizontal Error: ";
-
-  if (GetColorSpace() != other->GetColorSpace())
-    throw AvisynthError(STACK_HZ_ERR + UNMATCHING_CLR_SPACE);  
-  if (GetVideoHeight() != other->GetVideoHeight())
-    throw AvisynthError(STACK_HZ_ERR + "Height don't match");
-  if (IsFieldBased() != other-> IsFieldBased())
-    throw AvisynthError(STACK_HZ_ERR + FB_DONT_MATCH);
-  //now everything is ok
+  //TODO: the checks  
   
-  dimension original_width = GetVideoWidth(); 
+  int original_width = GetVideoWidth(); 
   SizeChange(0, -other->GetVideoWidth(), 0, 0);
   Copy(other, original_width, 0);
 }
 
 void VideoFrame::StackVertical(CPVideoFrame other)
 {
-  static const string STACK_VT_ERR = "StackVertical Error: ";
+  //TODO: the checks
 
-  if (GetColorSpace() != other->GetColorSpace())
-    throw AvisynthError(STACK_VT_ERR + UNMATCHING_CLR_SPACE);  
-  if (GetVideoWidth() != other->GetVideoWidth())
-    throw AvisynthError(STACK_VT_ERR + "Width don't match");
-  if (IsFieldBased() != other-> IsFieldBased())
-    throw AvisynthError(STACK_VT_ERR + FB_DONT_MATCH);
-  //now everything is ok
-
-  dimension original_height = GetVideoHeight();
+  int original_height = GetVideoHeight();
   SizeChange(0, 0, 0, -other->GetVideoHeight());
   Copy(other, 0, original_height);
 }
 
 
+
+
 /**********************************************************************************************/
-/************************************ VideoFrameBuffer ****************************************/
+/************************************ TaggedVideoFrame ****************************************/
 /**********************************************************************************************/
 
 
-VideoFrameBuffer::VideoFrameBuffer(dimension row_size, dimension height, Align _align)
-: align( (_align < 0)? -_align : max(_align, FRAME_ALIGN) ),
-  pitch(Aligned(row_size)), size( height * pitch + align*4 ) 
+TaggedVideoFrame::TaggedVideoFrame(const ColorSpace& space, int width, int height, bool IsField)
 {
-  AllocationVector::iterator it = alloc.begin();
-  while( it != alloc.end() && it->first != size ) { ++it; }
-  if (it == alloc.end() )
-    data = new BYTE[size];
-  else {
-    data = it->second;
-    alloc.erase(it);
-  }
+  PPropertySet _prop = new PropertySet();
+  _prop->Set(ColorSpaceProperty::GetInstance(space));  //colorspace property set
+  _prop->Set(new WidthProperty(width));                //width set
+  _prop->Set(new HeightProperty(height));              //height set
+
+  _prop->Set(new FrameTypeProperty(space, IsField));   //Frame type set
+
+  propSet = _prop;   //integritycheck automatically called, errors thrown as needed
 }
 
 
-
-
-/**********************************************************************************************/
-/************************************** BufferWindow ******************************************/
-/**********************************************************************************************/
-
-
-BYTE* BufferWindow::GetWritePtr() { 
-  if (vfb->isShared()) {
-    VideoFrameBuffer * new_vfb = new VideoFrameBuffer(row_size, height, -vfb->GetAlign());
-    int new_offset = new_vfb->FirstOffset();
-    IScriptEnvironment::BitBlt(new_vfb->GetDataPtr() + new_offset, new_vfb->GetPitch(), vfb->GetDataPtr() + offset, vfb->GetPitch(), row_size, height);
-    vfb = new_vfb;
-    offset = new_offset;
-  }
-  return vfb->GetDataPtr() + offset;
-} 
-
-
-BufferWindow::BufferWindow(const BufferWindow& other, dimension left, dimension right, dimension top, dimension bottom)
-  : row_size(RowSizeCheck(other.row_size - left - right)), height(HeightCheck(other.height - top - bottom)),
-    offset(other.offset + left + top*other.GetPitch()), vfb(other.vfb)
+const ColorSpace& TaggedVideoFrame::GetColorSpace() const
 {
-  //three conditions where needed to reallocate the Buffer
-  if (row_size > GetPitch() || offset < 0 || offset + height * GetPitch() >= vfb->GetSize())
+  CPColorSpaceProperty prop = propSet->Get(&ColorSpaceProperty::KEY);
+  return prop->space;
+}
+
+int TaggedVideoFrame::GetVideoWidth() const
+{
+  CPIntProperty prop = propSet->Get(&WidthProperty::KEY);
+  return prop->value;
+}
+
+int TaggedVideoFrame::GetVideoHeight() const
+{
+  CPIntProperty prop = propSet->Get(&HeightProperty::KEY);
+  return prop->value;
+}
+
+void TaggedVideoFrame::SizeChange(int left, int right, int top, int bottom) //args in pixels
+{
+  //fetch ColorSpace
+  const ColorSpace& space = GetColorSpace();
+  //partial check of args validity (otherwise errors from side can compensate themselves)
+  space.IsLegalHeightShift(left);
+  space.IsLegalHeightShift(top, IsInterlaced());
+  //now we do the full change in the prop set, if it works, args are legal
+  PPropertySet temp = propSet;
+  //update width
+  temp->Set(new WidthProperty(GetVideoWidth() - left - right)); 
+  //update height
+  temp->Set(new HeightProperty(GetVideoHeight() - top - bottom));  
+  //try committing
+  propSet = temp;  //constraintviolation thrown if bad args 
+
+  //now we have to do the job
+  for(int i = 4; i-- > 0; )
   {
-    vfb = new VideoFrameBuffer(row_size, height, -vfb->GetAlign());
-    offset = vfb->FirstOffset();
-    Copy(other, -left, -top);
-  }
+    Plane p = IndexToPlane(i);
+    if (space.HasPlane(p))
+    {
+      BufferWindow & buf = GetPlane(p);
+      buf = BufferWindow(buf, space.WidthToRowSize(left, p), space.WidthToRowSize(right, p),
+        space.HeightToPlaneHeight(top, p), space.HeightToPlaneHeight(bottom, p));
+    }
+  }//done
 }
 
-void BufferWindow::Copy(const BufferWindow& other, dimension left, dimension top)
+void TaggedVideoFrame::Copy(CPVideoFrame other, int left, int top)
 {
-  _ASSERTE(this != &other);
-  BYTE * dst = GetWritePtr();  //has to be done first since it can change the pitch of self
-  const BYTE * src = other.GetReadPtr();
-  int copy_offset = 0, copy_offset_other = 0;
-  dimension pitch = GetPitch();
-  dimension pitch_other = other.GetPitch();
-  dimension copy_row_size, copy_height;
-  if (left < 0) {
-    copy_row_size = min(row_size, other.row_size + left);
-    copy_offset_other -= left;
-  } else {
-    copy_row_size = min(row_size - left, other.row_size);
-    copy_offset += left;
-  }
-  if (top < 0) {
-    copy_height = min(height, other.height + top);
-    copy_offset_other -= top*pitch_other;
-  } else {
-    copy_height = min(height - top, other.height);
-    copy_offset += top*pitch;
-  }
-  if (copy_height > 0 && copy_row_size > 0) //these checks should be moved in BitBlt
-    IScriptEnvironment::BitBlt(dst + copy_offset, pitch, src + copy_offset_other, pitch_other, copy_row_size, copy_height);                                          
+  //TODO: the checks
+
+
 }
 
-void BufferWindow::Blend(const BufferWindow& other, float factor)
-{
-  static const AvisynthError UNMATCHING_SIZE("Blend Error: Height or Width don't match");
-  if (row_size != other.row_size || height != other.height)
-    throw UNMATCHING_SIZE;
-  if (factor <= 0) 
-    return;         //no change
-  if (factor >= 1)
-    *this = other;  //we replace this window by the other one
-  else {
-    //TODO: Code ME !!
-  }
-}
-
-
-/**********************************************************************************************/
-/************************************** PropertyList ******************************************/
-/**********************************************************************************************/
-
-
-PropertyList::CPProperty PropertyList::GetProperty(const PropertyName& name) const
-{
-  static CPProperty nullProp;
-  PropertyVector::const_iterator it = props.begin();
-  while (it != props.end() && ! (*it)->IsType(name)) { ++it; }
-  return it != props.end()? *it : nullProp;
-}
-
-PropertyList * PropertyList::SetProperty(CPProperty prop)
-{
-  PropertyVector::iterator it = props.begin();
-  while( it != props.end() && ! (*it)->SameTypeAs(*prop) ) { ++it; }
-  if (it != props.end())
-    *it = prop;
-  else
-    props.push_back(prop);
-  return this;
-}
-
-PropertyList * PropertyList::RemoveProperty(const PropertyName& name)
-{
-  PropertyVector::iterator it = props.begin();
-  while (it != props.end() && ! (*it)->IsType(name)) { ++it; }
-  if (it != props.end())
-    props.erase(it);
-  return this;
-}
-
-
-struct IsPropVolatile : public unary_function<PropertyList::CPProperty, bool> {
-  bool operator() (const VideoFrame::CPProperty& prop) const { return prop->IsVolatile(); }
-};
-
-PropertyList * PropertyList::RemoveVolatileProperties()
-{  
-  props.erase(remove_if(props.begin(), props.end(), IsPropVolatile()), props.end());
-  return this;
-}
-
-
-/**********************************************************************************************/
-/********************************** InterleavedVideoFrame *************************************/
-/**********************************************************************************************/
-
-
-void InterleavedVideoFrame::Copy(CPVideoFrame other, dimension left, dimension top)
-{
-  if (GetColorSpace() != other->GetColorSpace())
-    throw AvisynthError("Copy Error: " + UNMATCHING_CLR_SPACE);
-  left = WidthToRowSize(left);
-  top = HeightCheck(top);          
-  main.Copy( ((CPInterleavedVideoFrame)other)->main, left, top);
-}
 
 /**********************************************************************************************/
 /************************************* RGBVideoFrame ******************************************/
 /**********************************************************************************************/
 
-
+/*
 void RGBVideoFrame::FlipHorizontal()
 {  
-  dimension row_size = main.GetRowSize();
-  dimension height   = main.GetHeight();
+  int row_size = main.GetRowSize();
+  int height   = main.GetHeight();
   BufferWindow dst(row_size, height, -main.GetAlign());
   
   BYTE * dstp = dst.GetWritePtr();  
   const BYTE * srcp = main.GetReadPtr();
-  dimension src_pitch = main.GetPitch();
-  dimension dst_pitch = dst.GetPitch();
+  int src_pitch = main.GetPitch();
+  int dst_pitch = dst.GetPitch();
 
   int step = WidthToRowSize(1);
-  dimension width = row_size/step;
+  int width = row_size/step;
   srcp += row_size - step;
   for(int h = height; h--> 0; )
   {
@@ -253,23 +153,23 @@ void RGBVideoFrame::FlipHorizontal()
     dstp += dst_pitch;
   }
   main = dst;  //replace window by the flipped one  
-}
+}*/
 
 
 /**********************************************************************************************/
 /************************************ RGB32VideoFrame *****************************************/
 /**********************************************************************************************/
 
-CPVideoFrame RGB32VideoFrame::ConvertTo(const ColorSpace& space) const
+CPVideoFrame RGB32VideoFrame::ConvertTo(const ColorSpace& space, int align) const
 {
   switch(space.id)
   {
-    case I_BGR32: return this;
-    case I_BGR24: return new RGB24VideoFrame(*this);
+    case I_RGB24: return new RGB24VideoFrame(*this);
     case I_YUY2:  return new YUY2VideoFrame(*this);
     case I_YV12:  return new PlanarVideoFrame(*this);
   }
-  throw AvisynthError(CONVERTTO_ERR);
+  AddRef();   
+  return this; //aka case I_RGB32:
 }
 
 
@@ -278,16 +178,16 @@ CPVideoFrame RGB32VideoFrame::ConvertTo(const ColorSpace& space) const
 /************************************ RGB24VideoFrame *****************************************/
 /**********************************************************************************************/
 
-CPVideoFrame RGB24VideoFrame::ConvertTo(const ColorSpace& space) const
+CPVideoFrame RGB24VideoFrame::ConvertTo(const ColorSpace& space, int align) const
 {
   switch(space.id)
   {
-    case I_BGR32: return new RGB32VideoFrame(*this);
-    case I_BGR24: return this;
+    case I_RGB32: return new RGB32VideoFrame(*this);
     case I_YUY2:  return new YUY2VideoFrame(*this);
     case I_YV12:  return new PlanarVideoFrame(*this);
   }
-  throw AvisynthError(CONVERTTO_ERR);
+  AddRef();   
+  return this; //aka case I_RGB24:
 }
 
 
@@ -299,28 +199,28 @@ CPVideoFrame RGB24VideoFrame::ConvertTo(const ColorSpace& space) const
 
 
 
-CPVideoFrame YUY2VideoFrame::ConvertTo(const ColorSpace& space) const
+CPVideoFrame YUY2VideoFrame::ConvertTo(const ColorSpace& space, int align) const
 {
   switch(space.id)
   {
-    case I_BGR32: return new RGB32VideoFrame(*this);
-    case I_BGR24: return new RGB24VideoFrame(*this);
-    case I_YUY2:  return this;
+    case I_RGB32: return new RGB32VideoFrame(*this);
+    case I_RGB24: return new RGB24VideoFrame(*this);
     case I_YV12:  return new PlanarVideoFrame(*this);
   }
-  throw AvisynthError(CONVERTTO_ERR);
+  AddRef();   
+  return this; //aka case I_YUY2:
 }
 
 void YUY2VideoFrame::FlipHorizontal()
 {  
-  dimension row_size = main.GetRowSize();
-  dimension height   = main.GetHeight();
+  int row_size = main.GetRowSize();
+  int height   = main.GetHeight();
   BufferWindow dst(row_size, height, -main.GetAlign());
   
   BYTE * dstp = dst.GetWritePtr();  
   const BYTE * srcp = main.GetReadPtr();
-  dimension src_pitch = main.GetPitch();
-  dimension dst_pitch = dst.GetPitch();
+  int src_pitch = main.GetPitch();
+  int dst_pitch = dst.GetPitch();
 
   srcp += row_size - 4;
   for(int h = height; h--> 0; )
@@ -342,71 +242,42 @@ void YUY2VideoFrame::FlipHorizontal()
 /**********************************************************************************************/
 
 
-PlanarVideoFrame::PlanarVideoFrame(const RGB24VideoFrame& other)
-: VideoFrameAncestor(other.IsFieldBased()), y(WidthToRowSize(other.GetVideoWidth()), HeightCheck(other.GetVideoHeight())),
-  u(other.GetVideoWidth()>>1, other.GetVideoHeight()>>1), v(other.GetVideoWidth()>>1, other.GetVideoHeight()>>1)
-{
-  //TODO: Code ME !!
-}
- 
-PlanarVideoFrame::PlanarVideoFrame(const RGB32VideoFrame& other)
-: VideoFrameAncestor(other.IsFieldBased()), y(WidthToRowSize(other.GetVideoWidth()), HeightCheck(other.GetVideoHeight())),
-  u(other.GetVideoWidth()>>1, other.GetVideoHeight()>>1), v(other.GetVideoWidth()>>1, other.GetVideoHeight()>>1)
-{
-  //TODO: Code ME !!  
-}
- 
-PlanarVideoFrame::PlanarVideoFrame(const YUY2VideoFrame& other)
-: VideoFrameAncestor(other.IsFieldBased()), y(WidthToRowSize(other.GetVideoWidth()), HeightCheck(other.GetVideoHeight())),
-  u(other.GetVideoWidth()>>1, other.GetVideoHeight()>>1), v(other.GetVideoWidth()>>1, other.GetVideoHeight()>>1)
-{
-  //TODO: Code ME !!  
-}
 
 
-CPVideoFrame PlanarVideoFrame::ConvertTo(const ColorSpace& space) const
+
+CPVideoFrame PlanarVideoFrame::ConvertTo(const ColorSpace& space, int align) const
 {
   switch(space.id)
   {
-    case I_BGR32: return new RGB32VideoFrame(*this);
-    case I_BGR24: return new RGB24VideoFrame(*this);
+    case I_RGB32: return new RGB32VideoFrame(*this);
+    case I_RGB24: return new RGB24VideoFrame(*this);
     case I_YUY2:  return new YUY2VideoFrame(*this);
-    case I_YV12:  return this;
   }
-  throw AvisynthError(CONVERTTO_ERR);
+  AddRef();   
+  return this; //aka case I_YUY2:
 }
 
-void PlanarVideoFrame::SizeChange(dimension left, dimension right, dimension top, dimension bottom)
-{
-  left = WidthToRowSize(left);   //those four perform the args check
-  right = WidthToRowSize(right);
-  HeightCheck(top);
-  HeightCheck(bottom);
-  y = BufferWindow(y, left, right, top, bottom);   //width and height > 0 checked here
-  u = BufferWindow(u, left>>1, right>>1, top>>1, bottom>>1);
-  v = BufferWindow(v, left>>1, right>>1, top>>1, bottom>>1);
-  //that's all
-}
+
 
 
 void PlanarVideoFrame::FlipVertical()
 {
   for(int i = 3; i--> 0; ) //reverse loop  
-    GetWindow(IndexToYUVPlane(i)).FlipVertical();
+    GetPlane(IndexToPlane(i)).FlipVertical();
 }
 
 void PlanarVideoFrame::FlipHorizontal()
 {
   for(int i = 3; i--> 0; ) //reverse loop
   {
-    BufferWindow& src = GetWindow(IndexToYUVPlane(i));
-    dimension row_size = src.GetRowSize();
-    dimension height   = src.GetHeight();
+    BufferWindow& src = GetPlane(IndexToPlane(i));
+    int row_size = src.GetRowSize();
+    int height   = src.GetHeight();
     BufferWindow dst(row_size, height, -src.GetAlign());
     BYTE* dstp = dst.GetWritePtr();  
     const BYTE* srcp = src.GetReadPtr();
-    dimension src_pitch = src.GetPitch();
-    dimension dst_pitch = dst.GetPitch();
+    int src_pitch = src.GetPitch();
+    int dst_pitch = dst.GetPitch();
 
     srcp +=row_size-1;
     for(int h = height; h--> 0; )
@@ -420,14 +291,3 @@ void PlanarVideoFrame::FlipHorizontal()
   }
 }
 
-void PlanarVideoFrame::Blend(CPVideoFrame other, float factor)
-{
-  if (other->GetColorSpace() != VideoInfo::CS_YV12)
-    throw AvisynthError("Blend Error: " + UNMATCHING_CLR_SPACE); 
-  CPPlanarVideoFrame planar_other = other;
-
-  for(int i = 3; i--> 0; ) { //reverse loop
-    Plane p = IndexToYUVPlane(i);
-    GetWindow(p).Blend(planar_other->GetWindow(p), factor);  //width and height check done here
-  }
-}

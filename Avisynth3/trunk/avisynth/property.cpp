@@ -21,46 +21,40 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __ERROR_H__
-#define __ERROR_H__
+#include "property.h"
+#include "algorithm"
+
+typedef smart_ptr<PropertySet> PPropertySet;
+
+void PropertySet::Set(CPProperty prop) 
+{
+  PropertyVector::iterator it = find(propVector.begin(), propVector.end(), prop->key);
+  if (it != propVector.end())
+    it->value = prop;
+  else
+    propVector.push_back(prop);
+}
+
+void PropertySet::Remove(PPropertyKey key) 
+{
+  PropertyVector::iterator it = find(propVector.begin(), propVector.end(), key);
+  if (it != propVector.end())
+    propVector.erase(it);
+}
 
 
-#include <string>
-using namespace std;
+CPProperty PropertySet::Get(PPropertyKey key) const
+{
+  PropertyVector::const_iterator it = find(propVector.begin(), propVector.end(), key);
+  return it == propVector.end() ? CPProperty() : it->value;
+}
 
-
-
-//internal exception class
-//those are not supposed to reach top level
-class InternalError {
-public: 
-  const string err_msg;
-  InternalError(const string& _err_msg) : err_msg(_err_msg) { }
-};
-
-
-//exception class (who may reach top level)
-class AvisynthError  {
-public:
-  const string err_msg;
-  AvisynthError(const string& _err_msg) : err_msg(_err_msg) { }
-};
-
-
-
-//exception class for errors in parsed scripts
-class ScriptError : public AvisynthError {
-public: 
-  ScriptError(const string& err_msg) : AvisynthError("Script Error: " + err_msg) { }
-};
-
-
-
-// the code for this is in AVIReadHandler.cpp
-
-//AvisynthError MyWin32Error(const char *format, DWORD err, ...);
-
-
-#endif  //#ifndef __ERROR_H__
-
-
+void PropertySet::IntegrityCheck() const 
+{
+  PropertyVector::const_iterator it = propVector.begin();
+  while( it != propVector.end() )
+  {
+    it->value->IntegrityCheck(*this);
+    ++it;
+  }
+}

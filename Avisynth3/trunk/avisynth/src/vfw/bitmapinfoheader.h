@@ -50,7 +50,7 @@ class BitmapInfoHeader : public BITMAPINFOHEADER
 
 public:  //structors
 
-  BitmapInfoHeader();
+  BitmapInfoHeader(Dimension const& dim);
   BitmapInfoHeader(VideoInfo const& vi);
 
   //generated copy constructor and destructor are fine
@@ -67,7 +67,6 @@ public:  //write access
 
   void SetColorSpace(PColorSpace const& space);
   void SetDimension(Dimension const& dim);
-
 
 public:
 

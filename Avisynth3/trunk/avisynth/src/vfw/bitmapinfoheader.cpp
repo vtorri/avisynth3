@@ -30,12 +30,14 @@
 namespace avs { namespace vfw {
 
 
-BitmapInfoHeader::BitmapInfoHeader()
+BitmapInfoHeader::BitmapInfoHeader(Dimension const& dim)
 {
   memset( static_cast<BITMAPINFOHEADER *>(this), 0, sizeof(BITMAPINFOHEADER) );
 
   biSize        = sizeof(BITMAPINFOHEADER);
   biPlanes      = 1;
+
+  SetDimension(dim);
 }
 
 
@@ -74,7 +76,7 @@ PColorSpace BitmapInfoHeader::GetColorSpace() const
 
 void BitmapInfoHeader::SetColorSpace(PColorSpace const& space)
 {
-  biBitCount    = space->GetBitsPerPixel();
+  biBitCount    = static_cast<WORD>(space->GetBitsPerPixel());
   biCompression = space->GetFourCC();
   biSizeImage   = space->GetBitmapSize(GetDimension());
 }

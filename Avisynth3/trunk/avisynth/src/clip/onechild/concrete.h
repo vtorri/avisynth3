@@ -40,13 +40,13 @@ namespace avs { namespace clip { namespace onechild {
 class NOVTABLE Concrete : public virtual OneChild
 {
 
-  PClip child_;
+  mutable PClip child_;
 
 
 public:  //constructor
 
   Concrete(PClip const& child)
-    : child_( child->Simplify() ) { }
+    : child_( child ) { }
 
   //generated destrcutor is fine
 
@@ -59,6 +59,11 @@ public:  //access to child
 protected:  //write access
 
   void SetChild(PClip const& child) { child_ = child; }
+
+
+protected:  //helper for FinalSimplify
+
+  virtual void FinalSimplifyChild() const { child_ = child_->FinalSimplify(); }
 
 
 protected:  //implementations helpers

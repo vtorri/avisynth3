@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -40,9 +40,9 @@ namespace avs { namespace clip { namespace onechild {
 //  only works on audio without caring at all about video
 //  so provides appropriate Refactor behavior for KillAudio and KillVideo
 //
-class AudioProcess : public virtual OneChild
-                   , public Refactorable<filters::KillAudio>
-                   , public Refactorable<filters::KillVideo>
+class NOVTABLE AudioProcess : public virtual OneChild               
+                            , public Refactorable<filters::KillAudio>
+                            , public FinalRefactorable<filters::KillVideo>
 {
 
 public:  //clip general interface
@@ -57,9 +57,9 @@ private:  //Refactor methods
     return parent.clone( GetChild() );
   }
 
-  virtual PClip Refactor(filters::KillVideo const& parent) const
+  virtual PClip FinalRefactor(filters::KillVideo const& parent) const
   {
-    return clone( parent.clone(GetChild()) );
+    return clone( parent.clone(GetChild()) )->FinalSimplify();
   }
 
 };

@@ -37,12 +37,12 @@ namespace avs { namespace clip { namespace onechild {
 ////////////////////////////////////////////////////////////////////////////
 //  VideoProcess
 //
-//  only works on video without caring at all about audio
+//  only works on video and just forwards audio from child
 //  so provides appropriate Refactor behavior for KillAudio and KillVideo
 //
-class VideoProcess : public virtual OneChild
-                   , public Refactorable<filters::KillAudio>
-                   , public Refactorable<filters::KillVideo>
+class NOVTABLE VideoProcess : public virtual OneChild
+                            , public Refactorable<filters::KillVideo>
+                            , public FinalRefactorable<filters::KillAudio>
 {
 
 public:  //clip general interface
@@ -52,14 +52,14 @@ public:  //clip general interface
 
 private:  //Refactor methods
 
-  virtual PClip Refactor(filters::KillAudio const& parent) const
-  {
-    return clone( parent.clone(GetChild()) );
-  }
-
   virtual PClip Refactor(filters::KillVideo const& parent) const
   {
     return parent.clone( GetChild() );
+  }
+
+  virtual PClip FinalRefactor(filters::KillAudio const& parent) const
+  {
+    return clone( parent.clone(GetChild()) )->FinalSimplify();
   }
 
 };

@@ -36,11 +36,6 @@
 #pragma warning (disable : 4250)  
 #endif //_MSC_VER
 
-#ifdef _MSC_VER
-#define NOVTABLE __declspec(novtable)
-#else
-#define NOVTABLE
-#endif
 
 
 namespace avs {

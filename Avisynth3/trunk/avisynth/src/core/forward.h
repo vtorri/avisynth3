@@ -32,6 +32,15 @@
 #include <boost/rational.hpp>      //for rational
 
 
+//NOVTABLE macro
+#ifdef _MSC_VER
+#define NOVTABLE __declspec(novtable)
+#else
+#define NOVTABLE
+#endif
+
+
+
 namespace avs {
 
 

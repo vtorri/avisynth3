@@ -73,17 +73,17 @@ STDMETHODIMP AviStream::QueryInterface(IID const& iid, void **ppv)
 
 //IAVIStream
 
-STDMETHODIMP_(LONG) AviStream::Info(AVISTREAMINFOW *psi, LONG lSize)
+STDMETHODIMP_(LONG) AviStream::Info(AVISTREAMINFOW * psi, LONG lSize)
 {
   if ( lSize < (long)sizeof(AVISTREAMINFOW) )
     return AVIERR_BUFFERTOOSMALL; 
+ 
+  if ( psi != NULL )
+    FillAviStreamInfo(reinterpret_cast<AviStreamInfo *>(psi));
 
-  memset(psi, 0, lSize);
-  
-  FillAviStreamInfo(*psi);
-
-  return 0;
+  return S_OK;
 }
+
 
 STDMETHODIMP_(LONG) AviStream::FindSample(LONG lPos, LONG lFlags)
 {

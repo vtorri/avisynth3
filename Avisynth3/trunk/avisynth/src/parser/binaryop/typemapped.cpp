@@ -43,14 +43,14 @@ TypeMapped::TypeMapped(std::string const& opName, ElementalOperation const& op, 
 }
 
 
-void TypeMapped::AccumulateCode(TypedCode& target, char rightType) const
+ElementalOperation TypeMapped::GetOperation(char& leftType, char rightType) const
 {
-  TypeMap::const_iterator it = map_.find(std::make_pair(target.get<1>(), rightType));
+  TypeMap::const_iterator it = map_.find(std::make_pair(leftType, rightType));
   if ( it == map_.end() )
     throw exception::Generic("parsing failed");
   
-  target.get<0>() += op_;
-  target.get<1>() = it->second;
+  leftType = it->second;  
+  return op_;
 }
 
 

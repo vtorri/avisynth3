@@ -61,9 +61,8 @@ public:  //structors
 
 public:  //interface
 
-  //given types of left of right arg, add op to passed code and update its type
-  //NB: left type is target type  
-  void AccumulateCode(TypedCode& target, char rightType) const;
+  //given types of left of right arg, return appropriate op and update left type to result type
+  ElementalOperation GetOperation(char& leftType, char rightType) const;
 
 };
 

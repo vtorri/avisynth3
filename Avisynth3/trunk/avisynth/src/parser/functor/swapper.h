@@ -24,22 +24,31 @@
 #ifndef __AVS_PARSER_FUNCTOR_SWAPPER_H__
 #define __AVS_PARSER_FUNCTOR_SWAPPER_H__
 
-//avisynth include
+//avisynth includes
+#include "../optype.h"
 #include "../vmstate.h"
 
 
 namespace avs { namespace parser { namespace functor {
 
 
+
+//////////////////////////////////////////////////////////////////////////////////
+//  Swapper
+//
+//  swaps top two values on the stack
+//
 struct Swapper
 {
 
-  void operator()(VMState& state) const
+  OpType operator()(VMState& state) const
   {
     state.peek(1).swap(state.top());
+    return NORMAL;
   }
 
 };
+
 
 } } } //namespace avs::parser::functor
 

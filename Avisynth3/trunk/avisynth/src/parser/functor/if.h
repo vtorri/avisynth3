@@ -27,10 +27,7 @@
 //avisynth includes
 #include "../optype.h"
 #include "../vmcode.h"
-#include "../scopeenforcer.h"
 
-//boost include
-#include <boost/variant/get.hpp>
 
 
 namespace avs { namespace parser { namespace functor {
@@ -50,23 +47,7 @@ struct IfThen
   IfThen(VMCode const& then)
     : then_( then ) { }
 
-  OpType operator()(VMState& state) const
-  {
-    OpType result = NORMAL;    
-    bool cond = boost::get<bool>(state.top());
-    state.pop();
-
-    if ( cond )
-    {
-      ScopeEnforcer enforcer(state);
-
-      result = then_(state);
-
-      enforcer.SetDismiss( IsReturning(result) );
-    }
-
-    return result;
-  }
+  OpType operator()(VMState& state) const;
 
 };
 
@@ -86,19 +67,7 @@ struct IfThenElse
     : then_( then )
     , else_( els ) { }
 
-  OpType operator()(VMState& state) const
-  {
-    bool cond = boost::get<bool>(state.top());
-    state.pop();
-
-    ScopeEnforcer enforcer(state);
-
-    OpType result = cond ? then_(state) : else_(state);
-
-    enforcer.SetDismiss( IsReturning(result) );
-
-    return result;
-  }
+  OpType operator()(VMState& state) const;
 
 };
 

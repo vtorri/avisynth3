@@ -24,7 +24,8 @@
 #ifndef __AVS_PARSER_FUNCTOR_PUSHER_H__
 #define __AVS_PARSER_FUNCTOR_PUSHER_H__
 
-//avisynth include
+//avisynth includes
+#include "../optype.h"
 #include "../vmstate.h"
 
 
@@ -46,7 +47,11 @@ struct pusher
   pusher(Holder const& holder)
     : holder_( holder ) { }
 
-  void operator()(VMState& state) const { state.push(holder_(state)); }
+  OpType operator()(VMState& state) const
+  { 
+    state.push(holder_(state)); 
+    return NORMAL;
+  }
 
 };
 

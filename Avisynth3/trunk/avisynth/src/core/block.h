@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,8 @@
 
 //avisynth includes
 #include "block/base.h"
-#include "block/deleter.h"
+#include "block/align.h"
+#include "block/deleter/base.h"
 
 
 namespace avs {
@@ -33,7 +34,7 @@ namespace avs {
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-//  Block
+//  block_<align>
 //
 //  Holds an aligned block of memory, with automatic deallocation.
 //
@@ -51,35 +52,46 @@ namespace avs {
 //  Problem: The recycling list only grows and never release memory,
 //             even when some sizes are never requested anymore....
 //           
-class Block : public block::base<block::Deleter>
+template <int align> 
+class block_ : public block::base<block::deleter::Base, align>
 {
 
 public:  //structors
   
-  explicit Block(int size, bool recycle = false);
+  explicit block_(int size, bool recycle = false);
+
+  template <class Deleter>
+  explicit block_(Deleter const& deleter)
+    :  BaseBlockType( deleter ) { }
+
+  template <int alignOther>
+  explicit block_(block_<alignOther> const& other)
+    : BaseBlockType( other ) { }
 
   //generated copy constructor and destructor are fine
 
 
 public:  //assignemnt
 
+  template <int alignOther>
+  block_<align>& operator=(block_<alignOther> const& other)
+  {
+    return static_cast<block_<align>&>( BaseBlockType::operator=(other) );
+  }
+
   //generated operator= is fine
-
   //swap inherited from superclass
-
-
-public:  //comparisons operators
-
-  bool operator==(Block const& other) const { return get() == other.get(); }
-  bool operator!=(Block const& other) const { return get() != other.get(); }
 
 
 public:  //reset method
 
-  void reset(int size, bool recycle = false) { Block(size, recycle).swap(*this); }
+  void reset(int size, bool recycle = false) { block_(size, recycle).swap(*this); }
 
-};//Block
+};
 
+
+//this constructor is only defined for avs nominal align
+template <> block_<block::Align>::block_(int size, bool recycle);
 
 
 

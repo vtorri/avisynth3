@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="avisynth"
+	RootNamespace="avisynth"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -105,7 +106,7 @@
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="2"
-				PreprocessorDefinitions="NDEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_DLL;_USRDLL;AVISYNTH_EXPORTS"
+				PreprocessorDefinitions="NDEBUG;INC_OLE2;STRICT;WIN32;_WIN32;_MT;_DLL;_USRDLL;AVISYNTH_EXPORTS;_INTEL_ASM"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"
@@ -251,6 +252,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				RelativePath=".\src\clip\folded.h">
 			</File>
 			<File
+				RelativePath=".\src\clip\manychilds.h">
+			</File>
+			<File
 				RelativePath=".\src\clip\nochild.h">
 			</File>
 			<File
@@ -335,6 +339,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			</File>
 			<File
 				RelativePath=".\src\com\base.h">
+			</File>
+			<File
+				RelativePath=".\src\com\deleler.h">
 			</File>
 		</Filter>
 		<Filter
@@ -460,6 +467,36 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath=".\src\core\bufferwindow\blender.h">
 				</File>
 				<File
+					RelativePath=".\src\core\bufferwindow\blender_x86_nasm.asm">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Nasm-compiling $(InputFileName)"
+							CommandLine="nasmw -f win32 -DPREFIX -DSUFFIX $(Inputpath) -o $(OutDir)\$(InputName).obj
+"
+							Outputs="$(OutDir)\$(InputName).obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Nasm-compiling $(InputFileName)"
+							CommandLine="nasmw -f win32 -DPREFIX -DSUFFIX $(Inputpath) -o $(OutDir)\$(InputName).obj
+"
+							Outputs="$(OutDir)\$(InputName).obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile|Win32">
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Nasm-compiling $(InputFileName)"
+							CommandLine="nasmw -f win32 -DPREFIX -DSUFFIX $(Inputpath) -o $(OutDir)\$(InputName).obj
+"
+							Outputs="$(OutDir)\$(InputName).obj"/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\src\core\bufferwindow\copier.cpp">
 				</File>
 				<File
@@ -566,10 +603,19 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath=".\src\core\exception\baddimension.h">
 				</File>
 				<File
+					RelativePath=".\src\core\exception\brokenfile.h">
+				</File>
+				<File
+					RelativePath=".\src\core\exception\fatal.h">
+				</File>
+				<File
 					RelativePath=".\src\core\exception\generic.h">
 				</File>
 				<File
 					RelativePath=".\src\core\exception\noaudio.h">
+				</File>
+				<File
+					RelativePath=".\src\core\exception\nosuchfile.h">
 				</File>
 				<File
 					RelativePath=".\src\core\exception\nosuchframe.h">
@@ -583,6 +629,22 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				<File
 					RelativePath=".\src\core\exception\unsupportedcolorspace.h">
 				</File>
+				<Filter
+					Name="Collision"
+					Filter="">
+					<File
+						RelativePath=".\src\core\exception\collision\colorspace.h">
+					</File>
+					<File
+						RelativePath=".\src\core\exception\collision\dimension.h">
+					</File>
+					<File
+						RelativePath=".\src\core\exception\collision\fps.h">
+					</File>
+					<File
+						RelativePath=".\src\core\exception\collision\framecount.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Timing"
@@ -616,13 +678,7 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					RelativePath=".\src\core\videoframe\base.h">
 				</File>
 				<File
-					RelativePath=".\src\core\videoframe\interleaved.cpp">
-				</File>
-				<File
 					RelativePath=".\src\core\videoframe\interleaved.h">
-				</File>
-				<File
-					RelativePath=".\src\core\videoframe\planar_yuv.cpp">
 				</File>
 				<File
 					RelativePath=".\src\core\videoframe\planar_yuv.h">
@@ -632,9 +688,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 				<File
 					RelativePath=".\src\core\videoframe\videoframe.cpp">
-				</File>
-				<File
-					RelativePath=".\src\core\videoframe\yuy2.cpp">
 				</File>
 				<File
 					RelativePath=".\src\core\videoframe\yuy2.h">
@@ -677,8 +730,46 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 			</Filter>
 			<Filter
+				Name="Convert"
+				Filter="">
+				<File
+					RelativePath=".\src\filters\convert\convert.cpp">
+				</File>
+				<File
+					RelativePath=".\src\filters\convert\convert.h">
+				</File>
+				<File
+					RelativePath=".\src\filters\convert\torgb24.cpp">
+				</File>
+				<File
+					RelativePath=".\src\filters\convert\torgb24.h">
+				</File>
+				<Filter
+					Name="ToRGB24"
+					Filter="">
+					<File
+						RelativePath=".\src\filters\convert\torgb24\fromrgb32.cpp">
+					</File>
+					<File
+						RelativePath=".\src\filters\convert\torgb24\fromrgb32.h">
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
 				Name="Edit"
 				Filter="">
+				<File
+					RelativePath=".\src\filters\edit\splice.cpp">
+				</File>
+				<File
+					RelativePath=".\src\filters\edit\splice.h">
+				</File>
+				<File
+					RelativePath=".\src\filters\edit\trim.cpp">
+				</File>
+				<File
+					RelativePath=".\src\filters\edit\trim.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="Fps"
@@ -759,6 +850,36 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 						<File
 							RelativePath=".\src\filters\levels\tweak\yuy2\isse.h">
 						</File>
+						<File
+							RelativePath=".\src\filters\levels\tweak\yuy2\isse_x86_nasm.asm">
+							<FileConfiguration
+								Name="Debug|Win32">
+								<Tool
+									Name="VCCustomBuildTool"
+									Description="Nasm-compiling $(InputFileName)"
+									CommandLine="nasmw -f win32 -DPREFIX -DSUFFIX $(Inputpath) -o $(OutDir)\$(InputName).obj
+"
+									Outputs="$(OutDir)\$(InputName).obj"/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32">
+								<Tool
+									Name="VCCustomBuildTool"
+									Description="Nasm-compiling $(InputFileName)"
+									CommandLine="nasmw -f win32 -DPREFIX -DSUFFIX $(Inputpath) -o $(OutDir)\$(InputName).obj
+"
+									Outputs="$(OutDir)\$(InputName).obj"/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Profile|Win32">
+								<Tool
+									Name="VCCustomBuildTool"
+									Description="Nasm-compiling $(InputFileName)"
+									CommandLine="nasmw -f win32 -DPREFIX -DSUFFIX $(Inputpath) -o $(OutDir)\$(InputName).obj
+"
+									Outputs="$(OutDir)\$(InputName).obj"/>
+							</FileConfiguration>
+						</File>
 					</Filter>
 				</Filter>
 			</Filter>
@@ -766,22 +887,34 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				Name="Resize"
 				Filter="">
 				<File
+					RelativePath=".\src\filters\resize\badrange.h">
+				</File>
+				<File
 					RelativePath=".\src\filters\resize\filter.h">
 				</File>
 				<File
 					RelativePath=".\src\filters\resize\forward.h">
 				</File>
 				<File
+					RelativePath=".\src\filters\resize\horizontal.cpp">
+				</File>
+				<File
 					RelativePath=".\src\filters\resize\horizontal.h">
+				</File>
+				<File
+					RelativePath=".\src\filters\resize\resize.cpp">
 				</File>
 				<File
 					RelativePath=".\src\filters\resize\resize.h">
 				</File>
 				<File
-					RelativePath=".\src\filters\resize\resize_horizontal.h">
+					RelativePath=".\src\filters\resize\subrange.cpp">
 				</File>
 				<File
 					RelativePath=".\src\filters\resize\subrange.h">
+				</File>
+				<File
+					RelativePath=".\src\filters\resize\vertical.h">
 				</File>
 				<Filter
 					Name="Pattern"
@@ -843,6 +976,36 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					Name="Horizontal"
 					Filter="">
 					<File
+						RelativePath=".\src\filters\resize\horizontal\horizontal_x86_nasm.asm">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCustomBuildTool"
+								Description="Nasm-compiling $(InputFileName)"
+								CommandLine="nasmw -f win32 -DPREFIX -DSUFFIX $(Inputpath) -o $(OutDir)\$(InputName).obj
+"
+								Outputs="$(OutDir)\$(InputName).obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCustomBuildTool"
+								Description="Nasm-compiling $(InputFileName)"
+								CommandLine="nasmw -f win32 -DPREFIX -DSUFFIX $(Inputpath) -o $(OutDir)\$(InputName).obj
+"
+								Outputs="$(OutDir)\$(InputName).obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Win32">
+							<Tool
+								Name="VCCustomBuildTool"
+								Description="Nasm-compiling $(InputFileName)"
+								CommandLine="nasmw -f win32 -DPREFIX -DSUFFIX $(Inputpath) -o $(OutDir)\$(InputName).obj
+"
+								Outputs="$(OutDir)\$(InputName).obj"/>
+						</FileConfiguration>
+					</File>
+					<File
 						RelativePath=".\src\filters\resize\horizontal\rgb.h">
 					</File>
 					<File
@@ -887,6 +1050,15 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				Name="Source"
 				Filter="">
 				<File
+					RelativePath=".\src\filters\source\avifilesource.cpp">
+				</File>
+				<File
+					RelativePath=".\src\filters\source\avifilesource.h">
+				</File>
+				<File
+					RelativePath=".\src\filters\source\avisource.cpp">
+				</File>
+				<File
 					RelativePath=".\src\filters\source\avisource.h">
 				</File>
 				<File
@@ -910,6 +1082,22 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				<File
 					RelativePath=".\src\filters\source\voidclip.h">
 				</File>
+				<Filter
+					Name="Avi"
+					Filter="">
+					<File
+						RelativePath=".\src\filters\source\avi\framedecompressor.cpp">
+					</File>
+					<File
+						RelativePath=".\src\filters\source\avi\framedecompressor.h">
+					</File>
+					<File
+						RelativePath=".\src\filters\source\avi\icframedecompressor.cpp">
+					</File>
+					<File
+						RelativePath=".\src\filters\source\avi\icframedecompressor.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Transform"
@@ -965,6 +1153,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			<File
 				RelativePath=".\src\linker\plugin.h">
 			</File>
+			<File
+				RelativePath=".\src\linker\scriptcontext.h">
+			</File>
 			<Filter
 				Name="Plugin"
 				Filter="">
@@ -986,6 +1177,34 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 				<File
 					RelativePath=".\src\linker\core\plugin.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="External"
+				Filter="">
+				<File
+					RelativePath=".\src\linker\external\plugin.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\src\linker\external\plugin.h">
 				</File>
 			</Filter>
 		</Filter>
@@ -1336,6 +1555,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				RelativePath=".\src\utility\folder.h">
 			</File>
 			<File
+				RelativePath=".\src\utility\instancecounted.h">
+			</File>
+			<File
 				RelativePath=".\src\utility\threshold.h">
 			</File>
 			<File
@@ -1362,6 +1584,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			</File>
 			<File
 				RelativePath=".\src\vfw\avistream.h">
+			</File>
+			<File
+				RelativePath=".\src\vfw\bitmapinfoheader.cpp">
+			</File>
+			<File
+				RelativePath=".\src\vfw\bitmapinfoheader.h">
 			</File>
 			<Filter
 				Name="Avistream"
@@ -1410,8 +1638,27 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 			</Filter>
 		</Filter>
+		<Filter
+			Name="FreeType"
+			Filter="">
+			<File
+				RelativePath=".\src\freetype\face.h">
+			</File>
+			<File
+				RelativePath=".\src\freetype\glyph.h">
+			</File>
+			<File
+				RelativePath=".\src\freetype\library.h">
+			</File>
+			<File
+				RelativePath=".\src\freetype\size.h">
+			</File>
+		</Filter>
 		<File
 			RelativePath="distrib\AviSynth.ico">
+		</File>
+		<File
+			RelativePath=".\src\core.h">
 		</File>
 		<File
 			RelativePath=".\src\main.cpp">

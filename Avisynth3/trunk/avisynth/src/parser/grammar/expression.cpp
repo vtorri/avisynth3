@@ -32,7 +32,6 @@ namespace avs { namespace parser { namespace grammar {
 
 
 
-
 Expression::Expression()
 {
 
@@ -46,8 +45,9 @@ Expression::Expression()
   mult_op.add
     ( "*", TypeMapped( "*", make<Square>(Square()), Square::types() ) )
     ( "/", TypeMapped( "/", make<Divide>(Divide()), Divide::types() ) );
-
+  
 }
+
 
 
 

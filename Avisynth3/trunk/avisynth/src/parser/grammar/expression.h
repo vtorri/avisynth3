@@ -31,7 +31,7 @@
 #include "vartable.h"
 #include "../vmcode.h"
 #include "../lazy/unwrap.h"
-#include "../functiontable.h"
+#include "../function/table.h"
 #include "../binaryop/parser.h"
 #include "../functor/var.h"
 #include "../functor/assigner.h"
@@ -63,7 +63,7 @@ struct Expression : spirit::closure
     , boost::reference_wrapper<VarTable>
     , boost::optional<int>
     , boost::reference_wrapper<VarTable>
-    , boost::reference_wrapper<FunctionTable>
+    , boost::reference_wrapper<function::Table>
     >
 {
   member1 value;
@@ -89,7 +89,7 @@ struct InnerExpression : spirit::closure
   member2 implicit;   //mark if implicit last function call are possible within the expression
 };
 
-struct FunctionCall : spirit::closure<FunctionCall, std::string, FunctionPool const *>
+struct FunctionCall : spirit::closure<FunctionCall, std::string, function::Pool const *>
 {
   member1 prototype;
   member2 functionPool;
@@ -239,7 +239,7 @@ public:  //definition nested class
       call_expr
           =   spirit::lazy_p( unwrap(self.functionTable) )
               [
-                call_expr.functionPool = bind(&boost::reference_wrapper<FunctionPool>::get_pointer)(arg1)
+                call_expr.functionPool = bind(&boost::reference_wrapper<function::Pool>::get_pointer)(arg1)
               ]
           >>  '('
           >> !(   expression( TypedCode(), false )
@@ -251,7 +251,7 @@ public:  //definition nested class
               )
           >>  spirit::ch_p(')')
               [
-                bind(&FunctionPool::Resolve)(call_expr.functionPool, call_expr.prototype, atom_expr.value)
+                bind(&function::Pool::Resolve)(call_expr.functionPool, call_expr.prototype, atom_expr.value)
               ]
           ;
 

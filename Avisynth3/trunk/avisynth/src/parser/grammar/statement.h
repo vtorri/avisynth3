@@ -58,7 +58,7 @@ struct Statement : spirit::closure
     , boost::reference_wrapper<VarTable>
     , boost::reference_wrapper<boost::optional<int> >
     , boost::reference_wrapper<VarTable>
-    , boost::reference_wrapper<FunctionTable>
+    , boost::reference_wrapper<function::Table>
     , char
     >
 {

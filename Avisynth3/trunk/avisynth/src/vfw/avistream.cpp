@@ -138,7 +138,7 @@ void AviStream::ReadWrapper(void* lpBuffer, int lStart, int lSamples)
 
 void AviStream::ThrowAccessViolation(EXCEPTION_POINTERS * ei)
 {
-  throw Exception(str( 
+  throw GenericException(str( 
       boost::format("Avisynth: caught an access violation at 0x%08x,\nattempting to %s 0x%08x")
         % ei->ExceptionRecord->ExceptionAddress
         % ( ei->ExceptionRecord->ExceptionInformation[0] ? "write to" : "read from" )
@@ -148,22 +148,22 @@ void AviStream::ThrowAccessViolation(EXCEPTION_POINTERS * ei)
 
 void AviStream::ThrowIllegalInstruction(EXCEPTION_POINTERS * ei)
 {
-  throw Exception(str( boost::format("Avisynth: illegal instruction at 0x%08x") % ei->ExceptionRecord->ExceptionAddress ));
+  throw GenericException(str( boost::format("Avisynth: illegal instruction at 0x%08x") % ei->ExceptionRecord->ExceptionAddress ));
 }
 
 void AviStream::ThrowIntDivideByZero(EXCEPTION_POINTERS * ei)
 {
-  throw Exception(str( boost::format("Avisynth: division by zero at 0x%08x") % ei->ExceptionRecord->ExceptionAddress ));
+  throw GenericException(str( boost::format("Avisynth: division by zero at 0x%08x") % ei->ExceptionRecord->ExceptionAddress ));
 }
 
 void AviStream::ThrowStackOverFlow()
 {
-  throw Exception("Avisynth: stack overflow");
+  throw GenericException("Avisynth: stack overflow");
 }
 
 void AviStream::ThrowUnknownException(EXCEPTION_POINTERS * ei, DWORD code)
 {
-  throw Exception(str( 
+  throw GenericException(str( 
       boost::format("Avisynth: unknown exception 0x%08x at 0x%08x")
         % code 
         % ei->ExceptionRecord->ExceptionAddress

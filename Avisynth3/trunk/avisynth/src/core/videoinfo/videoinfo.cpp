@@ -103,17 +103,17 @@ void VideoInfo::CheckHasFrame(int n) const
 
 void VideoInfo::ThrowNoVideoException()
 {
-  throw Exception("clip has no video");
+  throw GenericException("clip has no video");
 }
 
 void VideoInfo::ThrowNoAudioException()
 {
-  throw Exception("clip has no audio");
+  throw GenericException("clip has no audio");
 }
  
 void VideoInfo::ThrowNoSuchFrameException(int n)
 {
-  throw Exception(str( boost::format("clip has no frame %d") % n ));
+  throw GenericException(str( boost::format("clip has no frame %d") % n ));
 }
 
 

@@ -40,12 +40,9 @@ namespace avs {
 class BadDimension : public Exception
 {
 
-public:  //structors
+public:  //diagnotic message
 
-  BadDimension()
-    : Exception("Bad Dimension") { }
-
-  //generated copy constructor and destructor are fine
+  virtual char const * what() const throw() { return "Bad Dimension"; }
 
 };
 

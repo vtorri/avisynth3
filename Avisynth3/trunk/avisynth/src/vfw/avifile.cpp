@@ -152,9 +152,9 @@ bool AviFile::DelayedInit()
       // get information about the clip
       vi_ = clip_->GetVideoInfo();
       if ( vi_->IsYV12() && ( vi_->GetWidth() & 3 ) )
-        throw Exception("Avisynth error: YV12 images for output must have a width divisible by 4 (use crop)!");
+        throw GenericException("Avisynth error: YV12 images for output must have a width divisible by 4 (use crop)!");
       if ( vi_->IsYUY2() && ( vi_->GetWidth() & 3 ) )
-        throw Exception("Avisynth error: YUY2 images for output must have a width divisible by 4 (use crop)!");      
+        throw GenericException("Avisynth error: YUY2 images for output must have a width divisible by 4 (use crop)!");      
     }    
     catch (Exception& ex)
     {

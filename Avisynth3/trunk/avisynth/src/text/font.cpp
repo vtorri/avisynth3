@@ -41,7 +41,7 @@ Font::Font(std::string const& name, int size, bool bold, bool italic)
                      italic, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
                      CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE | DEFAULT_PITCH, name.c_str() )  );
   if ( *pFont == NULL )
-    throw Exception("Unable to create font");
+    throw GenericException("Unable to create font");
 
   pFont_.reset( pFont, HFONTDeleter() );
 }
@@ -67,7 +67,7 @@ Dimension Font::GetTextBoundingBox(std::string const& text)
   ReleaseDC(NULL, hdc);
 
   if ( height == 0 )
-    throw Exception("GetTextBoundingBox failure");
+    throw GenericException("GetTextBoundingBox failure");
 
   return Dimension( (r.right + 7) >> 3, (height + 7) >> 3 );
 }

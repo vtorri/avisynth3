@@ -23,7 +23,7 @@
 
 //avisynth include
 #include "blender.h"
-
+#include "../ownedblock.h"
 
 namespace avs { namespace bw {
 

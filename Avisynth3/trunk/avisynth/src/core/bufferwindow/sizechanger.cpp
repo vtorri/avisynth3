@@ -25,6 +25,7 @@
 #include "copier.h"
 #include "sizechanger.h"
 #include "../geometry/vecteur.h"
+#include "../ownedblock.h"
 
 
 namespace avs { namespace bw {

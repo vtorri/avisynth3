@@ -23,6 +23,7 @@
 
 //avisynth include
 #include "leftturner.h"
+#include "../ownedblock.h"
 
 
 namespace avs { namespace bw {

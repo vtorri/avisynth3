@@ -24,6 +24,7 @@
 //avisynth include
 #include "copier.h"
 #include "../geometry/vecteur.h"
+#include "../ownedblock.h"
 
 
 namespace avs { namespace bw {

@@ -24,6 +24,7 @@
 //avisynth includes
 #include "../blitter.h"
 #include "verticalflipper.h"
+#include "../ownedblock.h"
 
 
 namespace avs { namespace bw {

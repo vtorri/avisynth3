@@ -27,11 +27,11 @@
 
 //avisynth includes
 #include "block.h"
+#include "forward.h"                          //for ColorSpace, Dimension, Blitter, CPVideoFrame
 #include "frametype.h"
 #include "ownedblock.h"
 
 //boost include
-#include <boost/shared_ptr.hpp>               //for shared_ptr
 #include <boost/enable_shared_from_this.hpp>  //for enable_shared_from_this
 
 
@@ -40,8 +40,6 @@ namespace avs {
 
 //declarations
 class Cache;                //in cache.h
-class Dimension;
-class ColorSpace;
 namespace clip { class Caching; }
 
 
@@ -76,14 +74,20 @@ public:  //memory stuff
   virtual void MemoryVirtuallyAllocated(int size) = 0;  //no throw
 
 
-public:  //NewCache method
+public:  //typedef
 
   typedef clip::Caching Caching;
+
+
+public:  //various Create or access methods
 
   //create a cache for the source caching clip
   virtual Cache * CreateCache(Caching const& source) = 0;
 
   virtual CPVideoFrame CreateFrame(ColorSpace& space, Dimension const& dim, FrameType type);
+
+  //fetch avisynth blitter
+  virtual Blitter const& GetBlitter();
 
 
 public:  //factory method

@@ -23,6 +23,7 @@
 
 //avisynth include
 #include "concrete.h"
+#include "../blitter.h"
 #include "../colorspace.h"
 #include "../timing/threadclock.h"
 #include "../runtime_environment.h"
@@ -41,6 +42,12 @@ OwnedBlock RuntimeEnvironment::NewOwnedBlock(int size, bool recycle)
 CPVideoFrame RuntimeEnvironment::CreateFrame(ColorSpace& space, Dimension const& dim, FrameType type)
 {
   return space.CreateFrame( shared_from_this(), dim, type );
+}
+
+
+Blitter const& RuntimeEnvironment::GetBlitter()
+{
+  return Blitter::Get();
 }
 
 

@@ -46,18 +46,17 @@ namespace avs { namespace text { namespace freetype {
 class Outline : public FT_Outline
 {
 
-private:  //declared but not implemented
 
-  Outline();
-  ~Outline();
+public:  //structors
+
   Outline(Outline const& other);
 
+  ~Outline();
+
+
+private:  //declared but not implemented
+
   Outline& operator=(Outline const& other);
-
-
-public:  //clone method
-
-  POutline clone() const;
 
 
 public:  //Outline interface

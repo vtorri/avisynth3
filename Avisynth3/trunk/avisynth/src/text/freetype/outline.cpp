@@ -34,37 +34,23 @@ namespace avs { namespace text { namespace freetype {
 
 
 
-namespace {
-
-
-//custom shared_ptr deleter for Outline
-struct OutlineDeleter
+Outline::Outline(Outline const& other)
 {
-  void operator()(Outline * outline) const
-  {
-    FT_Error error = FT_Outline_Done (Library::instance, outline );
-    
-    assert( error == 0 );
-  }
-};
-
-
-} //namespace anonymous
-
-
-POutline Outline::clone() const
-{
-  FT_Outline * result = NULL;
-
-  FT_Outline_New(Library::instance, n_points, n_contours, result);
-  if ( result == NULL )
-    throw std::bad_alloc();
-
-  FT_Error error = FT_Outline_Copy(const_cast<Outline *>(this), result);
+  FT_Error error = FT_Outline_New(Library::instance, n_points, n_contours, this);
   assert( error == 0 );
-
-  return POutline( static_cast<Outline *>(result), OutlineDeleter() );
+  
+  error = FT_Outline_Copy(const_cast<Outline *>(&other), this);
+  assert( error == 0 );
 }
+
+
+Outline::~Outline()
+{
+  FT_Error error = FT_Outline_Done(Library::instance, this);
+    
+  assert( error == 0 );
+}
+
 
 
 void Outline::Translate(VecteurFP6 const& shift)
@@ -78,7 +64,7 @@ BoxFP6 Outline::GetControlBox() const
   FT_BBox box;
   FT_Outline_Get_CBox(const_cast<Outline *>(this), &box);        //can't fail: returns void
 
-  return BoxFP6(VecteurFP6(box.xMin, box.yMin), VecteurFP6(box.xMax, box.yMax));
+  return BoxFP6(VecteurFP6(FP6(box.xMin), FP6(box.yMin)), VecteurFP6(FP6(box.xMax), FP6(box.yMax)));
 }
 
 

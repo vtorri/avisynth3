@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -66,10 +66,10 @@ public:  //structors
 
 public:  //NewCache method
 
-  virtual avs::Cache * CreateCache(Caching const& source)
+  virtual avs::Cache * CreateCache(FrameMaker const& maker)
   {
     typedef cache::concrete<cache::CacheLogic, EnvType> Cache;
-    return new Cache( boost::static_pointer_cast<EnvType>(shared_from_this()), source );
+    return new Cache( boost::static_pointer_cast<EnvType>(shared_from_this()), maker );
   }
 
 private:  //stop/restart timing when attempting memory cleanup

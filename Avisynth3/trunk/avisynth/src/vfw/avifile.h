@@ -83,21 +83,21 @@ public:  //IPersistFile
 
   STDMETHODIMP IsDirty() { 	return S_FALSE; }
 	STDMETHODIMP Load(LPCOLESTR lpszFileName, DWORD grfMode);
-  STDMETHODIMP Save(LPCOLESTR lpszFileName, BOOL fRemember) { return E_FAIL; }
-  STDMETHODIMP SaveCompleted(LPCOLESTR lpszFileName) { return S_OK; }
-  STDMETHODIMP GetCurFile(LPOLESTR *lplpszFileName) { *lplpszFileName = NULL; return E_FAIL; }
+  STDMETHODIMP Save(LPCOLESTR /*lpszFileName*/, BOOL /*fRemember*/) { return E_FAIL; }
+  STDMETHODIMP SaveCompleted(LPCOLESTR /*lpszFileName*/) { return S_OK; }
+  STDMETHODIMP GetCurFile(LPOLESTR * lplpszFileName) { *lplpszFileName = NULL; return E_FAIL; }
 
 	
 public:  //IAVIFile
 
-  STDMETHODIMP CreateStream(PAVISTREAM *ppStream, AVISTREAMINFOW *psi) { *ppStream = NULL; return AVIERR_READONLY; }
+  STDMETHODIMP CreateStream(PAVISTREAM *ppStream, AVISTREAMINFOW * /*psi*/) { *ppStream = NULL; return AVIERR_READONLY; }
   STDMETHODIMP EndRecord() { return AVIERR_READONLY; }
 	STDMETHODIMP GetStream(PAVISTREAM *ppStream, DWORD fccType, LONG lParam);
 	STDMETHODIMP Info(AVIFILEINFOW *psi, LONG lSize);
 	//STDMETHODIMP Open(LPCSTR szFile, UINT mode, LPCOLESTR lpszFileName);
-  STDMETHODIMP ReadData(DWORD fcc, LPVOID lp, LONG *lpcb) { return AVIERR_NODATA; }
-  STDMETHODIMP WriteData(DWORD fcc, LPVOID lpBuffer, LONG cbBuffer) { return AVIERR_READONLY; }
-  STDMETHODIMP DeleteStream(DWORD fccType, LONG lParam) { return AVIERR_READONLY; }
+  STDMETHODIMP ReadData(DWORD /*fcc*/, LPVOID /*lp*/, LONG * /*lpcb*/) { return AVIERR_NODATA; }
+  STDMETHODIMP WriteData(DWORD /*fcc*/, LPVOID /*lpBuffer*/, LONG /*cbBuffer*/) { return AVIERR_READONLY; }
+  STDMETHODIMP DeleteStream(DWORD /*fccType*/, LONG /*lParam*/) { return AVIERR_READONLY; }
 
   //STDMETHODIMP Save(LPCSTR szFile, AVICOMPRESSOPTIONS FAR *lpOptions, AVISAVECALLBACK lpfnCallback) { return AVIERR_READONLY; }
 				
@@ -105,7 +105,7 @@ public:  //IAVIFile
 private:  //implementation
     
   bool DelayedInit();    
-  void MakeErrorStream(std::string const& msg) { }
+  void MakeErrorStream(std::string const& /*msg*/) { }   //IMPLEMENT ME !!!!!!!!
 
   friend class AviStream;  //so can call the above
 

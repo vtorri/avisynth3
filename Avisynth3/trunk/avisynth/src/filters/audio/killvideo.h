@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -56,7 +56,7 @@ public:  //clip general interface
   virtual CPVideoInfo GetVideoInfo() const;
 
   virtual CPVideoFrame GetFrame(int n) const;
-  virtual void GetAudio(void * buffer, int64 start, int count) const { GetChildAudio(buffer, start, count); }
+  virtual void GetAudio(void * buffer, long long start, int count) const { GetChildAudio(buffer, start, count); }
 
 
 public:  //Simplify method

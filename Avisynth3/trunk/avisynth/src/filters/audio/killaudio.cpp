@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,6 @@
 #include "../source/voidclip.h"
 #include "../../core/videoinfo.h"
 #include "../../clip/folded/make.h"
-#include "../../core/cow_shared_ptr.h"
 #include "../../core/exception/noaudio.h"
 
 
@@ -44,7 +43,7 @@ CPVideoInfo KillAudio::GetVideoInfo() const
 }
 
 
-void KillAudio::GetAudio(void * buf, int64 start, int count) const
+void KillAudio::GetAudio(void * /*buf*/, long long /*start*/, int /*count*/) const
 {
   throw exception::NoAudio();
 }
@@ -64,7 +63,7 @@ PClip KillAudio::Simplify() const
 
 PClip KillAudio::Create(PClip const& child)
 { 
-  return PClip( (Clip *)new clip::folded::Make<KillAudio, WeakPClip>(child) ); 
+  return PClip( static_cast<Clip *>(new clip::folded::Make<KillAudio, WeakPClip>(child)) ); 
 }
 
 

@@ -56,7 +56,7 @@ public:  //clip general interface
   virtual CPVideoInfo GetVideoInfo() const;
 
   virtual CPVideoFrame GetFrame(int n) const { return GetChildFrame(n); }
-  virtual void GetAudio(void * buf, int64 start, int count) const;
+  virtual void GetAudio(void * buf, long long start, int count) const;
 
 
 public:  //Simplify method

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 #include "../core/videoframe.h"
 #include "antialiaser/bitcount.h"
 //#include "antialiaser/bitexpand.h"
-#include "../core/exception/unsupportedcolorspace.h"
+#include "../core/exception/colorspace/unsupported.h"
 
 
 namespace avs { namespace text {
@@ -57,7 +57,7 @@ void Antialiaser::Apply(VideoFrame& frame, int textColor, int haloColor)
   case ColorSpace::I_YUY2: ApplyYUY2( frame, textColor, haloColor ); break;
   case ColorSpace::I_YV12: ApplyYV12( frame, textColor, haloColor ); break;
   
-  default: throw exception::UnsupportedColorSpace(frame.GetColorSpace());
+  default: throw exception::cspace::Unsupported(frame.GetColorSpace());
   }
   
 }

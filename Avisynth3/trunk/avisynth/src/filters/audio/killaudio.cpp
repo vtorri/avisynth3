@@ -22,6 +22,7 @@
 
 
 #include "killaudio.h"
+#include "killaudio/folded.h"
 #include "../source/voidclip.h"
 #include "../../core/videoinfo.h"
 #include "../../core/cow_shared_ptr.h"
@@ -54,9 +55,10 @@ PClip KillAudio::Simplify() const
   if ( ! child_vi->HasAudio() )                             //if child has no audio
     return GetChild();                                      //child is equivalent
 
-  return FoldedSimplifiableType::Simplify();
+  return SimplifiableType::Simplify();
 }
 
 
+PClip KillAudio::Create(PClip const& child) { return PClip( (Clip *)new killaudio::Folded(child) ); }
 
 } } //namespace avs::filters

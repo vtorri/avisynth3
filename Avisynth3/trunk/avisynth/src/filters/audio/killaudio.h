@@ -26,7 +26,7 @@
 
 //avisynth includes
 #include "../../clip/onechild/concrete.h"
-#include "../../clip/onechild/foldedsimplifiable.h"
+#include "../../clip/onechild/simplifiable.h"
 
 
 #pragma warning ( push )           //push warning state
@@ -42,14 +42,16 @@ namespace avs { namespace filters {
 //
 //  Removes the audio from its child
 //
-class KillAudio : public clip::onechild::FoldedSimplifiable<KillAudio, WeakPClip>
+class KillAudio : public clip::onechild::Simplifiable<KillAudio>
                 , public clip::onechild::Concrete
 {
 
-public:  //constructor
+protected:  //structors
 
   KillAudio(PClip const& child)
     : Concrete( child ) { }
+
+  //generated destructor is fine
 
 
 public:  //clip general interface
@@ -71,14 +73,9 @@ public:  //child changing clone
   virtual PClip clone(PClip const& child) const { return Create(child); }
 
 
-private:  //GetKey method
-
-  virtual WeakPClip GetKey() const { return GetChild(); }
-
-
 public:  //factory method
 
-  static PClip Create(PClip const& child) { return PClip( (Clip *)new KillAudio(child) ); }
+  static PClip Create(PClip const& child); // { return PClip( (Clip *)new KillAudio(child) ); }
 
 };
 

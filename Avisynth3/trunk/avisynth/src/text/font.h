@@ -34,13 +34,11 @@
 #include <string>
 
 
-
 namespace avs { namespace text {
 
 
 //declaration
 namespace detail { struct GetHFONT; }  //struct to retrieve the win HFONT from a Font object
-
 
 
 
@@ -74,8 +72,7 @@ private:  //HFONTDeleter struct
     void operator()(void * ptr) const; // { DeleteObject( *(HFONT *)pFont ); }
   };
 
-
-  friend struct detail::GetHFONT;
+  friend struct GetHFONT;
 
 };
 

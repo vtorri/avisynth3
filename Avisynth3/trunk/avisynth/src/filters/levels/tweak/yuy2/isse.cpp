@@ -46,13 +46,8 @@ CPVideoFrame ISSE::MakeFrame(CPVideoFrame const& source) const
                   | static_cast<long long>(Sin) << 16
                   | static_cast<long long>(Cos);
 
-  long long satcont64 = static_cast<long long>(Sat) << 48
-                      | static_cast<long long>(Cont) << 32
-                      | static_cast<long long>(Sat) << 16
-                      | static_cast<long long>(Cont);
-
-  long long bright64 = static_cast<long long>(Bright_p16) << 32
-                     | static_cast<long long>(Bright_p16);
+  int satcont = Sat << 16 | Cont;
+  int bright = Bright_p16;             //just put on the stack so the asm can take the value
 
 
 #if defined(_INTEL_ASM) && ! defined(_FORCE_NASM)
@@ -67,11 +62,13 @@ CPVideoFrame ISSE::MakeFrame(CPVideoFrame const& source) const
   __asm
   {
     pxor		   mm0, mm0
-    movq		   mm1, norm			    // 128 0 128 0
+    movq		   mm1, norm			    // 128   0  128  0
     movq		   mm2, hue64     		// Cos -Sin Sin Cos (fix12)
-    movq		   mm3, satcont64 		// Sat Cont Sat Cont (fix9)
+    movd		   mm3, satcont   		//  0    0  Sat Cont (fix9)
+    punpckldq  mm3, mm3           // Sat Cont Sat Cont (fix9)
     movq		   mm4, mm1
-    paddw		   mm4, bright64  		// 128 Bright_p16 128 Bright_p16
+    paddd		   mm4, bright    		// 128   0  128 Bright_p16
+    punpckldq  mm4, mm4           // 128 Bright_p16 128 Bright_p16
 
     mov			   esi, wp.ptr    		
     mov			   edx, y         		// height
@@ -111,8 +108,8 @@ CPVideoFrame ISSE::MakeFrame(CPVideoFrame const& source) const
 
 #else
 
-//use nasm code
-tweak_yuy2_isse_nasm(wp.ptr, wp.width>>2, wp.height, wp.padValue(), hue64, satcont64, bright64);
+  //use nasm code
+  tweak_yuy2_isse_nasm(wp.ptr, wp.width>>2, wp.height, wp.padValue(), hue64, satcont64, bright64);
 
 #endif //defined(_INTEL_ASM) && ! defined(_FORCE_NASM)
 

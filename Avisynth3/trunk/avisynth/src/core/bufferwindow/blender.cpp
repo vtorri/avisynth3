@@ -131,7 +131,7 @@ void Blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom
     emms
   }
 #else
-#error "Blender : missing code path
+#error "Blender : missing code path"
 #endif //_INTEL_ASM
 
 }

@@ -29,6 +29,7 @@
 // freetype includes
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include FT_GLYPH_H
 
 //assert include
 #include <assert.h>
@@ -48,13 +49,10 @@ Face::Face(std::string const& fileName, int index)
   face_.reset(face, &FT_Done_Face);  
 }
   
-
-
 unsigned Face::GetCharIndex(unsigned charCode)
 {
   return FT_Get_Char_Index(face_.get(), charCode);
 }
-
 
 
 bool Face::HasKerning() const
@@ -62,34 +60,39 @@ bool Face::HasKerning() const
   return FT_HAS_KERNING(face_.get()) != 0;
 }
 
+
 Vecteur Face::GetKerning(unsigned leftGlyph, unsigned rightGlyph) const
 {
   FT_Vector result;
-
   FT_Error error = FT_Get_Kerning(face_.get(), leftGlyph, rightGlyph, FT_KERNING_DEFAULT, &result);
 
   assert( error == 0 );
 
-  return Vecteur( result.x, result.y );
+  return Vecteur( result.x >> 6, result.y >>6);
+}
+
+  
+void Face::SetCharSize (Dimension const& size, Dimension const& resolution)  
+{   
+  FT_Error error = FT_Set_Char_Size(face_.get(), size.GetWidth(), size.GetHeight()
+                                               , resolution.GetWidth(), resolution.GetHeight());
+  assert( error == 0 );    //assuming it normally always suceeds
+}
+
+
+Glyph Face::GetGlyph(unsigned glyphIndex)
+{
+  FT_Glyph glyph;
+  if ( FT_Load_Glyph(face_.get(), glyphIndex, FT_LOAD_DEFAULT) != 0 )
+    throw avs::exception::Generic ("Error while loading a glyphslot in a Face.");
+  
+  if ( FT_Get_Glyph(face_.get()->glyph, &glyph) != 0 )
+    throw avs::exception::Generic ("Error while retrieving a glyph from a glyphslot.");
+  
+  return Glyph(glyph);
 }
 
 /*
-
-  void Face::set_char_size (FT_F26Dot6 char_width,
-			    FT_F26Dot6 char_height,
-			    FT_UInt    horz_resolution,
-			    FT_UInt    vert_resolution)
-  {
-    FT_Error error;
-    
-    error = FT_Set_Char_Size (face, 
-			      char_width, char_height,
-			      horz_resolution, vert_resolution);
-    
-    if (error)
-      throw avs::exception::Generic ("Error while setting the character dimensions of a Face.");
-  }
-
   void Face::set_pixel_sizes (FT_UInt pixel_width,
 			      FT_UInt pixel_height)
   {

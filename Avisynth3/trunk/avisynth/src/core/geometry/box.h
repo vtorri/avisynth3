@@ -25,8 +25,8 @@
 #define __AVS_BOX_H__
 
 //avisynth include
-#include "../core/vecteur.h"
-#include "../core/dimension.h"
+#include "vecteur.h"
+#include "dimension.h"
 
 //boost include
 #include <boost/operators.hpp>
@@ -36,6 +36,10 @@ namespace avs {
 
 
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+//  Box
+//
+//
 class Box
      : boost::addable<Box             //defines Box + Box
      , boost::addable2<Box, Vecteur>  //defines Box + Vecteur
@@ -43,13 +47,13 @@ class Box
 {
 
   Vecteur pos_;
-  Dimension size_;
+  Dimension dim_;
 
 
 public:  //structors
 
   Box() { }
-  Box(Vecteur const& pos, Dimension const& size) : pos_( pos ), size_( size ) { }
+  Box(Vecteur const& pos, Dimension const& dim) : pos_( pos ), dim_( dim ) { }
   
   //generated destructor and copy constructor are fine
 
@@ -58,7 +62,13 @@ public:  //assignment
 
   //generated operator= is fine
 
-  void swap(Box& other) { pos_.swap(other.pos_), size_.swap(other.size_);
+  void swap(Box& other) { pos_.swap(other.pos_); dim_.swap(other.dim_); }
+
+
+public:  //read access
+
+  Vecteur const& GetPosition() const { return pos_; }
+  Dimension const& GetDimension() const { return dim_; }
 
 
 public:  //operators
@@ -72,13 +82,13 @@ public:  //operators
   Box& operator+=(Box const& other)
   {
     Vecteur position = min(pos_, other.pos_);                                     //get top left corner of the box
-    size_ = Dimension( max(pos_ + size_, other.pos_ + other.size_) - position );  //calculate bottom right
+    dim_ = Dimension( max(pos_ + dim_, other.pos_ + other.dim_) - position );     //calculate bottom right
     pos_ = position;                                                              //update pos_
     return *this;
   }
 
-  bool operator==(Box const& other) const { return size_ == other.size_ && position_ == other.position_; }
-  bool operator!=(Box const& other) const { return size_ != other.size_ || position_ != other.position_; }
+  bool operator==(Box const& other) const { return dim_ == other.dim_ && pos_ == other.pos_; }
+  bool operator!=(Box const& other) const { return dim_ != other.dim_ || pos_ != other.pos_; }
 
 };
 

@@ -26,13 +26,18 @@
 
 
 # ifdef _MSC_VER
+
 #   define AVS_NORETURN  __declspec(noreturn)
 #   define AVS_NOVTABLE  __declspec(novtable)
 #   define AVS_DLLEXPORT __declspec(dllexport)
 #   define AVS_DLLIMPORT __declspec(dllimport)
 #   define AVS_STDCALL   __stdcall
 #   define AVS_CDECL     __cdecl
+
+#   define AVS_HAS_INTEL_INLINE_ASM
+
 # else //other plaforms
+
 #   define AVS_NOVTABLE
 #   define AVS_NORETURN  __attribute__((noreturn))
     //FIXME: Only gcc 3.5/4.0 supports visibility - note for later
@@ -40,7 +45,11 @@
 #   define AVS_DLLIMPORT
 #   define AVS_STDCALL   __attribute((__stdcall__))
 #   define AVS_CDECL     __attribute((__cdecl__))
+
+#   define AVS_HAS_ATT_INLINE_ASM
+
 # endif //end for platforms
+
 
 #endif //__AVS_DEFINE_H__
 

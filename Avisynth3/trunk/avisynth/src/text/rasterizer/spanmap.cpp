@@ -68,12 +68,12 @@ SpanMap SpanMap::Thicken(float radius) const
 void SpanMap::Realize(WindowPtr const& wp, int step) const
 {
   Map::const_iterator it = map_.lower_bound(0);
-  Map::const_iterator end = map_.upper_bound(wp.height - 1);
+  Map::const_iterator end = map_.upper_bound( (wp.height << 3) - 1 );
 
-  LineSpan span(0, wp.width);
+  LineSpan span(0, wp.width << 3);
 
   for ( ; it != end; ++it )
-    it->second.Realize(wp.at(0, it->first), span, step);
+    it->second.Realize(wp.at(0, it->first >> 3), span, step);
 }
 
 

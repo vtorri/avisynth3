@@ -95,7 +95,7 @@ public:
 
 //instantation of the clock_ static member
 template <class Clock>
-Clock const timer<Clock>::clock_;
+Clock const timer<Clock>::clock_ = Clock();
 
 
 } } //namespace avs::timing

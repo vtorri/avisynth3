@@ -21,8 +21,8 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_PARSER_FUNCTOR_ASSIGNER_H__
-#define __AVS_PARSER_FUNCTOR_ASSIGNER_H__
+#ifndef __AVS_PARSER_FUNCTOR_POPASSIGNER_H__
+#define __AVS_PARSER_FUNCTOR_POPASSIGNER_H__
 
 //avisynth include
 #include "../vmstate.h"
@@ -33,22 +33,23 @@ namespace avs { namespace parser { namespace functor {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-//  assigner<Holder>
+//  popassigner<Holder>
 //
-//  assign stack top to the holder value
+//  assign stack top to the holder value, and pops stack top
 //
 template <typename Holder>
-struct assigner
+struct popassigner
 {
 
-  Holder holder_;
+  Holder const holder_;
 
-  assigner(Holder const& holder)
+  popassigner(Holder const& holder)
     : holder_( holder ) { }
 
   void operator()(VMState& state) const 
   { 
     holder_(state) = state.top(); 
+    state.pop(); 
   }
 
 };
@@ -56,4 +57,4 @@ struct assigner
 
 } } } //namespace avs::parser::functor
 
-#endif //__AVS_PARSER_FUNCTOR_ASSIGNER_H__
+#endif //__AVS_PARSER_FUNCTOR_POPASSIGNER_H__

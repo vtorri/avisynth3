@@ -21,8 +21,8 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_EXCEPTION_NOSUCHFILE_H__
-#define __AVS_EXCEPTION_NOSUCHFILE_H__
+#ifndef __AVS_EXCEPTION_BROKENHFILE_H__
+#define __AVS_EXCEPTION_BROKENHFILE_H__
 
 //avisynth include
 #include "../exception.h"
@@ -36,11 +36,11 @@ namespace avs { namespace exception {
 
 
 //////////////////////////////////////////////////////////////////////////////
-//  exception::NoSuchFile
+//  exception::BrokenFile
 //
-//  the file requested doesn't exist
+//  the file is broken or in an invalid format
 //
-class NoSuchFile
+class BrokenFile
 {
 
   std::string fileName_;
@@ -48,7 +48,7 @@ class NoSuchFile
 
 public:  //structors
 
-  NoSuchFile(std::string const& fileName)
+  BrokenFile(std::string const& fileName)
     : fileName_( fileName ) { }
 
   //generated copy constructor and destructor are fine
@@ -58,14 +58,14 @@ public:  //diagnostic message
 
   virtual std::string msg() const
   {
-    return str( boost::format("File %s doesn't exist") % fileName_ );
+    return str( boost::format("File %s is borken or in an invalid format") % fileName_ );
   }
 
-  virtual char const * what() const throw() { return "File doesn't exist"; }
+  virtual char const * what() const throw() { return "File is broken or in an invalid fomat"; }
 
 };
 
 
 } } //namespace avs::exception
 
-#endif //__AVS_EXCEPTION_NOSUCHFILE_H__
+#endif //__AVS_EXCEPTION_BROKENHFILE_H__

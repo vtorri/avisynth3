@@ -59,7 +59,7 @@ STDAPI DllGetClassObject(CLSID const& rclsid, IID const& riid, void ** ppv)
 
 STDAPI DllCanUnloadNow() 
 {
-  return avs::com::Base::ObjectCount() == 0 ? S_OK : S_FALSE;
+  return avs::com::InstanceCounted::Count() == 0 ? S_OK : S_FALSE;
 }
 
 

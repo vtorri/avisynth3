@@ -177,7 +177,7 @@ void AviFile::MakeErrorStream(const char* msg) {
 
 STDMETHODIMP AviFile::Info(AVIFILEINFOW *pfi, LONG lSize) 
 {
-  if ( lSize < sizeof(AVIFILEINFOW) )
+  if ( lSize < LONG(sizeof(AVIFILEINFOW)) )
     return AVIERR_BUFFERTOOSMALL;
 
 	if ( ! DelayedInit() ) 
@@ -238,6 +238,7 @@ AviStream * AviFile::CreateStream(DWORD fccType, int lParam)
         case ColorSpace::I_RGB32: 
         case ColorSpace::I_YUY2: return new avistream::Interleaved(*this);
         case ColorSpace::I_YV12: return new avistream::YV12(*this);
+        default:
         }
       return NULL;
     case 1:

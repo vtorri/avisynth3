@@ -58,7 +58,7 @@ public:  //Function interface
   virtual char GetReturnType() const { return returnType_; }  
   virtual char const * GetName() const { return name_.c_str(); }
   virtual char const * GetPrototype() const { return prototype_.c_str(); }
-  virtual PPlugin GetMotherPlugin() const { return PPlugin(); }
+  virtual linker::PPlugin GetMotherPlugin() const { return linker::PPlugin(); }
 
   virtual parser::ElementalOperation const& GetOperation() const { return op_; }
 

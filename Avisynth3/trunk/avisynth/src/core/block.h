@@ -20,6 +20,7 @@
 #ifndef __AVS_BLOCK_H__
 #define __AVS_BLOCK_H__
 
+
 //boost include
 #include <boost/shared_ptr.hpp>
 
@@ -54,7 +55,7 @@ typedef unsigned char BYTE;
 class Block
 {
 
-  boost::shared_ptr<BYTE> block;
+  boost::shared_ptr<BYTE> block;  //underlying shared_ptr
 
 
 public:  
@@ -68,11 +69,11 @@ public:
 
 public:  //constructors
 
-  Block(int size);              //basic constructor
+  Block(int size);               //basic constructor
 
-  Block(int size, recycle);     //recycling constructor
+  Block(int size, recycle);      //recycling constructor
 
-  Block(Block const& other)     //copy constructor
+  Block(Block const& other)      //copy constructor
     : block( other.block ) { }
 
 
@@ -80,12 +81,23 @@ public:  //assignment
 
   Block& operator=(Block const& other) { block = other.block; return *this; }
 
+  void swap(Block& other) { block.swap( other.block ); }
+
+
+public:  //reset methods
+
+  void reset(int size) { Block(size).swap(*this); }
+
+  void reset(int size, recycle r) { Block(size, r).swap(*this); }
+
 
 public:  //public interface
 
   BYTE * get() const { return block.get(); }
 
   int size() const;
+
+  bool unique() const { return block.unique(); }    //required by OwnedBlock
 
 
 private:  //implementation details 
@@ -95,11 +107,15 @@ private:  //implementation details
 
   static BYTE * New(int& size);
 
-  static void Delete(void * ptr) throw();
+  static void Delete(void * ptr);  //no throw
 
-  static void Recycle(void * ptr) throw();
+  static void Recycle(void * ptr); //no throw
 
 };//Block
+
+
+
+
 
 
 } //namespace avs

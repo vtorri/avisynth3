@@ -17,7 +17,7 @@
 // http://www.gnu.org/copyleft/gpl.html .
 
 
-//avisynth includes
+//avisynth include
 #include "block.h"
 
 //stl include
@@ -112,15 +112,15 @@ BYTE * Block::New(int& size)
 }
 
 
-void Block::Delete(void * ptr) throw()
+void Block::Delete(void * ptr)
 {
-  _aligned_free(ptr);                         //free ptr
+  _aligned_free(ptr);                        //free ptr
 
   Manager().sizeMap().erase( (BYTE *)ptr );  //erase size entry
 }
 
 
-void Block::Recycle(void * ptr) throw()
+void Block::Recycle(void * ptr)
 {
   Manager manager;
 
@@ -136,7 +136,7 @@ void Block::Recycle(void * ptr) throw()
     int size = it->second;             //take the size
     manager.sizeMap().erase(it);       //erase size entry
 
-    //necessary for not throw guarantee
+    //necessary for no throw guarantee
     try { 
       manager.recycleMap().insert( std::make_pair(size, (BYTE *)ptr) );
     }
@@ -146,5 +146,10 @@ void Block::Recycle(void * ptr) throw()
     }
   }
 }
+
+
+
+
+
 
 } //namespace avs

@@ -21,12 +21,12 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_EXCEPTION_COLORSPACE_INVALIDWIDTH_H__
-#define __AVS_EXCEPTION_COLORSPACE_INVALIDWIDTH_H__
+#ifndef __AVS_EXCEPTION_COLORSPACE_INVALIDHEIGHT_H__
+#define __AVS_EXCEPTION_COLORSPACE_INVALIDHEIGHT_H__
 
 //avisynth includes
-#include "../../exception.h"
-#include "../../colorspace.h"
+#include "../exception.h"
+#include "../colorspace.h"
 
 //boost include
 #include <boost/format.hpp>
@@ -37,22 +37,24 @@ namespace avs { namespace exception { namespace cspace {
 
 
 //////////////////////////////////////////////////////////////////////////////////
-//  InvalidWidth
+//  InvalidHeight
 //
-//  reports that the ColorSpace doesn't handle given width
+//  reports that the ColorSpace doesn't handle given height
 //
-class InvalidWidth : public Exception
+class InvalidHeight : public Exception
 {
 
   ColorSpace const * space_;
-  int width_;
+  int height_;
+  bool interlaced_;
 
 
 public:  //structors
 
-  InvalidWidth(ColorSpace const& space, int width, int /*modulo*/)
+  InvalidWidth(ColorSpace const& space, int height, int /*modulo*/, bool interlaced)
     : space_( &space ) 
-    , width_( width ) { }
+    , height_( height )
+    , interlaced_( interlaced ) { }
 
   //generated copy constructor and destructor are fine
 
@@ -61,7 +63,8 @@ public:  //diagnotic message
 
   virtual std::string msg() const
   {
-    return str( boost::format("%s: illegal width value: %d") % space_->GetName() % width_ );
+    return str( boost::format( interlaced_ ? "%s: illegal interlaced height value: %d" 
+                                           : "%s: illegal height value: %d" ) % space_->GetName() % height_ );
   }
 
 };
@@ -69,4 +72,4 @@ public:  //diagnotic message
 
 } } } //namespace avs::exception::cspace
 
-#endif //__AVS_EXCEPTION_COLORSPACE_INVALIDWIDTH_H__
+#endif //__AVS_EXCEPTION_COLORSPACE_INVALIDHEIGHT_H__

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -51,19 +51,19 @@ protected:  //constructors
 
 protected:  //Pipeline MakeFrame method
 
-  virtual CPVideoFrame MakeFrame(CPVideoFrame const& source) const;
+  virtual CPVideoFrame MakeFrame(PVideoFrame const& source) const;
 
 
 public:  //factory methods
 
   static PClip Create(PClip const& child, double hue, double sat, double bright, double cont)
   {
-    return PClip( (Clip *)new YUY2(child, hue, sat, bright, cont) );
+    return PClip( static_cast<Clip *>(new YUY2(child, hue, sat, bright, cont)) );
   }
 
   static PClip Create(PClip const& child, Tweak const& other)
   {
-    return PClip( (Clip *)new YUY2(child, other) );
+    return PClip( static_cast<Clip *>(new YUY2(child, other)) );
   }
 
 };

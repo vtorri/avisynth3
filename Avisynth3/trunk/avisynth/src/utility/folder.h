@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -54,11 +54,11 @@ template <class Key, class Value, class Expired> class folder
   typedef boost::mutex Mutex;
   typedef boost::mutex::scoped_lock Lock;
 
-  Mutex mutex_;          //provides synchronisation
-  InstanceMap map_;      //underlying map
-  unsigned op_count_;    //used to regularly clean up the map of obsolete entries
+  Mutex mutex_;            //provides synchronisation
+  InstanceMap map_;        //underlying map
+  unsigned op_count_;      //used to regularly clean up the map of obsolete entries
 
-  Expired expired;       //functor used to detect obsolete entries
+  Expired const expired;   //functor used to detect obsolete entries
 
 
 public:  //structors
@@ -134,7 +134,7 @@ public:  //Proxy inner class
     {
       Lock lock( parent_.mutex_ );
 
-      InstanceMap::iterator it = parent_.map_.find(key_);
+      typename InstanceMap::iterator it = parent_.map_.find(key_);
       if ( it != parent_.map_.end() )
         return it->second;
 
@@ -147,7 +147,7 @@ public:  //Proxy inner class
     {
       Lock lock( parent_.mutex_ );
 
-      InstanceMap::iterator it = parent_.map_.find( key_ );
+      typename InstanceMap::iterator it = parent_.map_.find( key_ );
       return it != parent_.map_.end() ? it->second : Value();
     }
   
@@ -181,7 +181,7 @@ private:  //implementation detail
 
   void UnlockedCleanUp()
   {
-    for(InstanceMap::iterator it = map_.begin(); it != map_.end(); )
+    for(typename InstanceMap::iterator it = map_.begin(); it != map_.end(); )
       if ( expired(it->first) || expired(it->second) )
         map_.erase(it++);
       else ++it;

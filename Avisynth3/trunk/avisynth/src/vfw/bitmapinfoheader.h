@@ -24,8 +24,9 @@
 #ifndef __AVS_VFW_BITMAPINFOHEADER_H__
 #define __AVS_VFW_BITMAPINFOHEADER_H__
 
-//avisynth include
+//avisynth includes
 #include "../core/forward.h"
+#include "../core/dimension.h"
 
 //windows includes
 #include <windows.h>
@@ -36,6 +37,11 @@ namespace avs { namespace vfw {
 
 
 
+/////////////////////////////////////////////////////////////////////////////////
+//  BitmapInfoHeader
+//
+//  a more friendly replacement for VFW BITMAPINFOHEADER
+//
 class BitmapInfoHeader : public BITMAPINFOHEADER
 {
 
@@ -48,10 +54,17 @@ public:  //structors
   //generated copy constructor and destructor are fine
 
 
-public:  //queries
+public:  //read access
 
   //returns NULL if it doesn't map to an avs color space
   ColorSpace * GetColorSpace() const;
+  Dimension GetDimension() const { return Dimension(biWidth, biHeight); }
+
+
+public:  //write access
+
+  void SetColorSpace(ColorSpace& space);
+  void SetDimension(Dimension const& dim);
 
 };
 

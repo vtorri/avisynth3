@@ -37,6 +37,7 @@ BitmapInfoHeader::BitmapInfoHeader()
   memset( static_cast<BITMAPINFOHEADER *>(this), 0, sizeof(BITMAPINFOHEADER) );
 
   biSize        = sizeof(BITMAPINFOHEADER);
+  biPlanes      = 1;
 }
 
 
@@ -45,12 +46,10 @@ BitmapInfoHeader::BitmapInfoHeader(VideoInfo const& vi)
   memset( static_cast<BITMAPINFOHEADER *>(this), 0, sizeof(BITMAPINFOHEADER) );
 
   biSize        = sizeof(BITMAPINFOHEADER);
-  biWidth       = vi.GetWidth();
-  biHeight      = vi.GetHeight();
   biPlanes      = 1;
-  biBitCount    = vi.BitsPerPixel();
-  biCompression = vi.GetColorSpace().GetFourCC();
-  biSizeImage   = vi.GetColorSpace().GetBitmapSize(vi.GetDimension());
+
+  SetDimension(vi.GetDimension());
+  SetColorSpace(vi.GetColorSpace());
 }
 
 
@@ -75,6 +74,23 @@ ColorSpace * BitmapInfoHeader::GetColorSpace() const
 }
 
 
+void BitmapInfoHeader::SetColorSpace(ColorSpace& space)
+{
+  biBitCount    = space.GetBitsPerPixel();
+  biCompression = space.GetFourCC();
+  biSizeImage   = space.GetBitmapSize(GetDimension());
+}
+
+
+void BitmapInfoHeader::SetDimension(Dimension const& dim)
+{
+  biWidth       = dim.GetWidth();
+  biHeight      = dim.GetHeight();
+
+  ColorSpace * space = GetColorSpace();
+  if ( space != NULL )
+    biSizeImage = space->GetBitmapSize(dim);
+}
 
 
 } } //namespace avs::vfw

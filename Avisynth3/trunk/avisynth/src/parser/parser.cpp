@@ -55,24 +55,24 @@ PClip Parser::operator ()(std::string const& src)
 
 
   CodeCouple code;
-  VarTable localTable, globalTable;
-  boost::optional<int> last;
+  LocalContext localCtxt;
+  GlobalContext globalCtxt;
 
   Script script;
   //Statement statement;
   //Expression expression;
 
   parse(src.c_str(), 
-      script( CodeCouple(), boost::ref(localTable), boost::ref(last), boost::ref(globalTable), boost::ref(functionTable) )
-          //statement( CodeCouple(), boost::ref(localTable), boost::ref(last), boost::ref(globalTable), boost::ref(functionTable), 'c' )
-          //expression( value::Expression(), boost::ref(varTable), last )
+      script( CodeCouple(), boost::ref(localCtxt), boost::ref(globalCtxt) )
+      //statement( CodeCouple(), boost::ref(localCtxt), boost::ref(globalCtxt), 'c' )
+      //expression( value::Expression(), boost::ref(localCtxt), boost::ref(globalCtxt) )
       [            
         var(code) += arg1
       ]
       , spirit::blank_p);
 
 
-  VMState state(env, globalTable.size());  
+  VMState state(env, globalCtxt.get<0>().size());  
   //state.push(1);
 
   StatementCode statCode = code;

@@ -36,7 +36,7 @@ namespace avs { namespace text { namespace freetype {
 
 Outline::Outline(Outline const& other)
 {
-  FT_Error error = FT_Outline_New(Library::instance, n_points, n_contours, this);
+  FT_Error error = FT_Outline_New(Library::instance, other.n_points, other.n_contours, this);
   assert( error == 0 );
   
   error = FT_Outline_Copy(const_cast<Outline *>(&other), this);

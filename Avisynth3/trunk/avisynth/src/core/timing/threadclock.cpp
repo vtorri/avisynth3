@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -38,14 +38,14 @@ namespace avs { namespace timing {
 
 
 
-int64 ThreadClock::operator ()() const
+long long ThreadClock::operator ()() const
 {
 #ifdef _WIN32
 
   union
   {
     FILETIME ft;
-    int64 i64;
+    long long i64;
   } ct, et, kt, ut;
 
   GetThreadTimes(GetCurrentThread(), &ct.ft, &et.ft, &kt.ft, &ut.ft);

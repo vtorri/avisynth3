@@ -24,9 +24,8 @@
 #ifndef __AVS_FILTERS_RESIZE_PATTERN_BASE_H__
 #define __AVS_FILTERS_RESIZE_PATTERN_BASE_H__
 
-//boost include
-#include <boost/utility.hpp>      //for noncopyable
-#include <boost/shared_ptr.hpp>   //for shared_ptr
+//avisynth include
+#include "../../../core/ownedblock.h"
 
 
 namespace avs { namespace filters { namespace resize { namespace pattern {
@@ -38,27 +37,54 @@ namespace avs { namespace filters { namespace resize { namespace pattern {
 //
 //  base class of pattern classes
 //
-class Base : private boost::noncopyable
+class Base
 {
 
-protected:  //members
-
-  boost::shared_ptr<int> pattern;
-  int count_;
+  int count_;             //that is always the coeff count in the pattern, not the number of loops expected
+  OwnedBlock pattern_;    //underlying OwnedBlock
 
 
-protected:  //constructor
+protected:  //structors
 
-  Base() { }
+  Base(PEnvironment const& env)
+    : pattern_( env ) { }
+
+  Base(Base const& other)
+    : count_( other.count_ )
+    , pattern_( other.pattern_ ) { }
+
+  //generated destructor is fine
+
+
+protected:  //assignment
+
+  void operator=(Base const& other)
+  {
+    count_ = other.count_;
+    pattern_ = other.pattern_;
+  }
+
+  void swap(Base& other)
+  { 
+    std::swap(count_, other.count_); 
+    pattern_.swap(other.pattern_); 
+  }
 
 
 public:  //access
 
   //gets pattern data
-  int const * get() const { return pattern.get(); }
+  int const * get() const { return (int const *)pattern_.get(); }
 
   //always return the coeffs count per pixel, not the number of loops expected    
   int count() const { return count_; }
+
+
+protected:  //at the disposition of subclasses constructor
+
+  void init(int count, int size) { count_ = count; pattern_.reset(size << 2, false); }
+
+  int * get() { return (int *)pattern_.get(); }
 
 };
 

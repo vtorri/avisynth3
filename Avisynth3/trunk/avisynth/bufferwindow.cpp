@@ -24,7 +24,7 @@
 #include "bitblit.h"
 
 /**********************************************************************************************/
-/************************************ VideoFrameBuffer ****************************************/
+/************************************ VideoFrameBuffer  ****************************************/
 /**********************************************************************************************/
 
 
@@ -32,53 +32,56 @@
 
 
 
-
-
-
-
-/*
-
-AlphaForwardingBuffer::AlphaForwardingBuffer(int row_size, int height)
-: ForwardingBuffer(row_size, FRAME_ALIGN)
+void EnvSharingBuffer::RemoveSharingEnv(PEnvironment env)
 {
-  int size = SizeFor(pitch, height);
-  if (largest.empty() || largest->GetSize() < size)
-    largest = new SharedAlphaBuffer(size);
-  
-  forwardTo = largest;
+  if ( env != GetEnvironment() )                                          //if not current owner
+    sharingEnvs.erase(find(sharingEnvs.begin(), sharingEnvs.end(), env)); //remove from waiting list
+  else                                 //current oxner want to release ownership
+    if ( ! sharingEnvs.empty() )       //if another is interested
+    {
+      env = sharingEnvs.back();        //get one 
+      sharingEnvs.pop_back();          //remove it from list
+      forwardTo->SetEnvironment(env);  //take ownership of buffer
+    }
 }
 
-*/
+
+
+
+
 
 /**********************************************************************************************/
 /************************************** BufferWindow ******************************************/
 /**********************************************************************************************/
 
 
-BufferWithOffset::BufferWithOffset(BufferWithOffset& other, PEnvironment env)
-  : vfb(other.vfb), offset(other.offset)
+void BufferWindow::MakeBufferWritable() const
 {
-  if ( env != GetEnvironment() )   //if same env, nothing more to do
-  { 
-    if (! other.vfb->IsEnvSharingEnabled() )
-      other.vfb = new ForwardToSharingBuffer(other.vfb);   //make sure sharing is enabled
-    vfb = other.vfb->ShareWith(env);                       //change vfb as a shared frame buffer
-  }
-}
-
-void BufferWithOffset::EnsureWritable(const Dimension& dimension)
-{
-  if ( ! vfb->IsWriteAllowed() )
+  if ( ! vfb->IsWritable() )          //if buffer not writable
   {
-    BufferWithOffset temp(dimension, GetEnvironment());
-    Blitter::Blit(temp.GetWritePtr(), temp.GetPitch(), GetReadPtr(), GetPitch(), dimension);
-    *this = temp;
+    int new_offset;                   //create a frame buffer to accomodate data from self
+    PVideoFrameBuffer new_vfb = MakeFrameBuffer(dimension, new_offset, GetEnvironment());
+    //copy the relevant data into it
+    Blitter::Blit(new_vfb->GetWritePtr() + new_offset, new_vfb->GetPitch(), GetReadPtr(), GetPitch(), dimension);
+    vfb = new_vfb;
+    offset = new_offset;              //update frame buffer and offset
   }
-  return *this;
 }
 
 
+BufferWindow::BufferWindow(const BufferWindow& other, PEnvironment env)
+ : dimension(other.dimension), vfb(other.vfb)
+{
+  if ( env != GetEnvironment() )                         //if env is not already the current owner
+  {
+    other.MakeBufferWritable();                          //make sure other owns its frame buffer
 
+    if (! other.vfb->IsEnvSharingEnabled() )
+      other.vfb = new ForwardToSharingBuffer(other.vfb); //make sure sharing is enabled
+    vfb = other.vfb->ShareWith(env);                     //change vfb as a shared frame buffer
+  }
+  offset = other.offset;                                 //update offset (done here coz MakeBufferWritable can change it)
+}
 
 
 void BufferWindow::Copy(const BufferWindow& temp, const Vecteur& coords)
@@ -88,7 +91,7 @@ void BufferWindow::Copy(const BufferWindow& temp, const Vecteur& coords)
   Vecteur topLeft = LimitToWindow(coords);
   Vecteur bottomRight = LimitToWindow(coords + other.dimension);
 
-  Dimension toCopy = bottomRight - topLeft;
+  Dimension toCopy = Dimension(bottomRight - topLeft);
 
   if (! toCopy.empty() )
     Blitter::Blit(
@@ -108,9 +111,8 @@ void BufferWindow::SizeChange(const Vecteur& topLeft, const Vecteur& bottomRight
   int pitch = GetPitch();
   if ( GetWidth() > pitch || offset < 0 || offset + GetHeight() * pitch > vfb->GetSize() )
   {
-    BufferWindow resized(dimension, GetEnvironment());  //new buffer
-    resized.Copy(saved, -topLeft);    //copy saved data at the right place
-    *this = resized;                  //replace self by resized                      
+    vfb = MakeFrameBuffer(dimension, offset, GetEnvironment()); //new frame buffer
+    Copy(saved, -topLeft);                    //copy saved data at the right place                      
   }
 }
 

@@ -45,7 +45,7 @@ namespace avs {
 //  ie all tests are the responsability of VideoInfo,
 //  you try it and if illegal it will throw the appropriate error.
 //
-class VideoInfo
+class NOVTABLE VideoInfo
 {
   
 public:  //structors
@@ -153,7 +153,8 @@ public:  //misc
   int BytesPerAudioSample() const { return BytesPerChannelSample() * GetChannelCount(); }
   virtual int BytesPerChannelSample() const;
 
-  virtual int AudioSamplesFromFrames(int frames) const;
+  long long AudioSamplesFromFrames() const { return AudioSamplesFromFrames(GetFrameCount()); }
+  virtual long long AudioSamplesFromFrames(int frames) const;
 
   virtual BYTE * GetBlankNoise(BYTE * buffer, int count) const;
 

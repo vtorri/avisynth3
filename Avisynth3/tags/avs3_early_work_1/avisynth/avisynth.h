@@ -101,21 +101,15 @@ using namespace std;
 // Audio Sample information
 typedef float SFLOAT;
 
-enum {SAMPLE_INT8  = 1<<0,
-        SAMPLE_INT16 = 1<<1, 
-        SAMPLE_INT24 = 1<<2,    // Int24 is a very stupid thing to code, but it's supported by some hardware.
-        SAMPLE_INT32 = 1<<3,
-        SAMPLE_FLOAT = 1<<4};
+enum SampleType {
+  SAMPLE_INT8,
+  SAMPLE_INT16, 
+  SAMPLE_INT24,    // Int24 is a very stupid thing to code, but it's supported by some hardware.
+  SAMPLE_INT32,
+  SAMPLE_FLOAT
+};
 
-enum {
-   PLANAR_Y=1<<0,
-   PLANAR_U=1<<1,
-   PLANAR_V=1<<2,
-   PLANAR_ALIGNED=1<<3,
-   PLANAR_Y_ALIGNED=PLANAR_Y|PLANAR_ALIGNED,
-   PLANAR_U_ALIGNED=PLANAR_U|PLANAR_ALIGNED,
-   PLANAR_V_ALIGNED=PLANAR_V|PLANAR_ALIGNED,
-  };
+
 
 struct VideoInfo {
   int width, height;    // width=0 means no video
@@ -272,14 +266,14 @@ class RefCounted {
 
   int refcount;
 
-  void InitAddRef() { refcount += (refcount == -1)? 2 : 1; }
+  void InitAddRef() { refcount += (refcount == -1)? 2 : 1; } //used by smart ptrs when getting a ptr
   void AddRef() { ++refcount; }
   void Release() { if (--refcount == 0) recycle(); }
   
   friend class smart_ptr_base;
 
 protected:
-  //refcount starts at -1 to prevent confustion between new instances and unreferrenced ones 
+  //refcount starts at -1 to prevent confusion between new instances and unreferrenced ones 
   //will help achieve thread-safety in instance recycling
   RefCounted() : refcount(-1) { } 
 
@@ -288,12 +282,13 @@ protected:
   virtual void recycle() { delete this; } 
 
   //clean volatile data (if there is any), performed when going from smart_ptr_to_cst to a smart_ptr
-  virtual void clean() { }   //default implementation : doing nothing
+  virtual void clean() { }   //default implementation : no effect
 
   //clone method, used by the conversion between smart_ptr and smart_ptr_to_cst
-  virtual RefCounted * clone() const { throw NotClonable(); }
+  //if your subclass represent constant objects, you can even make it return this (by casting away constness)
+  virtual RefCounted * clone() const throw(NotClonable) { throw NotClonable(); }
   
-  virtual ~RefCounted() { }  
+  virtual ~RefCounted() { }  //virtual destructor 
 
 public:
   bool isFree() { return refcount == 0; }   //useful for instance recycling
@@ -310,62 +305,65 @@ public:
 */
 
 //base class for the smart pointers classes
+//(would have been a template if (stupid) VC6 understood template friend declarations)
 class smart_ptr_base {
-
-  void Release() { if (ptr) ptr->Release(); }
-  void AddRef() { if (ptr) ptr->AddRef(); }
-  void InitAddRef() { if (ptr) ptr->InitAddRef(); }
 
 protected:
   RefCounted * ptr;
 
   smart_ptr_base() : ptr(NULL) { }
-  smart_ptr_base(RefCounted * _ptr) : ptr(_ptr) { InitAddRef(); }
-  smart_ptr_base(const smart_ptr_base& other) : ptr(other.ptr) { AddRef(); }  
+  smart_ptr_base(RefCounted * _ptr) : ptr(_ptr) { if (ptr) ptr->InitAddRef(); }
+  smart_ptr_base(const smart_ptr_base& other) : ptr(other.ptr) { if (ptr) ptr->AddRef(); }  
 
-  void Set(RefCounted * newPtr)
+  inline void Set(RefCounted * newPtr)
   { 
     if (ptr != newPtr) { 
-      Release(); 
+      if (ptr) ptr->Release(); 
       ptr = newPtr; 
-      InitAddRef(); 
+      if (ptr) ptr->InitAddRef(); 
     } 
   } 
 
-  void Copy(const smart_ptr_base& other)
+  inline void Copy(const smart_ptr_base& other)
   { 
     if (ptr != other.ptr) {
-      Release(); 
+      if (ptr) ptr->Release();      
       ptr = other.ptr;
-      AddRef();
+      if (ptr) ptr->AddRef();
     }  
   }
 
-  void Clone(const smart_ptr_base& other) { Set( (other.ptr)? other.ptr->clone() : NULL); }
+  inline void Clone(const smart_ptr_base& other) { 
+    _ASSERTE(this != &other);
+    if (ptr) ptr->Release();
+    if (other.ptr) {
+      ptr = other.ptr->clone();
+      ptr->InitAddRef();
+    }
+    else ptr = NULL;    
+  }
 
-  void StealOrClone(smart_ptr_base& other)
+  inline void StealOrClone(smart_ptr_base& other)
   {    
-    if (other.ptr && other.ptr->isShared())  //if shared
-      Set(other.ptr->clone()); //we make a copy for ourselves (and let the old one live)
-    else {
-      Release();
-      ptr = other.ptr;          //we steal ptr
+    _ASSERTE(this != &other);
+    if (ptr) ptr->Release();
+    if (other.ptr && other.ptr->isShared()) { //if shared
+      ptr = other.ptr->clone();
+      ptr->InitAddRef();          //we make a copy for ourselves (and let the old one live)
+    } else {
+      ptr = other.ptr;            //we steal ptr
       other.ptr = NULL;
     }
   } 
 
-  void Clean() { if (ptr) ptr->clean(); }
+  inline void Clean() { if (ptr) ptr->clean(); }
 
 public:
-  void release() { Set(NULL); }  //smart ptr voids itself
+  void release() { if (ptr) { ptr->Release(); ptr = NULL; } } //smart ptr voids itself
   
-  operator bool() const { return ptr != NULL; }  //useful in boolean expressions
+  operator bool() const { return ptr; }  //useful in boolean expressions
 
-  //probably useless, allow logically illegal comparisons but that's not really a problem
-  bool operator ==(const smart_ptr_base& other) const { return ptr == other.ptr; }
-  bool operator < (const smart_ptr_base& other) const { return ptr < other.ptr; }
-
-  ~smart_ptr_base() { Release(); }
+  ~smart_ptr_base() { if (ptr) ptr->Release(); }
 
 };
 
@@ -376,8 +374,11 @@ template <class T> class smart_ptr_to_cst : public smart_ptr_base {
 
 public:
   smart_ptr_to_cst() { }
-  smart_ptr_to_cst(T* _ptr) : smart_ptr_base<T>(_ptr) { }
-  smart_ptr_to_cst(const smart_ptr_to_cst<T>& other) : smart_ptr_base(other) { }
+  smart_ptr_to_cst(T* _ptr) : smart_ptr_base(_ptr) { }
+  //casting constructor using a dynamic cast (illegal cast will get a NULL ref)
+  template <class Y> smart_ptr_to_cst(const smart_ptr_to_cst<Y>& other) : smart_ptr_base(dynamic_cast<T*>(other.ptr)) { }
+  //template specialisation to spare the dynamic cast when T = Y
+  template <> smart_ptr_to_cst(const smart_ptr_to_cst<T>& other) : smart_ptr_base(other) { }
   smart_ptr_to_cst(smart_ptr<T>& other);
   smart_ptr_to_cst(const smart_ptr<T>& other);
 
@@ -391,6 +392,11 @@ public:
   
   const T * const operator ->() const { return (T*)ptr; }
   const T& operator *() const { return *((T*)ptr); }
+
+  //comparison operators, operate on the pointed object
+  bool operator ==(const smart_ptr_to_cst<T>& other) const { return *((T*)ptr) == *((T*)other.ptr); }
+  bool operator < (const smart_ptr_to_cst<T>& other) const { return *((T*)ptr) < *((T*)other.ptr); }
+
 };
 
 
@@ -401,7 +407,10 @@ template <class T> class smart_ptr : public smart_ptr_base {
 public:
   smart_ptr() { }
   smart_ptr(T* _ptr) : smart_ptr_base(_ptr) { }
-  smart_ptr(const smart_ptr<T>& other) : smart_ptr_base(other) { }  
+  //casting constructor using a dynamic cast (illegal cast will get a NULL ref)
+  template <class Y> smart_ptr(const smart_ptr<Y>& other) : smart_ptr_base(dynamic_cast<T*>(other.ptr)) { }  
+  //template specialisation to spare the dynamic cast when T = Y
+  template <> smart_ptr(const smart_ptr<T>& other) : smart_ptr_base(other) { }
   smart_ptr(smart_ptr_to_cst<T>& other) { StealOrClone(other); Clean(); }
   smart_ptr(const smart_ptr_to_cst<T>& other) { Clone(other); Clean(); }
 
@@ -414,6 +423,10 @@ public:
 
   T * const operator ->() const { return (T*)ptr; }
   T& operator *() const { return *((T*)ptr); }
+
+  //comparison operators, operate on the pointed object
+  bool operator ==(const smart_ptr<T>& other) const { return *((T*)ptr) == *((T*)other.ptr); }
+  bool operator < (const smart_ptr<T>& other) const { return *((T*)ptr) < *((T*)other.ptr); }
 
 };
 
@@ -446,8 +459,9 @@ class VideoFrame : public RefCounted {
 
 public:
 
-  typedef unsigned short dimension;  //in Bytes when horizontal, not pixels
+  typedef short dimension;  //generally in Bytes when horizontal, not pixels
   typedef signed char Align;
+  typedef VideoInfo::ColorSpace ColorSpace;
 
   enum Plane {
     NOT_PLANAR,
@@ -485,14 +499,55 @@ public:
   virtual BYTE * GetWritePtr(Plane plane) throw(NoSuchPlane) = 0;
 
 
-  virtual VideoInfo::ColorSpace GetColorSpace() const = 0;
+  virtual ColorSpace GetColorSpace() const = 0;
   bool IsPlanar() const { return GetColorSpace() & VideoInfo::CS_PLANAR != 0; }
-  dimension GetVideoHeight() const { return GetHeight( IsPlanar()? PLANAR_Y : NOT_PLANAR ): }
-  //dimension GetVideoWidth() const { return GetRowSize( IsPlanar()? PLANAR_Y : NOT_PLANAR ) /
+  dimension GetVideoHeight() const { return GetHeight( IsPlanar()? PLANAR_Y : NOT_PLANAR ); }
+  //dimension GetVideoWidth() const { return GetRowSize( IsPlanar()? PLANAR_Y : NOT_PLANAR ) //COMPLETE ME !!
 
-  //construction method
-  PVideoFrame NewVideoFrame(const VideoInfo& vi, Align align);
+  //frames now know about their fieldbased state
+  bool IsFieldBased() const;
+  void SetFieldBased(bool fieldBased);
 
+  //methods used to check that pixels args match Colorspace restrictions
+  //they throw the appropriate error msg when arg are illegal
+  //you are not supposed to use them, all calls are done internally when needed
+  dimension WidthToRowSize(dimension width) const;
+  dimension HeightCheck(dimension height) const;
+
+  //construction method, moved from IScriptEnvironment
+  static PVideoFrame NewVideoFrame(const VideoInfo& vi, Align align = FRAME_ALIGN);
+  //same as the above but with inheritance of the non volatiles properties
+  virtual PVideoFrame NewVideoFrame(const VideoInfo& vi, Align align = FRAME_ALIGN) const = 0; 
+
+
+  /************************************************************************************
+   *  various ToolBox methods now provided by the VideoFrame API                       *
+   ************************************************************************************/
+
+  //ColorSpace conversion method
+  virtual CPVideoFrame ConvertTo(ColorSpace space) const = 0;
+
+  //Please Note that those dimensions are in PIXELS, and can be negative
+  //positive values crop, negatives increase size, buffers won't be reallocated if possible
+  //if reallocation has to be done, original data is copied at the right place
+  virtual void SizeChange(dimension left, dimension right, dimension top, dimension bottom) = 0;
+
+  //Copy other into self, the coords left and top can be negative
+  //Only the overlapping part is copied
+  virtual void Copy(CPVideoFrame other, dimension left, dimension top) = 0;
+
+  void StackHorizontal(CPVideoFrame other); //implemented using SizeChange and Copy 
+  void StackVertical(CPVideoFrame other);   
+  
+  virtual void FlipVertical() = 0;
+  virtual void FlipHorizontal() = 0;
+
+  virtual void TurnLeft() = 0;
+  virtual void TurnRight() = 0;
+
+  virtual Blend(CPVideoFrame other, float factor) = 0;
+
+  //what else ???
 
   /************************************************************************************
    *  Custom Properties System                                                        *
@@ -508,40 +563,44 @@ public:
 
   //Property class, you can subclass it to add parameters you need
   //subclass should implement an accurate operator == taking new parameters into account
+  //if your subclass is not made of constant objects, reimplement clone too
   class Property : public RefCounted {
-    const PropertyName * const name;
-
+    const PropertyName * name;
+    
   protected:
-    Property(const Property& other) : name(other.name) { } 
-    virtual RefCounted * clone() const { return new Property(*this); } //probably useless, but...
+    Property(const Property& other) : name(other.name) { }
+    //Property is constant here, so I can return safely this as a clone
+    //REIMPLEMENT if your subclass is mutable
+    virtual RefCounted * clone() const { return const_cast<Property*>(this); } 
 
   public:
-    Property(const PropertyName& _name) : name(&_name) { }  //convenience constructor
+    Property(const PropertyName& _name) : name(&_name) { }  
 
     bool IsType(const PropertyName& _name) const { return name == &_name; } //convenience version of IsType
     bool SameTypeAs(const Property& other) const { return name == other.name; }
 
+    virtual bool IsVolatile() const { return false; }   //properties are sticky by default
+    
+    //virtual == operator, should be reimplemented to take new members into account if subclassed
     virtual bool operator==(const Property& other) const { return SameTypeAs(other); }
+    //does not yield a total order when subclassing but since multiple instance of a subclass
+    //are not supposed to cohabit it pose no problem.
+    bool operator <(const Property& other) const { return name < other.name; }
   };
    
-  typedef smart_ptr_to_cst<Property> CPProperty;
+  typedef smart_ptr_to_cst<Property> CPProperty;  //smart const Property *
   typedef smart_ptr<Property> PProperty;  //you are not really supposed to use it, but you can
 
-  virtual const Property * GetProperty(const PropertyName& name) const = 0;
-  virtual void SetProperty(const CPProperty& prop) = 0;
-  void SetProperty(const PProperty& prop) { SetProperty(CPProperty(prop)); }  //exists so outside PProperty won't be casted to CPProperty by the call of the above and loses its ref
+  virtual CPProperty GetProperty(const PropertyName& name) const = 0;
+  virtual void SetProperty(CPProperty prop) = 0;
+  void SetProperty(PProperty prop) { SetProperty(CPProperty(prop)); }  //exists so outside PProperty won't be casted to CPProperty by the call of the above and loses its ref
   virtual void RemoveProperty(const PropertyName& name) = 0;
 
 
 };
 
 
-
-
-
 class IScriptEnvironment;
-
-
 
 // Base class for all filters.
 class IClip : public RefCounted {
@@ -558,7 +617,7 @@ public:
 
   virtual int __stdcall GetVersion() { return AVISYNTH_INTERFACE_VERSION; }
   
-  virtual PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env) = 0;
+  virtual CPVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env) = 0;
   virtual bool __stdcall GetParity(int n) = 0;  // return field parity if field_based, else parity of first field in frame
   virtual void __stdcall GetAudio(void* buf, __int64 start, __int64 count, IScriptEnvironment* env) = 0;  // start and count are in samples
   virtual void __stdcall SetCacheHints(CachePolicy policy, int size) { }  // We do not pass cache requests upwards, only to the next filter.
@@ -696,7 +755,7 @@ protected:
   VideoInfo vi;
 public:
   GenericVideoFilter(PClip _child) : child(_child) { vi = child->GetVideoInfo(); }
-  PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env) { return child->GetFrame(n, env); }
+  CPVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env) { return child->GetFrame(n, env); }
   void __stdcall GetAudio(void* buf, __int64 start, __int64 count, IScriptEnvironment* env) { child->GetAudio(buf, start, count, env); }
   const VideoInfo& __stdcall GetVideoInfo() { return vi; }
   bool __stdcall GetParity(int n) { return child->GetParity(n); }
@@ -706,8 +765,8 @@ public:
 
 class AvisynthError /* exception */ {
 public:
-  const char* const msg;
-  AvisynthError(const char* _msg) : msg(_msg) {}
+  const string err_msg;
+  AvisynthError(const string& _err_msg) : err_msg(_err_msg) { }
 };
 
 
@@ -720,7 +779,7 @@ class AlignPlanar : public GenericVideoFilter
 public:
   AlignPlanar(PClip _clip);
   static PClip Create(PClip clip);
-  PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
+  CPVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
 };
 
 
@@ -730,7 +789,7 @@ class FillBorder : public GenericVideoFilter
 public:
   FillBorder(PClip _clip);
   static PClip Create(PClip clip);
-  PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
+  CPVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
 };
 
 

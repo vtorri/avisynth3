@@ -99,6 +99,16 @@ public:  //structors
     : cb_( new detail::functor_callback<Result, Functor>(functor) ) { }
 
 
+public:  //assignment
+
+  template <class Functor>
+  VMOperation<Result>& operator=(Functor const& functor)
+  {
+    cb_.reset( new detail::functor_callback<Result, Functor>(functor) );
+    return *this;
+  }
+
+
 public:  //function-like interface
 
   Result operator()(VMState& state) const { return (*cb_)(state); }

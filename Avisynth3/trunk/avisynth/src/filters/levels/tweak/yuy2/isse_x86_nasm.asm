@@ -50,7 +50,7 @@ norm: dw  128, 0, 128, 0
 ; Declaration
 ;=============================================================================
 SECTION .text
-cglobal tweak_yuy2_isse_nasm, 40
+cglobal tweak_yuy2_isse_nasm, 36
 
 ;=============================================================================
 ; Code
@@ -71,11 +71,13 @@ tweak_yuy2_isse_nasm:
   mov       ebx, [esp+12+12]	; x
   mov       edi, [esp+12+16]	; modulo
   pxor      mm0, mm0
-  movq      mm1, [norm]		    ; 128 0 128 0
+  movq      mm1, [norm]		; 128 0 128 0
   movq      mm2, [esp+12+20]	; hue64 = Cos -Sin Sin Cos (fix12)
-  movq      mm3, [esp+12+28]	; satcont64 = Sat Cont Sat Cont (fix9)
-  movq      mm4, mm1		    ; bright64
-  paddw     mm4, [esp+12+36]	; 128 Bright_p16 128 Bright_p16
+  movq      mm4, [esp+12+32]	; 0 0 |  0 Bright_p16
+  movq      mm3, [esp+12+28]	; 0 0 | Sat Cont (fix9)
+  punpckldq mm4, mm4		; 0 Bright_p16 | 0 Bright_p16
+  punpckldq mm3, mm3		; Sat Cont | Sat Cont
+  paddw     mm4, mm1		; 128 Bright_p16 | 128 Bright_p16
 
 ALIGN 16
 .y_loop:

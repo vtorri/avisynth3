@@ -72,10 +72,12 @@ CPVideoFrame ISSE::MakeFrame(CPVideoFrame const& source) const
 
     mov			   esi, wp.ptr    		
     mov			   edx, y         		// height
+    align 16
   
   y_loop:
 	
     mov			   ecx, x	          	// width
+    align 16
 
   x_loop:
 	
@@ -109,13 +111,12 @@ CPVideoFrame ISSE::MakeFrame(CPVideoFrame const& source) const
 #else
 
   //use nasm code
-  tweak_yuy2_isse_nasm(wp.ptr, wp.width>>2, wp.height, wp.padValue(), hue64, satcont64, bright64);
+  tweak_yuy2_isse_nasm(wp.ptr, wp.width>>2, wp.height, wp.padValue(), hue64, satcont, bright);
 
 #endif //defined(_INTEL_ASM) && ! defined(_FORCE_NASM)
 
   return frame;
 }
-
 
   
 } } } } //namespace avs::filters::tweak::yuy2

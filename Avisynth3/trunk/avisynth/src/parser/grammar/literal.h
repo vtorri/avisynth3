@@ -25,6 +25,7 @@
 #define __AVS_PARSER_GRAMMAR_LITERAL_H__
 
 //avisynth includes
+#include "../forward.h"
 #include "../lazy/tuple.h"
 #include "../vmoperation.h"
 #include "../functor/pusher.h"

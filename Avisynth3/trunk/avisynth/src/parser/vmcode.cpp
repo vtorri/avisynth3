@@ -21,7 +21,8 @@
 // General Public License cover the whole combination.
 
 
-//avisynth include
+//avisynth includes
+#include "optype.h"
 #include "vmcode.h"
 
 

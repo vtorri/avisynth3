@@ -33,6 +33,9 @@
 namespace avs {
 
 
+  
+PVideoInfo VideoInfo::Create() { return CPVideoInfo( static_cast<VideoInfo *>(new videoinfo::Concrete()) ); }
+
 
 int VideoInfo::GetWidth() const { return GetDimension().GetWidth(); }
 int VideoInfo::GetHeight() const { return GetDimension().GetHeight(); }

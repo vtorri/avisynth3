@@ -24,10 +24,10 @@
 //avisynth includes
 #include "concrete.h"
 #include "../blitter.h"
+#include "../videoinfo.h"
 #include "../colorspace.h"
 #include "../timing/threadclock.h"
 #include "../runtime_environment.h"
-#include "../videoinfo/concrete.h"
 
 
 namespace avs {
@@ -42,7 +42,7 @@ OwnedBlock RuntimeEnvironment::NewOwnedBlock(int size, bool recycle)
 
 PVideoInfo RuntimeEnvironment::CreateVideoInfo() const
 {
-  return videoinfo::Concrete::Create();
+  return VideoInfo::Create();
 }
 
 

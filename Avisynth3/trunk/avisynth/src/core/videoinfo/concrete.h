@@ -93,11 +93,6 @@ public:  //clone method
   virtual CPVideoInfo clone() const { return CPVideoInfo( (VideoInfo *)new Concrete(*this) ); }
 
 
-public:  //factory method
-
-  static CPVideoInfo Create() { return CPVideoInfo( static_cast<VideoInfo *>(new Concrete()) ); }
-
-
 public:  //video methods
 
   virtual bool HasVideo() const { return video_; }

@@ -59,6 +59,12 @@ public:  //clone method
   virtual CPVideoInfo clone() const = 0;
 
 
+public:  //factory method
+
+  //plugin writers use RuntimeEnvironment::CreateVideoInfo()
+  static PVideoInfo Create();
+
+
 public:  //video methods
 
   virtual bool HasVideo() const = 0;

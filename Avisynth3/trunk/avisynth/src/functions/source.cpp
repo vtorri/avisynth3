@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -23,15 +23,15 @@
 
 //avisynth includes
 #include "source.h"
-#include "../parser/functor/adaptor.h"
+#include "../parser/adapt.h"
 #include "../filters/source/colorbars.h"
 
 
 namespace avs { namespace functions {
 
 
+using parser::adapt;
 using linker::core::Function;
-using parser::functor::adapt;
 
 
 

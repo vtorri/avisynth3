@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 //avisynth includes
 #include "script.h"
-#include "../parser/functor/adaptor.h"
+#include "../parser/adapt.h"
 
 //boost include
 #include <cmath>
@@ -32,8 +32,8 @@
 namespace avs { namespace functions {
 
 
+using parser::adapt;
 using linker::core::Function;
-using parser::functor::adapt;
 
 
 inline double sin(double value) { return std::sin(value); }

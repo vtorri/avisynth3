@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 #include "roundup.h"
 #include "exception/baddimension.h"
 
-//assert include
+//stl include
 #include <assert.h>
 
 
@@ -53,7 +53,7 @@ class Dimension
   static int CheckSign(int val)
   {
     if ( val < 0 )
-      throw BadDimension();
+      throw exception::BadDimension();
     return val;
   }
 

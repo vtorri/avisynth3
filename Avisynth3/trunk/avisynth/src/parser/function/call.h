@@ -52,7 +52,7 @@ template <bool returnVoid = false> struct Call
     OpType type = body_(state);
     assert( type == RETURN );
 
-    state.restore(size, ! returnVoid);
+    state.restore(size, returnVoid ? 0 : 1);
   }
 
 };

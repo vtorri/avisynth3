@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 #define __AVS_CLIP_NOCHILD_H__
 
 //avisynth include
-#include "../../core/clip.h"
+#include "../core/clip.h"
 
 
 namespace avs { namespace clip {

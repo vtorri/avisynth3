@@ -44,16 +44,13 @@ class Concrete : public virtual TwoChilds
   PClip right_;       //right child
 
 
-public:  //constructor
+public:  //structors
 
   Concrete(PClip const& left, PClip const& right)
     : left_( left->Simplify() )
     , right_( right->Simplify() ) { }
 
-
-public:  //clip general interface
-
-  virtual PEnvironment const& GetEnvironment() const { return left_->GetEnvironment(); }
+  //generated destructor is fine
 
 
 public:  //read access
@@ -70,7 +67,7 @@ protected:  //write access
 
 protected:  //implementations helpers
 
-  PEnvironment GetChildEnvironment() const { return left_->GetEnvironment(); }
+  PEnvironment const& GetChildEnvironment() const { return left_->GetEnvironment(); }
   
   CPVideoInfo GetLeftVideoInfo() const { return left_->GetVideoInfo(); }
   CPVideoInfo GetRightVideoInfo() const { return right_->GetVideoInfo(); }

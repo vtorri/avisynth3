@@ -36,10 +36,9 @@
 #include <boost/scoped_ptr.hpp>
 
 //windows includes
+#define NOMINMAX          //prevents generation of min and max macros
 #include <windows.h>
-#ifdef _MSC_VER
 #include <Mmreg.h>
-#endif //_MSC_VER
 #include <Msacm.h>
 
 

@@ -70,7 +70,7 @@ AC_DEFUN([AM_CHECK_FFMPEG],
                  [AC_MSG_ERROR(FFMPEG library not in ${ffmpeg_path}/lib)])],
               [AC_MSG_ERROR(FFMPEG library not in ${ffmpeg_path}/lib)])
            FFMPEG_CFLAGS="-DAVS_HAS_FFMPEGSOURCE -I${ffmpeg_path}/include"
-           FFMPEG_LIBS="-L${ffmpeg_path}/lib/ -lavformat -lavcodec"],
+           FFMPEG_LIBS="-L${ffmpeg_path}/lib/ -lavformat -lavcodec -lz"],
           [AC_MSG_ERROR(FFMPEG headers not in ${ffmpeg_path}/include)])
        CXXFLAGS="$saved_CXXFLAGS"
        LDFLAGS="$saved_LDFLAGS"
@@ -100,7 +100,7 @@ AC_DEFUN([AM_CHECK_FFMPEG],
              AC_MSG_WARN([FFMPEG support disable])
              ffmpeg_enable="no"])
           FFMPEG_CFLAGS="-DAVS_HAS_FFMPEGSOURCE"
-          FFMPEG_LIBS="-lavformat -lavcodec"],
+          FFMPEG_LIBS="-lavformat -lavcodec -lz"],
          [AC_MSG_WARN([FFMPEG library missing. Run configure --help])
           AC_MSG_WARN([to see how to configure the path of FFMPEG])
           AC_MSG_WARN([FFMPEG support disable])

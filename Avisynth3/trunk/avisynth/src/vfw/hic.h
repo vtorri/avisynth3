@@ -31,7 +31,9 @@
 #include <boost/shared_ptr.hpp>
 
 //windows includes
+#ifndef NOMINMAX
 #define NOMINMAX          //prevents generation of min and max macros
+#endif //NOMINMAX
 #include <windows.h>
 #include <vfw.h>
 

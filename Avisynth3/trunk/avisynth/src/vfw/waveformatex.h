@@ -28,7 +28,9 @@
 #include "../core/forward.h"       //for VideoInfo
 
 //windows include
+#ifndef NOMINMAX
 #define NOMINMAX          //prevents generation of min and max macros
+#endif //NOMINMAX
 #include <windows.h>
 
 

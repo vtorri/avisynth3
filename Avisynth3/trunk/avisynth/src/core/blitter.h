@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -57,23 +57,29 @@ public:
 
   void operator()(BYTE const * srcp, int srcPitch, BYTE * dstp, int dstPitch, int width, int height) const
   {
-    return operator()(srcp, srcPitch, dstp, dstPitch, Dimension(width, height));
+    operator()(srcp, srcPitch, dstp, dstPitch, Dimension(width, height));
   }
 
   void operator()(CWindowPtr const& src, BYTE * ptr, int pitch) const
   {
-    return operator()(src.ptr, src.pitch, ptr, pitch, Dimension(src.width, src.height));
+    operator()(src.ptr, src.pitch, ptr, pitch, Dimension(src.width, src.height));
+  }
+
+  void operator()(BYTE const * src, int pitch, WindowPtr& dst) const
+  {
+    operator()(src, pitch, dst.ptr, dst.pitch, Dimension(dst.width, dst.height));
   }
 
   void operator()(CWindowPtr const& src, WindowPtr const& dst, Dimension const& dim) const
   {
-    return operator()(src.ptr, src.pitch, dst.ptr, dst.pitch, dim);
+    operator()(src.ptr, src.pitch, dst.ptr, dst.pitch, dim);
   }
 
 
 public:  //access to instance
 
-  static Blitter& Get();
+  //plugin writers use RuntimeEnvironment::GetBlitter
+  static Blitter const& Get();
 
 };
 

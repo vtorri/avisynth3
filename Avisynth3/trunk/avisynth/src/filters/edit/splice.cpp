@@ -106,9 +106,9 @@ bool Splice::MergingPush(PClip const& child)
     boost::shared_ptr<Trim const> right = boost::dynamic_pointer_cast<Trim const>(child);
   
     if (  left                                    //if left is a Trim
-       || right                                   //if right is a Trim
-       || left->GetChild() == right->GetChild()   //if they have same child
-       || left->GetEnd() == right->GetBegin()     //if they are contiguous
+       && right                                   //if right is a Trim
+       && left->GetChild() == right->GetChild()   //if they have same child
+       && left->GetEnd() == right->GetBegin()     //if they are contiguous
        )
     {
       //update back with the appropriate Trim

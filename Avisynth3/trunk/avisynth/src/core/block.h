@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -66,6 +66,12 @@ public:  //assignemnt
   //generated operator= is fine
 
   //swap inherited from superclass
+
+
+public:  //comparisons operators
+
+  bool operator==(Block const& other) const { return get() == other.get(); }
+  bool operator!=(Block const& other) const { return get() != other.get(); }
 
 
 public:  //reset method

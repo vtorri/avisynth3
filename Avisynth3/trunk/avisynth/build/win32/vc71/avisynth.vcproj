@@ -59,6 +59,8 @@
 				ModuleDefinitionFile=".\avisynth.def"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/avisynth.pdb"
+				OptimizeReferences="2"
+				OptimizeForWindows98="1"
 				ImportLibrary=".\Debug/avisynth.lib"
 				TargetMachine="1"/>
 			<Tool
@@ -129,12 +131,14 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				Outputs="$(SystemRoot)\system32\avisynth.dll"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="msacm32.lib quartz.lib ddraw.lib amstrmid.lib vfw32.lib version.lib winmm.lib"
+				AdditionalDependencies="msacm32.lib quartz.lib ddraw.lib amstrmid.lib vfw32.lib version.lib winmm.lib freetype219.lib"
 				OutputFile=".\Release/avisynth.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\avisynth.def"
 				ProgramDatabaseFile=".\Release/avisynth.pdb"
+				OptimizeReferences="2"
+				OptimizeForWindows98="1"
 				ImportLibrary=".\Release/avisynth.lib"
 				TargetMachine="1"/>
 			<Tool
@@ -207,6 +211,8 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				ModuleDefinitionFile=".\avisynth.def"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Profile/avisynth.pdb"
+				OptimizeReferences="2"
+				OptimizeForWindows98="1"
 				ImportLibrary=".\Profile/avisynth.lib"
 				TargetMachine="1"/>
 			<Tool
@@ -257,7 +263,13 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				RelativePath="..\..\..\src\clip\manychilds.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\clip\noaudio.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\clip\nochild.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\clip\novideo.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\clip\onechild.h">
@@ -312,6 +324,13 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				Filter="">
 				<File
 					RelativePath="..\..\..\src\clip\twochilds\concrete.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="ManyChilds"
+				Filter="">
+				<File
+					RelativePath="..\..\..\src\clip\manychilds\concrete.h">
 				</File>
 			</Filter>
 		</Filter>
@@ -474,6 +493,15 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 				<File
 					RelativePath="..\..\..\src\core\bufferwindow\blender_x86_nasm.asm">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Nasm-compiling $(InputFileName)"
+							CommandLine="nasmw -f win32 -DPREFIX -DSUFFIX $(Inputpath) -o $(OutDir)\$(InputName).obj
+"
+							Outputs="$(OutDir)\$(InputName).obj"/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\src\core\bufferwindow\copier.cpp">
@@ -807,6 +835,52 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				<File
 					RelativePath="..\..\..\src\filters\edit\trim.h">
 				</File>
+				<Filter
+					Name="Splice"
+					Filter="">
+					<File
+						RelativePath="..\..\..\src\filters\edit\splice\aligned.cpp">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\edit\splice\aligned.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\edit\splice\audioswitch.cpp">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\edit\splice\audioswitch.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\edit\splice\noaudio.cpp">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\edit\splice\noaudio.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\edit\splice\novideo.cpp">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\edit\splice\novideo.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\edit\splice\standard.cpp">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\edit\splice\standard.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\edit\splice\unaligned.cpp">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\edit\splice\unaligned.h">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\edit\splice\videoswitch.cpp">
+					</File>
+					<File
+						RelativePath="..\..\..\src\filters\edit\splice\videoswitch.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Fps"
@@ -853,6 +927,15 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 						</File>
 						<File
 							RelativePath="..\..\..\src\filters\levels\tweak\yuy2\isse_x86_nasm.asm">
+							<FileConfiguration
+								Name="Debug|Win32">
+								<Tool
+									Name="VCCustomBuildTool"
+									Description="Nasm-compiling $(InputFileName)"
+									CommandLine="nasmw -f win32 -DPREFIX -DSUFFIX $(Inputpath) -o $(OutDir)\$(InputName).obj
+"
+									Outputs="$(OutDir)\$(InputName).obj"/>
+							</FileConfiguration>
 						</File>
 					</Filter>
 				</Filter>
@@ -951,6 +1034,15 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					Filter="">
 					<File
 						RelativePath="..\..\..\src\filters\resize\horizontal\horizontal_x86_nasm.asm">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCustomBuildTool"
+								Description="Nasm-compiling $(InputFileName)"
+								CommandLine="nasmw -f win32 -DPREFIX -DSUFFIX $(Inputpath) -o $(OutDir)\$(InputName).obj
+"
+								Outputs="$(OutDir)\$(InputName).obj"/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\..\src\filters\resize\horizontal\rgb.h">
@@ -1123,7 +1215,31 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				Name="External"
 				Filter="">
 				<File
+					RelativePath="..\..\..\src\linker\external\native.cpp">
+				</File>
+				<File
+					RelativePath="..\..\..\src\linker\external\native.h">
+				</File>
+				<File
 					RelativePath="..\..\..\src\linker\external\plugin.cpp">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\src\linker\external\plugin.h">

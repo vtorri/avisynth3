@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,6 @@ template <class Deleter> class base
   
 public:  //typedefs
 
-  typedef Recycler Recycler;
   typedef unsigned char BYTE;
 
 

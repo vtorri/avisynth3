@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -60,7 +60,7 @@ STDMETHODIMP Video::Read(LONG lStart, LONG lSamples, LPVOID lpBuffer, LONG cbBuf
 {
   CPVideoInfo vi = GetVideoInfo();
 
-  int bmpSize = vi->GetColorSpace().GetBitmapSize(vi->GetDimension());
+  int bmpSize = vi->GetColorSpace()->GetBitmapSize(vi->GetDimension());
     
   if ( plSamples != NULL )
     *plSamples = 1;
@@ -82,11 +82,11 @@ STDMETHODIMP Video::Read(LONG lStart, LONG lSamples, LPVOID lpBuffer, LONG cbBuf
       MakeErrorStream(ex.msg());
       ReadWrapper(lpBuffer, lStart, lSamples);
     }
-    catch (...) 
+ /*   catch (...) 
     {
       MakeErrorStream("Avisynth: unknown exception");
       ReadWrapper(lpBuffer, lStart, lSamples);
-    }
+    }*/
   }
   catch (...) { return E_FAIL; }
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -44,7 +44,7 @@ public:
 
   BufferWindow operator()(BufferWindow const& source) const
   {
-    BufferWindow result( source.GetDimension().Turn<bpp>(), source.GetEnvironment() );
+    BufferWindow result( source.GetDimension().template Turn<bpp>(), source.GetEnvironment() );
 
     //...
 

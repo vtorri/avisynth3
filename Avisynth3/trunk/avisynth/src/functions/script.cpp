@@ -40,19 +40,8 @@ inline double sin(double value) { return std::sin(value); }
 inline double cos(double value) { return std::cos(value); }
 
 
-Function Script::sinus
-    ( 'd'
-    , "sin"
-    , "d"
-    , adapt( &sin )
-    );
-
-Function Script::cosinus
-    ( 'd'
-    , "cos"
-    , "d"
-    , adapt( &cos )
-    );
+Function Script::sinus( 'd', "sin", "d", adapt( &sin ) );
+Function Script::cosinus( 'd', "cos", "d", adapt( &cos ) );
     
 
 } } //namespace avs::functions

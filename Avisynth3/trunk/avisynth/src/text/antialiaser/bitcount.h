@@ -25,7 +25,7 @@
 #define __AVS_TEXT_ALIASER_BITCOUNT_H__
 
 //avisynth include
-#include "../../bytemap.h"
+#include "../../utility/bytemap.h"
 
 
 namespace avs { namespace text { namespace aliaser {

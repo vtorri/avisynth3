@@ -27,6 +27,7 @@
 //avisynth includes
 #include "name.h"
 #include "expression.h"
+#include "../codecouple.h"
 #include "../functor/if.h"
 #include "../functor/popper.h"
 #include "../functor/swapper.h"
@@ -49,17 +50,39 @@ namespace closure {
 /////////////////////////////////////////////////////////////////////////////////
 //  closure::Statement
 //
-//  closure for both the Statement grammar and its inner statement rule
+//  closure for the Statement grammar
 //
 struct Statement : spirit::closure
     < Statement
-    , VMCode
+    , CodeCouple
+    , boost::reference_wrapper<VarTable>
+    , boost::reference_wrapper<boost::optional<int> >
+    , boost::reference_wrapper<VarTable>
+    , boost::reference_wrapper<FunctionTable>
+    >
+{
+  member1 value;
+  member2 localTable;
+  member3 last;
+  member4 globalTable;
+  member5 functionTable;
+};
+
+
+/////////////////////////////////////////////////////////////////////////////////
+//  closure::InnerStatement
+//
+//  closure for the statement rule within the Statement grammar
+//
+struct InnerStatement : spirit::closure
+    < InnerStatement
+    , CodeCouple
     , boost::reference_wrapper<VarTable>
     , boost::reference_wrapper<boost::optional<int> >
     >
 {
   member1 value;
-  member2 varTable;
+  member2 localTable;
   member3 last;
 };
 
@@ -81,7 +104,7 @@ struct CreateVar : spirit::closure
 
 struct StatementBlock : spirit::closure
     < StatementBlock
-    , VMCode
+    , CodeCouple
     , VarTable
     , boost::optional<int>
     >
@@ -97,28 +120,14 @@ struct StatementBlock : spirit::closure
 
 
 
-class Statement : public spirit::grammar<Statement, closure::Statement::context_t>
+struct Statement : public spirit::grammar<Statement, closure::Statement::context_t>
 {
-
-  VarTable& globalVarTable;
-  FunctionTable const& functionTable;
-
-
-public:  //structors
-
-  Statement(FunctionTable const& functionTable_, VarTable& globalVarTable_)
-    : functionTable( functionTable_ )
-    , globalVarTable( globalVarTable_ ) { }
-
-
-public:  //definition nested class
 
   template <typename ScannerT>
   struct definition
   {
 
     definition(Statement const& self)
-      : expression( self.functionTable, self.globalVarTable )
     {
 
       using namespace lazy;
@@ -126,7 +135,7 @@ public:  //definition nested class
       using namespace phoenix;
 
       top
-          =   statement( VMCode(), self.varTable, self.last )
+          =   statement( CodeCouple(), self.localTable, self.last )
               [ 
                 self.value = arg1 
               ]
@@ -153,12 +162,12 @@ public:  //definition nested class
           ;
 
       stackingStatement
-          =   expression( value::Expression(), statement.varTable, unwrap(statement.last) )
+          =   expression( value::Expression(), statement.localTable, unwrap(statement.last), self.globalTable, self.functionTable )
               [
-                statement.value = first(arg1),
+                statement.value += first(arg1),
                 if_( second(arg1) == val('c') && ! third(arg1) )   //if type clip and not a top level =
                 [                                                  //we define a last
-                  second(stackingStatement.value) = bind(&VarTable::size)(unwrap(statement.varTable))
+                  second(stackingStatement.value) = bind(&VarTable::size)(unwrap(statement.localTable))
                 ]
                 .else_
                 [
@@ -169,14 +178,14 @@ public:  //definition nested class
                   first(stackingStatement.value) = val(false)      //report we stack nothing
                 ]
               ]
-          |   createVar( false, statement.varTable )
+          |   createVar( false, statement.localTable )
           ;
 
       createVar
           =   (   spirit::str_p("global")
                   [
                     createVar.globalVar = val(true),
-                    createVar.varTable = wrap(var(self.globalVarTable))
+                    createVar.varTable = self.globalTable
                   ]
               |   !   spirit::str_p("local")
               )
@@ -185,12 +194,12 @@ public:  //definition nested class
                 createVar.name = construct_<std::string>(arg1, arg2)
               ]
           >>  '='
-          >>  expression( value::Expression(), statement.varTable, unwrap(statement.last) )
+          >>  expression( value::Expression(), statement.localTable, unwrap(statement.last), self.globalTable, self.functionTable )
               [
-                statement.value = first(arg1),
+                statement.value += first(arg1),     //accumulate creation code, then define var
                 createVar.index = bind(&VarTable::DefineVar)( unwrap(createVar.varTable), createVar.name, second(arg1) ), 
-                if_( createVar.globalVar )
-                [
+                if_( createVar.globalVar )          //if global var
+                [                                   //add appropriate assigning code
                   statement.value += construct_<popassigner<GlobalVar> >( createVar.index ),
                   first(stackingStatement.value) = val(false)     //report we leave nothing on stack
                 ]
@@ -200,24 +209,24 @@ public:  //definition nested class
       ifStatement
           =   spirit::str_p("if")
           >>  '('
-          >>  expression( value::Expression(), statement.varTable, unwrap(statement.last) )
+          >>  expression( value::Expression(), statement.localTable, unwrap(statement.last), self.globalTable, self.functionTable )
               [
-                statement.value = first(arg1)
+                statement.value += first(arg1)
               ]
           >>  ')'
-          >>  block( VMCode(), unwrap(statement.varTable) )
+          >>  block( CodeCouple(), unwrap(statement.localTable) )
               [
                 ifStatement.value = arg1
               ]          
           >>  (   *   spirit::eol_p
               >>  spirit::str_p("else")
-              >>  block( VMCode(), unwrap(statement.varTable) )
+              >>  block( CodeCouple(), unwrap(statement.localTable) )
                   [
-                    statement.value += construct_<functor::IfThenElse>(ifStatement.value, arg1)
+                    statement.value -= construct_<functor::IfThenElse>(ifStatement.value, arg1)
                   ]
               |   spirit::eps_p
                   [
-                    statement.value += construct_<functor::IfThen>(ifStatement.value)
+                    statement.value -= construct_<functor::IfThen>(ifStatement.value)
                   ]
               )
           ;
@@ -225,7 +234,7 @@ public:  //definition nested class
       block
           =   *   spirit::eol_p
           >>  '{'
-          >> *(   statement( VMCode(), wrap(block.varTable), wrap(block.last) )
+          >> *(   statement( CodeCouple(), wrap(block.varTable), wrap(block.last) )
                   [
                     block.value += arg1
                   ]
@@ -242,10 +251,10 @@ public:  //definition nested class
   private:
 
     spirit::rule<ScannerT> top;
-    spirit::rule<ScannerT, closure::Statement::context_t> statement;
+    spirit::rule<ScannerT, closure::InnerStatement::context_t> statement;
     spirit::rule<ScannerT, closure::Value<value::StackingStatement>::context_t> stackingStatement;
     spirit::rule<ScannerT, closure::CreateVar::context_t> createVar;
-    spirit::rule<ScannerT, closure::Value<VMCode>::context_t> ifStatement;
+    spirit::rule<ScannerT, closure::Value<StatementCode>::context_t> ifStatement;
     spirit::rule<ScannerT, closure::StatementBlock::context_t> block;
 
     Name name;

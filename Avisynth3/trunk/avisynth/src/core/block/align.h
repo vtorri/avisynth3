@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 #define __AVS_BLOCK_ALIGN_H__
 
 //avisynth include
-#include "../roundup.h"
+#include "../utility/round.h"         //for RoundUp
 
 
 namespace avs { namespace block {
@@ -36,8 +36,8 @@ enum { Align = 16 };       //alignment of memory allocated
 
 
 //alignment helper methods
-inline int AlignValue(int value) { return RoundUp<Align>(value); }
-inline bool IsAligned(int value) { return value % Align == 0; }
+template <typename T> inline T AlignValue(T value) { return RoundUp<Align>(value); }
+template <typename T> inline bool IsAligned(T value) { return value % Align == 0; }
 
 
 

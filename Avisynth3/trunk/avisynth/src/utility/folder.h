@@ -41,7 +41,7 @@ namespace avs {
 
 
 /////////////////////////////////////////////////////////////////////////////////////
-//  Folder<Key, Value, Expired>
+//  folder<Key, Value, Expired>
 //
 //
 //
@@ -58,7 +58,7 @@ template <class Key, class Value, class Expired> class folder
   InstanceMap map_;        //underlying map
   unsigned op_count_;      //used to regularly clean up the map of obsolete entries
 
-  Expired const expired;   //functor used to detect obsolete entries
+  Expired expired;         //functor used to detect obsolete entries
 
 
 public:  //structors
@@ -128,21 +128,24 @@ public:  //Proxy inner class
 
   public:  //Proxy interface
 
-    //associates passed value to its key into underlying map
-    //and replace it by folded value if key was already known
-    Value operator=(Value const& value)
+    //useful to test if key is in the map
+    operator bool() const
     {
       Lock lock( parent_.mutex_ );
 
-      typename InstanceMap::iterator it = parent_.map_.find(key_);
-      if ( it != parent_.map_.end() )
-        return it->second;
+      return parent_.map_.find(key_) != parent_.map_.end();
+    }
 
-      parent_.map_[ key_ ] = value;
-      return value;
+    //associates passed value to its key into underlying map
+    Value& operator=(Value const& value)
+    {
+      Lock lock( parent_.mutex_ );
+
+      return parent_.map_[ key_ ] = value;
     }
 
     //retrieve value associated to key
+    //returns a default constructed Value if key is unknown
     operator Value ()
     {
       Lock lock( parent_.mutex_ );

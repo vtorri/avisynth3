@@ -53,7 +53,8 @@ INSTALL=@INSTALL@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
-includedir=@includedir@
+includedir=@includedir@/avs
+pkgconfigdir=@libdir@/pkgconfig
 
 ###########
 # Sources #
@@ -67,4 +68,5 @@ ASSEMBLY_OBJECTS=$(@ASSEMBLY_SOURCES@:.@ASSEMBLY_EXTENSION@=.@OBJECT_EXTENSION@)
 STATIC_LIB=@STATIC_LIB@
 SHARED_LIB=@SHARED_LIB@
 PRE_SHARED_LIB=@PRE_SHARED_LIB@
+AVS_PC=avs.pc
 

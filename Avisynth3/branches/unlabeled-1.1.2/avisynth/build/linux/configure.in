@@ -20,6 +20,7 @@ AC_CONFIG_SRCDIR(configure.in)
 dnl Do not forget to increase that when needed.
 API_MAJOR="3"
 API_MINOR="0"
+VERSION="${API_MAJOR}.${API_MINOR}"
 PACKAGE="Avisynth"
 
 dnl NASM version requirement
@@ -31,7 +32,7 @@ BOOST_VER_MAJOR="1"
 BOOST_VER_MINOR="31"
 
 dnl Default CFLAGS -- Big impact on overall speed
-our_cxxflags_defaults="-Wall"
+our_cxxflags_defaults="-O2 -Wall"
 our_cxxflags_defaults="$our_cxxflags_defaults -fstrength-reduce"
 our_cxxflags_defaults="$our_cxxflags_defaults -finline-functions"
 our_cxxflags_defaults="$our_cxxflags_defaults -freduce-all-givs"
@@ -39,7 +40,7 @@ our_cxxflags_defaults="$our_cxxflags_defaults -ffast-math"
 our_cxxflags_defaults="$our_cxxflags_defaults -ansi"
 
 dnl Default GEN_SOURCES for gen_source.sh
-dnl On Linux, Vfw files should be removed
+dnl On Linux, Vfw and COM files should be removed
 GEN_SOURCES=
 
 dnl ==========================================================================
@@ -275,7 +276,7 @@ case "$target_os" in
 	STATIC_LIB="libavisynth.\$(STATIC_EXTENSION)"
 	SHARED_LIB="libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR).\$(API_MINOR)"
 	SPECIFIC_LDFLAGS="-pthread -Wl,-soname,libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR) -shared -lc -lm"
-	SPECIFIC_CFLAGS="-O2 -fPIC"
+	SPECIFIC_CFLAGS="-fPIC"
 	GEN_SOURCES="/com\\\\/d;/vfw\\\\/d;"
 	;;
      [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
@@ -677,6 +678,7 @@ AC_SUBST(RANLIB)
 AC_SUBST(PACKAGE)
 AC_SUBST(API_MAJOR)
 AC_SUBST(API_MINOR)
+AC_SUBST(VERSION)
 AC_SUBST(STATIC_LIB)
 AC_SUBST(PRE_SHARED_LIB)
 AC_SUBST(SHARED_LIB)
@@ -689,7 +691,9 @@ dnl
 dnl ==========================================================================
 
 AC_CONFIG_FILES([platform.inc])
-AC_CONFIG_FILES(gen_sources.sh, [chmod +x gen_sources.sh && ./gen_sources.sh])
+AC_CONFIG_FILES([gen_sources.sh],
+		[chmod +x gen_sources.sh && ./gen_sources.sh])
+AC_CONFIG_FILES([avs.pc])
 
 AC_OUTPUT
 
@@ -698,7 +702,7 @@ AC_OUTPUT
 
 echo
 echo "------------------------------------------------------------------------"
-echo " $PACKAGE $API_MAJOR.$API_MINOR"
+echo " $PACKAGE $VERSION"
 echo "------------------------------------------------------------------------"
 echo
 echo " Install path......: $prefix"

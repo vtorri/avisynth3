@@ -25,7 +25,6 @@
 #define __AVS_WINDOW_PTR_H__
 
 
-
 namespace avs {
 
 
@@ -57,7 +56,8 @@ struct window_ptr
   int width;
   int height;
 
-  //constructor
+
+  //structors
   window_ptr(Data * _ptr, int _pitch, int _width, int _height)
     : ptr( _ptr )
     , pitch( _pitch )
@@ -66,11 +66,23 @@ struct window_ptr
 
   //compiler generated copy constructor and operator= are fine
 
+  //data manip methods
   Data * at(int x, int y) const { return ptr + x + y * pitch; }
   Data & operator()(int x, int y) { return *at(x, y); }
   Data & operator[](int x) { return ptr[x]; }
 
+
+  //movements methods
   void to(int x, int y) { ptr += x + y * pitch; }
+
+  void toTop() { to(0, 1 - height); }
+  void toBottom() { to(0, height - 1); }
+  //bpp = bytes per pixel
+  template <int bpp> void toRight() { to(width - bpp, 0); }
+  template <int bpp> void toLeft() { to(step - bpp, 0); }
+
+
+  //pad methods
   void pad() { ptr += padValue(); }
   void negPad() { ptr += negPadValue(); }
   void skipPad() { ptr += skipPadValue(); }
@@ -79,9 +91,11 @@ struct window_ptr
   int negPadValue() const { return -pitch -width; }
   int skipPadValue() const { return pitch * 2 - width; }
 
+
+  //special
   window_ptr<Data>& operator+=(Vecteur const& vect) { to(vect.x, vect.y); return *this; }
   
-};//window_ptr<Data>
+};
 
 
 

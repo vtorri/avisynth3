@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,8 @@
 #ifndef __AVS_FORWARD_H__
 #define __AVS_FORWARD_H__
 
-//boost include
+//boost includes
+#include <boost/rational.hpp>      //for rational
 #include <boost/shared_ptr.hpp>    //for shared_ptr
 
 
@@ -46,6 +47,7 @@ class RuntimeEnvironment;
 template <class T> class cow_shared_ptr;
 
 //typedefs
+typedef boost::rational<int> Fraction;
 typedef boost::shared_ptr<Clip const> PClip;
 typedef boost::shared_ptr<Property const> CPProperty;
 typedef boost::shared_ptr<VideoInfo const> CPVideoInfo;

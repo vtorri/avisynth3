@@ -28,23 +28,23 @@
 #include "forward.h"
 #include "sampletype.h"
 
-//boost includes
-#include <boost/rational.hpp>    //for rational
-
 
 namespace avs {
 
 
-//typedef
-typedef boost::rational<int> FPS;
 
-
-// The VideoInfo class holds global information about a clip 
-// (i.e. information that does not depend on the frame number).  
-// The GetVideoInfo method in Clip returns this class.
-
-// As of 3.0 VideoInfo becomes a class and is now responsible of checking all clip constraints.
-// ie all tests are the responsability of VideoInfo, you try it and if illegal it will throw the appropriate error)
+///////////////////////////////////////////////////////////////////////////////
+//  VideoInfo
+//
+//  The VideoInfo class holds global information about a clip 
+//  (i.e. information that does not depend on the frame number).  
+//  The GetVideoInfo method in Clip returns this class.
+//
+//  As of 3.0 VideoInfo becomes a polymorphic class 
+//  which is responsible of checking all clip constraints.
+//  ie all tests are the responsability of VideoInfo,
+//  you try it and if illegal it will throw the appropriate error.
+//
 class VideoInfo
 {
   
@@ -71,7 +71,7 @@ public:  //video methods
   virtual ColorSpace& GetColorSpace() const = 0;
   virtual Dimension const& GetDimension() const = 0;
   virtual int GetFrameCount() const = 0;
-  virtual FPS const& GetFPS() const = 0;
+  virtual Fraction const& GetFPS() const = 0;
   virtual bool IsFrameClip() const = 0;
 
   virtual int GetWidth() const;
@@ -85,13 +85,13 @@ public:  //video methods
   virtual void SetColorSpace(ColorSpace& space) = 0;
   virtual void SetDimension(Dimension const& dim) = 0;
   virtual void SetFrameCount(int frameCount) = 0;
-  virtual void SetFPS(FPS const& fps) = 0;
+  virtual void SetFPS(Fraction const& fps) = 0;
   virtual void SetIsFrameClip(bool frameClip) = 0;
 
   virtual void SetWidth(int width);
   virtual void SetHeight(int height);
 
-  void SetFPS(int numerator, int denominator) { SetFPS( FPS(numerator, denominator) ); }
+  void SetFPS(int numerator, int denominator) { SetFPS( Fraction(numerator, denominator) ); }
 
   void AddToFrameCount(int shift) { SetFrameCount(GetFrameCount() + shift); }
 
@@ -114,7 +114,7 @@ public:  //video methods
 
 
   //virtual void AddVideo();
-  virtual void AddVideo(ColorSpace& space, Dimension const& dim, int frameCount, FPS const& fps = 25, bool frameClip = true) = 0;
+  virtual void AddVideo(ColorSpace& space, Dimension const& dim, int frameCount, Fraction const& fps = 25, bool frameClip = true) = 0;
 
   virtual void KillVideo() = 0;
 

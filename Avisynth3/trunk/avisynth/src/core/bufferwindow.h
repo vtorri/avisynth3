@@ -24,14 +24,20 @@
 #ifndef __AVS_BUFFERWINDOW_H__
 #define __AVS_BUFFERWINDOW_H__
 
-
 //avisynth includes
+#include "blitter.h"
 #include "dimension.h"
 #include "ownedblock.h"
 #include "window_ptr.h"
+#include "block/align.h"
+#include "runtime_environment.h"
 
 
 namespace avs {
+
+
+//declaration
+namespace bw { struct SizeChanger; }
 
 
 
@@ -48,11 +54,17 @@ class BufferWindow
   int offset_;                 //offset from buffer start to window start
   OwnedBlock buffer_;
 
+  friend struct bw::SizeChanger;   //need internal knowledge to work
 
-public:  //sstructors
+
+public:  //structors
 
   //normal constructor
-  BufferWindow(Dimension const& dim, PEnvironment const& env);
+  BufferWindow(Dimension const& dim, PEnvironment const& env)
+    : dim_( dim )
+    , pitch_( block::AlignValue(width()) )
+    , offset_( block::Align )
+    , buffer_( env->NewOwnedBlock(pitch() * height() + block::Align * 2, true) ) { }
  
   //generated copy constructor and destructor are fine
   
@@ -61,7 +73,13 @@ public:  //assignment
 
   //generated operator= is fine
 
-  void swap(BufferWindow& other);  //no throw
+  void swap(BufferWindow& other)  //no throw
+  {
+    dim_.swap(other.dim_);
+    std::swap(pitch_, other.pitch_);
+    std::swap(offset_, other.offset_);
+    buffer_.swap(other.buffer_);
+  }
 
 
 public:  //access
@@ -70,18 +88,27 @@ public:  //access
   Dimension const& GetDimension() const { return dim_; }
 
   BYTE const * read() const { return buffer_.get() + offset_; }
-  BYTE * write();
+  BYTE * write()
+  {
+    if ( ! buffer_.unique() )
+    {
+      PEnvironment const& env = GetEnvironment();
+      BufferWindow buf(dim_, env);
+
+      env->GetBlitter()(*this, buf);
+
+      *this = buf;
+    }
+    return buffer_.get() + offset_;
+  }
 
   int pitch() const { return pitch_; }
   int width() const { return dim_.GetWidth(); }
   int height() const { return dim_.GetHeight(); }
 
-
+  //window_ptr methods
   CWindowPtr Read() const { return CWindowPtr( read(), pitch(), width(), height() ); }
   WindowPtr Write() { BYTE * ptr = write(); return WindowPtr( ptr, pitch(), width(), height() ); }
-
-  CWindowPtr ReadFromBottom() const { return CWindowPtr( read() + pitch() * (height() - 1), -pitch(), width(), height() ); }
-  WindowPtr WriteFromBottom() { BYTE * ptr = write(); return WindowPtr( ptr + pitch() * (height() - 1), -pitch(), width(), height() ); }  
 
 
 public:  //comparison operators
@@ -89,18 +116,9 @@ public:  //comparison operators
   bool operator==(BufferWindow const& other) const { return buffer_ == other.buffer_ && offset_ == other.offset_ && dim_ == other.dim_; }
   bool operator!=(BufferWindow const& other) const { return buffer_ != other.buffer_ || offset_ != other.offset_ || dim_ != other.dim_; }
 
+ 
+};
 
-public:  
-
-  //buffer resizing method
-  //will try to avoid buffer reallocation when possible
-  void ChangeSize(Vecteur const& topLeft, Vecteur const& bottomRight);
-
-  //copy other into self at the given coords (which can be negatives)
-  //only overlap is copied, no effect if there is none
-  void Copy(BufferWindow other, Vecteur const& coords); 
-  
-};//BufferWindow
 
 
 } //namespace avs

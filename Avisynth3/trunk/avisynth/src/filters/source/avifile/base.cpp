@@ -21,10 +21,13 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
 //avisynth include
 #include "./base.h"                    //anti vc++ weirdness
 
 //windows includes
+#define NOMINMAX
 #include <windows.h>
 #include <vfw.h>
 
@@ -45,3 +48,5 @@ Base::~Base()
 
 
 } } } } //namespace avs::filters::source::avifile
+
+#endif //_WIN32

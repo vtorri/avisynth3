@@ -21,7 +21,9 @@
 // General Public License cover the whole combination.
 
 
-//avisynth include
+#ifdef _WIN32
+
+//avisynth includes
 #include "rawaudio.h"
 #include "../avifilesource.h"                //for AviFileSource::ReadFormat
 #include "../../../core/videoinfo.h"
@@ -31,6 +33,7 @@
 #include "../../../core/exception/generic.h"
 
 //windows includes
+#define NOMINMAX
 #include <windows.h>
 #include <vfw.h>
 
@@ -54,15 +57,15 @@ long RawAudio::ReadAudio(BYTE * buffer, long long start, long& size) const
   {
     long samplesRead = 0;
     long bytesRead = 0;
-    long count = size / bps;                //samples that fit into size when uncompressed, so more should fit without pb
 
     //reads data from stream
-    HRESULT hResult = audio_->Read(lStart, count, buffer, bufferSize, &bytesRead, &samplesRead);
-    if ( hResult != AVIERR_OK && hResult != AVIERR_BUFFERTOOSMALL )
-      throw exception::Generic("Cannot read from source file");
+    HRESULT hResult = audio_->Read(lStart, AVISTREAMREAD_CONVENIENT, buffer, bufferSize, &bytesRead, &samplesRead);
 
-    if ( bytesRead == 0 )                   //exits while when nothing more was read
+    if ( hResult == AVIERR_FILEREAD )
+      throw exception::Generic("Cannot read from source file");    
+    if (  bytesRead == 0 )                  //exits while when nothing more was rea
       break;
+    assert( hResult == AVIERR_OK );
 
     buffer += bytesRead;                    //move ptr after data read
     bufferSize -= bytesRead;                //bytesRead less space available in buffer
@@ -81,20 +84,25 @@ void RawAudio::InitAudio(PAVIStream const& audio, VideoInfo& vi)
 {
   if ( audio )
   {
-    audio_ = audio;
-
     //get wav format header from stream
     vfw::PWaveFormatEx wfe = boost::static_pointer_cast<vfw::WaveFormatEx>(AviFileSource::ReadFormat(audio));
+    
+    if ( ! wfe->IsVBR() )        //checks it's CBR  (vfw IAVIStream seems unable to output vfr data)
+    {
+      audio_ = audio;
 
-    //sets audio decompressor (and gets output format in wfe)
-    SetAudioDecompressor( ACMAudioDecompressor::Create(*this, wfe) );
-    vfw::AviStreamInfo asi(*audio);
+      //sets audio decompressor (and gets output format in wfe)
+      SetAudioDecompressor( ACMAudioDecompressor::Create(*this, wfe) );
+      vfw::AviStreamInfo asi(*audio);
 
-    assert( wfe->wBitsPerSample == 8 || wfe->wBitsPerSample == 16 );
-    vi.AddAudio( wfe->wBitsPerSample == 8 ? SAMPLE_INT8 : SAMPLE_INT16, wfe->nSamplesPerSec, 0, wfe->nChannels );                 
-    asi.SetLengthsTo(vi);
+      assert( wfe->wBitsPerSample == 8 || wfe->wBitsPerSample == 16 );
+      vi.AddAudio( wfe->wBitsPerSample == 8 ? SAMPLE_INT8 : SAMPLE_INT16, wfe->nSamplesPerSec, 0, wfe->nChannels );                 
+      asi.SetLengthsTo(vi);
+    }
   }
 }
 
 
 } } } } //namespace avs::filters::source::avifile
+
+#endif //_WIN32

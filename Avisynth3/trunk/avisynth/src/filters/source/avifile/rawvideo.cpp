@@ -21,6 +21,8 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
 //avisynth includes
 #include "rawvideo.h"
 #include "../avifilesource.h"                 //for AviFileSource::ReadFormat
@@ -31,6 +33,7 @@
 #include "../../../core/exception/generic.h"
 
 //windows includes
+#define NOMINMAX
 #include <windows.h>
 #include <vfw.h>
 
@@ -79,3 +82,5 @@ void RawVideo::InitVideo(PAVIStream const& video, VideoInfo& vi)
 
 
 } } } } //namespace avs::filters::source::avifile
+
+#endif //_WIN32

@@ -28,7 +28,7 @@
 #include "get.h"
 #include "check.h"
 #include "literal.h"
-#include "vartable.h"
+#include "forward.h"
 #include "../vmcode.h"
 #include "../lazy/ref.h"
 #include "../function/table.h"
@@ -42,15 +42,6 @@
 
 
 namespace avs { namespace parser { namespace grammar {
-
-
-//typedefs
-typedef boost::tuples::tuple<VarTable, function::Table> GlobalContext;
-typedef boost::tuples::tuple<VarTable, int, boost::optional<int> > LocalContext;
-namespace value { 
-  typedef boost::tuples::tuple<ElementalOperation> ElementalOpProxy;
-  typedef boost::tuples::tuple<ElementalCode, char, bool> Expression; 
-}
 
 
 

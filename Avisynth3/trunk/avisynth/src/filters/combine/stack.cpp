@@ -52,11 +52,6 @@ Stack::Stack(PClip const& first, PClip const& second, Dimension const& expand)
   vi_ = vi;
 }
 
-
-BYTE * Stack::GetAudio(BYTE * buffer, long long start, int count) const
-{
-  throw exception::NoAudio();
-}
  
 
 CPVideoFrame Stack::MakeFrame(int n) const

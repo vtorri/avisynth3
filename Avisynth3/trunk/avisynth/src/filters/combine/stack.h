@@ -27,6 +27,7 @@
 #include "../../core/geometry/vecteur.h"
 #include "../../clip/caching/concrete.h"
 #include "../../clip/twochilds/concrete.h"
+#include "../../clip/noaudio.h"
 
 
 namespace avs { namespace filters { 
@@ -40,6 +41,7 @@ namespace avs { namespace filters {
 //  
 class Stack : public clip::twochilds::Concrete
             , public clip::caching::Concrete
+            , public clip::NoAudio
 {
     
   CPVideoInfo vi_;
@@ -56,8 +58,6 @@ public:  //clip general interface
     
   virtual CPVideoInfo GetVideoInfo() const { return vi_; }
     
-  virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const;
-
 
 private:  //MakeFrame method
 

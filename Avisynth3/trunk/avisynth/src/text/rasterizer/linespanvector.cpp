@@ -193,7 +193,10 @@ void LineSpanVector::Realize(BYTE * ptr, LineSpan const& span, int step) const
   }
 
   while ( it != end() && *it < span.end )     //while there more which are inside span
+  {
     it->Realize(ptr, step);                   //we realize them
+    ++it;                                     //next one
+  }
 
   if ( it != end() && *it <= span.end )       //there is an extra span, which starts inside span: then overlap
   {

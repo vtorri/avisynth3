@@ -31,15 +31,8 @@
 #include "../../clip/onechild/cachingpipeline.h"
 
 
-#pragma warning ( push )           //push warning state
-#pragma warning (disable : 4250)   //get rid of MI dominance decisions
-
-
 namespace avs { namespace filters {
 
-
-//declarations
-namespace resize { class Filter; }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -88,7 +81,5 @@ public:
 
 
 } } //namespace avs::filters
-
-#pragma warning ( pop )
 
 #endif //__AVS_FILTERS_RESIZE_H__

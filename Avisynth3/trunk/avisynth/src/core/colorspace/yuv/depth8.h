@@ -28,13 +28,7 @@
 #include "../../colorspace.h"
 
 
-namespace avs { 
-  
-//declarations
-class ByteMap;
-class ByteCounter;
-  
-namespace cspace { namespace yuv {
+namespace avs { namespace cspace { namespace yuv {
 
 
 
@@ -46,11 +40,6 @@ namespace cspace { namespace yuv {
 class AVS_NOVTABLE Depth8 : public virtual ColorSpace
 {
 
-public:  //yuv::Depth8 interface
-
-  virtual void Count(VideoFrame const& frame, ByteCounter& y, ByteCounter& u, ByteCounter& v) const = 0;
-
-  virtual void Apply(VideoFrame& frame, ByteMap const& y, ByteMap const& u, ByteMap const& v) const = 0;
 
 };
 

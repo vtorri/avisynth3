@@ -55,6 +55,8 @@ class Block : public block::base<block::Deleter>
 {
 
 public:  //structors
+
+  Block();   //allocates 0 bytes
   
   explicit Block(int size, bool recycle = false);
 

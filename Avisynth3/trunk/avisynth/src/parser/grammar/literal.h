@@ -25,13 +25,13 @@
 #define __AVS_PARSER_GRAMMAR_LITERAL_H__
 
 //avisynth includes
-#include "../stack.h"
 #include "../lazy/pair.h"
-#include "../stackoperation.h"
+#include "../vmoperation.h"
 #include "../functor/pusher.h"
 
 //spirit include
 #include <boost/spirit/core.hpp>
+#include <boost/spirit/symbols.hpp>
 #include <boost/spirit/attribute/closure.hpp>
 #include <boost/spirit/phoenix/statements.hpp>      //for operator,
 //#include <boost/spirit/utility/escape_char.hpp>   //for c_escape_ch_p, the day it starts converting
@@ -87,6 +87,11 @@ struct Literal : public spirit::grammar<Literal, closure::Value<TypedOp>::contex
                 first(self.value) = construct_<functor::pusher<std::string> >(arg1),
                 second(self.value) = val('s')
               ]
+          |   boolLiteral
+              [
+                first(self.value) = construct_<functor::pusher<bool> >(arg1),
+                second(self.value) = val('b')
+              ]
           ;
 
       string
@@ -105,6 +110,11 @@ struct Literal : public spirit::grammar<Literal, closure::Value<TypedOp>::contex
               >>  '"'
               ]
           ;
+
+      boolLiteral.add
+          ( "true", true )
+          ( "false", false );
+
     }
 
     spirit::rule<ScannerT> const & start() const { return literal; }
@@ -114,6 +124,8 @@ struct Literal : public spirit::grammar<Literal, closure::Value<TypedOp>::contex
 
     spirit::rule<ScannerT> literal;
     spirit::rule<ScannerT, closure::Value<std::string>::context_t> string;
+
+    spirit::symbols<bool> boolLiteral;
 
   };
 

@@ -25,12 +25,7 @@
 #include "avifilesource.h"
 #include "../../com/deleter.h"
 #include "../../core/videoinfo.h"
-#include "../../vfw/avistreaminfo.h"
-#include "../../vfw/bitmapinfoheader.h"
-#include "../../core/exception/noaudio.h"
-#include "../../core/Exception/generic.h"
 #include "../../core/exception/brokenfile.h"
-#include "avi/vfwframedecompressor.h"
 
 //windows includes
 #include <windows.h>
@@ -57,9 +52,6 @@ AviFileSource::AviFileSource(std::string const& fileName, PEnvironment const& en
   vi_ = vi;                                                      //save it as this' 
   
 }
-
-
-
 
 
 AviFileSource::PAVIStream AviFileSource::GetStream(PAVIFile const& aviFile, unsigned long fccType)

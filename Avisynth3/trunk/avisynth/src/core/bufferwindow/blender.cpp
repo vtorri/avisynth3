@@ -28,6 +28,11 @@
 namespace avs { namespace bw {
 
 
+//equivalent nasm code of the inline asm inside operator() below
+extern "C" void blender_mmx_nasm
+    (BYTE* dst_ptr, int dst_pitch, const BYTE* src_ptr, int src_pitch, int dst_width, int dst_height, int weight);
+
+
 
 Blender<1>::Blender<1>(float factor)
 {
@@ -43,7 +48,6 @@ Blender<1>::Blender<1>(float factor)
 }
 
 
-
 void Blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom) const
 {
 
@@ -56,15 +60,15 @@ void Blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom
     return;
   }
 
-  static long long const rounder = 0x0000400000004000LL;		       //(0.5)<<15 in each dword
-                                     
   //we have to work     
   WindowPtr dst = blendIn.Write();
   CWindowPtr src = blendFrom.Read();
+
+
+#if defined(_INTEL_ASM) && ! defined(_FORCE_NASM)
+
+  static long long const rounder = 0x0000400000004000LL;		       //(0.5)<<15 in each dword
   int weight = weight_;
-
-
-#ifdef _INTEL_ASM
 
   /////////////////////
   // Blends two planes.
@@ -130,9 +134,13 @@ void Blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom
 
     emms
   }
+
 #else
-#warning "Blender : missing code path"
-#endif //_INTEL_ASM
+
+  //use nasm code
+  blender_mmx_nasm(dst.ptr, dst.pitch, src.ptr, src.pitch, dst.width, dst.height, weight_);
+
+#endif //defined(_INTEL_ASM) && ! defined(_FORCE_NASM)
 
 }
 

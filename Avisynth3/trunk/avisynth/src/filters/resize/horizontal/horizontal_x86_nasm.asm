@@ -43,8 +43,8 @@ BITS 32
 ;=============================================================================
 SECTION .text
 cglobal resize_horizontal_rgb24_mmx_nasm, 32
-cglobal resize_horizontal_rgb24_mmx_nasm, 36
-cglobal resize_horizontal_rgb24_mmx_nasm, 36
+cglobal resize_horizontal_yuy2_mmx_nasm, 36
+cglobal resize_horizontal_rgb32_mmx_nasm, 32
 cglobal emms_, 0
 
 ;=============================================================================
@@ -291,14 +291,13 @@ ALIGN 16
 
 ;-----------------------------------------------------------------------------
 ; void resize_horizontal_rgb32_mmx_nasm(const BYTE *src_ptr,
-;                    int src_width,
-;                    BYTE *tempY,
-;                    BYTE *tempUV,
-;                    const int *pptrUV,
-;                    const int *pptrY,
-;                    int countY,
-;                    int countUV,
-;                    int x)
+;                    BYTE *dst_ptr,
+;                    int dst_width,
+;                    int const *pptr,
+;                    int count,
+;                    int y,
+;                    int src_pitch,
+;                    int pad)
 ;-----------------------------------------------------------------------------
 ALIGN 16
 resize_horizontal_rgb32_mmx_nasm:

@@ -27,7 +27,7 @@
 
 
 
-namespace avs {
+namespace avs { namespace vfw {
 
 
 
@@ -70,4 +70,4 @@ HRESULT AviFileFactory::Create(IID const& riid, void ** ppv)
 }
 
 
-} //namespace avs
+} } //namespace avs::vfw

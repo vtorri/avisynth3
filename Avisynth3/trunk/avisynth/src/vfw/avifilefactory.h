@@ -28,7 +28,7 @@
 #include "../com/base.h"
 
 
-namespace avs {
+namespace avs { namespace vfw {
 
 
 
@@ -63,6 +63,6 @@ public:  //factory method
 
 
 
-} //namespace avs
+} } //namespace avs::vfw
 
 #endif //__AVS_AVIFILEFACTORY_H__

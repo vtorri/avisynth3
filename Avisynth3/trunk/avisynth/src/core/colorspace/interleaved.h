@@ -21,70 +21,34 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_CS_INTERLEAVED_H__
-#define __AVS_CS_INTERLEAVED_H__
+#ifndef __AVS_COLORSPACE_INTERLEAVED_H__
+#define __AVS_COLORSPACE_INTERLEAVED_H__
 
-//avisynth includes
+//avisynth include
 #include "../colorspace.h"
-#include "../exception/nosuchplane.h"
 
 
 namespace avs { namespace cspace {
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////
-//  interleaved<bpp, bps, VFrame>
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  cspace::Interleaved
 //
+//  ColorSpace sub interface for interleaved color spaces
 //
-//
-template <int bpp_, int bps_, typename VFrame> 
-class interleaved : public Interleaved
+class Interleaved : public virtual ColorSpace
 {
-
-public:  //declarations and typedefs
-
-  enum { bpp = bpp_, bps = bps_ };
-
-  typedef interleaved<bpp, bps, VFrame> InterleavedType;
-
-
-public:  //ColorSpace interface
-
-  virtual int GetBitsPerPixel() const { return 8 * bpp; }
-
-  virtual int GetBitmapSize(Dimension const& dim) const
-  {
-    return RoundUp<4>( dim.GetWidth() * bpp ) * dim.GetHeight();
-  }
-
-  virtual bool HasPlane(Plane plane) const { return plane == NOT_PLANAR; }
-
-  virtual void ToPlane(int& x, int& /*y*/, Plane plane) const
-  {
-    if ( plane != NOT_PLANAR )
-      throw exception::NoSuchPlane(*this, plane);
-    x *= bpp;
-  }
-
-  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
-  {
-    return CPVideoFrame( static_cast<VideoFrame *>(new VFrame(dim, type, env)) );
-  }
-
 
 public:  //Interleaved interface
 
-  virtual PVideoFrame CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& main) const
-  {
-    return CPVideoFrame( static_cast<VideoFrame *>(new VFrame(dim, type, main)) );
-  }
+  //create a frame using a given buffer
+  virtual PVideoFrame CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& main) const = 0;
 
 };
 
 
 
-
 } } //namespace avs::cspace
 
-#endif //__AVS_CS_INTERLEAVED_H__
+#endif //__AVS_COLORSPACE_INTERLEAVED_H__

@@ -43,7 +43,7 @@ namespace avs { namespace parser { namespace lazy {
 template <int n> struct Attribute
 {
 
-  template <typename T, int d = n>
+  template <typename T, typename D = Attribute<n> >
   struct result
   {
     //NB: add_reference is necessary, in the case where the tuple element is a reference itself
@@ -51,20 +51,20 @@ template <int n> struct Attribute
   };
 
   template <typename T>
-  struct result<boost::reference_wrapper<T>, n>
+  struct result<boost::reference_wrapper<T>, Attribute<n> >
   {
     typedef typename result<T>::type type;
   };
 
   template <typename T>
-  struct result<boost::reference_wrapper<T> const, n>
+  struct result<boost::reference_wrapper<T> const, Attribute<n> >
   {
     typedef typename result<T>::type type;
   };
 
   //deflect phoenix::nil_t... no idea why it's necessary
   template <>
-  struct result<phoenix::nil_t, n>
+  struct result<phoenix::nil_t, Attribute<n> >
   {
     typedef phoenix::nil_t type;
   };

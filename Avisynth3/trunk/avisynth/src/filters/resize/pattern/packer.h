@@ -75,7 +75,7 @@ public:  //packer methods
     {
 
       for( int k = 0; k < groupCoeffPairBy; ++k)
-        ptr_[k] = static_cast<int *>(coeffs)[k];
+        ptr_[k] = ((int *)coeffs)[k];
 
       i = 0;                                  //reset i for next ones
       ptr_ += groupCoeffPairBy * packerCount; //move to next position

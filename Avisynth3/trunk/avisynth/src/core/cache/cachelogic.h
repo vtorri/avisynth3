@@ -29,6 +29,7 @@
 
 //boost include
 #include <boost/circular_buffer.hpp>
+//actually a boost extension, grab it at http://groups.yahoo.com/group/boost/files/circular_buffer_v3.6.zip
 
 
 namespace avs { namespace cache {

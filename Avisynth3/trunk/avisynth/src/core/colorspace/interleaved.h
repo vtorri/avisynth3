@@ -51,6 +51,8 @@ public:  //declarations and typedefs
 
 public:  //ColorSpace interface
 
+  virtual int GetBitsPerPixel() const { return 8 * bpp; }
+
   virtual int GetBitmapSize(Dimension const& dim) const
   {
     return RoundUp<4>( dim.GetWidth() * bpp ) * dim.GetHeight();

@@ -80,6 +80,7 @@ public:  //ColorSpace interface
   virtual ID id() const { return I_YV12; }
   virtual char const * GetName() const { return "YV12"; }
   virtual unsigned long GetFourCC() const { return '21VY'; }
+  virtual int GetBitsPerPixel() const { return 12; }
 
   virtual int GetBitmapSize(Dimension const& dim) const
   {
@@ -142,6 +143,7 @@ public:  //ColorSpace interface
   virtual ID id() const { return I_YV24; }
   virtual char const * GetName() const { return "YV24"; }
   virtual unsigned long GetFourCC() const { throw exception::UnsupportedColorSpace(*this); }
+  virtual int GetBitsPerPixel() const { return 24; }
 
   virtual int GetBitmapSize(Dimension const& dim) const
   {
@@ -187,6 +189,7 @@ public:  //ColorSpace interface
   virtual ID id() const { return I_YV45; }
   virtual char const * GetName() const { return "YV45"; }
   virtual unsigned long GetFourCC() const { throw exception::UnsupportedColorSpace(*this); }
+  virtual int GetBitsPerPixel() const { return 45; }
 
   virtual int GetBitmapSize(Dimension const& dim) const
   {

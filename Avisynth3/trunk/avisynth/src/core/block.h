@@ -63,37 +63,30 @@ public:
   //alignment of memory allocated by Blocks
   enum { Align = 16 };
 
-  //recycle struct, used as a signature for the recycling constructor
-  struct recycle { };
 
+public:  //constructor
+  
+  explicit Block(int size, bool recycle = false);
 
-public:  //constructors
-
-  Block(int size);               //basic constructor
-
-  Block(int size, recycle);      //recycling constructor
-
-  Block(Block const& other)      //copy constructor
-    : block( other.block ) { }
+  //generated copy constructor and destructor are fine
 
 
 public:  //assignment
 
-  Block& operator=(Block const& other) { block = other.block; return *this; }
+  //generated operator= is fine
 
   void swap(Block& other) { block.swap( other.block ); }
 
 
 public:  //reset methods
 
-  void reset(int size) { Block(size).swap(*this); }
-  void reset(int size, recycle r) { Block(size, r).swap(*this); }
+  void reset(int size, bool recycle = false) { Block(size, recycle).swap(*this); }
 
 
 public:  //read access
 
   BYTE * get() const { return block.get(); }
-  int size() const;
+  int size() const { return boost::get_deleter<Deleter>(block)->size_; }
 
   bool unique() const { return block.unique(); }
 
@@ -102,18 +95,26 @@ public:  //helper methods
 
   static int AlignValue(int value) { return (value + Align - 1) & -Align; }
 
-  static bool IsAligned(int value) { return value % value == 0; }
+  static bool IsAligned(int value) { return value % Align == 0; }
 
 
 private:  //implementation details 
   
-  class Manager;      //manages recycling and sizes of Blocks
+  class Recycler;      //manages recycling
 
+  //custom deleter used by the underlying shared_ptr
+  struct Deleter
+  {
+    int size_;
+    bool recycle_;
 
-  static BYTE * New(int& size);
+    Deleter(int size, bool recycle) : size_( size ), recycle_( recycle ) { }
 
-  static void Delete(void * ptr);  //no throw
-  static void Recycle(void * ptr); //no throw
+    void operator()(void * ptr) const;
+
+  };//Deleter
+
+  friend class Recycler;
 
 };//Block
 

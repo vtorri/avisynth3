@@ -33,119 +33,70 @@
 namespace avs {
 
 
-class Block::Manager
+
+class Block::Recycler
 {
 
-  typedef std::map<BYTE *, int> SizeMap;         //maps memory blocks to their size
   typedef std::multimap<int, BYTE *> RecycleMap; //maps size to memory blocks of that size
 
   static boost::mutex mutex;             //provides synchronisation
   
-  static SizeMap sizes;
-  static RecycleMap recycle;
+  static RecycleMap recycleMap;
 
   boost::mutex::scoped_lock lock;
 
 
 public:  //constructor
 
-  Manager()
+  Recycler()
     : lock( mutex ) { }
 
 
 public:
 
-  SizeMap& sizeMap() const { return sizes; }
-  RecycleMap& recycleMap() const { return recycle; }
+  void Return(int size, BYTE * ptr) const { recycleMap.insert( std::make_pair(size, ptr) ); }
 
-
-};//Block::Manager
-
-
-
-Block::Block(int size)
-  : block( New(size), &Delete )
-{
-  Manager().sizeMap()[ get() ] = size;
-}
-
-
-Block::Block(int size, recycle)
-{
-  Manager manager;
-
-  Manager::RecycleMap::iterator it = manager.recycleMap().find(size);
-
-  BYTE * ptr;
-
-  if ( it != manager.recycleMap().end() )   //if found one to recycle
+  boost::shared_ptr<BYTE> Acquire(int size, bool recycle) const
   {
-    BYTE * ptr = it->second;                //take it   
-    manager.recycleMap().erase(it);         //remove from recycle map
-  }
-  else ptr = New(size);                     //else create a new one
-  
-  block.reset( ptr, &Recycle );             //update shared_ptr
-  
-  manager.sizeMap()[ get() ] = size;        //register its size
+    boost::shared_ptr<BYTE> result;
 
-}
+    RecycleMap::iterator it = recycleMap.find(size);
 
-
-int Block::size() const
-{ 
-  return Manager().sizeMap()[ get() ]; 
-}
-
-
-BYTE * Block::New(int& size)
-{
-  if ( size < 0 )              //security : if neg
-    size = 0;                  //make it zero instead
-
-  BYTE * ptr = (BYTE *) _aligned_malloc(size, Align);
-
-  if ( ptr == NULL )           //bad_alloc if malloc failed
-    throw std::bad_alloc();    //else we end up associating a size with NULL...
-
-  return ptr;                         
-}
-
-
-void Block::Delete(void * ptr)
-{
-  _aligned_free(ptr);                        //free ptr
-
-  Manager().sizeMap().erase( (BYTE *)ptr );  //erase size entry
-}
-
-
-void Block::Recycle(void * ptr)
-{
-  Manager manager;
-
-  Manager::SizeMap::iterator it = manager.sizeMap().find( (BYTE *)ptr );
-
-  //NB: normally there should be such an entry
-  //the test handles the case where an exception in the constructor
-  //caused unwinding before size could be registered in the size map
-  if ( it == manager.sizeMap().end() )  
-    _aligned_free(ptr);                //we delete, what else can we do...
-  else
-  {
-    int size = it->second;             //take the size
-    manager.sizeMap().erase(it);       //erase size entry
-
-    //necessary for no throw guarantee
-    try { 
-      manager.recycleMap().insert( std::make_pair(size, (BYTE *)ptr) );
-    }
-    catch(std::bad_alloc&)
+    if ( it != recycleMap.end() )
     {
-      _aligned_free(ptr);              //once again, no choice
+      result.reset( it->second, Deleter(size, true) );
+      recycleMap.erase(it);
+    }     
+    else 
+    {
+      BYTE * ptr = (BYTE *)_aligned_malloc(size, Align);
+
+      if ( ptr == NULL )
+        throw std::bad_alloc();
+
+      result.reset( ptr, Deleter(size, recycle) );
     }
+
+    return result;
   }
+
+
+
+};//Block::Recycler
+
+
+
+Block::Block(int size, bool recycle)
+  : block( Recycler().Acquire(size, recycle) ) { }
+
+
+void Block::Deleter::operator ()(void * ptr) const
+{
+  if ( recycle_ )
+    Recycler().Return(size_, (BYTE *)ptr);
+  else _aligned_free(ptr);
 }
+  
 
 
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ namespace avs {
 
 
 ////////////////////////////////////////////////////////////////////////////////////
-//  ToundUp<int Round>
+//  RoundUp<int Round>
 //
 //  small template helper function to Round up values (to powers of 2)
 //

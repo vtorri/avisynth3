@@ -448,7 +448,7 @@ struct traits<R (A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1, B2, B3, B4, B5, B6
   typedef B6 Arg16Type;
   typedef B7 Arg17Type;
   typedef B8 Arg18Type;
-  typedef B9 Arg18Type;
+  typedef B9 Arg19Type;
 
   enum { arity = 19 };
 };
@@ -480,7 +480,7 @@ struct traits<R (A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1, B2, B3, B4, B5, B6
   typedef B6 Arg16Type;
   typedef B7 Arg17Type;
   typedef B8 Arg18Type;
-  typedef B9 Arg18Type;
+  typedef B9 Arg19Type;
   typedef B10 Arg20Type;
 
   enum { arity = 20 };

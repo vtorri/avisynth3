@@ -341,7 +341,7 @@ struct caller_<Function, 9>
 //  calls CallBack with args corresponding to the prototype of Function
 //
 template <typename CallBack, typename Function>
-struct caller : detail::caller_impl<Function>
+struct caller : detail::caller_<Function>
 {
 
   CallBack const callBack_;
@@ -349,10 +349,10 @@ struct caller : detail::caller_impl<Function>
   caller(CallBack const& callBack)
     : callBack_( callBack ) { }
 
-  typename detail::caller_impl<Function>::ResultType
+  typename detail::caller_<Function>::ResultType
   operator()(VMState& state) const
   {
-    return detail::caller_impl<Function>::operator()(state, callBack_);
+    return detail::caller_<Function>::operator()(state, callBack_);
   }
 
 };

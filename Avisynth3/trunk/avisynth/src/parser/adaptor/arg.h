@@ -38,7 +38,7 @@ namespace avs { namespace parser { namespace adaptor { namespace detail {
 //  extracts type of arg n of given function
 //
 template <typename Function, int n>
-struct arg { }
+struct arg { };
 
 
 template <typename Function>

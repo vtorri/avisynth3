@@ -29,9 +29,6 @@
 #include "../core/colorspace.h"
 #include "../core/exception/generic.h"
 
-//boost include
-#include <boost/format.hpp>
-
 
 namespace avs { namespace vfw {
 
@@ -104,76 +101,18 @@ PClip const& AviStream::GetClip()
   return parent_.clip_;
 }
 
+
 CPVideoInfo AviStream::GetVideoInfo()
 {
   return parent_.vi_;
 }
+
 
 void AviStream::MakeErrorStream(std::string const& msg)
 {
   parent_.MakeErrorStream(msg);
 }
 
-
-void AviStream::ReadWrapper(void* lpBuffer, int lStart, int lSamples)
-{
-  // It's illegal to call GetExceptionInformation() inside an __except
-  // block!  Hence this variable and the horrible hack below...
-
-#ifdef _MSC_VER
-  EXCEPTION_POINTERS* ei = NULL;    
-  DWORD code = 0;          //both init to avoid warning about may be not initialized
-
-  __try { Read(lpBuffer, lStart, lSamples); }
-  __except ( ei = GetExceptionInformation(), code = GetExceptionCode(), (code >> 28) == 0xC ) 
-  {
-    switch (code) 
-    {
-    case EXCEPTION_ACCESS_VIOLATION:    ThrowAccessViolation(ei);
-    case EXCEPTION_ILLEGAL_INSTRUCTION: ThrowIllegalInstruction(ei);
-    case EXCEPTION_INT_DIVIDE_BY_ZERO:  ThrowIntDivideByZero(ei);      
-    case EXCEPTION_STACK_OVERFLOW:      ThrowStackOverFlow();
-    default:                            ThrowUnknownException(ei, code);
-    }        
-  }
-#else
-  Read(lpBuffer, lStart, lSamples);
-#endif
-}
-
-void AviStream::ThrowAccessViolation(EXCEPTION_POINTERS * ei)
-{
-  throw exception::Generic(str( 
-      boost::format("Avisynth: caught an access violation at 0x%08x,\nattempting to %s 0x%08x")
-        % ei->ExceptionRecord->ExceptionAddress
-        % ( ei->ExceptionRecord->ExceptionInformation[0] ? "write to" : "read from" )
-        % ei->ExceptionRecord->ExceptionInformation[1]  
-      ));
-}
-
-void AviStream::ThrowIllegalInstruction(EXCEPTION_POINTERS * ei)
-{
-  throw exception::Generic(str( boost::format("Avisynth: illegal instruction at 0x%08x") % ei->ExceptionRecord->ExceptionAddress ));
-}
-
-void AviStream::ThrowIntDivideByZero(EXCEPTION_POINTERS * ei)
-{
-  throw exception::Generic(str( boost::format("Avisynth: division by zero at 0x%08x") % ei->ExceptionRecord->ExceptionAddress ));
-}
-
-void AviStream::ThrowStackOverFlow()
-{
-  throw exception::Generic("Avisynth: stack overflow");
-}
-
-void AviStream::ThrowUnknownException(EXCEPTION_POINTERS * ei, DWORD code)
-{
-  throw exception::Generic(str( 
-      boost::format("Avisynth: unknown exception 0x%08x at 0x%08x")
-        % code 
-        % ei->ExceptionRecord->ExceptionAddress
-      ));
-}
 
 
 } } //namespace avs::vfw

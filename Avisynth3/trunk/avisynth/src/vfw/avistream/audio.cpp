@@ -79,19 +79,19 @@ STDMETHODIMP Audio::Read(LONG lStart, LONG lSamples, LPVOID lpBuffer, LONG cbBuf
   
   try 
   {
-    try { ReadWrapper(lpBuffer, lStart, lSamples); }
+    try { Read(lpBuffer, lStart, lSamples); }
     catch (avs::Exception& ex)
     {
       MakeErrorStream(ex.msg());
-      ReadWrapper(lpBuffer, lStart, lSamples);
+      Read(lpBuffer, lStart, lSamples);
     }
-    catch (...) 
+    catch (std::exception& ex) 
     {
-      MakeErrorStream("Avisynth: unknown exception");
-      ReadWrapper(lpBuffer, lStart, lSamples);
+      MakeErrorStream(ex.what());
+      Read(lpBuffer, lStart, lSamples);
     }
   }
-  catch (...) { return E_FAIL; }
+  catch (std::exception&) { return E_FAIL; }
 
   return S_OK;
 }

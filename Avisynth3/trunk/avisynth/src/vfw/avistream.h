@@ -25,7 +25,7 @@
 #define __AVS_VFW_AVISTREAM_H__
 
 //avisynth includes
-#include "../define.h"
+#include "../define.h"             //for AVS_NOVTABLE
 #include "../com/base.h"
 #include "../core/forward.h"       //for PClip
 
@@ -33,13 +33,14 @@
 #include <string>
 
 //windows include
+#define NOMINMAX          //prevents generation of min and max macros
 #include <vfw.h>
 
 
 namespace avs { namespace vfw {
   
 
-//declaration
+//declarations
 class AviFile;         //in avifile.h
 class AviStreamInfo;   //in avistreaminfo.h
 
@@ -50,8 +51,8 @@ class AviStreamInfo;   //in avistreaminfo.h
 //
 //  implementation of the vfw IAVIStream interface
 //
-class AviStream : public IAVIStream
-                , public com::Base
+class AVS_NOVTABLE AviStream : public IAVIStream
+                             , public com::Base
 {
 
 	AviFile & parent_;
@@ -90,17 +91,9 @@ protected:  //AviStream implementation
   PClip const& GetClip();
   CPVideoInfo GetVideoInfo();
   void MakeErrorStream(std::string const& msg);
-	void ReadWrapper(void* lpBuffer, int lStart, int lSamples);
 
   virtual void FillAviStreamInfo(AviStreamInfo * asi) = 0;
   virtual void Read(void* lpBuffer, int lStart, int lSamples) = 0;
-
-  //helpers for ReadWrapper
-  AVS_NORETURN void ThrowAccessViolation(EXCEPTION_POINTERS * ei);
-  AVS_NORETURN void ThrowIllegalInstruction(EXCEPTION_POINTERS * ei);
-  AVS_NORETURN void ThrowIntDivideByZero(EXCEPTION_POINTERS * ei);
-  AVS_NORETURN void ThrowStackOverFlow();
-  AVS_NORETURN void ThrowUnknownException(EXCEPTION_POINTERS * ei, DWORD code);
 
 };
 

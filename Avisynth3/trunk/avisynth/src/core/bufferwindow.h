@@ -81,7 +81,7 @@ public:  //access
   WindowPtr Write() { BYTE * ptr = write(); return WindowPtr( ptr, pitch(), width(), height() ); }
 
   CWindowPtr ReadFromBottom() const { return CWindowPtr( read() + pitch() * (height() - 1), -pitch(), width(), height() ); }
-  WindowPtr WriteFromBottom() const { BYTE * ptr = write(); return WindowPtr( ptr + pitch() * (height() - 1), -pitch(), width(), height() ); }  
+  WindowPtr WriteFromBottom() { BYTE * ptr = write(); return WindowPtr( ptr + pitch() * (height() - 1), -pitch(), width(), height() ); }  
 
 
 public:  //comparison operators

@@ -95,8 +95,8 @@ void BufferWindow::ChangeSize(Vecteur const& topLeft, Vecteur const& bottomRight
 
 void BufferWindow::Copy(BufferWindow other, Vecteur const& coords)
 {
-  Vecteur topLeft = coords >> dimension_;
-  Vecteur bottomRight = ( coords + other.dimension_ ) >> dimension_;
+  Vecteur topLeft = coords >> dim_;
+  Vecteur bottomRight = ( coords + other.dim_ ) >> dim_;
 
   Dimension toCopy = Dimension(bottomRight - topLeft);
 

@@ -47,14 +47,12 @@ class Concrete : public virtual Caching
   boost::scoped_ptr<Cache> cache_;
 
 
-public:  //structors
+protected:  //SetFrameMaker method
 
-  Concrete(PEnvironment const& env)
+  void SetFrameMaker(FrameMaker const& maker, PEnvironment const& env)
   { 
-    cache_.reset( env->CreateCache(*this) );
+    cache_.reset( env->CreateCache(maker) );
   }
-
-  //generated destructor is fine
 
 
 private:  //Caching requirement

@@ -47,6 +47,7 @@ class BitmapInfoHeader : public BITMAPINFOHEADER
 
 public:  //structors
 
+  BitmapInfoHeader();
   BitmapInfoHeader(VideoInfo const& vi);
 
   //generated copy constructor and destructor are fine
@@ -54,7 +55,7 @@ public:  //structors
 
 public:  //read access
 
-  //returns 'NULL' if it doesn't map to an avs color space
+  //returns empty if it doesn't map to an avs color space
   PColorSpace GetColorSpace() const;
   Dimension GetDimension() const { return Dimension(biWidth, biHeight); }
 

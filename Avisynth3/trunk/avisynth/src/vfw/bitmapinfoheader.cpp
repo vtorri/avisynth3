@@ -30,6 +30,13 @@
 namespace avs { namespace vfw {
 
 
+BitmapInfoHeader::BitmapInfoHeader()
+{
+  memset( static_cast<BITMAPINFOHEADER *>(this), 0, sizeof(BITMAPINFOHEADER) );
+
+  biSize        = sizeof(BITMAPINFOHEADER);
+  biPlanes      = 1;
+}
 
 
 BitmapInfoHeader::BitmapInfoHeader(VideoInfo const& vi)
@@ -78,8 +85,7 @@ void BitmapInfoHeader::SetDimension(Dimension const& dim)
   biWidth       = dim.GetWidth();
   biHeight      = dim.GetHeight();
 
-  PColorSpace space = GetColorSpace();
-  if ( ! space )
+  if ( PColorSpace space = GetColorSpace() )
     biSizeImage = space->GetBitmapSize(dim);
 }
 

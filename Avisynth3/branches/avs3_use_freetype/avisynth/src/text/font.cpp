@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,57 +25,102 @@
 #include "font.h"
 #include "../core/exception/generic.h"
 
-//windows includes
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>             
+//freetype includes
+#include "../freetype/glyph.h"
+#include "../freetype/face.h"
 
 
 namespace avs { namespace text {
 
 
-
-Font::Font(std::string const& name, int size, bool bold, bool italic)
+Font::Font(std::string const& name, int size)
+  : font_( name, size )
 {
-  //try new before creating so thazt we don't miss a DeleOBject through bad_alloc
-  HFONT * pFont = new HFONT(  CreateFont( size * 8, 0, 0, 0, bold ? FW_BOLD : FW_NORMAL, 
-                     italic, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
-                     CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE | DEFAULT_PITCH, name.c_str() )  );
-  if ( *pFont == NULL )
-    throw exception::Generic("Unable to create font");
-
-  pFont_.reset( pFont, HFONTDeleter() );
+  font_.SetCharSize(Dimension(0, size << 6), Dimension(300, 300));
 }
-
 
 
 Dimension Font::GetTextBoundingBox(std::string const& text)
 {
-  HDC hdc = GetDC(NULL);
+  if ( text.size() == 0 )   //if no text
+    return Dimension();     //empty box
 
-  HFONT oldHFont = (HFONT)SelectObject( hdc, *(HFONT *)pFont_.get() );
-  int oldMapMode = SetMapMode(hdc, MM_TEXT);
-  //UINT oldAlign = SetTextAlign(hdc, TA_BASELINE | TA_LEFT );
+  int glyphCount = text.length();
+  bool useKerning = font_.HasKerning();
 
-  RECT r = { 0, 0, 0, 0 };
+  unsigned prevIndex = font_.GetCharIndex(text[0]);
+  int x = font_.GetAdvance(prevIndex).x >> 6;
 
-  int height = DrawText(hdc, text.c_str(), text.length(), &r, DT_CALCRECT | DT_NOPREFIX);
+  for( int n = 1; n < glyphCount; ++n )
+  {
+    unsigned glyphIndex = font_.GetCharIndex(text[n]);
 
-  //SetTextAlign(hdc, oldAlign);
-  SetMapMode(hdc, oldMapMode);
-  SelectObject(hdc, oldHFont);
+    if ( useKerning )
+      x += font_.GetKerning(prevIndex, glyphIndex).x >> 6;
 
-  ReleaseDC(NULL, hdc);
+  
+  freetype::Glyph *glyphs = new freetype::Glyph[num_glyphs];
+  Vecteur *pos = new Vecteur [num_glyphs];
 
-  if ( height == 0 )
+  for ( int n = 0 ; n < glyphCount; ++n )
+  {
+    Vecteur advance;
+
+    unsigned glyphIndex
+    
+    if ( use_kerning && previous && glyphIndex )
+	  {
+	    Vecteur delta = font_.GetKerning(previous, glyphIndex);
+  	  x += delta.x >> 6;
+	  }
+    
+    pos[n].x = x;
+    pos[n].y = y;
+    font_.LoadGlyph (glyph_index);
+    glyphs[n]=font_.GetGlyph (glyph_index);
+    advance = font_.GetAdvance (glyph_index);
+    x += advance.x >> 6;
+    previous = glyph_index;
+  }
+
+  Vecteur  bbox_min (32000, 32000);
+  Vecteur  bbox_max (-32000, -32000);
+
+  for ( int n = 0; n < glyphCount; ++n )
+  {
+    Vecteur min, max; 
+    glyphs[n].GetCbox (ft_glyph_bbox_pixels, &min, &max);
+    min += pos[n];
+    max += pos[n];
+
+    if ( min.x < bbox_min.x )
+	    bbox_min.x = min.x;
+    if ( min.y < bbox_min.y )
+	    bbox_min.y = min.y;
+      
+    if ( max.x > bbox_max.x )
+	    bbox_max.x = max.x;
+    if ( max.y > bbox_max.y )
+	    bbox_max.y = max.y;
+  }
+
+  if (bbox_min.x > bbox_max.x)
+    {
+      bbox_min = Vecteur (0, 0);
+      bbox_max = Vecteur (0, 0);
+    }
+
+  delete [] glyphs;
+  delete [] pos;
+
+  width  = bbox_max.x - bbox_min.x;
+  height = bbox_max.y - bbox_min.y;
+
+  if (height == 0)
     throw exception::Generic("GetTextBoundingBox failure");
 
-  return Dimension( (r.right + 7) >> 3, (height + 7) >> 3 );
+  return Dimension(width, height);
 }
-
-
-
-void Font::HFONTDeleter::operator()(void * ptr) const { DeleteObject( *(HFONT *)ptr ); }
-
 
 
 

@@ -75,7 +75,7 @@ public:  //instance
 //
 //  RGB32 ColorSpace subclass
 //
-class RGB32 : public interleaved<3, true>
+class RGB32 : public interleaved<4, true>
 {
 
 private:  //constructor

@@ -26,8 +26,11 @@
 
 //avisynth includes
 #include "../define.h"
+#include "../core/forward.h"
 #include "../core/property.h"
 
+//boost include
+#include <boost/weak_ptr.hpp>
 
 
 namespace avs { namespace directstream {
@@ -50,17 +53,53 @@ namespace avs { namespace directstream {
 class AVS_NOVTABLE DirectStreamer : public Property
 {
 
+  WeakPClip source_;
+  int n_;
+
+
+public:  //structors
+
+  DirectStreamer(PClip const& source, int n)
+    : source_( source )
+    , n_( n ) { }
+
+  //generated copy constructor and destructor are fine
+
+
 public:  //Property interface
 
   virtual bool IsStatic() const { return true; }
 
 
-public:  //DirectStreamer interface
+public:  //DirectStreamer public interface
 
-  virtual bool CanStartHere() const = 0;
-  virtual bool CanStopHere() const = 0;
+  virtual bool CanStartHere() const = 0;    //report if a segment can start with the frame (ie keyframe)
+  virtual bool CanStopHere() const = 0;     //report if a segment can stop with the frame
 
-  virtual bool CanFollow(DirectStreamer const& other) const = 0;
+  bool CanFollow(DirectStreamer const& other) const
+  {
+    //try the most common case first : ie two frames from same clip
+    if ( ! (source_ < other.source_) && ! (other.source_ < source_)    //ugly for source == other.source_ 
+       && (  n_ == other.n_ + 1                          //and frames are consecutives
+          || ( CanStartHere() && other.CanStopHere() )   //or possible to cut on them
+          )
+       )
+      return true;                  //success
+
+    //else need to check video compatibilty and still need to cut there
+    return IsVideoCompatible(other) && ( CanStartHere() && other.CanStopHere() );
+  }
+
+
+private:  //DirectStreamer private interface
+
+  virtual bool IsVideoCompatible(DirectStreamer const& other) const = 0;
+
+
+protected:  //read access
+
+  PClip GetSource() const { return PClip(source_); }
+  int GetN() const { return n_; }
 
 };
 

@@ -22,54 +22,46 @@
 
 
 //avisynth includes
-#include "flip.h"
 #include "symetry.h"
+#include "turn.h"
+#include "flip.h"
 #include "../../videoframe.h"
 
 
 namespace avs { namespace filters {
 
 
-CPVideoFrame Flip::Vertical::ProcessFrame(CPVideoFrame source) const
+CPVideoFrame Symetry::ProcessFrame(CPVideoFrame source) const
 {
   PVideoFrame result = source;
-  result->FlipVertical();
-  return result;
-}
 
-
-PClip Flip::Vertical::OtherFlip(PClip child) const
-{
-  return new Horizontal(child);
-}
-
-
-PClip Flip::Vertical::FlipHorizontal() const
-{
-  return new Symetry(GetChild());
-}
-
-
-
-CPVideoFrame Flip::Horizontal::ProcessFrame(CPVideoFrame source) const
-{
-  PVideoFrame result = source;
   result->FlipHorizontal();
+  result->FlipVertical();
+
   return result;
 }
 
 
-PClip Flip::Horizontal::OtherFlip(PClip child) const
+
+PClip Symetry::Refactor(Flip const& parent) const
 {
-  return new Vertical(child);
+  return parent.OtherFlip(GetChild());
 }
 
 
-PClip Flip::Horizontal::FlipVertical() const
+PClip Symetry::Refactor(Turn const& parent) const
 {
-  return new Symetry(GetChild());
+  return parent.MirrorTurn(GetChild());
 }
 
 
 
-}; }; //namespace avs::filters
+
+
+
+
+
+
+
+
+} } //namespace avs::filters

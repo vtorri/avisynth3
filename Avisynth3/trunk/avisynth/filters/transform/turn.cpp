@@ -23,6 +23,8 @@
 
 //avisynth includes
 #include "turn.h"
+#include "flip.h"
+#include "symetry.h"
 #include "../../dimension.h"
 #include "../../videoframe.h"
 
@@ -46,6 +48,12 @@ Turn::Turn(PClip child)
 }
 
 
+PClip Turn::Refactor(Flip const& parent) const
+{
+  return clone( parent.OtherFlip(GetChild()) );
+}
+
+
 
 CPVideoFrame Turn::Left::ProcessFrame(CPVideoFrame source) const
 {
@@ -55,12 +63,17 @@ CPVideoFrame Turn::Left::ProcessFrame(CPVideoFrame source) const
 }
 
 
-PClip Turn::Left::Simplify(PClip self) const
+PClip Turn::Left::MirrorTurn(PClip child) const
 {
-  if (boost::shared_ptr<Right const> tr = dynamic_pointer_cast<Right const>( GetChild() ))
-    return tr->GetChild();
-  return self;
+  return new Right(child);
 }
+
+
+PClip Turn::Left::TurnLeft() const
+{
+  return new Symetry(GetChild());
+}
+
 
 
 CPVideoFrame Turn::Right::ProcessFrame(CPVideoFrame source) const
@@ -71,11 +84,15 @@ CPVideoFrame Turn::Right::ProcessFrame(CPVideoFrame source) const
 }
 
 
-PClip Turn::Right::Simplify(PClip self) const
+PClip Turn::Right::MirrorTurn(PClip child) const
 {
-  if (boost::shared_ptr<Left const> tl = dynamic_pointer_cast<Left const>( GetChild() ))
-    return tl->GetChild();
-  return self;
+  return new Left(child);
+}
+
+
+PClip Turn::Right::TurnRight() const
+{
+  return new Symetry(GetChild());
 }
 
 

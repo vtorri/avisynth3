@@ -27,6 +27,7 @@
 
 //avisynth includes
 #include "../../videoinfo.h"
+#include "../simplifiable.h"
 #include "../cachingclip_onechild_pipeline.h"
 
 
@@ -37,12 +38,22 @@
 namespace avs { namespace filters {
 
 
+//class declarations
+class Flip;
+class Symetry;
+
+
+
 /////////////////////////////////////////////////////////////////////////////////////////
 //  Turn
 //
 //  factorisation superclass for Turn::Left and Turn::Right
 //
 class Turn : public CachingClip::OneChild::Pipeline
+           , public Simplifiable<Turn>
+           , public Refactorable<Turn>
+           , public Refactorable<Flip>
+           , public Refactorable<Symetry>
 {
 
   VideoInfo vi_;
@@ -55,7 +66,22 @@ public:  //constructor
 
 public:  //clip general interface
 
-  virtual const VideoInfo& GetVideoInfo() const { return vi_; }
+  virtual VideoInfo const& GetVideoInfo() const { return vi_; }
+
+
+private:  //Refactor methods
+
+  virtual PClip Refactor(Flip const& parent) const;
+
+  virtual PClip Refactor(Symetry const& parent) const { return MirrorTurn(GetChild()); }
+
+
+public:  //Turn interface
+
+  virtual PClip MirrorTurn(PClip child) const = 0;
+
+  virtual PClip TurnLeft() const = 0;
+  virtual PClip TurnRight() const = 0;
 
 
 public:  //implementation inner subclasses
@@ -86,14 +112,22 @@ public:  //child changing clone
   virtual PClip clone(PClip child) const { return new Left(child); }
 
 
-private:  //ProcessFrame method
+protected:  //ProcessFrame method
   
   virtual CPVideoFrame ProcessFrame(CPVideoFrame source) const;
 
 
-protected:  //Simplify method
+private:  //Refactorable<Turn>
 
-  virtual PClip Simplify(PClip self) const;
+  virtual PClip Refactor(Turn const& parent) const { return parent.TurnLeft(); }
+
+
+public:  //Turn interface
+
+  virtual PClip MirrorTurn(PClip child) const;
+
+  virtual PClip TurnLeft() const;
+  virtual PClip TurnRight() const { return GetChild(); }
 
 };
 
@@ -116,14 +150,23 @@ public:  //child changing clone
   virtual PClip clone(PClip child) const { return new Right(child); }
 
 
-private:  //ProcessFrame method
+protected:  //ProcessFrame method
   
   virtual CPVideoFrame ProcessFrame(CPVideoFrame source) const;
 
 
-protected:  //Simplify method
+private:  //Refactorable<Turn>
 
-  virtual PClip Simplify(PClip self) const;
+  virtual PClip Refactor(Turn const& parent) const { return parent.TurnRight(); }
+
+
+public:  //Turn interface
+
+  virtual PClip MirrorTurn(PClip child) const;
+
+  virtual PClip TurnLeft() const { return GetChild(); }
+  virtual PClip TurnRight() const; 
+
 
 };//Turn::Right
 

@@ -25,7 +25,8 @@
 #define __AVS_FILTERS_FLIP_H__
 
 
-//avisynth include
+//avisynth includes
+#include "../simplifiable.h"
 #include "../cachingclip_onechild_pipeline.h"
 
 
@@ -36,23 +37,61 @@
 namespace avs { namespace filters {
 
 
-////////////////////////////////////////////////////////////////////////////////////
-//  FlipVertical
-//
-//  filter to flip the video vertically
-//
-class FlipVertical : public CachingClip::OneChild::Pipeline
+//class declaration
+class Symetry;
+
+
+
+class Flip : public CachingClip::OneChild::Pipeline
+           , public Simplifiable<Flip>
+           , public Refactorable<Flip>
+           , public Refactorable<Symetry>
 {
 
 public:  //constructor
 
-  FlipVertical(PClip child)
+  Flip(PClip child)
     : Pipeline( child ) { }
+
+
+private:  //Refactor<Symetry>
+
+  virtual PClip Refactor(Symetry const& parent) const { return OtherFlip(GetChild()); }
+
+
+public:  //Flip interface
+
+  virtual PClip OtherFlip(PClip child) const = 0;
+
+  virtual PClip FlipVertical() const = 0;
+  virtual PClip FlipHorizontal() const = 0;
+
+
+public:  //implementation inner subclasses
+
+  class Vertical;
+  class Horizontal;
+
+};
+
+
+////////////////////////////////////////////////////////////////////////////////////
+//  Flip::Vertical
+//
+//  filter to flip the video vertically
+//
+class Flip::Vertical : public Flip
+{
+
+public:  //constructor
+
+  Vertical(PClip child)
+    : Flip( child ) { }
 
 
 public:  //child changing clone
 
-  virtual PClip clone(PClip child) const { return new FlipVertical(child); }
+  virtual PClip clone(PClip child) const { return new Vertical(child); }
 
 
 protected:  //ProcessFrame method
@@ -60,30 +99,38 @@ protected:  //ProcessFrame method
   virtual CPVideoFrame ProcessFrame(CPVideoFrame source) const;
 
 
-protected:  //Simplify method
+private:  //Refactorable<Flip>
 
-  virtual PClip Simplify(PClip self) const;
+  virtual PClip Refactor(Flip const& parent) const { return parent.FlipVertical(); }
+
+
+public:  //Flip interface
+
+  virtual PClip OtherFlip(PClip child) const;
+
+  virtual PClip FlipVertical() const { return GetChild(); }
+  virtual PClip FlipHorizontal() const;
 
 };
 
 
 /////////////////////////////////////////////////////////////////////////////////////
-//  FlipHorizontal
+//  Flip::Horizontal
 //
 //  filter to flip a video horizontally
 //
-class FlipHorizontal : public CachingClip::OneChild::Pipeline
+class Flip::Horizontal : public Flip
 {
 
 public:  //constructor
 
-  FlipHorizontal(PClip child)
-    : Pipeline( child ) { }
+  Horizontal(PClip child)
+    : Flip( child ) { }
 
 
 public:  //child changing clone
 
-  virtual PClip clone(PClip child) const { return new FlipHorizontal(child); }
+  virtual PClip clone(PClip child) const { return new Horizontal(child); }
 
 
 protected:  //ProcessFrame method
@@ -91,9 +138,18 @@ protected:  //ProcessFrame method
   virtual CPVideoFrame ProcessFrame(CPVideoFrame source) const;
 
 
-protected:  //Simplify method
+private:  //Refactorable<Flip>
 
-  virtual PClip Simplify(PClip self) const;
+  virtual PClip Refactor(Flip const& parent) const { return parent.FlipHorizontal(); }
+
+
+public:  //Flip interface
+
+  virtual PClip OtherFlip(PClip child) const;
+
+  virtual PClip FlipVertical() const; 
+  virtual PClip FlipHorizontal() const { return GetChild(); }
+
 
 };
 

@@ -24,8 +24,8 @@
 //avisynth include
 #include "yv12.h"
 #include "../../core/blitter.h"
-#include "../../core/roundup.h"
 #include "../../core/videoframe.h"
+#include "../../core/utility/round.h"
 
 
 namespace avs { namespace vfw { namespace avistream {

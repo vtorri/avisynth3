@@ -21,54 +21,27 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_BW_LEFTTURNER_H__
-#define __AVS_BW_LEFTTURNER_H__
-
-//avisynth includes
-#include "../bufferwindow.h"
+//avisynth include
+#include "leftturner.h"
 
 
 namespace avs { namespace bw {
 
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-//  LeftTurner<bpp>
-//
-//  templated functor to turn windows
-//  
-template <int bpp> class LeftTurner
+BufferWindow LeftTurner<1>::operator()(BufferWindow const& source) const
 {
+  BufferWindow result( source.GetDimension().Turn<1>(), source.GetEnvironment() );
 
-public:
+  CWindowPtr src = source.Read();
+  WindowPtr dst = result.Write();
 
-  BufferWindow operator()(BufferWindow const& source) const
-  {
-    BufferWindow result( source.GetDimension().Turn<bpp>(), source.GetEnvironment() );
+  dst.toBottom();
 
-    //...
+  for( int y = src.height; y-- > 0; src.to(0, 1), dst.to(1, 0) )
+    for( int x = src.width; x-- > 0; )
+      dst(0, -x) = src(x, 0);
 
-    return result;
-  }
-
-};
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
-//  LeftTurner<1>
-//
-//  LeftTurner specialisation for bpp = 1
-//
-template <> class LeftTurner<1>
-{
-
-public:
-
-  BufferWindow operator()(BufferWindow const& source) const;
-
-};
-
+  return result;
+}
 
 } } //namespace avs::bw
-
-#endif //__AVS_BW_LEFTTURNER_H__

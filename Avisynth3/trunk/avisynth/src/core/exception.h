@@ -48,33 +48,6 @@ public:  //string diagnotic message (no need to be pre built)
 
 
 
-//////////////////////////////////////////////////////////////////////////
-//  GenericException
-//
-//  
-//
-class GenericException : public Exception
-{
-
-  std::string msg_;
-
-
-public:  //structors
-
-  GenericException(std::string const& msg)
-    : msg_( msg ) { }
-
-  //generated copy constructor and destructor are fine
-
-
-public:  //interface
-
-  virtual std::string msg() const { return msg_; }
-
-  virtual char const * what() const throw() { return msg_.c_str(); }
-
-};
-
 
 } //namespace avs
 

@@ -49,10 +49,10 @@ private:  //
     ColorSpace * space_;
     Dimension dim_;
     int frameCount_;
-    FPS fps_;
+    Fraction fps_;
     bool frameClip_;
 
-    VideoProperties(ColorSpace& space, Dimension const& dim, int frameCount, FPS const fps, bool frameClip)
+    VideoProperties(ColorSpace& space, Dimension const& dim, int frameCount, Fraction const fps, bool frameClip)
       : space_( &space )
       , dim_( dim )
       , frameCount_( frameCount )
@@ -103,7 +103,7 @@ public:  //video methods
   virtual ColorSpace& GetColorSpace() const { CheckHasVideo(); return *video_->space_; }
   virtual Dimension const& GetDimension() const { CheckHasVideo(); return video_->dim_; }
   virtual int GetFrameCount() const { CheckHasVideo(); return video_->frameCount_; }
-  virtual FPS const& GetFPS() const { CheckHasVideo(); return video_->fps_; }
+  virtual Fraction const& GetFPS() const { CheckHasVideo(); return video_->fps_; }
   virtual bool IsFrameClip() const { CheckHasVideo(); return video_->frameClip_; }
 
   //write access
@@ -111,11 +111,11 @@ public:  //video methods
   virtual void SetColorSpace(ColorSpace& space) { CheckHasVideo(); space.CheckDim(video_->dim_); video_->space_ = &space; }
   virtual void SetDimension(Dimension const& dim) { CheckHasVideo(); video_->space_->CheckDim(dim); video_->dim_ = dim; }
   virtual void SetFrameCount(int frameCount) { CheckHasVideo(); video_->frameCount_ = CheckFrameCount(frameCount); }
-  virtual void SetFPS(FPS const& fps) { CheckHasVideo(); video_->fps_ = fps; }
+  virtual void SetFPS(Fraction const& fps) { CheckHasVideo(); video_->fps_ = fps; }
   virtual void SetIsFrameClip(bool frameClip) { CheckHasVideo(); video_->frameClip_ = frameClip; }
 
 
-  virtual void AddVideo(ColorSpace& space, Dimension const& dim, int frameCount, FPS const& fps = 25, bool frameClip = true)
+  virtual void AddVideo(ColorSpace& space, Dimension const& dim, int frameCount, Fraction const& fps = 25, bool frameClip = true)
   {
     space.CheckDim(dim);
     video_ = VideoProperties(space, dim, CheckFrameCount(frameCount), fps, frameClip);

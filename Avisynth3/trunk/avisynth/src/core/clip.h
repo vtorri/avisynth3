@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,12 +24,15 @@
 #ifndef __AVS_CLIP_H__
 #define __AVS_CLIP_H__
 
-
 //avisynth include
-#include "smart_ptr_fwd.h"
+#include "forward.h"
 
 //boost include
 #include <boost/enable_shared_from_this.hpp>
+
+
+//definitely get rid of warning 4250 : MI dominance decisions
+#pragma warning (disable : 4250)  
 
 
 namespace avs {
@@ -37,9 +40,9 @@ namespace avs {
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// Clip
+//  Clip
 //
-// base class for all filters
+//  base class for all filters
 //
 class Clip : public boost::enable_shared_from_this<Clip>
 {
@@ -79,4 +82,4 @@ public:  //filter chain simplication method
 
 } //namespace avs
 
-#endif //#ifndef __AVS_CLIP_H__
+#endif //__AVS_CLIP_H__

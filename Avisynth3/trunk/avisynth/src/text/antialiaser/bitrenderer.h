@@ -27,8 +27,8 @@
 //avisynth includes
 #include "../font.h"
 #include "../align.h"
-#include "../../core/dimension.h"
 #include "../../core/window_ptr.h"
+#include "../../core/geometry/dimension.h"
 
 //boost include
 #include <boost/utility.hpp>

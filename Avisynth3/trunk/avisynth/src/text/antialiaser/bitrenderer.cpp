@@ -24,7 +24,7 @@
 //avisynth include
 #include "bitrenderer.h"
 #include "../gethfont.h"
-#include "../../core/vecteur.h"
+#include "../../core/geometry/vecteur.h"
 
 
 namespace avs { namespace text { namespace aliaser {

@@ -25,7 +25,6 @@
 #include "bitmapinfoheader.h"
 #include "../core/videoinfo.h"
 #include "../core/colorspace.h"
-#include "../core/exception/unsupportedcolorspace.h"
 
 
 namespace avs { namespace vfw {

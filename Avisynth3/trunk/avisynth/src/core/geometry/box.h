@@ -54,7 +54,8 @@ public:  //structors
 
   Box() { }
   Box(Vecteur const& pos, Dimension const& dim) : pos_( pos ), dim_( dim ) { }
-  
+  Box(Vecteur const& topLeft, Vecteur const& bottomRight) : pos_( topLeft ), dim_( bottomRight - topLeft ) { }
+
   //generated destructor and copy constructor are fine
 
 

@@ -26,7 +26,7 @@
 #include "../core/colorspace.h"
 #include "../core/videoframe.h"
 #include "antialiaser/bitcount.h"
-#include "antialiaser/bitexpand.h"
+//#include "antialiaser/bitexpand.h"
 
 
 namespace avs { namespace text {
@@ -175,10 +175,8 @@ void Antialiaser::UpdateAlpha()
   dirty_ = false;
 
   ByteMap const& bitcnt = aliaser::BitCount::instance;
-  ByteMap const& bitexl = aliaser::BitExpandRight::instance;
-  ByteMap const& bitexr = aliaser::BitExpandLeft::instance;
-  //NB: even though they may appear reversed, bitexl and bitexr are correct
-  // ( the left bits in an array of bits are at right when taking a byte from them )
+  //ByteMap const& bitexr = aliaser::BitExpandRight::instance;
+  //ByteMap const& bitexl = aliaser::BitExpandLeft::instance;
 
   CWindowPtr antialias = bitRenderer_.ReadBits();
   WindowPtr alpha = alphaBuffer_.Write();
@@ -213,8 +211,8 @@ void Antialiaser::UpdateAlpha()
           for( int i = 0; i < 8; ++i ) 
           {        
             //no need to consider the center case, we know it empty
-            centerMask |= bitexl[ antialias(-1, i) ];
-            centerMask |= bitexr[ antialias( 1, i) ];
+            centerMask |= /*bitexl[*/ antialias(-1, i); // ];
+            centerMask |= /*bitexr[*/ antialias( 1, i); // ];
           }
 
           if ( centerMask == 255 )
@@ -224,23 +222,25 @@ void Antialiaser::UpdateAlpha()
           
             BYTE mask = centerMask;
 
-            BYTE bottomMasks[8] = { 255, 255, 255, 255, 255, 255, 255, 255 };
-            BYTE topMasks[8] = { 255, 255, 255, 255, 255, 255, 255, 255 };
+            BYTE bottomMasks[8]; // = { 255, 255, 255, 255, 255, 255, 255, 255 };
+            BYTE topMasks[8]; // = { 255, 255, 255, 255, 255, 255, 255, 255 };
 
-            for( int i = 8; i-- > 0 && mask != 255 && antialias( 0, i - 8) != 0; ) 
+            for( int i = 8; i-- > 0; ) 
             {
-              mask |= bitexl[ antialias(-1, i - 8) ];
-              mask |= bitexr[ antialias( 1, i - 8) ];
+              mask |= antialias(0, i - 8);
+              mask |= /*bitexl[*/ antialias(-1, i - 8) << (7 - i); // ];
+              mask |= /*bitexr[*/ antialias( 1, i - 8) >> (7 - i); // ];
 
-              topMasks[7 - i] = mask;
+              topMasks[i] = mask;
             }
 
             mask = centerMask;
 
-            for( int i = 0; i < 8 && mask != 255 && antialias( 0, i + 8) != 0; ++i ) 
+            for( int i = 0; i < 8; ++i ) 
             {
-              mask |= bitexl[ antialias(-1, i + 8) ];
-              mask |= bitexr[ antialias(-1, i + 8) ];
+              mask |= antialias(0, i + 8);
+              mask |= /*bitexl[*/ antialias(-1, i + 8) << i; // ];
+              mask |= /*bitexr[*/ antialias( 1, i + 8) >> i; // ];
 
               bottomMasks[i] = mask;
             }
@@ -250,7 +250,7 @@ void Antialiaser::UpdateAlpha()
           
           }//if ( centerMask == 255 )
         }//if ( text != 0 )
-      }//if ( tmp & 0x00FFFFFF != 0 )
+      }//if ( tmp & 0x00FFFFFF != 0 ) 
 
       alpha[0] = text;
       alpha[1] = halo;

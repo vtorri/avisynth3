@@ -81,6 +81,8 @@ public:  //function-like interface
 };
 
 
+typedef std::pair<StackOperation, char> TypedOp;
+
 
 } } //namespace avs::parser
 

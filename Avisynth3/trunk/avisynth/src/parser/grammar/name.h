@@ -21,61 +21,59 @@
 // General Public License cover the whole combination.
 
 
-//avisynth include
-#include "parser.h"
-#include "vmcode.h"
-#include "grammar/statement.h"
-#include "../core/runtime_environment.h"
-#include "../filters/source/staticimage.h"
+#ifndef __AVS_PARSER_GRAMMAR_NAME_H__
+#define __AVS_PARSER_GRAMMAR_NAME_H__
 
-//stl include
-#include <sstream>
+//boost includes
+#include <boost/spirit/core.hpp>
+#include <boost/spirit/symbols.hpp>
 
+namespace spirit = boost::spirit;
 
 
-namespace avs { namespace parser {
+namespace avs { namespace parser { namespace grammar {
 
 
 
-PClip Parser::operator ()(std::string const& src)
+class Name : public spirit::grammar<Name>
 {
+
+  static spirit::symbols<char> const keywords;
+
+
+public:  //definition nested class
+
+  template <typename ScannerT>
+  struct definition
+  {
+
+    definition(Name const& self)
+    {
+
+      using namespace spirit;
+
+      name
+          =   lexeme_d
+              [
+                ( (alpha_p | '_') >> *(alnum_p | '_') )
+              ]
+              - keywords
+          ;
+
+    }
+
+    spirit::rule<ScannerT> const & start() const { return name; }
+
+
+  private:
   
-  using namespace phoenix;
-  using namespace avs::parser::grammar;
+    spirit::rule<ScannerT> name;
 
-  //Expression expression;
+  };
 
-  int stackSize = 0;
-  Stack stack;  
-  VarTable varTable;
-
-  Statement statement(stackSize, varTable);
-  //Variable variable(varTable);
-
-  VMCode code;
-  //std::string types;
-
-  parse(src.c_str(), 
-   *( statement
-      [
-        var(code) += arg1//,
-    //    var(types) += bind(&TypedCode::type)(arg1)
-      ]
-      >> spirit::eol_p
-    ), spirit::blank_p);
+};
 
 
-  code(stack);
+} } } //namepace avs::parser::grammar
 
-  std::stringstream stream;
-
-  stream << "parsed:";
-
-  for(int i = 0; i < stack.size(); ++i)
-    stream << ' ' /*<< types[i] << ":"*/ << stack.stack_[i];
-
-  return filters::StaticImage::CreateMessageClip(stream.str(), RuntimeEnvironment::Create(10000000) );
-}
-
-
-} } //namespace avs::parser
+#endif //__AVS_PARSER_GRAMMAR_NAME_H__

@@ -22,60 +22,24 @@
 
 
 //avisynth include
-#include "parser.h"
-#include "vmcode.h"
-#include "grammar/statement.h"
-#include "../core/runtime_environment.h"
-#include "../filters/source/staticimage.h"
-
-//stl include
-#include <sstream>
+#include "typemapped.h"
 
 
-
-namespace avs { namespace parser {
-
+namespace avs { namespace parser { namespace binaryop {
 
 
-PClip Parser::operator ()(std::string const& src)
+  TypeMapped::TypeMapped(std::string const& opName, StackOperation const& op, std::string const types)
+  : opName_( opName )
+  , op_( op )
 {
-  
-  using namespace phoenix;
-  using namespace avs::parser::grammar;
+  int size = types.size();
 
-  //Expression expression;
+  for( int i = 0; i < size; i += 3 )
+    map_[ std::make_pair(types[i], types[i + 1]) ] = types[i + 2];
 
-  int stackSize = 0;
-  Stack stack;  
-  VarTable varTable;
-
-  Statement statement(stackSize, varTable);
-  //Variable variable(varTable);
-
-  VMCode code;
-  //std::string types;
-
-  parse(src.c_str(), 
-   *( statement
-      [
-        var(code) += arg1//,
-    //    var(types) += bind(&TypedCode::type)(arg1)
-      ]
-      >> spirit::eol_p
-    ), spirit::blank_p);
-
-
-  code(stack);
-
-  std::stringstream stream;
-
-  stream << "parsed:";
-
-  for(int i = 0; i < stack.size(); ++i)
-    stream << ' ' /*<< types[i] << ":"*/ << stack.stack_[i];
-
-  return filters::StaticImage::CreateMessageClip(stream.str(), RuntimeEnvironment::Create(10000000) );
 }
 
 
-} } //namespace avs::parser
+
+
+} } } //namespace avs::parser::binaryop

@@ -20,91 +20,55 @@
 // combined work based on Avisynth.  Thus, the terms and conditions of the GNU
 // General Public License cover the whole combination.
 
-
-#ifndef __AVS_PARSER_VMCODE_H__
-#define __AVS_PARSER_VMCODE_H__
+#ifndef __AVS_PARSER_BINARYOP_TYPEMAPPED_H__
+#define __AVS_PARSER_BINARYOP_TYPEMAPPED_H__
 
 //avisynth include
-#include "stackoperation.h"
-
-//boost include
-//#include <boost/function.hpp>
+#include "../stackoperation.h"
+#include "../../core/exception/generic.h"
 
 //stl include
-#include <vector>
-#include <assert.h>
+#include <map>
 
 
-namespace avs { namespace parser {
+namespace avs { namespace parser { namespace binaryop {
 
 
 
-class VMCode
+class TypeMapped
 {
 
-  typedef std::vector<StackOperation> OperationVector;
-
-  OperationVector code_;
+  typedef std::map<std::pair<char, char>, char> TypeMap;
+   
+  TypeMap map_;
+  StackOperation op_;
+  std::string opName_;
 
 
 public:  //structors
 
-  VMCode() { }
-
-  VMCode(StackOperation const& op) 
-  {
-    assert( ! op.empty() );
-    code_.push_back(op);
-  }
+  TypeMapped(std::string const& opName, StackOperation const& op, std::string const types);
 
   //generated copy constructor and destructor are fine
 
 
-public:  
+public:  //interface
 
-  VMCode& operator+=(StackOperation const& op) 
-  { 
-    assert( ! op.empty() );
-    code_.push_back(op); 
-    return *this; 
-  }
-
-  VMCode& operator+=(VMCode const& other)
+  char get(char left, char right) const
   {
-    code_.insert(code_.end(), other.code_.begin(), other.code_.end());
-    return *this;
+    TypeMap::const_iterator it = map_.find(std::make_pair(left, right));
+    if ( it == map_.end() )
+      throw exception::Generic("parsing failed");
+    return it->second;
   }
 
+  StackOperation const& op() const { return op_; }
 
-  void operator()(Stack& stack) const
-  {
-    for( OperationVector::const_iterator it = code_.begin(); it != code_.end(); ++it )
-      (*it)(stack);
-  }
-
-  int size() const { return code_.size(); }
 };
 
 
-/*
-struct TypedCode
-{
-
-  VMCode code;
-  char type;
-
-  TypedCode& operator=(TypedOp const& typedOp)
-  {
-    code = (VMCode() += typedOp.op);
-    type = typedOp.type;
-    return *this;
-  }
-
-};*/
-
-typedef std::pair<VMCode, char> TypedCode;
 
 
-} } //namespace avs::parser
+} } } //namespace avs::parser::binaryop
 
-#endif //__AVS_PARSER_VMCODE_H__
+#endif //__AVS_PARSER_BINARYOP_TYPEMAPPED_H__

@@ -26,15 +26,14 @@
 
 //avisynth includes
 #include "../stack.h"
-#include "../vmcode.h"
+#include "../lazy/pair.h"
+#include "../stackoperation.h"
 
 //spirit include
 #include <boost/spirit/core.hpp>
-#include <boost/spirit/phoenix/binders.hpp>         //for bind
-#include <boost/spirit/phoenix/statements.hpp>      //for operator,
 #include <boost/spirit/attribute/closure.hpp>
+#include <boost/spirit/phoenix/statements.hpp>      //for operator,
 //#include <boost/spirit/utility/escape_char.hpp>   //for c_escape_ch_p, the day it starts converting
-
 
 namespace spirit = boost::spirit;
 
@@ -43,9 +42,6 @@ namespace avs { namespace parser {
   
   
 namespace closure {
-
-
-
 
 
 template <class Type> struct Value : spirit::closure<Value, Type>
@@ -61,11 +57,6 @@ template <class Type> struct Value : spirit::closure<Value, Type>
 namespace grammar {
 
 
-struct TypedOp
-{
-  StackOperation op;
-  char type;
-};
 
 
 struct Literal : public spirit::grammar<Literal, closure::Value<TypedOp>::context_t>
@@ -81,7 +72,7 @@ struct Literal : public spirit::grammar<Literal, closure::Value<TypedOp>::contex
     stack_pusher(Value const& value)
       : value_( value ) { }
 
-    void operator()(Stack& stack) const { stack.push_back( value_ ); }
+    void operator()(Stack& stack) const { stack.push( value_ ); }
 
   };
 
@@ -93,41 +84,41 @@ struct Literal : public spirit::grammar<Literal, closure::Value<TypedOp>::contex
     definition(Literal const& self)
     {
 
-      using phoenix::arg1;
-      using phoenix::construct_;     
+      using namespace lazy;
+      using namespace phoenix;
 
       literal
           =   spirit::strict_real_p
               [
-                bind(&TypedOp::op)(self.value) = construct_<stack_pusher<double> >(arg1),
-                bind(&TypedOp::type)(self.value) = val('d')
+                first(self.value) = construct_<stack_pusher<double> >(arg1),
+                second(self.value) = val('d')
               ]
           |   spirit::int_p
               [
-                bind(&TypedOp::op)(self.value) = construct_<stack_pusher<int> >(arg1),
-                bind(&TypedOp::type)(self.value) = val('i')
+                first(self.value) = construct_<stack_pusher<int> >(arg1),
+                second(self.value) = val('i')
               ]
           |   string
               [
-                bind(&TypedOp::op)(self.value) = construct_<stack_pusher<std::string> >(arg1),
-                bind(&TypedOp::type)(self.value) = val('s')
+                first(self.value) = construct_<stack_pusher<std::string> >(arg1),
+                second(self.value) = val('s')
               ]
           ;
 
       string
           =   spirit::lexeme_d
               [
-                '"'
-                >> *(   spirit::str_p("\\n")
-                        [
-                          string.value += val('\n')
-                        ]
-                    |   ( spirit::anychar_p - '"' )
-                        [
-                          string.value += *arg1
-                        ]
-                    )
-                >>  '"'
+                  '"'
+              >> *(   spirit::str_p("\\n")
+                      [
+                        string.value += val('\n')
+                      ]
+                  |   ( spirit::anychar_p - '"' )
+                      [
+                        string.value += *arg1
+                      ]
+                  )
+              >>  '"'
               ]
           ;
     }

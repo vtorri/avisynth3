@@ -22,60 +22,13 @@
 
 
 //avisynth include
-#include "parser.h"
-#include "vmcode.h"
-#include "grammar/statement.h"
-#include "../core/runtime_environment.h"
-#include "../filters/source/staticimage.h"
-
-//stl include
-#include <sstream>
+#include "name.h"
 
 
-
-namespace avs { namespace parser {
-
+namespace avs { namespace parser { namespace grammar {
 
 
-PClip Parser::operator ()(std::string const& src)
-{
-  
-  using namespace phoenix;
-  using namespace avs::parser::grammar;
-
-  //Expression expression;
-
-  int stackSize = 0;
-  Stack stack;  
-  VarTable varTable;
-
-  Statement statement(stackSize, varTable);
-  //Variable variable(varTable);
-
-  VMCode code;
-  //std::string types;
-
-  parse(src.c_str(), 
-   *( statement
-      [
-        var(code) += arg1//,
-    //    var(types) += bind(&TypedCode::type)(arg1)
-      ]
-      >> spirit::eol_p
-    ), spirit::blank_p);
+spirit::symbols<char> const Name::keywords;
 
 
-  code(stack);
-
-  std::stringstream stream;
-
-  stream << "parsed:";
-
-  for(int i = 0; i < stack.size(); ++i)
-    stream << ' ' /*<< types[i] << ":"*/ << stack.stack_[i];
-
-  return filters::StaticImage::CreateMessageClip(stream.str(), RuntimeEnvironment::Create(10000000) );
-}
-
-
-} } //namespace avs::parser
+} } } //namespace avs::parser::grammar

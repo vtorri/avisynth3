@@ -21,61 +21,42 @@
 // General Public License cover the whole combination.
 
 
+#ifndef __AVS_PARSER_BINARYOP_MAKE_H__
+#define __AVS_PARSER_BINARYOP_MAKE_H__
+
 //avisynth include
-#include "parser.h"
-#include "vmcode.h"
-#include "grammar/statement.h"
-#include "../core/runtime_environment.h"
-#include "../filters/source/staticimage.h"
+#include "../stack.h"
 
-//stl include
-#include <sstream>
+//boost include
+#include <boost/variant/apply_visitor.hpp>
 
 
-
-namespace avs { namespace parser {
+namespace avs { namespace parser { namespace binaryop {
 
 
 
-PClip Parser::operator ()(std::string const& src)
+template <typename Visitor> struct make
 {
-  
-  using namespace phoenix;
-  using namespace avs::parser::grammar;
 
-  //Expression expression;
-
-  int stackSize = 0;
-  Stack stack;  
-  VarTable varTable;
-
-  Statement statement(stackSize, varTable);
-  //Variable variable(varTable);
-
-  VMCode code;
-  //std::string types;
-
-  parse(src.c_str(), 
-   *( statement
-      [
-        var(code) += arg1//,
-    //    var(types) += bind(&TypedCode::type)(arg1)
-      ]
-      >> spirit::eol_p
-    ), spirit::blank_p);
+  Visitor visitor_;
 
 
-  code(stack);
+public:  //structors
 
-  std::stringstream stream;
-
-  stream << "parsed:";
-
-  for(int i = 0; i < stack.size(); ++i)
-    stream << ' ' /*<< types[i] << ":"*/ << stack.stack_[i];
-
-  return filters::StaticImage::CreateMessageClip(stream.str(), RuntimeEnvironment::Create(10000000) );
-}
+  make(Visitor const& visitor)
+    : visitor_( visitor ) { }
 
 
-} } //namespace avs::parser
+  void operator()(Stack& stack) const
+  {
+    stack.peek(1) = boost::apply_visitor(visitor_, stack.peek(1), stack.top());
+    stack.pop();
+  }
+
+};
+
+
+
+} } } //namespace avs::parser::binaryop
+
+#endif //__AVS_PARSER_BINARYOP_MAKE_H__

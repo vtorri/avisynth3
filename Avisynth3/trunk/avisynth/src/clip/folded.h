@@ -24,10 +24,10 @@
 #ifndef __AVS_CLIP_FOLDED_H__
 #define __AVS_CLIP_FOLDED_H__
 
-//avisynth include
-#include "../folder.h"
+//avisynth includes
 #include "../core/clip.h"
-#include "../weakexpired.h"
+#include "../utility/folder.h"
+#include "../utility/weakexpired.h"
 
 
 namespace avs { namespace clip {
@@ -37,7 +37,7 @@ namespace avs { namespace clip {
 ////////////////////////////////////////////////////////////////////////////////////////
 //  Folded<Key, Expired>
 //
-//
+//  uses the folder template to provide folding behavior to the Simplify method
 //
 template <class Key, class Expired = WeakExpired> class Folded : public virtual Clip
 {
@@ -73,6 +73,7 @@ private:  //GetKey method
   virtual Key GetKey() const = 0;
 
 };
+
 
 template <class Key, class Expired>
 folder<Key, WeakPClip, Expired> Folded<Key, Expired>::folder_;

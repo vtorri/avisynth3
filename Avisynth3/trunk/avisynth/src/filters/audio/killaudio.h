@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -27,10 +27,6 @@
 //avisynth includes
 #include "../../clip/onechild/concrete.h"
 #include "../../clip/onechild/simplifiable.h"
-
-
-#pragma warning ( push )           //push warning state
-#pragma warning (disable : 4250)   //get rid of MI dominance decisions
 
 
 namespace avs { namespace filters {
@@ -80,14 +76,12 @@ protected:  //GetKey method
 
 public:  //factory method
 
-  static PClip Create(PClip const& child); // { return PClip( (Clip *)new KillAudio(child) ); }
+  static PClip Create(PClip const& child); //NB: it's not return PClip( (Clip *)new KillAudio(child) );
 
 };
 
 
 
 } } //namespace avs::filters
-
-#pragma warning ( pop )
 
 #endif __AVS_FILTERS_KILLAUDIO_H__

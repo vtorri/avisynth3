@@ -35,29 +35,29 @@ namespace avs { namespace clip {
 namespace onechild { 
   
 //declarations
-template <class T> class InitialSimplifiable;
-template <class T> class Simplifiable; 
+template <class T> class Simplifiable;
+template <class T> class FinalSimplifiable; 
 
 }
 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
-//  InitialRefactorable<Parent>
+//  Refactorable<Parent>
 //
-//  Signature class of clips able of initial refactoring a parent of type Parent
+//  Signature class of clips able of refactoring a parent of type Parent
 //
 template <class Parent> 
-class NOVTABLE InitialRefactorable : public virtual Clip
+class NOVTABLE Refactorable : public virtual Clip
 {
 
 private:  //Refactor method
 
   //Refactorisation method (associated with parent type)
   //parent is passed so info can be extracted from it
-  virtual PClip InitialRefactor(Parent const& parent) const = 0;
+  virtual PClip Refactor(Parent const& parent) const = 0;
 
-  friend class onechild::InitialSimplifiable<Parent>;
+  friend class onechild::Simplifiable<Parent>;
 
 };
 
@@ -65,7 +65,7 @@ private:  //Refactor method
 ///////////////////////////////////////////////////////////////////////////////////////
 //  FinalRefactorable<Parent>
 //
-//  Signature class of clips able of initial refactoring a parent of type Parent
+//  Signature class of clips able of final refactoring a parent of type Parent
 //
 template <class Parent> 
 class NOVTABLE FinalRefactorable : public virtual Clip
@@ -77,7 +77,7 @@ private:  //Refactor method
   //parent is passed so info can be extracted from it
   virtual PClip FinalRefactor(Parent const& parent) const = 0;
 
-  friend class onechild::Simplifiable<Parent>;
+  friend class onechild::FinalSimplifiable<Parent>;
 
 };
 

@@ -35,10 +35,14 @@ namespace avs { namespace vfw { namespace avistream {
 class Interleaved : public Video
 {
 
+  int bpp_;
+
+
 public:  //constructor
 
-  Interleaved(AviFile& parent, DWORD fccHandler)
-    : Video( parent, fccHandler ) { }
+  Interleaved(AviFile& parent, DWORD fccHandler, int bpp)
+    : Video( parent, fccHandler )
+    , bpp_( bpp ) { }
 
 
 protected:  //Video implementation

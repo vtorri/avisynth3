@@ -23,17 +23,19 @@
 
 //avisynth includes
 #include "../main.h"
-#include "avifile.h"
+#include "avifile.h" 
 #include "avistream/yv12.h"
 #include "avistream/audio.h"
 #include "avistream/interleaved.h"
 #include "../core/clip.h"
 #include "../core/exception.h"
 #include "../core/videoinfo.h"
-#include "../core/videoframe.h"
 #include "../core/colorspace.h"
 #include "../core/runtime_environment.h"
 #include "../filters/source/staticimage.h"
+
+//assert include
+#include <assert.h>
 
 
 extern "C" const GUID CLSID_CAVIFileSynth   // {E6D6B700-124D-11D4-86F3-DB80AFD98778}
@@ -133,12 +135,11 @@ bool AviFile::DelayedInit()
       if (!filter_graph)
         throw AvisynthError("The returned video clip was nil (this is a bug)");  */
 
-      PEnvironment env = RuntimeEnvironment::Create(10000000);
-      CPVideoFrame frame = env->CreateFrame(ColorSpace::yv12(), Dimension(640, 480), PROGRESSIVE);
-      clip_ = filters::StaticImage::Create(frame);
+
+      clip_ = filters::StaticImage::CreateMessageClip( "Avisynth 3.0 alpha", RuntimeEnvironment::Create(10000000) );
 
       // get information about the clip
-      vi_ = clip_->GetVideoInfo();      
+      vi_ = clip_->GetVideoInfo();
       if ( vi_->IsYV12() && ( vi_->GetWidth() & 3 ) )
         throw Exception("Avisynth error: YV12 images for output must have a width divisible by 4 (use crop)!");
       if ( vi_->IsYUY2() && ( vi_->GetWidth() & 3 ) )
@@ -153,7 +154,7 @@ bool AviFile::DelayedInit()
       filter_graph = env->Invoke("MessageClip", AVSValue(args, 2), arg_names).AsClip();
       vi = &filter_graph->GetVideoInfo();
     }*/    
-    catch (...) { return false; }    
+    catch (...) { assert(false); return false; }    
   } 
 
   return true;
@@ -225,9 +226,9 @@ AviStream * AviFile::CreateStream(DWORD fccType, int lParam)
       if ( fccType == 0 || fccType == streamtypeVIDEO )
         switch( vi_->GetColorSpace().id() )
         {
-        case ColorSpace::I_RGB24:
-        case ColorSpace::I_RGB32: return new avistream::Interleaved(*this, BI_RGB);
-        case ColorSpace::I_YUY2: return new avistream::Interleaved(*this, '2YUY');
+        case ColorSpace::I_RGB24: return new avistream::Interleaved(*this, BI_RGB, 3);
+        case ColorSpace::I_RGB32: return new avistream::Interleaved(*this, BI_RGB, 4);
+        case ColorSpace::I_YUY2: return new avistream::Interleaved(*this, '2YUY', 2);
         case ColorSpace::I_YV12: return new avistream::YV12(*this);
         }
       return NULL;

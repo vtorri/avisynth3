@@ -21,9 +21,10 @@
 // General Public License cover the whole combination.
 
 
-//avisynth include
+//avisynth includes
 #include "interleaved.h"
 #include "../../core/blitter.h"
+#include "../../core/roundup.h"
 #include "../../core/dimension.h"
 #include "../../core/videoframe.h"
 
@@ -33,7 +34,7 @@ namespace avs { namespace vfw { namespace avistream {
 
 int Interleaved::GetBMPSize(Dimension const& dim)
 {
-  return dim.GetHeight() * ( (dim.GetWidth() + 3) & -4 );
+  return dim.GetHeight() * RoundUp<4>( dim.GetWidth() * bpp_ );
 }
 
 
@@ -41,7 +42,7 @@ void Interleaved::ReadFrame(VideoFrame const& frame, BYTE * ptr)
 {
   CWindowPtr src = frame.ReadFrom(NOT_PLANAR);  
     
-  Blitter::Get()(src, ptr, (src.width + 3) & -4);  // BMP scanlines are always dword-aligned
+  Blitter::Get()(src, ptr, RoundUp<4>(src.width));  // BMP scanlines are always dword-aligned
 }
 
 

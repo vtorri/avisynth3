@@ -62,13 +62,13 @@ class VMOperation
 
 public:  //structors
   
-  StackOperation() { }
+  VMOperation() { }
 
-  StackOperation(StackOperation const& other)
+  VMOperation(VMOperation const& other)
     : cb_( other.cb_ ) { }
 
   template <class Functor>
-  StackOperation(Functor const& functor)
+  VMOperation(Functor const& functor)
     : cb_( new functor_callback<Functor>(functor) ) { }
 
 

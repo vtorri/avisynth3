@@ -147,7 +147,9 @@ public:  //definition nested class
                   ]
               |   ifStatement
               )
-          >>  spirit::eol_p
+          >>  (   spirit::eol_p           //statement are normally ended by a newline
+              |   spirit::eps_p( '}' )    //but an end of block would do too
+              )
           ;
 
       stackingStatement
@@ -205,10 +207,10 @@ public:  //definition nested class
           >>  ')'
           >>  block( VMCode(), unwrap(statement.varTable) )
               [
-                ifStatement.value += arg1
-              ]
-          >>  *   spirit::eol_p
-          >>  (   spirit::str_p("else")
+                ifStatement.value = arg1
+              ]          
+          >>  (   *   spirit::eol_p
+              >>  spirit::str_p("else")
               >>  block( VMCode(), unwrap(statement.varTable) )
                   [
                     statement.value += construct_<functor::IfThenElse>(ifStatement.value, arg1)

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -42,6 +42,9 @@ void RGB24::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
     
   int y = dst.height;                     //y loop counter
   int pad = dst.padValue();               //padding from end of dst row to start of next one
+
+
+#ifdef _INTEL_ASM
 
   __asm
   {
@@ -110,6 +113,12 @@ void RGB24::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
 
     emms
   }
+
+#else
+#error "resize horizontal RGB24: missing code path"
+#endif //_INTEL_ASM
+
+
 }
 
 

@@ -65,7 +65,7 @@ STDMETHODIMP AviStream::QueryInterface(IID const& iid, void **ppv)
 		  return E_NOINTERFACE;
 	  }
 
-	AddRef();
+	AddRef();               //update refcount counting the new ref in ppv
 
 	return S_OK;
 }
@@ -125,7 +125,7 @@ void AviStream::ReadWrapper(void* lpBuffer, int lStart, int lSamples)
   DWORD code = 0;          //both init to avoid warning about may be not initialized
 
   __try { Read(lpBuffer, lStart, lSamples); }
-  __except ( ei = GetExceptionInformation(), code = GetExceptionCode(), (code >> 28) == 0xC) 
+  __except ( ei = GetExceptionInformation(), code = GetExceptionCode(), (code >> 28) == 0xC ) 
   {
     switch (code) 
     {

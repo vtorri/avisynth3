@@ -51,7 +51,7 @@ public:  //clip general interface
 
   virtual PEnvironment const& GetEnvironment() const { return GetCache().GetEnvironment(); }
 
-  virtual CPVideoFrame GetFrame(int n) const { return GetCache().GetFrame(n); }
+  virtual CPVideoFrame GetFrame(long n) const { return GetCache().GetFrame(n); }
 
 
 private:  //CachingClip requirement: have a cache
@@ -63,7 +63,7 @@ private:  //MakeFrame method
   
   //method who creates the requested frame
   //called by the cache, when not cached
-  virtual CPVideoFrame MakeFrame(int n) const = 0;
+  virtual CPVideoFrame MakeFrame(long n) const = 0;
 
   friend class cache::Base;  //so can call MakeFrame
 

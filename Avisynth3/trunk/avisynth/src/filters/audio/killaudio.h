@@ -55,8 +55,8 @@ public:  //clip general interface
   virtual PEnvironment const& GetEnvironment() const { return GetChildEnvironment(); }
   virtual CPVideoInfo GetVideoInfo() const;
 
-  virtual CPVideoFrame GetFrame(int n) const { return GetChildFrame(n); }
-  virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const;
+  virtual CPVideoFrame GetFrame(long n) const { return GetChildFrame(n); }
+  virtual BYTE * GetAudio(BYTE * buffer, long long start, long count) const;
 
 
 public:  //Simplify methods

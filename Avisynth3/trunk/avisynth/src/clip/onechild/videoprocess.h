@@ -47,7 +47,7 @@ class AVS_NOVTABLE VideoProcess : public virtual OneChild
 
 public:  //clip general interface
 
-  virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const { return GetChild()->GetAudio(buffer, start, count); }
+  virtual BYTE * GetAudio(BYTE * buffer, long long start, long count) const { return GetChild()->GetAudio(buffer, start, count); }
 
 
 private:  //Refactor methods

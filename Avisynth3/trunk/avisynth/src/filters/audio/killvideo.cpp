@@ -42,7 +42,7 @@ CPVideoInfo KillVideo::GetVideoInfo() const
 }
 
 
-CPVideoFrame KillVideo::GetFrame(int /*n*/) const
+CPVideoFrame KillVideo::GetFrame(long /*n*/) const
 {
   throw exception::NoVideo();
 }

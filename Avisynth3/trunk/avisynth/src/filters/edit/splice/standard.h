@@ -56,8 +56,8 @@ public:  //structors
 
 public:  //clip general interface
 
-  virtual CPVideoFrame GetFrame(int n) const { return video_.GetFrame(n, *this); }
-  virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const { return audio_.GetAudio(buffer, start, count, *this); }
+  virtual CPVideoFrame GetFrame(long n) const { return video_.GetFrame(n, *this); }
+  virtual BYTE * GetAudio(BYTE * buffer, long long start, long count) const { return audio_.GetAudio(buffer, start, count, *this); }
 
 
 protected:  //Splice protected interface

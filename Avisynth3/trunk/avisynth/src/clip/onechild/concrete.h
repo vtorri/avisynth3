@@ -71,8 +71,8 @@ protected:  //implementations helpers
   PEnvironment const& GetChildEnvironment() const { return child_->GetEnvironment(); }
   CPVideoInfo GetChildVideoInfo() const { return child_->GetVideoInfo(); }
 
-  CPVideoFrame GetChildFrame(int n) const { return child_->GetFrame(n); }
-  BYTE * GetChildAudio(BYTE * buffer, long long start, int count) const { return child_->GetAudio(buffer, start, count); }
+  CPVideoFrame GetChildFrame(long n) const { return child_->GetFrame(n); }
+  BYTE * GetChildAudio(BYTE * buffer, long long start, long count) const { return child_->GetAudio(buffer, start, count); }
 
 };
 

@@ -28,7 +28,8 @@
 namespace avs { namespace filters {
 
 
-Trim::Trim(PClip const& child, int begin, int end)
+
+Trim::Trim(PClip const& child, long begin, long end)
   : clip::onechild::Concrete( child )
   , begin_( begin )
   , audio_begin_( 0 )                 //default for case no sound

@@ -56,8 +56,8 @@ public:  //Clip general interface
   virtual PEnvironment const& GetEnvironment() const { return env_; }
   virtual CPVideoInfo GetVideoInfo() const;
 
-  virtual CPVideoFrame GetFrame(int n) const;
-  virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const;
+  virtual CPVideoFrame GetFrame(long n) const;
+  virtual BYTE * GetAudio(BYTE * buffer, long long start, long count) const;
 
 
 public:  //factory method

@@ -57,8 +57,8 @@ public:  //clip general interface
   virtual PEnvironment const& GetEnvironment() const { return GetChildEnvironment(); }
   virtual CPVideoInfo GetVideoInfo() const { return vi_; }
 
-  virtual CPVideoFrame GetFrame(int n) const { return GetChildFrame(n); }
-  virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const { return GetChildAudio(buffer, start, count); }
+  virtual CPVideoFrame GetFrame(long n) const { return GetChildFrame(n); }
+  virtual BYTE * GetAudio(BYTE * buffer, long long start, long count) const { return GetChildAudio(buffer, start, count); }
 
 
 public:  //child changing clone

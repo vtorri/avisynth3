@@ -47,26 +47,26 @@ StaticImage::StaticImage(CPVideoFrame const& frame)
 
 
 StaticImage::StaticImage(CPVideoFrame const& frame, CPVideoInfo const& vi)
-  : frame_( frame )
-  , vi_( vi )
+  : vi_( vi )
+  , frame_( frame )
 {
   //anti shoot in your own foot
-  assert( vi->GetColorSpace() == frame->GetColorSpace() && vi->GetDimension() == frame->GetDimension() );
+  assert( *vi->GetColorSpace() == *frame->GetColorSpace() && vi->GetDimension() == frame->GetDimension() );
 }
 
 
 PEnvironment const& StaticImage::GetEnvironment() const { return frame_->GetEnvironment(); }
 
 
-BYTE * StaticImage::GetAudio(BYTE * buffer, long long /*start*/, int count) const
+BYTE * StaticImage::GetAudio(BYTE * buffer, long long /*start*/, long count) const
 {
   return vi_->GetBlankNoise(buffer, count);
 }
 
 
-PClip StaticImage::CreateBlankClip(ColorSpace& space, Dimension const& dim, PEnvironment const& env)
+PClip StaticImage::CreateBlankClip(PColorSpace const& space, Dimension const& dim, PEnvironment const& env)
 {
-  return Create( space.CreateFrame(env, dim, PROGRESSIVE) );
+  return Create( space->CreateFrame(env, dim, PROGRESSIVE) );
 }
 
 

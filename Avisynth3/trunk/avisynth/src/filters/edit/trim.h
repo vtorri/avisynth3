@@ -48,7 +48,7 @@ class Trim : public clip::onechild::Simplifiable<Trim>
            , public clip::onechild::Concrete                
 {
 
-  int begin_;               //frame offset
+  long begin_;               //frame offset
   long long audio_begin_;   //audio offset
 
   CPVideoInfo vi_;          //video info
@@ -56,7 +56,7 @@ class Trim : public clip::onechild::Simplifiable<Trim>
     
 private:  //structors
 
-  Trim(PClip const& child, int begin, int end);
+  Trim(PClip const& child, long begin, long end);
   
   //generated destructor is fine
 
@@ -66,8 +66,8 @@ public:  //clip general interface
   virtual PEnvironment const& GetEnvironment() const { return GetChildEnvironment(); }
   virtual CPVideoInfo GetVideoInfo() const { return vi_; }
 
-  virtual CPVideoFrame GetFrame(int n) const { return GetChildFrame(n + begin_); }
-  virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const { return GetChildAudio(buffer, start + audio_begin_, count); }
+  virtual CPVideoFrame GetFrame(long n) const { return GetChildFrame(n + begin_); }
+  virtual BYTE * GetAudio(BYTE * buffer, long long start, long count) const { return GetChildAudio(buffer, start + audio_begin_, count); }
 
 
 public:  //child changing clone
@@ -82,25 +82,25 @@ private:  //Refactorable<KillAudio>
 
 public:  //read access
 
-  int GetBegin() const { return begin_; }
-  int GetEnd() const { return begin_ + GetVideoInfo()->GetFrameCount(); }
+  long GetBegin() const { return begin_; }
+  long GetEnd() const { return begin_ + GetVideoInfo()->GetFrameCount(); }
 
 
 public:  //factory method and functors
 
-  static PClip Create(PClip const& child, int begin, int end) 
+  static PClip Create(PClip const& child, long begin, long end) 
   { 
     return PClip( static_cast<Clip *>(new Trim(child, begin, end)) )->Simplify(); 
   }
 
   struct Creator
   {
-    PClip operator()(PClip const& child, int begin, int end) const { return Create(child, begin, end); }
+    PClip operator()(PClip const& child, long begin, long end) const { return Create(child, begin, end); }
   };
 
   struct OneArgCreator
   {
-    PClip operator()(PClip const& child, int begin) const 
+    PClip operator()(PClip const& child, long begin) const 
     { 
       return Create(child, begin, child->GetVideoInfo()->GetFrameCount()); 
     }
@@ -108,7 +108,7 @@ public:  //factory method and functors
 
   struct NegEndCreator
   {
-    PClip operator()(PClip const& child, int begin, int end) const
+    PClip operator()(PClip const& child, long begin, long end) const
     {
       return Create(child, begin, child->GetVideoInfo()->GetFrameCount() - end);
     }

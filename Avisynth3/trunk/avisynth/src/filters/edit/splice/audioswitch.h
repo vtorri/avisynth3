@@ -45,7 +45,7 @@ class AudioSwitch
 
 public:  //AudioSwitch interface
 
-  BYTE * GetAudio(BYTE * buffer, long long start, int count, Splice const& splice) const;
+  BYTE * GetAudio(BYTE * buffer, long long start, long count, Splice const& splice) const;
 
   //these returns the total sample count, not clip contribution only
   long long Push(PClip const& clip, bool merging);

@@ -56,12 +56,12 @@ public:  //clip general interface
     
   virtual CPVideoInfo GetVideoInfo() const { return vi_; }
 
-  virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const;
+  virtual BYTE * GetAudio(BYTE * buffer, long long start, long count) const;
 
 
 private:  //MakeFrame method
 
-  virtual CPVideoFrame MakeFrame(int n) const;
+  virtual CPVideoFrame MakeFrame(long n) const;
 
 
 private:  //Stack interface

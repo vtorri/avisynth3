@@ -32,7 +32,7 @@ namespace avs { namespace filters { namespace splice {
 
 
 
-BYTE * NoAudio::GetAudio(BYTE * /*buf*/, long long /*start*/, int /*count*/) const
+BYTE * NoAudio::GetAudio(BYTE * /*buf*/, long long /*start*/, long /*count*/) const
 {
   throw exception::NoAudio();
 }

@@ -46,7 +46,7 @@ class AVS_NOVTABLE CachingPipeline : public virtual Caching
 
 private:  //Caching requirement
 
-  virtual CPVideoFrame MakeFrame(int n) const
+  virtual CPVideoFrame MakeFrame(long n) const
   {
     return MakeFrame(GetChild()->GetFrame(n));
   }

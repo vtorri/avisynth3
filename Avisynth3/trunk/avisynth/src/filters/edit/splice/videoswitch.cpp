@@ -30,7 +30,7 @@
 namespace avs { namespace filters { namespace splice {
 
 
-CPVideoFrame VideoSwitch::GetFrame(int n, Splice const& splice) const
+CPVideoFrame VideoSwitch::GetFrame(long n, Splice const& splice) const
 {
   //search position where inserting respect the switchs ordering
   SwitchVector::const_iterator it = std::upper_bound(switchs_.begin(), switchs_.end(), n);
@@ -46,9 +46,9 @@ CPVideoFrame VideoSwitch::GetFrame(int n, Splice const& splice) const
 }
 
 
-int VideoSwitch::Push(PClip const& clip, bool merging)
+long VideoSwitch::Push(PClip const& clip, bool merging)
 {
-  int count = clip->GetVideoInfo()->GetFrameCount();
+  long count = clip->GetVideoInfo()->GetFrameCount();
 
   if ( ! switchs_.empty() )
     count += switchs_.back();

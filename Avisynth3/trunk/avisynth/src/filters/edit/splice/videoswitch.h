@@ -38,17 +38,17 @@ namespace avs { namespace filters { namespace splice {
 class VideoSwitch
 {
   
-  typedef std::vector<int> SwitchVector;
+  typedef std::vector<long> SwitchVector;
 
   SwitchVector switchs_;
 
 
 public:  //VideoSwitch interface
 
-  CPVideoFrame GetFrame(int n, Splice const& splice) const;
+  CPVideoFrame GetFrame(long n, Splice const& splice) const;
 
   //returns total frame count, not clip contribution
-  int Push(PClip const& clip, bool merging);
+  long Push(PClip const& clip, bool merging);
 
 };
 

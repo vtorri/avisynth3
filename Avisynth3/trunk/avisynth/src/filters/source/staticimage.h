@@ -31,15 +31,7 @@
 #include <string>
 
 
-namespace avs { 
-  
-
-//declarations
-class Dimension;
-class ColorSpace;
-  
-  
-namespace filters {
+namespace avs { namespace filters {
 
 
 
@@ -69,15 +61,15 @@ public:  //clip general interface
   virtual PEnvironment const& GetEnvironment() const;
   virtual CPVideoInfo GetVideoInfo() const { return vi_; }
 
-  virtual CPVideoFrame GetFrame(int /*n*/) const { return frame_; }
-  virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const;
+  virtual CPVideoFrame GetFrame(long /*n*/) const { return frame_; }
+  virtual BYTE * GetAudio(BYTE * buffer, long long start, long count) const;
 
 
 public:  //factory methods
 
   static PClip Create(CPVideoFrame const& frame) { return PClip( static_cast<Clip *>(new StaticImage(frame)) ); }
 
-  static PClip CreateBlankClip(ColorSpace& space, Dimension const& dim, PEnvironment const& env);
+  static PClip CreateBlankClip(PColorSpace const& space, Dimension const& dim, PEnvironment const& env);
 
 };
 

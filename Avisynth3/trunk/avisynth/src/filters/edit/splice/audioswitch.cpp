@@ -30,7 +30,7 @@ namespace avs { namespace filters { namespace splice {
 
 
 
-BYTE * AudioSwitch::GetAudio(BYTE * buffer, long long start, int count, Splice const& splice) const
+BYTE * AudioSwitch::GetAudio(BYTE * buffer, long long start, long count, Splice const& splice) const
 {
   //search where start insert itself in the audio switchs
   SwitchVector::const_iterator it = std::upper_bound(switchs_.begin(), switchs_.end(), start);

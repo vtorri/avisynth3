@@ -47,7 +47,7 @@ class AudioDub : public clip::twochilds::Concrete
                , public clip::Refactorable<KillVideo>
 {  
 
-public:  //constructor
+public:  //structors
 
   AudioDub(PClip const& video, PClip const& audio);
 
@@ -59,8 +59,8 @@ public:  //clip general interface
   virtual PEnvironment const& GetEnvironment() const { return GetChildEnvironment(); }
   virtual CPVideoInfo GetVideoInfo() const;
 
-  virtual CPVideoFrame GetFrame(int n) const { return GetLeftFrame(n); }
-  virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const { return GetRightAudio(buffer, start, count); }
+  virtual CPVideoFrame GetFrame(long n) const { return GetLeftFrame(n); }
+  virtual BYTE * GetAudio(BYTE * buffer, long long start, long count) const { return GetRightAudio(buffer, start, count); }
 
 
 public:  //childs changing clone method
@@ -98,6 +98,6 @@ public:  //factory method and functor
 
 
 
-} } //namespace avs { namespace filters
+} } //namespace avs::filters
 
 #endif //__AVS_FILTERS_AUDIODUB_H__

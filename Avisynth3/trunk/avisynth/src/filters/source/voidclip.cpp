@@ -33,8 +33,8 @@ namespace avs { namespace filters {
 
 CPVideoInfo VoidClip::GetVideoInfo() const { return VideoInfo::Create(); }
 
-CPVideoFrame VoidClip::GetFrame(int /*n*/) const { throw exception::NoVideo(); }
-BYTE * VoidClip::GetAudio(BYTE * /*buffer*/, long long /*start*/, int /*count*/) const { throw exception::NoAudio(); }
+CPVideoFrame VoidClip::GetFrame(long /*n*/) const { throw exception::NoVideo(); }
+BYTE * VoidClip::GetAudio(BYTE * /*buffer*/, long long /*start*/, long /*count*/) const { throw exception::NoAudio(); }
 
 
 PClip VoidClip::Create(PEnvironment const& env)

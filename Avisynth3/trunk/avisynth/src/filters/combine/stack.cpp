@@ -53,13 +53,13 @@ Stack::Stack(PClip const& first, PClip const& second, Dimension const& expand)
 }
 
  
-BYTE * Stack::GetAudio(BYTE * /*buf*/, long long /*start*/, int /*count*/) const
+BYTE * Stack::GetAudio(BYTE * /*buf*/, long long /*start*/, long /*count*/) const
 {
   throw exception::NoAudio();
 }
 
 
-CPVideoFrame Stack::MakeFrame(int n) const
+CPVideoFrame Stack::MakeFrame(long n) const
 {
   CPVideoFrame left = GetLeftFrame(n);
   CPVideoFrame right = GetRightFrame(n);

@@ -32,7 +32,7 @@ namespace avs { namespace filters { namespace splice {
 
 
 
-CPVideoFrame NoVideo::GetFrame(int /*n*/) const
+CPVideoFrame NoVideo::GetFrame(long /*n*/) const
 {
   throw exception::NoVideo();
 }

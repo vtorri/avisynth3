@@ -54,30 +54,26 @@ PClip Parser::operator ()(std::string const& src)
 
   functionTable.AddPlugin(linker::core::Plugin::Get());
 
-  Statement statement(functionTable);
-  Expression expression(functionTable);
 
   VMCode code;
-  VarTable varTable;
-  int stackSize = 0;
+  VarTable varTable, globalVarTable;
   boost::optional<int> last;
 
-  //varTable.add( "un", TypedIndex(0, 'i') );
-
-  boost::reference_wrapper<VarTable const> varRef(varTable);
+  Statement statement(functionTable, globalVarTable);
+  Expression expression(functionTable, globalVarTable);
 
   parse(src.c_str(), 
-     *(   statement( VMCode(), boost::ref(varTable), boost::ref(stackSize), boost::ref(last) )
+     *(   statement( VMCode(), boost::ref(varTable), boost::ref(last) )
           //expression( value::Expression(), boost::ref(varTable), last )
           [            
             var(code) += arg1
           ]
+      |   spirit::eol_p
       ), spirit::blank_p);
 
 
-  VMState state(env);  
+  VMState state(env, globalVarTable.size());  
   //state.push(1);
-
 
   code(state); 
 

@@ -25,14 +25,13 @@
 #define __AVS_PARSER_GRAMMAR_EXPRESSION_H__
 
 //avisynth includes
-#include "get.h"
-#include "check.h"
 #include "literal.h"
-#include "forward.h"
 #include "../vmcode.h"
 #include "../lazy/ref.h"
+#include "../action/get.h"
+#include "../action/check.h"
 #include "../function/table.h"
-#include "../binaryop/parser.h"
+#include "binaryopparser.h"
 #include "../functor/var.h"
 #include "../functor/assigner.h"
 
@@ -102,8 +101,8 @@ struct FunctionCall : spirit::closure<FunctionCall, std::string, function::Pool 
 class Expression : public spirit::grammar<Expression, closure::Expression::context_t>
 {
 
-  spirit::symbols<bool> equality_op;                     //maps "==" to true and "!=" to false
-  spirit::symbols<binaryop::TypeMapped const> add_op, mult_op;
+  spirit::symbols<bool> equality_op;                //maps "==" to true and "!=" to false
+  spirit::symbols<char const> add_op, mult_op;      //maps the symbol to itself
 
 
 public:  //structors
@@ -187,7 +186,7 @@ public:  //definition nested class
                   ]
               >>  add_expr
                   [
-                    first(self.value) += bind(&Get::EqualityOperation)(expression.type, arg1, equality_expr.value),
+                    first(self.value) += bind(&action::Get::EqualityOperation)(expression.type, arg1, equality_expr.value),
                     --second(self.localCtxt)
                   ]
               )
@@ -258,7 +257,7 @@ public:  //definition nested class
               ]
           |   spirit::str_p("last")
               [
-                local_var_expr.value = bind(&Check::LastIsDefined)(third(self.localCtxt)),
+                local_var_expr.value = bind(&action::Check::LastIsDefined)(third(self.localCtxt)),
                 atom_expr.value = val('c')
               ]
           ;
@@ -299,7 +298,7 @@ public:  //definition nested class
           =  '['
           >>  expression( char(), false )
               [
-                bind(&Check::TypeIsExpected)(arg1, val('i'))
+                bind(&action::Check::TypeIsExpected)(arg1, val('i'))
               ]
           >>  ','
           >>  (   spirit::str_p("end")
@@ -309,13 +308,13 @@ public:  //definition nested class
                   ]
               |   expression( char(), false )
                   [
-                    bind(&Check::TypeIsExpected)(arg1, val('i')),
+                    bind(&action::Check::TypeIsExpected)(arg1, val('i')),
                     second(self.localCtxt) -= 2
                   ]
               )
           >>  spirit::ch_p(']')
               [
-                first(self.value) += bind(&Get::SubscriptOperation)(atom_expr.value, subscript_helper.value)
+                first(self.value) += bind(&action::Get::SubscriptOperation)(atom_expr.value, subscript_helper.value)
               ]
           ;
 
@@ -323,7 +322,7 @@ public:  //definition nested class
       infix_helper
           =   spirit::ch_p('.')
               [   //check if infix allowed (throw if not)                
-                infix_helper.value = bind(&Check::IsInfixable)(atom_expr.value)
+                infix_helper.value = bind(&action::Check::IsInfixable)(atom_expr.value)
               ]
               >>  call_expr( infix_helper.value )
           ;

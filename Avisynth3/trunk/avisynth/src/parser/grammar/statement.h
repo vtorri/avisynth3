@@ -26,11 +26,11 @@
 
 //avisynth includes
 #include "name.h"
-#include "action.h"
 #include "expression.h"
 #include "../lazy/get.h"
 #include "../codecouple.h"
 #include "../functor/if.h"
+#include "../action/action.h"
 
 
 namespace avs { namespace parser { namespace grammar {
@@ -129,7 +129,7 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
       statement
           =   (   expression( value::Expression(), statement.localCtxt, self.globalCtxt )
                   [
-                    bind(&Action::ExprStatement)(statement.value, statement.localCtxt, arg1)                        
+                    bind(&action::Action::ExprStatement)(statement.value, statement.localCtxt, arg1)                        
                   ]
               |   createVar( ref(first(statement.localCtxt)) )  //pass local VarTable
               |   ifStatement
@@ -154,7 +154,7 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
           >>  '='
           >>  expression( value::Expression(), statement.localCtxt, self.globalCtxt )
               [
-                bind(&Action::CreateVarStatement)
+                bind(&action::Action::CreateVarStatement)
                     (statement.value, statement.localCtxt, arg1, createVar.table, createVar.name)
               ]
           ;
@@ -164,7 +164,7 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
           >>  '('
           >>  expression( value::Expression(), statement.localCtxt, self.globalCtxt )
               [
-                bind(&Check::TypeIsExpected)(second(arg1), val('b')),
+                bind(&action::Check::TypeIsExpected)(second(arg1), val('b')),
                 statement.value += first(arg1),
                 --second(statement.localCtxt)                          //report that the if consumes the bool value
               ]
@@ -202,7 +202,7 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
           =   spirit::str_p("return")
           >>  (   spirit::str_p("self")
                   [
-                    bind(&Check::TRecurseAllowed)(! self.termRecInfo)
+                    bind(&action::Check::TRecurseAllowed)(! self.termRecInfo)
                   ]
               >>  argList( 0 )
                   [
@@ -211,7 +211,7 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
                   ]
               |   expression( value::Expression(), statement.localCtxt, self.globalCtxt )
                   [
-                    bind(&Check::ReturnTypeIsExpected)(second(arg1), self.returnTypeExpected),
+                    bind(&action::Check::ReturnTypeIsExpected)(second(arg1), self.returnTypeExpected),
                     statement.value += first(arg1),
                     statement.value -= construct_<literal<OpType> >(RETURN)
                   ]
@@ -223,7 +223,7 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
           >> !(   expression( value::Expression(), statement.localCtxt, self.globalCtxt )
                   [
                     //check the type is the one expected by prototype of outer function
-                    bind(&Check::TypeIsExpected)(second(arg1), first(get(self.termRecInfo))[argList.value]),
+                    bind(&action::Check::TypeIsExpected)(second(arg1), first(get(self.termRecInfo))[argList.value]),
                     statement.value += first(arg1),
                     ++argList.value
                   ]

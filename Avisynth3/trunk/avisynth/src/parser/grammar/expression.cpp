@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -21,11 +21,8 @@
 // General Public License cover the whole combination.
 
 
-//avisynth includes
+//avisynth include
 #include "expression.h"
-#include "../visitor/add.h"
-#include "../visitor/mult.h"
-#include "../binaryop/make.h"
 
 
 namespace avs { namespace parser { namespace grammar {
@@ -35,23 +32,19 @@ namespace avs { namespace parser { namespace grammar {
 Expression::Expression()
 {
 
-  using namespace visitor;
-  using namespace binaryop;
-
   equality_op.add
     ( "==", true )
     ( "!=", false );
 
   add_op.add
-    ( "+", TypeMapped( "+", make<Plus>(Plus()), Plus::types() ) )
-    ( "-", TypeMapped( "-", make<Minus>(Minus()), Minus::types() ) );
+      ( "+", '+' )
+      ( "-", '-' );
 
   mult_op.add
-    ( "*", TypeMapped( "*", make<Square>(Square()), Square::types() ) )
-    ( "/", TypeMapped( "/", make<Divide>(Divide()), Divide::types() ) );
- 
-}
+      ( "*", '*' )
+      ( "/", '/' );
 
+}
 
 
 

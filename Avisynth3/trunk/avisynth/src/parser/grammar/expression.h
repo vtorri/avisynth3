@@ -81,7 +81,17 @@ struct InnerExpression : spirit::closure
   member2 implicit;   //mark if implicit last function call are possible within the expression
 };
 
-struct FunctionCall : spirit::closure<FunctionCall, std::string, function::Pool const *>
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//  closure::FunctionCall
+//
+//  closure for the function call rule with the Expression grammar
+//
+struct FunctionCall : spirit::closure
+    < FunctionCall
+    , std::string
+    , function::Pool const *
+    >
 {
   member1 prototype;
   member2 functionPool;
@@ -226,7 +236,7 @@ public:  //definition nested class
                       [
                         first(self.value) += construct_<LocalVarPusher>( second(self.localCtxt) - arg1 )
                       ]
-                  |   global_var_expr  //a global variable
+                  |   global_var_expr  //a global variable  
                   )
                   [
                     ++second(self.localCtxt)       //these 3 don't update stack size themselves

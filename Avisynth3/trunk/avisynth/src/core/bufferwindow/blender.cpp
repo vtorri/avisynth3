@@ -40,7 +40,8 @@ Blender<1>::Blender<1>(float factor)
 
   weight = (weight << 16) + 32767 - weight;     //aka weight-other | weight-this
 
-  weight64_ = long long(weight) | (long long(weight) << 32); //WO | WT | WO | WT
+  weight64_ = ( static_cast<long long>(weight) << 32 )
+              | static_cast<long long>(weight);          //WO | WT | WO | WT
 }
 
 
@@ -131,7 +132,7 @@ void Blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom
     emms
   }
 #else
-#error "Blender : missing code path"
+#warning "Blender : missing code path"
 #endif //_INTEL_ASM
 
 }

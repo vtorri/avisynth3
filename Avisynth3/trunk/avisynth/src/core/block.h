@@ -87,17 +87,15 @@ public:  //assignment
 public:  //reset methods
 
   void reset(int size) { Block(size).swap(*this); }
-
   void reset(int size, recycle r) { Block(size, r).swap(*this); }
 
 
-public:  //public interface
+public:  //read access
 
   BYTE * get() const { return block.get(); }
-
   int size() const;
 
-  bool unique() const { return block.unique(); }    //required by OwnedBlock
+  bool unique() const { return block.unique(); }
 
 
 private:  //implementation details 
@@ -108,7 +106,6 @@ private:  //implementation details
   static BYTE * New(int& size);
 
   static void Delete(void * ptr);  //no throw
-
   static void Recycle(void * ptr); //no throw
 
 };//Block

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,8 +24,7 @@
 #ifndef __AVS_TIMING_TIMER_H__
 #define __AVS_TIMING_TIMER_H__
 
-
-//avisynth include
+//avisynth includes
 #include "chrono.h"
 
 //boost include
@@ -43,14 +42,16 @@ template <class Timer> class timerstack;
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 //  timer<Clock>
 //
-//
+//  uses a Clock (functor returning int64 for operator()()) to make a timer
 //
 template <class Clock> class timer : boost::noncopyable
 {
 
-  int count_;             //number of times it has run
-  __int64 start_;         //time of last start
-  __int64 elapsed_;       //elapsed time
+  int count_;                  //number of times it has run
+  int64 start_;                //time of last start
+  int64 elapsed_;              //elapsed time
+
+  static Clock const clock_;   //Clock instance
 
 
 public:  //structors
@@ -62,22 +63,24 @@ public:  //structors
   //default destructor is fine
 
 
-public:
+public:  //timer interface
 
-  __int64 elapsed() const { return elapsed_; }
+  int64 elapsed() const { return elapsed_; }
   int count() const { return count_; }
   double average() const { return double(elapsed_) / count_; }
 
   void reset() { elapsed_ = 0; count_ = 0; }
 
 
-private:
+private:  //timer private interface
 
+  //for chrono use
   void start() { ++ count_; restart(); }
-  void stop() { elapsed_ += Clock()() - start_;  }
+  void stop() { elapsed_ += clock_() - start_;  }
 
+  //for timerstack use
   void interrupt() { stop(); }
-  void restart() { start_ = Clock()(); }
+  void restart() { start_ = clock_(); }
 
 
 public:
@@ -90,8 +93,9 @@ public:
 };
 
 
-
-
+//instantation of the clock_ static member
+template <class Clock>
+Clock const timer<Clock>::clock_;
 
 
 } } //namespace avs::timing

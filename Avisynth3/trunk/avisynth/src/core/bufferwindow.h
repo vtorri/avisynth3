@@ -26,10 +26,8 @@
 
 //avisynth includes
 #include "blitter.h"
-#include "ownedblock.h"
 #include "window_ptr.h"
 #include "geometry/dimension.h"
-#include "runtime_environment.h"
 
 //assert include
 #include "assert.h"
@@ -44,43 +42,44 @@ namespace bw { struct SizeChanger; }
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-//  buffer_window<int align, int guard>
+//  buffer_window<int align, int guard, class Buffer>
 //
 //
 //
-template <int align, int guard> 
+template <int align, int guard, class Buffer> 
 class buffer_window
 {
 
   Dimension dim_;              //dimension of the window
   int pitch_;
   int offset_;                 //offset from buffer start to window start
-  owned_block<1> buffer_;      //buffer doesn't need to be aligned
+  Buffer buffer_;
 
   friend struct bw::SizeChanger;   //need internal knowledge to work
   //needed for the converting constructor to access other's members
-  template <int otherAlign, int otherGuard> friend class buffer_window;
+  template <int alignOther, int guardOther, class BufferOther> friend class buffer_window;
 
 
 public:  //declarations and typedef
 
   enum { Align = align, Guard = guard };
 
-  typedef buffer_window<align, guard> BufferWindowType;
+  typedef Buffer BufferType;
+  typedef buffer_window<align, guard, Buffer> BufferWindowType;
 
 
 public:  //structors
 
   //normal constructor
-  buffer_window(Dimension const& dim, PEnvironment const& env)
+  buffer_window(Dimension const& dim, typename BufferType::Creator const& create)
     : dim_( dim )
     , pitch_( RoundUp<Align>(width()) )
     , offset_( Guard )
-    , buffer_( env->NewOwnedBlock(pitch() * height() + Guard * 2, true) ) { }
+    , buffer_( create(pitch() * height() + Guard * 2, true) ) { }
  
-  //constructor using a given block as buffer
-  template <int alignOther>
-  buffer_window(Dimension const& dim, owned_block<alignOther> const& buffer, int offset = 0)
+  //constructor using a given buffer
+  template <class BufferOther>
+  buffer_window(Dimension const& dim, BufferOther const& buffer, int offset)
     : dim_( dim )
     , pitch_( RoundUp<Align>(width()) )
     , offset_( offset )
@@ -93,8 +92,8 @@ public:  //structors
   }
 
   //same as above, but allows custom pitch (possibly negative, but not zero)
-  template <int alignOther>
-  buffer_window(Dimension const& dim, owned_block<alignOther> const& buffer, int offset, int pitch)
+  template <class BufferOther>
+  buffer_window(Dimension const& dim, BufferOther const& buffer, int offset, int pitch)
     : dim_( dim )
     , pitch_( pitch )
     , offset_( offset )
@@ -108,8 +107,8 @@ public:  //structors
 
 
   //conversion from another buffer_window type
-  template<int otherAlign, int otherGuard>
-  buffer_window(buffer_window<otherAlign, otherGuard> const& other)
+  template<int alignOther, int guardOther, class BufferOther>
+  buffer_window(buffer_window<alignOther, guardOther, BufferOther> const& other)
     : dim_( other.dim_ )
     , pitch_( other.pitch_ )
     , offset_( other.offset_ )
@@ -126,7 +125,7 @@ public:  //assignment
 
   //generated operator= is fine
 
-  void swap(BufferWindowType other)  //no throw
+  void swap(BufferWindowType& other)  //no throw
   {
     dim_.swap(other.dim_);
     std::swap(pitch_, other.pitch_);
@@ -191,7 +190,7 @@ private:  //alignment stuff
     PEnvironment const& env = GetEnvironment();      //fetch owning env
 
     BufferWindowType temp(dim_, env);                //make a new buffer
-    env->GetBlitter()(Read(), temp.Write(), dim_);   //blit the data into it
+    Blitter::Get()(Read(), temp.Write(), dim_);      //blit the data into it
     *this = temp;                                    //and replace self
   }
 
@@ -199,8 +198,8 @@ private:  //alignment stuff
 
 
 //global scope swap
-template <int align, int guard>
-inline void swap(buffer_window<align, guard>& left, buffer_window<align, guard>& right) { left.swap(right); }
+template <int align, int guard, class Buffer>
+inline void swap(buffer_window<align, guard, Buffer>& left, buffer_window<align, guard, Buffer>& right) { left.swap(right); }
 
 
 } //namespace avs

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -60,5 +60,13 @@ void Check::ReturnTypeIsExpected(char type, char typeExpected)
   if ( type != typeExpected )
     throw exception::parser::BadReturnType(typeExpected);
 }
+
+
+void Check::TRecurseAllowed(bool notAllowed)
+{
+  if ( notAllowed )
+    throw exception::Generic("Terminal recursivity unavailable outisde function defintion");
+}
+
 
 } } } //namespace avs::parser::grammar

@@ -278,6 +278,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				RelativePath=".\src\core\property.h">
 			</File>
 			<File
+				RelativePath=".\src\core\roundup.h">
+			</File>
+			<File
 				RelativePath=".\src\core\runtime_environment.h">
 			</File>
 			<File
@@ -509,6 +512,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 				</File>
 				<File
 					RelativePath=".\src\core\bufferwindow\horizontalflipper.h">
+				</File>
+				<File
+					RelativePath=".\src\core\bufferwindow\leftturner.cpp">
 				</File>
 				<File
 					RelativePath=".\src\core\bufferwindow\leftturner.h">
@@ -821,6 +827,12 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			Name="Text"
 			Filter="">
 			<File
+				RelativePath=".\src\text\align.h">
+			</File>
+			<File
+				RelativePath=".\src\text\antialiaser.cpp">
+			</File>
+			<File
 				RelativePath=".\src\text\antialiaser.h">
 			</File>
 			<File
@@ -829,9 +841,37 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			<File
 				RelativePath=".\src\text\font.h">
 			</File>
+			<File
+				RelativePath=".\src\text\gethfont.h">
+			</File>
+			<Filter
+				Name="Antialiaser"
+				Filter="">
+				<File
+					RelativePath=".\src\text\antialiaser\bitcount.cpp">
+				</File>
+				<File
+					RelativePath=".\src\text\antialiaser\bitcount.h">
+				</File>
+				<File
+					RelativePath=".\src\text\antialiaser\bitexpand.cpp">
+				</File>
+				<File
+					RelativePath=".\src\text\antialiaser\bitexpand.h">
+				</File>
+				<File
+					RelativePath=".\src\text\antialiaser\bitrenderer.cpp">
+				</File>
+				<File
+					RelativePath=".\src\text\antialiaser\bitrenderer.h">
+				</File>
+			</Filter>
 		</Filter>
 		<File
 			RelativePath="distrib\AviSynth.ico">
+		</File>
+		<File
+			RelativePath=".\src\bytemap.h">
 		</File>
 		<File
 			RelativePath=".\src\folder.h">

@@ -35,6 +35,46 @@ namespace avs { namespace parser {
 class VMState;
 
 
+//implementation namespace
+namespace detail {
+
+
+template <typename Result>
+struct CallBack
+{
+  virtual Result operator()(VMState& state) const = 0;
+};
+
+template <typename Result, typename Functor>
+struct functor_callback : CallBack<Result>
+{
+
+  Functor const functor_;
+
+  functor_callback(Functor const& functor)
+    : functor_( functor ) { }
+
+  virtual Result operator()(VMState& state) const { return functor_(state); }
+
+};
+
+template <typename Functor>
+struct functor_callback<void, Functor> : CallBack<void>
+{
+
+  Functor const functor_;
+
+  functor_callback(Functor const& functor)
+    : functor_( functor ) { }
+
+  virtual void operator()(VMState& state) const { functor_(state); }
+
+};
+
+
+}  //namespace detail
+
+
 
 ///////////////////////////////////////////////////////////////////////////////////
 //  VMOperation<Result>
@@ -44,24 +84,7 @@ class VMState;
 template <typename Result> class VMOperation
 {
 
-  struct CallBack
-  {
-    virtual Result operator()(VMState& state) const = 0;
-  };
-
-  template <class Functor>
-  struct functor_callback : CallBack
-  {
-    Functor functor_;
-
-    functor_callback(Functor const& functor)
-      : functor_( functor ) { }
-
-    virtual Result operator()(VMState& state) const { return functor_(state); }
-  };
-
-
-  boost::shared_ptr<CallBack const> cb_;
+  boost::shared_ptr<detail::CallBack<Result> const> cb_;
 
 
 public:  //structors
@@ -73,7 +96,7 @@ public:  //structors
 
   template <class Functor>
   VMOperation(Functor const& functor)
-    : cb_( new functor_callback<Functor>(functor) ) { }
+    : cb_( new detail::functor_callback<Result, Functor>(functor) ) { }
 
 
 public:  //function-like interface

@@ -46,10 +46,12 @@ class KillVideo : public clip::onechild::Simplifiable<KillVideo>
                 , public clip::onechild::Concrete
 {
 
-public:  //constructor
+protected:  //structors
 
   KillVideo(PClip const& child)
     : Concrete( child ) { }
+
+  //generated destructor is fine
 
 
 public:  //clip general interface

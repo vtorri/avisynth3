@@ -21,30 +21,30 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_BW_VERTICALFLIPPER_H__
-#define __AVS_BW_VERTICALFLIPPER_H__
-
-//avisynth include
-#include "../bufferwindow.h"
+//avisynth includes
+#include "../blitter.h"
+#include "verticalflipper.h"
 
 
 namespace avs { namespace bw {
 
 
 
-////////////////////////////////////////////////////////////////////////////////////
-//  VerticalFlipper
-//
-//  functor to flip a window vertically
-//
-struct VerticalFlipper
+BufferWindow VerticalFlipper::operator ()(BufferWindow const& source) const
 {
+  BufferWindow result( source.GetDimension(), source.GetEnvironment() );
 
-  BufferWindow operator()(BufferWindow const& source) const;
+  WindowPtr dst = result.Write();
+  CWindowPtr src = source.Read();
 
-};
+  src.to(0, src.height - 1 );   //move to last line
+  src.pitch = - src.pitch;      //negate pitch (so it will blit bottom to top)           
+
+  Blitter::Get()( src, dst.ptr, dst.pitch );
+
+  return result;
+}
+
 
 
 } } //namespace avs::bw
-
-#endif //__AVS_BW_VERTICALFLIPPER_H__

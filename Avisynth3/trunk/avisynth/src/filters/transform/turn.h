@@ -128,7 +128,7 @@ public:  //Turn interface
 
 public:  //factory method
 
-  static PClip Create(PClip const& child) { return PClip( (Clip *)new Left(child) ); }
+  static PClip Create(PClip const& child) { return PClip( static_cast<Clip *>(new Left(child)) )->Simplify(); }
 
 };
 
@@ -172,7 +172,7 @@ public:  //Turn interface
 
 public:  //factory method
 
-  static PClip Create(PClip const& child) { return PClip( (Clip *)new Right(child) ); }
+  static PClip Create(PClip const& child) { return PClip( static_cast<Clip *>(new Right(child)) )->Simplify(); }
 
 };//Turn::Right
 

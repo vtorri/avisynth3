@@ -54,7 +54,7 @@ class Trim : public clip::onechild::Simplifiable<Trim>
   CPVideoInfo vi_;          //video info
 
     
-protected:  //structors
+private:  //structors
 
   Trim(PClip const& child, int begin, int end);
   
@@ -90,7 +90,7 @@ public:  //factory method and functors
 
   static PClip Create(PClip const& child, int begin, int end) 
   { 
-    return PClip( static_cast<Clip *>(new Trim(child, begin, end)) ); 
+    return PClip( static_cast<Clip *>(new Trim(child, begin, end)) )->Simplify(); 
   }
 
   struct Creator

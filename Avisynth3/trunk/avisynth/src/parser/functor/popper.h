@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -56,30 +56,7 @@ struct popper
 template <>
 struct popper<0>
 {
-  void operator()(VMState& state) const { }
-};
-
-
-
-/////////////////////////////////////////////////////////////////////////////////
-//  Popper
-//
-//  same thing but with a non-template argument
-//
-struct Popper
-{
-
-  int n_;
-
-  Popper(int n)
-    : n_( n ) { }
-
-  void operator()(VMState& state) const
-  {
-    for(int i = n_; i-- > 0; )
-      state.pop();
-  }
-
+  void operator()(VMState& /*state*/) const { }
 };
 
 

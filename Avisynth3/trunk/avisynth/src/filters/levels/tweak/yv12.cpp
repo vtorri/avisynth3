@@ -56,7 +56,7 @@ CPVideoFrame YV12::MakeFrame(CPVideoFrame const& source) const
   }
 
 
-  for( y = U.height; y-- > 0; U.to(0, 1), V.to(0, 1) )
+  for( int y = U.height; y-- > 0; U.to(0, 1), V.to(0, 1) )
   {
     BYTE * pu = U.ptr;
     BYTE * pv = V.ptr;

@@ -35,24 +35,36 @@
 namespace avs { namespace parser {
 
 
+//declaration
+class ScopeEnforcer;
+
+
+
 /////////////////////////////////////////////////////////////////////////////////////
 //  VMState
 //
-//  virtual machine state
+//  virtual machine state, ie basically an AVSVAlue stack
 //
 class VMState
 {
 
-  PEnvironment env_;
-  std::vector<AVSValue> stack_;
+  PEnvironment env_;                //owning environment
+  std::vector<AVSValue> stack_;     //underlying stack (local vars and temporaries)
+  std::vector<AVSValue> globals_;   //globals
 
 
 public:  //structors
 
-  VMState(PEnvironment const& env)
-    : env_( env ) { }
+  VMState(PEnvironment const& env, int globalCount)
+    : env_( env )
+    , globals_( globalCount ) { }
 
   //generated destructor is fine
+
+
+public:  //fetch environment method
+
+  PEnvironment const& GetEnvironment() const { return env_; }
 
 
 public:  //stack behavior
@@ -66,11 +78,14 @@ public:  //stack behavior
   AVSValue& operator[](int index) { return stack_[index]; }
 
   int size() const { return stack_.size(); }
+  void restore(int stackSize) { stack_.resize(stackSize); }
+
+  friend class ScopeEnforcer;
 
 
-public:
+public:  //access to globals
 
-  PEnvironment const& GetEnvironment() const { return env_; }
+  AVSValue& global(int index) { return globals_[index]; }
 
 };
 

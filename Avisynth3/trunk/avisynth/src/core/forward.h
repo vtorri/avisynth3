@@ -46,14 +46,18 @@ class VideoInfo;
 class ColorSpace;
 class VideoFrame;
 class RuntimeEnvironment;
+template <int align> class block_;
+template <int align> class owned_block;
 template <int align, int guard = block::Align> class buffer_window;
 
 //typedefs
 typedef unsigned char BYTE;
+typedef block_<block::Align> Block;
+typedef owned_block<block::Align> OwnedBlock;
 typedef buffer_window<block::Align> BufferWindow;
+typedef boost::rational<int> Fraction;
 
 //ptr typedefs
-typedef boost::rational<int> Fraction;
 typedef boost::shared_ptr<Clip const> PClip;
 typedef boost::shared_ptr<Property const> CPProperty;
 typedef boost::shared_ptr<VideoInfo const> CPVideoInfo;

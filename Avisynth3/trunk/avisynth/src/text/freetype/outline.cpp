@@ -68,36 +68,44 @@ BoxFP6 Outline::GetControlBox() const
 }
 
 
+using namespace rasterizer;
+
+namespace {
+
+VecteurFP3 Wrap(FT_Vector const& v) { return VecteurFP3( FP3::Wrap(v.x), FP3::Wrap(v.y) ); }
+
+} //namespace anonymous
+
+
 void Outline::Split(rasterizer::OutlineSplitter& splitter, VecteurFP6 const& pen_) const
 {
-  typedef rasterizer::VecteurFP3 VecteurFP3;
-  VecteurFP3 const& pen = reinterpret_cast<VecteurFP3 const&>(pen_);
+  VecteurFP3 pen = VecteurFP3( FP3::Wrap(pen_.x.get()), FP3::Wrap(pen_.y.get()) );
 
-  VecteurFP3 const * ptIt = reinterpret_cast<VecteurFP3 *>(points);
+  FT_Vector const * ptIt = points;
   char * tagPtIt = tags;
   short * contourEndIt = contours;
 
   for ( int i = n_contours; i-- > 0; )      //loop over the outline contours
   {
     //past the end end position for the list of points of the current contour
-    VecteurFP3 const * ptItEnd = reinterpret_cast<VecteurFP3 *>(points) + *contourEndIt + 1;
+    FT_Vector const * ptItEnd = points + *contourEndIt + 1;
 
-    splitter.StartContour(pen + *ptIt++);
+    splitter.StartContour(pen + Wrap(*ptIt++));
     ++tagPtIt;
 
     while ( ptIt < ptItEnd )
     {
-      VecteurFP3 const& pt1 = *ptIt++;
+      VecteurFP3 pt1 = Wrap(*ptIt++);
       if ( (*tagPtIt++ & 1) == 0 )            //if not a control point
         splitter.LineTo( pt1 );               //just a line
       else
       {
-        VecteurFP3 const& pt2 = *ptIt++;      //take a second pt
+        VecteurFP3 pt2 = Wrap(*ptIt++);       //take a second pt
         if ( (*tagPtIt++ & 1) == 0 )          //if not a control point
           splitter.BezierCurveTo(pt2, pt1);   //2nr order Bezier
         else
         {
-          splitter.BezierCurveTo( *ptIt++, pt2, pt1 );   //3rd order Bezier
+          splitter.BezierCurveTo( Wrap(*ptIt++), pt2, pt1 );   //3rd order Bezier
           ++tagPtIt;
         }
       }

@@ -92,21 +92,20 @@ int AviFileSource::NearestKeyFrame(int n) const
 
 std::pair<OwnedBlock, long> AviFileSource::ReadVideo(int n) const
 {
-  std::pair<OwnedBlock, long> result = std::make_pair(OwnedBlock(GetEnvironment(), true), 0);
+  long size = 0;
+  video_->Read(n, 1, NULL, 0, &size, NULL);  //get needed size for the block
 
-  video_->Read(n, 1, NULL, 0, &result.second, NULL);  //get needed size for the block
+  OwnedBlock block(GetEnvironment(), size, true);
 
-  if ( result.second != 0 )
+  if ( size != 0 )
   {
-    result.first.reset( result.second + BufferWindow::Guard * 2, true );
-  
-    HRESULT hResult = video_->Read(n, 1, result.first.get() + BufferWindow::Guard, result.second, NULL, NULL);
+    HRESULT hResult = video_->Read(n, 1, block.get() + BufferWindow::Guard, size, NULL, NULL);
 
     if ( hResult != AVIERR_OK )
       throw exception::Generic("Cannot read from source file");
   }
 
-  return result;
+  return std::make_pair(block, size);
 }
 
 

@@ -689,12 +689,6 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 						RelativePath="..\..\..\src\core\colorspace\concrete\rgb.h">
 					</File>
 					<File
-						RelativePath="..\..\..\src\core\colorspace\concrete\yuvplanar8.cpp">
-					</File>
-					<File
-						RelativePath="..\..\..\src\core\colorspace\concrete\yuvplanar8.h">
-					</File>
-					<File
 						RelativePath="..\..\..\src\core\colorspace\concrete\yuy2.cpp">
 						<FileConfiguration
 							Name="Debug|Win32">
@@ -1434,8 +1428,7 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 					<File
 						RelativePath="..\..\..\src\filters\levels\coloryuv\lumamap.cpp">
 						<FileConfiguration
-							Name="Release static|Win32"
-							ExcludedFromBuild="TRUE">
+							Name="Release static|Win32">
 							<Tool
 								Name="VCCLCompilerTool"/>
 						</FileConfiguration>
@@ -2351,6 +2344,9 @@ copy Release\avisynth.dll &quot;$(SystemRoot)&quot;\system32
 			</File>
 			<File
 				RelativePath="..\..\..\src\text\gethfont.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\text\rasterizer.h">
 			</File>
 			<Filter
 				Name="Antialiaser"

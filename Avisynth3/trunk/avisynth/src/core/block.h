@@ -98,6 +98,13 @@ public:  //read access
   bool unique() const { return block.unique(); }
 
 
+public:  //helper methods
+
+  static int AlignValue(int value) { return (value + Align - 1) & -Align; }
+
+  static bool IsAligned(int value) { return value % value == 0; }
+
+
 private:  //implementation details 
   
   class Manager;      //manages recycling and sizes of Blocks

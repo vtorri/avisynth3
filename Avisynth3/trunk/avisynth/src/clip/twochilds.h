@@ -37,7 +37,7 @@ namespace avs { namespace clip {
 //
 //  clip subinterface for clip with two childs
 //
-class NOVTABLE TwoChilds : public virtual Clip
+class AVS_NOVTABLE TwoChilds : public virtual Clip
 {
 
 public:  //FinalSimplify

@@ -37,7 +37,7 @@ namespace avs { namespace clip { namespace onechild {
 //
 //  implementation of the OneChild interface
 //
-class NOVTABLE Concrete : public virtual OneChild
+class AVS_NOVTABLE Concrete : public virtual OneChild
 {
 
   mutable PClip child_;

@@ -34,8 +34,12 @@ namespace avs { namespace filters { namespace splice {
 
 
 
-
-class NOVTABLE Standard : public Splice
+////////////////////////////////////////////////////////////////////////////////////
+//  splice::Standard
+//
+//  just a factorisation superclass for splice::Aligned and splice::Unaligned
+//
+class AVS_NOVTABLE Standard : public Splice
 {
 
   AudioSwitch audio_;

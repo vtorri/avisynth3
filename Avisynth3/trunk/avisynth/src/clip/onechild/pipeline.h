@@ -37,7 +37,7 @@ namespace avs { namespace clip { namespace onechild {
 //
 //
 //
-class NOVTABLE Pipeline : public VideoProcess
+class AVS_NOVTABLE Pipeline : public VideoProcess
 {
 
 protected:  //Pipeline interface

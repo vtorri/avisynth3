@@ -38,8 +38,8 @@ namespace avs { namespace clip { namespace onechild {
 //
 //  subinterface of Caching and Pipeline, providing the proper MakeFrame call
 //
-class NOVTABLE CachingPipeline : public virtual Caching
-                               , public virtual Pipeline
+class AVS_NOVTABLE CachingPipeline : public virtual Caching
+                                   , public virtual Pipeline
 {
 
   using Pipeline::MakeFrame;

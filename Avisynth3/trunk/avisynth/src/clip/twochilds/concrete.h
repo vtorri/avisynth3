@@ -37,7 +37,7 @@ namespace avs { namespace clip { namespace twochilds {
 //
 //  implementation of the TwoChilds interface
 //
-class NOVTABLE Concrete : public virtual TwoChilds
+class AVS_NOVTABLE Concrete : public virtual TwoChilds
 {
 
   mutable PClip left_;        //left child

@@ -40,7 +40,7 @@ namespace avs { namespace clip { namespace onechild {
 //  when the child has the Refactorable<SubClip> signature
 //
 template <class SubClip> 
-class NOVTABLE Simplifiable : public virtual OneChild
+class AVS_NOVTABLE Simplifiable : public virtual OneChild
 {
 
 public:  //typedef

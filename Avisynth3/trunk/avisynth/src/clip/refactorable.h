@@ -48,7 +48,7 @@ template <class T> class FinalSimplifiable;
 //  Signature class of clips able of refactoring a parent of type Parent
 //
 template <class Parent> 
-class NOVTABLE Refactorable : public virtual Clip
+class AVS_NOVTABLE Refactorable : public virtual Clip
 {
 
 private:  //Refactor method
@@ -68,7 +68,7 @@ private:  //Refactor method
 //  Signature class of clips able of final refactoring a parent of type Parent
 //
 template <class Parent> 
-class NOVTABLE FinalRefactorable : public virtual Clip
+class AVS_NOVTABLE FinalRefactorable : public virtual Clip
 {
 
 private:  //Refactor method

@@ -43,12 +43,12 @@ class Symetry;
 //
 //  factorisation superclass for Flip::Vertical and Flip::Horizontal
 //
-class NOVTABLE Flip : public clip::onechild::CachingPipeline
-                    , public clip::onechild::Simplifiable<Flip>
-                    , public clip::Refactorable<Flip>
-                    , public clip::Refactorable<Symetry>
-                    , public clip::onechild::Concrete
-                    , public clip::caching::Concrete
+class AVS_NOVTABLE Flip : public clip::onechild::CachingPipeline
+                        , public clip::onechild::Simplifiable<Flip>
+                        , public clip::Refactorable<Flip>
+                        , public clip::Refactorable<Symetry>
+                        , public clip::onechild::Concrete
+                        , public clip::caching::Concrete
 {
 
 public:  //constructor

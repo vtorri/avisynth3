@@ -37,7 +37,7 @@ namespace avs { namespace clip {
 //
 //  clip subinterface for clip with an unlimited number of childs
 //
-class NOVTABLE ManyChilds : public virtual Clip
+class AVS_NOVTABLE ManyChilds : public virtual Clip
 {
 
 public:  //access to childs

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,25 +24,15 @@
 #ifndef __AVS_ENVIRONMENT_CONCRETE_H__
 #define __AVS_ENVIRONMENT_CONCRETE_H__
 
-//avisynth include
+//avisynth includes
 #include "base.h"
 #include "../timing/timer.h"
 #include "../cache/concrete.h"
 #include "../cache/cachelogic.h"
 #include "../timing/timerstack.h"
 
-//stl include
-#include <stack>
 
-
-namespace avs {
-
-
-//declaration
-namespace timing { template <class Clock> class timer; }
-
-
-namespace environment {
+namespace avs { namespace environment {
 
 
 
@@ -63,7 +53,7 @@ public:  //typedefs
 
 private:  //members
 
-  TimerStack timers_;
+  TimerStack timerStack_;
 
 
 public:  //structors
@@ -84,8 +74,8 @@ public:  //NewCache method
 
 private:  //stop/restart timing when attempting memory cleanup
 
-  virtual void InterruptTiming() { timers_.interrupt(); }
-  virtual void RestartTiming() { timers_.restart(); }
+  virtual void InterruptTiming() { timerStack_.interrupt(); }
+  virtual void RestartTiming() { timerStack_.restart(); }
 
 
 public:  //TimerStackMap struct
@@ -93,10 +83,10 @@ public:  //TimerStackMap struct
   struct TimerStackMap
   {
 
-    typedef Timer Timer;
+    typedef timing::timer<Clock> Timer;
     typedef boost::shared_ptr<EnvType> Key;
 
-    TimerStack& operator[](Key const& key) const { return key->timers_; }
+    TimerStack& operator[](Key const& key) const { return key->timerStack_; }
 
   };
 

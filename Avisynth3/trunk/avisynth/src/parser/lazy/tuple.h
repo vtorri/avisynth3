@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -34,6 +34,11 @@ namespace avs { namespace parser { namespace lazy {
 
 
 
+///////////////////////////////////////////////////////////////////////////////
+//  Attribute<int n>
+//
+//  accesses atribute n from a boost tuple which may be in a reference_wrapper
+//  
 template <int n> struct Attribute
 {
 

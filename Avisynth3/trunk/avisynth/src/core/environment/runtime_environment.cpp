@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 // General Public License cover the whole combination.
 
 
-//avisynth include
+//avisynth includes
 #include "concrete.h"
 #include "../blitter.h"
 #include "../colorspace.h"

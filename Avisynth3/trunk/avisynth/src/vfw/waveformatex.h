@@ -44,12 +44,6 @@ public:  //structors
 
   //generated destructor is fine
 
-
-public:  //interface
-
-  //adds corresponding audio to passed VideoInfo
-  void AddAudio(VideoInfo& vi) const;
-
 };
 
 

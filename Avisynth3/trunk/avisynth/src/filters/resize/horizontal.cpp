@@ -55,9 +55,9 @@ PClip Horizontal::clone(PClip const& child) const
 
 PClip Horizontal::Create(PClip const& child, PFilter const& filter, int width, SubRange const& subrange)
 {
-  ColorSpace& space = child->GetVideoInfo()->GetColorSpace();
+  PColorSpace const& space = child->GetVideoInfo()->GetColorSpace();
 
-  switch( space.id() )
+  switch( space->id() )
   {
   case ColorSpace::I_RGB24: return horizontal::RGB24::Create(child, filter, width, subrange);
   case ColorSpace::I_RGB32: return horizontal::RGB32::Create(child, filter, width, subrange);

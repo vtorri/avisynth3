@@ -23,14 +23,11 @@
 
 //avisynth includes
 #include "audio.h"
+#include "../waveformatex.h"
 #include "../avistreaminfo.h"
 #include "../../core/clip.h"
 #include "../../core/exception.h"
 #include "../../core/videoinfo.h"
-
-#ifndef _MSC_VER
-#define AVISTREAMREAD_CONVENIENT  -1
-#endif
 
 
 namespace avs { namespace vfw { namespace avistream {
@@ -39,24 +36,19 @@ namespace avs { namespace vfw { namespace avistream {
 
 STDMETHODIMP Audio::ReadFormat(LONG /*lPos*/, LPVOID lpFormat, LONG *lpcbFormat)
 {
-  if ( lpFormat == NULL )
-  {
-    *lpcbFormat = sizeof(WAVEFORMATEX);
+  long size = *lpcbFormat;                        //save old size
+  *lpcbFormat = sizeof(WAVEFORMATEX);             //update to used (needed) size
+
+  if ( lpFormat == NULL )                         //case where it was just a size request
 	  return S_OK;
-  }
 
-  CPVideoInfo vi = GetVideoInfo();
+  if ( size < sizeof(WAVEFORMATEX) )              //case where passed buffer is too small
+    return AVIERR_BUFFERTOOSMALL;
 
-  WAVEFORMATEX * wfx = (WAVEFORMATEX *)lpFormat;
-  memset(wfx, 0, sizeof(WAVEFORMATEX));
+  //creates a WaveFormatEx in the passed buffer
+  WaveFormatEx * wfe = static_cast<WaveFormatEx *>(lpFormat);
+  new (wfe) WaveFormatEx(*GetVideoInfo());
 
-  wfx->wFormatTag      = 1;
-  wfx->nChannels       = vi->GetChannelCount();  // Perhaps max out at 2?
-  wfx->nSamplesPerSec  = vi->GetSampleRate();
-  wfx->wBitsPerSample  = vi->BytesPerChannelSample() * 8;
-  wfx->nBlockAlign     = vi->BytesPerAudioSample();
-  wfx->nAvgBytesPerSec = wfx->nSamplesPerSec * wfx->nBlockAlign;
-    
   return S_OK;
 }
 

@@ -27,6 +27,7 @@
 #include "../core/videoframe.h"
 #include "antialiaser/bitcount.h"
 //#include "antialiaser/bitexpand.h"
+#include "../core/exception/unsupportedcolorspace.h"
 
 
 namespace avs { namespace text {
@@ -56,7 +57,7 @@ void Antialiaser::Apply(VideoFrame& frame, int textColor, int haloColor)
   case ColorSpace::I_YUY2: ApplyYUY2( frame, textColor, haloColor ); break;
   case ColorSpace::I_YV12: ApplyYV12( frame, textColor, haloColor ); break;
   
-  default: frame.GetColorSpace().ThrowUnsupportedColorSpaceException();
+  default: throw exception::UnsupportedColorSpace(frame.GetColorSpace());
   }
   
 }

@@ -27,6 +27,7 @@
 #include "tweak/yv12.h"
 #include "../../core/videoinfo.h"
 #include "../../core/colorspace.h"
+#include "../../core/exception/unsupportedcolorspace.h"
 
 //stl include
 #include <cmath>                   //for sin, cos
@@ -70,7 +71,7 @@ PClip Tweak::clone(PClip const& child) const
   case ColorSpace::I_YV12: return tweak::YV12::Create(child, *this);
   }
 
-  space.ThrowUnsupportedColorSpaceException();
+  throw exception::UnsupportedColorSpace(space);
 }
 
 
@@ -84,7 +85,7 @@ PClip Tweak::Create(PClip const& child, double hue, double sat, double bright, d
   case ColorSpace::I_YV12: return tweak::YV12::Create(child, hue, sat, bright, cont);
   }
 
-  space.ThrowUnsupportedColorSpaceException();
+  throw exception::UnsupportedColorSpace(space);
 }
 
 

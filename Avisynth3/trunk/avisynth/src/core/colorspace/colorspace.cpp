@@ -72,7 +72,7 @@ ColorSpace& ColorSpace::yv45() { return cspace::YV45::instance; }
 
 ColorSpace& ColorSpace::FromString(std::string const& name)
 {
-  static Map map;
+  static cspace::Map map;
 
   ColorSpace * result = map[name];
 

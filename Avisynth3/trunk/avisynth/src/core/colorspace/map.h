@@ -47,7 +47,7 @@ class Map : public boost::noncopyable
   ColorSpaceMap map_;
 
 
-private:  //structors
+public:  //structors
 
   Map();
 

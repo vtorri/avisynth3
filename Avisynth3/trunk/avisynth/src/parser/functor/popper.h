@@ -48,12 +48,39 @@ struct popper
 };
 
 
+////////////////////////////////////////////////////////////////////////////////
+//  popper<0>
+//
+//  provides stop condition for the popper<n> self recurring template
+//
 template <>
 struct popper<0>
 {
   void operator()(VMState& state) const { }
 };
 
+
+
+/////////////////////////////////////////////////////////////////////////////////
+//  Popper
+//
+//  same thing but with a non-template argument
+//
+struct Popper
+{
+
+  int n_;
+
+  Popper(int n)
+    : n_( n ) { }
+
+  void operator()(VMState& state) const
+  {
+    for(int i = n_; i-- > 0; )
+      state.pop();
+  }
+
+};
 
 
 } } } //namespace avs::parser::functor

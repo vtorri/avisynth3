@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,11 @@
 
 //avisynth includes
 #include "isse.h"
+#include "../../../../define.h"                  //for AVS_HAS_INTEL_INLINE_ASM
+#include "../../../../user_config.h"             //for AVS_ALWAYS_USE_NASM
 #include "../../../../core/videoframe.h"
 #include "../../../../core/cow_shared_ptr.h"
+
 
 namespace avs { namespace filters { namespace tweak { namespace yuy2 {
 
@@ -50,7 +53,7 @@ CPVideoFrame ISSE::MakeFrame(CPVideoFrame const& source) const
   int bright = Bright_p16;             //just put on the stack so the asm can take the value
 
 
-#if defined(_INTEL_ASM) && ! defined(_FORCE_NASM)
+#if defined(AVS_HAS_INTEL_INLINE_ASM) && ! defined(AVS_ALWAYS_USE_NASM)
 
   static long long const norm = 0x0080000000800000LL;
 
@@ -113,7 +116,7 @@ CPVideoFrame ISSE::MakeFrame(CPVideoFrame const& source) const
   //use nasm code
   tweak_yuy2_isse_nasm(wp.ptr, wp.width>>2, wp.height, wp.padValue(), hue64, satcont, bright);
 
-#endif //defined(_INTEL_ASM) && ! defined(_FORCE_NASM)
+#endif //defined(AVS_HAS_INTEL_INLINE_ASM) && ! defined(AVS_ALWAYS_USE_NASM)
 
   return frame;
 }

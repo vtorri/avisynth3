@@ -42,7 +42,7 @@ void Native::FillFunctionList(FunctionList& addTo) const
 {
   typedef PFunction (__stdcall * GetFunctionFunction)(int index);
 
-  GetFunctionFunction gff = static_cast<GetFunctionFunction>(GetProcAddress("GetFunction"));
+  GetFunctionFunction gff = (GetFunctionFunction)(GetProcAddress("GetFunction"));
   assert( gff != NULL );
 
   for ( int i = 0; true; ++i )

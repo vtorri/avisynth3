@@ -37,18 +37,18 @@ namespace avs { namespace clip { namespace twochilds {
 //
 //  implementation of the TwoChilds interface
 //
-class Concrete : public virtual TwoChilds
+class NOVTABLE Concrete : public virtual TwoChilds
 {
 
-  PClip left_;        //left child
-  PClip right_;       //right child
+  mutable PClip left_;        //left child
+  mutable PClip right_;       //right child
 
 
 public:  //structors
 
   Concrete(PClip const& left, PClip const& right)
-    : left_( left->Simplify() )
-    , right_( right->Simplify() ) { }
+    : left_( left )
+    , right_( right ) { }
 
   //generated destructor is fine
 
@@ -61,8 +61,8 @@ public:  //read access
 
 protected:  //write access
 
-  void SetLeftChild(PClip left) { left_ = left; }
-  void SetRightChild(PClip right) { right_ = right; }
+  void SetLeftChild(PClip const& left) { left_ = left; }
+  void SetRightChild(PClip const& right) { right_ = right; }
 
 
 protected:  //implementations helpers
@@ -77,6 +77,15 @@ protected:  //implementations helpers
 
   BYTE * GetLeftAudio(BYTE * buffer, long long start, int count) const { return left_->GetAudio(buffer, start, count); }
   BYTE * GetRightAudio(BYTE * buffer, long long start, int count) const { return right_->GetAudio(buffer, start, count); }
+
+
+protected:  //helper for FinalSimplify
+
+  virtual void FinalSimplifyChilds() const
+  {
+    left_ = left_->FinalSimplify();
+    right_ = right_->FinalSimplify();
+  }
 
 };
 

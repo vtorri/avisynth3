@@ -471,6 +471,7 @@ if test "$core_debug_mode" = "yes" ; then
    CORE_DEBUG_MODE_CFLAGS="-g"
 else
    CORE_DEBUG_MODE_CFLAGS="-DNDEBUG"
+   SPECIFIC_LDFLAGS="-s ${SPECIFIC_LDFLAGS}"
 fi
 
 

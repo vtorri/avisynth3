@@ -44,13 +44,13 @@ namespace avs { namespace exception { namespace cspace {
 class InvalidWidth : public Exception
 {
 
-  ColorSpace * space_;
+  ColorSpace const * space_;
   int width_;
 
 
 public:  //structors
 
-  InvalidWidth(ColorSpace& space, int width, int /*modulo*/)
+  InvalidWidth(ColorSpace const& space, int width, int /*modulo*/)
     : space_( &space ) 
     , width_( width ) { }
 

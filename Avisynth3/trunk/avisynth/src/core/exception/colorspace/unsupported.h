@@ -25,8 +25,8 @@
 #define __AVS_EXCEPTION_COLORSPACE_UNSUPPORTED_H__
 
 //avisynth include
-#include "../exception.h"
-#include "../colorspace.h"
+#include "../../exception.h"
+#include "../../colorspace.h"
 
 //boost include
 #include <boost/format.hpp>
@@ -44,12 +44,12 @@ namespace avs { namespace exception { namespace cspace {
 class Unsupported : public Exception
 {
 
-  ColorSpace * space_;
+  ColorSpace const * space_;
 
 
 public:  //structors
 
-  Unsupported(ColorSpace& space)
+  Unsupported(ColorSpace const& space)
     : space_( &space ) { }
 
   //generated copy constructor and destructor are fine

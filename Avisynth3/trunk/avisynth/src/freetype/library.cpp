@@ -21,46 +21,33 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_FREETYPE_LIBRARY_H__
-#define __AVS_FREETYPE_LIBRARY_H__
+//avisynth include
+#include "library.h"
 
-// freetype includes
-#include <ft2build.h>
-#include FT_FREETYPE_H
-
-//boost include
-#include <boost/noncopyable.hpp>
+//assert include
+#include <assert.h>
 
 
 namespace avs { namespace freetype {
 
 
+Library::Library()
+{    
+  FT_Error error = FT_Init_FreeType (&library_);
 
-class Library : public boost::noncopyable
+  assert( error == 0 );
+}
+
+  
+Library::~Library()
 {
+  FT_Error error = FT_Done_FreeType (library_);
 
-  FT_Library library_;  //underlying handle
-
-
-private:  //structors
-    
-  Library();
-  ~Library();
+  assert( error == 0 );
+}
 
 
-public:
-
-  operator FT_Library() const { return library_; }
+Library const Library::instance;
 
 
-public:  //sole library instance
-
-  static Library const instance;
-    
-};
-
-
-
-} } // namespace avs::freetype
-
-#endif //__AVS_FREETYPE_LIBRARY_H__
+} } //namespace avs::freetype

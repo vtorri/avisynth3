@@ -58,7 +58,7 @@ public:
 
   Dimension GetTextBoundingBox(std::string const& text);
 
-  operator HFONT() { return *pFont_; }
+  HFONT operator*() const { return *pFont_; }
 
 };
 

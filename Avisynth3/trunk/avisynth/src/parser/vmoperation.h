@@ -26,24 +26,27 @@
 
 //boost include
 #include <boost/shared_ptr.hpp>
-#include <boost/tuple/tuple.hpp>  //for tuple
 
 
 namespace avs { namespace parser {
 
 
+//declaration
 class VMState;
 
 
-//typedef boost::function<void (Stack&)> StackOperation
 
-
-class VMOperation
+///////////////////////////////////////////////////////////////////////////////////
+//  VMOperation<Result>
+//
+//  operation of the virtual machine
+//
+template <typename Result> class VMOperation
 {
 
   struct CallBack
   {
-    virtual void operator()(VMState& state) const = 0;
+    virtual Result operator()(VMState& state) const = 0;
   };
 
   template <class Functor>
@@ -54,7 +57,7 @@ class VMOperation
     functor_callback(Functor const& functor)
       : functor_( functor ) { }
 
-    virtual void operator()(VMState& state) const { functor_(state); }
+    virtual Result operator()(VMState& state) const { return functor_(state); }
   };
 
 
@@ -75,14 +78,12 @@ public:  //structors
 
 public:  //function-like interface
 
-  void operator()(VMState& state) const { (*cb_)(state); }
+  Result operator()(VMState& state) const { return (*cb_)(state); }
 
   bool empty() const { return ! cb_; }
 
 };
 
-
-typedef boost::tuples::tuple<VMOperation, char> TypedOp;
 
 
 } } //namespace avs::parser

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -26,8 +26,8 @@
 
 //avisynth includes
 #include "framedecompressor.h"
-#include "../../../clip/caching.h"
 #include "../../../clip/nochild.h"
+#include "../../../core/framemaker.h"
 
 //boost include
 #include <boost/scoped_ptr.hpp>
@@ -37,8 +37,13 @@ namespace avs { namespace filters { namespace source {
 
 
 
-class RawVideo : public virtual clip::NoChild
-               , public virtual clip::Caching
+///////////////////////////////////////////////////////////////////////////////////////////////
+//  RawVideo
+//
+//
+//
+class AVS_NOVTABLE RawVideo : public virtual clip::NoChild
+                            , public virtual avs::FrameMaker
 {
 
   boost::scoped_ptr<FrameDecompressor const> frameDecompressor_;

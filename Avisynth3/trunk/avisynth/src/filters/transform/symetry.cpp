@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@
 namespace avs { namespace filters {
 
 
-CPVideoFrame Symetry::MakeFrame(CPVideoFrame const& source) const
+CPVideoFrame Symetry::MakeFrame(PVideoFrame const& source) const
 {
   PVideoFrame result = source;
 

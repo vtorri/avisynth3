@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,9 +25,9 @@
 #define __AVS_FILTERS_FLIP_H__
 
 //avisynth includes
-#include "../../clip/caching/concrete.h"
 #include "../../clip/onechild/concrete.h"
-#include "../../clip/onechild/cachingpipeline.h"
+#include "../../clip/framemaker/concrete.h"
+#include "../../clip/onechild/framemakerpipeline.h"
 
 
 namespace avs { namespace filters {
@@ -43,19 +43,19 @@ class Symetry;
 //
 //  factorisation superclass for Flip::Vertical and Flip::Horizontal
 //
-class AVS_NOVTABLE Flip : public clip::onechild::CachingPipeline
+class AVS_NOVTABLE Flip : public clip::onechild::FrameMakerPipeline
                         , public clip::onechild::Simplifiable<Flip>
                         , public clip::Refactorable<Flip>
                         , public clip::Refactorable<Symetry>
                         , public clip::onechild::Concrete
-                        , public clip::caching::Concrete
+                        , public clip::framemaker::Concrete
 {
 
 public:  //constructor
 
   Flip(PClip const& child)
     : clip::onechild::Concrete( child )
-    , clip::caching::Concrete( child->GetEnvironment() ) { }
+    , clip::framemaker::Concrete( child->GetEnvironment() ) { }
 
 
 public:  //clip general interface
@@ -105,7 +105,7 @@ public:  //child changing clone
 
 protected:  //Pipeline interface
 
-  virtual CPVideoFrame MakeFrame(CPVideoFrame const& source) const;
+  virtual CPVideoFrame MakeFrame(PVideoFrame const& source) const;
 
 
 private:  //Refactorable<Flip>
@@ -149,7 +149,7 @@ public:  //child changing clone
 
 protected:  //Pipeline interface
 
-  virtual CPVideoFrame MakeFrame(CPVideoFrame const& source) const;
+  virtual CPVideoFrame MakeFrame(PVideoFrame const& source) const;
 
 
 private:  //Refactorable<Flip>

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -51,7 +51,7 @@ PClip Turn::Refactor(Flip const& parent) const
 
 
 
-CPVideoFrame Turn::Left::MakeFrame(CPVideoFrame const& source) const
+CPVideoFrame Turn::Left::MakeFrame(PVideoFrame const& source) const
 {
   PVideoFrame result = source;
 //  result->TurnLeft();
@@ -72,7 +72,7 @@ PClip Turn::Left::TurnLeft() const
 
 
 
-CPVideoFrame Turn::Right::MakeFrame(CPVideoFrame const& source) const
+CPVideoFrame Turn::Right::MakeFrame(PVideoFrame const& source) const
 {
   PVideoFrame result = source;
 //  result->TurnRight();

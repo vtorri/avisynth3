@@ -30,7 +30,8 @@
 namespace avs { namespace filters {
 
 
-CPVideoFrame Flip::Vertical::MakeFrame(CPVideoFrame const& source) const
+
+CPVideoFrame Flip::Vertical::MakeFrame(PVideoFrame const& source) const
 {
   PVideoFrame result = source;
 //  result->FlipVertical();
@@ -51,7 +52,7 @@ PClip Flip::Vertical::FlipHorizontal() const
 
 
 
-CPVideoFrame Flip::Horizontal::MakeFrame(CPVideoFrame const& source) const
+CPVideoFrame Flip::Horizontal::MakeFrame(PVideoFrame const& source) const
 {
   PVideoFrame result = source;
 //  result->FlipHorizontal();

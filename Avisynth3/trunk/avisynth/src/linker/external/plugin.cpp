@@ -23,6 +23,7 @@
 
 //avisynth includes
 #include "plugin.h"
+#include "native.h"
 #include "../../core/exception/generic.h"
 
 //boost includes
@@ -30,24 +31,53 @@
 #include <boost/filesystem/operations.hpp>
 
 #ifdef _WIN32
-//windows include
+//windows includes
 #include <windows.h>
 #include <winbase.h>
 #endif //_WIN32
+
+
 
 namespace avs { namespace linker { namespace external {
 
 
 
+Plugin::PluginFolder Plugin::pluginFolder;
+
+
 Plugin::Plugin(std::string const& fileName)
   : fileName_( fileName )
 {
+#ifdef _WIN32
+  HMODULE module = LoadLibrary(fileName_.c_str());
+  if ( module == NULL )
+#endif
+    throw exception::Generic("Unable to load library");
 
-
+  //TODO: add a plugin identity & version check here
 }
 
 
-/*
+Plugin::~Plugin()
+{
+#ifdef _WIN32
+  HMODULE module = GetModuleHandle(fileName_.c_str());
+  FreeLibrary(module);
+#endif
+}
+
+
+char const * Plugin::GetName() const
+{
+  typedef char const * (__cdecl *GetNameFunction)();
+
+  GetNameFunction gnf = static_cast<GetNameFunction>(GetProcAddress("GetName"));
+  assert( gnf != NULL );
+
+  return gnf();
+}
+
+
 PPlugin Plugin::Create(std::string const& fileName)
 {
   std::string name = CompleteName(fileName);
@@ -56,12 +86,33 @@ PPlugin Plugin::Create(std::string const& fileName)
   if ( result )
     return result;                             //return it if found
 
-  HMODULE module = LoadLibrary(name.c_str());
+  //else create, fold and return one
+  return pluginFolder[name] = PExtPlugin( static_cast<Plugin *>(new Native(name)) );
+}
 
-  if ( module == NULL )
-    throw exception::Generic("Unable to load library");
+
+void * Plugin::GetProcAddress(char const * procName) const
+{
+#ifdef _WIN32
+  return ::GetProcAddress(GetModuleHandle(fileName_.c_str()), procName);
+#endif
+}
 
 
-}*/
+bool Plugin::CanUnloadNow() const
+{
+  typedef int (__cdecl *CanUnloadNowFunction)();
+
+  CanUnloadNowFunction cunf = static_cast<CanUnloadNowFunction>(GetProcAddress("CanUnloadNow"));
+  assert( cunf != NULL );
+
+  return cunf() != 0;
+}
+
+
+std::string Plugin::CompleteName(std::string const& fileName)
+{
+  return fileName;           //TODO: implement me non-trivially
+}
 
 } } } //namespace avs::linker::external

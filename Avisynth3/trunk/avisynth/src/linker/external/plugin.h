@@ -51,27 +51,30 @@ class Plugin : public linker::Plugin
     
     bool operator()(std::string const& str) const { return false; }
 
-    bool operator()(boost::shared_ptr<external::Plugin const> const& plugin) const;
+    bool operator()(boost::shared_ptr<external::Plugin const> const& plugin) const
+    {
+      return plugin.unique() && plugin->CanUnloadNow();
+    }
 
   };
 
   typedef boost::shared_ptr<external::Plugin const> PExtPlugin;
   typedef folder<std::string, PExtPlugin, Expired> PluginFolder;
 
-  std::string fileName_;    //name of source file
-  std::string pluginName_;  //plugin name
-
-  static PluginFolder pluginFolder;
+  std::string fileName_;                   //name of source file
+  static PluginFolder pluginFolder;        //folds external plugins by file name
 
 
-protected:  //structors
+public:  //structors
 
   Plugin(std::string const& fileName);
+
+  virtual ~Plugin();
 
 
 public:  //Plugin interface
 
-  virtual char const * GetName() const { return pluginName_.c_str(); }
+  virtual char const * GetName() const;
 
 
 public:  //factory method
@@ -79,10 +82,19 @@ public:  //factory method
   static PPlugin Create(std::string const& fileName);
 
 
-private:  //implementation helper
+protected:  //implementation helper
 
+  void * GetProcAddress(char const * procName) const;
+
+
+private:  //...
+  
+  //returns true if plugin is ready for unload, ie the exterior is not using it
+  bool CanUnloadNow() const;
+
+  //helper for Create
   static std::string CompleteName(std::string const& fileName);
-
+  
 };
 
 

@@ -54,7 +54,7 @@ PClip Turn::Refactor(Flip const& parent) const
 CPVideoFrame Turn::Left::MakeFrame(CPVideoFrame const& source) const
 {
   PVideoFrame result = source;
-  result->TurnLeft();
+//  result->TurnLeft();
   return result;
 }
 
@@ -75,7 +75,7 @@ PClip Turn::Left::TurnLeft() const
 CPVideoFrame Turn::Right::MakeFrame(CPVideoFrame const& source) const
 {
   PVideoFrame result = source;
-  result->TurnRight();
+//  result->TurnRight();
   return result;
 }
 

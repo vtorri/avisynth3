@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,6 @@
 #include "flip.h"
 #include "symetry.h"
 #include "../../core/videoframe.h"
-#include "../../core/cow_shared_ptr.h"
 
 
 namespace avs { namespace filters {
@@ -36,8 +35,8 @@ CPVideoFrame Symetry::MakeFrame(CPVideoFrame const& source) const
 {
   PVideoFrame result = source;
 
-  result->FlipHorizontal();
-  result->FlipVertical();
+//  result->FlipHorizontal();
+//  result->FlipVertical();
 
   return result;
 }

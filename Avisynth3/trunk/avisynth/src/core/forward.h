@@ -50,10 +50,12 @@ namespace avs {
 class Key;
 class Clip;
 enum Plane;
+class Cache;
 class Blitter;
 class Property;
 enum FrameType;
 class VideoInfo;
+class FrameMaker;
 class ColorSpace;
 class VideoFrame;
 class RuntimeEnvironment;

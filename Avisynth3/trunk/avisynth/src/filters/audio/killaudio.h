@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -84,4 +84,4 @@ public:  //factory method
 
 } } //namespace avs::filters
 
-#endif __AVS_FILTERS_KILLAUDIO_H__
+#endif //__AVS_FILTERS_KILLAUDIO_H__

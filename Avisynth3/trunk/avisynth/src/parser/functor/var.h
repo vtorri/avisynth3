@@ -26,7 +26,6 @@
 
 //avisynth include
 #include "../vmstate.h"
-#include "../grammar/vartable.h"
 
 
 namespace avs { namespace parser { namespace functor {
@@ -43,8 +42,8 @@ struct LocalVar
 
   int const pos_;           //position from the top of the var on the stack
 
-  LocalVar(grammar::VarTable const& table, int baseIndex)
-    : pos_( table.FromTop(baseIndex) ) { }
+  LocalVar(int pos)
+    : pos_( pos ) { }
 
   AVSValue& operator()(VMState& state) const { return state.peek(pos_); }
 

@@ -35,17 +35,13 @@ namespace avs { namespace parser { namespace functor {
 struct IfThen
 {
 
-  VMCode condition_;
   VMCode then_;
 
-  IfThen(VMCode const& condition, VMCode const& then)
-    : condition_( condition )
-    , then_( then ) { }
+  IfThen(VMCode const& then)
+    : then_( then ) { }
 
   void operator()(VMState& state) const
   {
-    condition_(state);
-
     bool cond = boost::get<bool>(state.top());
     state.pop();
 

@@ -73,9 +73,11 @@ struct window_ptr
   void to(int x, int y) { ptr += x + y * pitch; }
   void pad() { ptr += padValue(); }
   void negPad() { ptr += negPadValue(); }
+  void skipPad() { ptr += skipPadValue(); }
 
   int padValue() const { return pitch - width; }
   int negPadValue() const { return -pitch -width; }
+  int skipPadValue() const { return pitch * 2 - width; }
 
   window_ptr<Data>& operator+=(Vecteur const& vect) { to(vect.x, vect.y); return *this; }
   

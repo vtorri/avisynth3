@@ -24,7 +24,7 @@
 #ifndef __AVS_CLIP_ONECHILD_AUDIOPROCESS_H__
 #define __AVS_CLIP_ONECHILD_AUDIOPROCESS_H__
 
-//avisynth include
+//avisynth includes
 #include "../onechild.h"
 #include "../../filters/audio/killaudio.h"
 #include "../../filters/audio/killvideo.h"
@@ -34,6 +34,12 @@ namespace avs { namespace clip { namespace onechild {
 
 
 
+////////////////////////////////////////////////////////////////////////////
+//  AudioProcess
+//
+//  only works on audio without caring at all about video
+//  so provides appropriate Refactor behavior for KillAudio and KillVideo
+//
 class AudioProcess : public virtual OneChild
                    , public Refactorable<filters::KillAudio>
                    , public Refactorable<filters::KillVideo>

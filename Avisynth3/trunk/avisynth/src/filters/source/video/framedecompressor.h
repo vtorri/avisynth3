@@ -26,7 +26,6 @@
 
 //avisynth includes
 #include "../../../define.h"              //for AVS_NOVTABLE
-//
 #include "../../../core/ownedblock.h"
 #include "../../../core/bufferwindow.h"
 

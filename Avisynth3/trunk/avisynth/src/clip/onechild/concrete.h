@@ -48,7 +48,7 @@ public:  //constructor
   Concrete(PClip const& child)
     : child_( child ) { }
 
-  //generated destrcutor is fine
+  //generated destructor is fine
 
 
 public:  //access to child

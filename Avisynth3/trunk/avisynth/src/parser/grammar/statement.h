@@ -55,19 +55,15 @@ namespace closure {
 struct Statement : spirit::closure
     < Statement
     , CodeCouple
-    , boost::reference_wrapper<VarTable>
-    , boost::reference_wrapper<boost::optional<int> >
-    , boost::reference_wrapper<VarTable>
-    , boost::reference_wrapper<function::Table>
+    , boost::reference_wrapper<LocalContext>
+    , boost::reference_wrapper<GlobalContext>
     , char
     >
 {
   member1 value;
-  member2 localTable;
-  member3 last;
-  member4 globalTable;
-  member5 functionTable;
-  member6 returnTypeExpected;
+  member2 localCtxt;
+  member3 globalCtxt;
+  member4 returnTypeExpected;
 };
 
 
@@ -79,13 +75,11 @@ struct Statement : spirit::closure
 struct InnerStatement : spirit::closure
     < InnerStatement
     , CodeCouple
-    , boost::reference_wrapper<VarTable>
-    , boost::reference_wrapper<boost::optional<int> >
+    , boost::reference_wrapper<LocalContext>
     >
 {
   member1 value;
-  member2 localTable;
-  member3 last;
+  member2 localCtxt;
 };
 
 
@@ -107,13 +101,11 @@ struct CreateVar : spirit::closure
 struct StatementBlock : spirit::closure
     < StatementBlock
     , CodeCouple
-    , VarTable
-    , boost::optional<int>
+    , LocalContext
     >
 {
   member1 value;
-  member2 varTable;
-  member3 last;
+  member2 localCtxt;
 };
 
 
@@ -137,7 +129,7 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
       using namespace phoenix;
 
       top
-          =   statement( CodeCouple(), self.localTable, self.last )
+          =   statement( CodeCouple(), self.localCtxt )
               [ 
                 self.value = arg1 
               ]
@@ -146,15 +138,16 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
       statement
           =   (   stackingStatement( value::StackingStatement(true) )
                   [
-                    if_( unwrap(statement.last) )   //if last was defined
+                    if_( third(statement.localCtxt) )  //if last was defined
                     [
-                      if_( first(arg1) )            //if we actually added to the stack
+                      if_( first(arg1) )               //if we actually added to the stack
                       [
                         statement.value += construct_<functor::Swapper>()   //swap so last is at top
                       ],
-                      statement.value += construct_<functor::popper<1> >()  //pop last
+                      statement.value += construct_<functor::popper<1> >(), //pop last
+                      --second(statement.localCtxt)                         //and update stack size
                     ],
-                    unwrap(statement.last) = second(arg1)                   //update definition of last
+                    third(statement.localCtxt) = second(arg1)               //update definition of last
                   ]
               |   ifStatement
               |   returnStatement
@@ -165,39 +158,40 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
           ;
 
       stackingStatement
-          =   expression( value::Expression(), statement.localTable, unwrap(statement.last), self.globalTable, self.functionTable )
+          =   expression( value::Expression(), statement.localCtxt, self.globalCtxt )
               [
-                statement.value += first(arg1),
+                statement.value += first(arg1),                    //accumulate code
                 if_( second(arg1) == val('c') && ! third(arg1) )   //if type clip and not a top level =
                 [                                                  //we define a last
-                  second(stackingStatement.value) = bind(&VarTable::size)(unwrap(statement.localTable))
+                  second(stackingStatement.value) = bind(&VarTable::size)(first(statement.localCtxt))
                 ]
                 .else_
                 [
                   if_( second(arg1) != val('v') )                  //if expr is not type void
                   [
-                    statement.value += construct_<popper<1> >()    //we pop it
+                    statement.value += construct_<popper<1> >(),   //we pop it
+                    --second(statement.localCtxt)                  //and update stack size
                   ],
                   first(stackingStatement.value) = val(false)      //report we stack nothing
                 ]
               ]
-          |   createVar( false, statement.localTable )
+          |   createVar( false, wrap(first(statement.localCtxt)) ) //pass local VarTable
           ;
 
       createVar
           =   (   spirit::str_p("global")
                   [
-                    createVar.globalVar = val(true),
-                    createVar.varTable = self.globalTable
+                    createVar.globalVar = val(true),                    //report global var
+                    createVar.varTable = wrap(first(self.globalCtxt))   //and set global VarTable
                   ]
-              |   !   spirit::str_p("local")
+              |   !   spirit::str_p("local")     //optional local keyword
               )
           >>  name
               [
                 createVar.name = construct_<std::string>(arg1, arg2)
               ]
           >>  '='
-          >>  expression( value::Expression(), statement.localTable, unwrap(statement.last), self.globalTable, self.functionTable )
+          >>  expression( value::Expression(), statement.localCtxt, self.globalCtxt )
               [
                 statement.value += first(arg1),     //accumulate creation code, then define var
                 createVar.index = bind(&VarTable::DefineVar)( unwrap(createVar.varTable), createVar.name, second(arg1) ), 
@@ -212,19 +206,19 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
       ifStatement
           =   spirit::str_p("if")
           >>  '('
-          >>  expression( value::Expression(), statement.localTable, unwrap(statement.last), self.globalTable, self.functionTable )
+          >>  expression( value::Expression(), statement.localCtxt, self.globalCtxt )
               [
                 bind(&Check::TypeIsExpected)(second(arg1), val('b')),
                 statement.value += first(arg1)
               ]
           >>  ')'
-          >>  block( CodeCouple(), unwrap(statement.localTable) )
+          >>  block( CodeCouple(), unwrap(statement.localCtxt) )
               [
                 ifStatement.value = arg1
               ]          
           >>  (   *   spirit::eol_p
               >>  spirit::str_p("else")
-              >>  block( CodeCouple(), unwrap(statement.localTable) )
+              >>  block( CodeCouple(), unwrap(statement.localCtxt) )
                   [
                     statement.value -= construct_<functor::IfThenElse>(ifStatement.value, arg1)
                   ]
@@ -237,8 +231,8 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
 
       block
           =   *   spirit::eol_p
-          >>  '{'
-          >> *(   statement( CodeCouple(), wrap(block.varTable), wrap(block.last) )
+          >>  '{' //NB: for now last is inherited from upper context.... FIX ME LATER
+          >> *(   statement( CodeCouple(), wrap(block.localCtxt) )
                   [
                     block.value += arg1
                   ]
@@ -249,7 +243,7 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
 
       returnStatement
           =   spirit::str_p("return")
-          >>  expression( value::Expression(), statement.localTable, unwrap(statement.last), self.globalTable, self.functionTable )
+          >>  expression( value::Expression(), statement.localCtxt, self.globalCtxt )
               [
                 bind(&Check::ReturnTypeIsExpected)(second(arg1), self.returnTypeExpected),
                 statement.value += first(arg1),

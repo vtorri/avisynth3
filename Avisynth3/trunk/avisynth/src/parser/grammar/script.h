@@ -39,43 +39,29 @@ namespace closure {
 struct Script : spirit::closure
     < Script
     , CodeCouple
-    , boost::reference_wrapper<VarTable>
-    , boost::reference_wrapper<boost::optional<int> >
-    , boost::reference_wrapper<VarTable>
-    , boost::reference_wrapper<function::Table>
+    , boost::reference_wrapper<LocalContext>
+    , boost::reference_wrapper<GlobalContext>
     >
 {
   member1 value;
-  member2 localTable;
-  member3 last;
-  member4 globalTable;
-  member5 functionTable;
+  member2 localCtxt;
+  member3 globalCtxt;
 };
 
 
 struct Function : spirit::closure
     < Function
     , function::FunctionId
-    , VarTable
+    , LocalContext
     , StatementCode
     >
 {
   member1 ident;
-  member2 localTable;
+  member2 localCtxt;
   member3 code;
 };
 
 
-
-struct FunctionBody : spirit::closure
-    < FunctionBody
-    , CodeCouple
-    , boost::optional<int>
-    >
-{
-  member1 code;
-  member2 last;
-};
 
 
 } //namespace closure
@@ -95,7 +81,7 @@ struct Script : public spirit::grammar<Script, closure::Script::context_t>
       using namespace phoenix;
 
       top
-          =  *(   statement( CodeCouple(), self.localTable, self.last, self.globalTable, self.functionTable, 'c' )
+          =  *(   statement( CodeCouple(), self.localCtxt, self.globalCtxt, 'c' )
                   [
                     self.value += arg1
                   ]
@@ -106,9 +92,10 @@ struct Script : public spirit::grammar<Script, closure::Script::context_t>
           ;
 
       function
-        =   Types::instance
+          =   Types::instance
               [
-                first(function.ident) = arg1
+                first(function.ident) = arg1,
+                second(function.localCtxt) = val(0)
               ]
           >>  name
               [
@@ -118,7 +105,7 @@ struct Script : public spirit::grammar<Script, closure::Script::context_t>
           >>  !(  arg   %   ','   )
           >>  spirit::ch_p(')')
               [
-                bind(&function::Table::DeclareScriptFunction)( unwrap(self.functionTable), function.ident )
+                bind(&function::Table::DeclareScriptFunction)( second(self.globalCtxt), function.ident )
               ]
           >>  functionBody
               [
@@ -127,7 +114,7 @@ struct Script : public spirit::grammar<Script, closure::Script::context_t>
           >>  spirit::eol_p
               [
                 bind(&function::Table::DefineScriptFunction)
-                    ( unwrap(self.functionTable), function.ident, function.code )                    
+                    ( second(self.globalCtxt), function.ident, function.code )                    
               ]
           ;
 
@@ -136,19 +123,20 @@ struct Script : public spirit::grammar<Script, closure::Script::context_t>
               [
                 arg.value = arg1
               ]
-          >>  (   name - spirit::lazy_p( function.localTable )  )
+          >>  (   name - spirit::lazy_p( first(function.localCtxt) )  )
               [
-                bind(&VarTable::DefineVar)(function.localTable, construct_<std::string>(arg1, arg2), arg.value),
-                third(function.ident) += arg.value
+                bind(&VarTable::DefineVar)(first(function.localCtxt), construct_<std::string>(arg1, arg2), arg.value),
+                third(function.ident) += arg.value,
+                ++second(function.localCtxt)
               ]
           ;
 
       functionBody
           =   *   spirit::eol_p
           >>  '{'
-          >> *(   statement( CodeCouple(), wrap(function.localTable), wrap(functionBody.last), self.globalTable, self.functionTable, first(function.ident) ) 
+          >> *(   statement( CodeCouple(), wrap(function.localCtxt), self.globalCtxt, first(function.ident) ) 
                   [
-                    functionBody.code += arg1
+                    functionBody.value += arg1
                   ]
               |   spirit::eol_p
               )
@@ -165,7 +153,7 @@ struct Script : public spirit::grammar<Script, closure::Script::context_t>
     spirit::rule<ScannerT> top;
     spirit::rule<ScannerT, closure::Function::context_t> function;
     spirit::rule<ScannerT, closure::Value<char>::context_t> arg;
-    spirit::rule<ScannerT, closure::FunctionBody::context_t> functionBody;
+    spirit::rule<ScannerT, closure::Value<CodeCouple>::context_t> functionBody;
 
     Name name;                    //Name grammar
     Statement statement;          //statement grammar

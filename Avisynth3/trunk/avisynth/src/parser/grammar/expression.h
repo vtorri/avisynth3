@@ -44,8 +44,14 @@
 namespace avs { namespace parser { namespace grammar {
 
 
-//typedef
-namespace value { typedef boost::tuples::tuple<ElementalCode, char, bool> Expression; }
+//typedefs
+typedef boost::tuples::tuple<VarTable, function::Table> GlobalContext;
+typedef boost::tuples::tuple<VarTable, int, boost::optional<int> > LocalContext;
+namespace value { 
+  typedef boost::tuples::tuple<ElementalOperation> ElementalOpProxy;
+  typedef boost::tuples::tuple<ElementalCode, char, bool> Expression; 
+}
+
 
 
 namespace closure {
@@ -60,17 +66,13 @@ namespace closure {
 struct Expression : spirit::closure
     < Expression
     , value::Expression
-    , boost::reference_wrapper<VarTable>
-    , boost::optional<int>
-    , boost::reference_wrapper<VarTable>
-    , boost::reference_wrapper<function::Table>
+    , boost::reference_wrapper<LocalContext>
+    , boost::reference_wrapper<GlobalContext>
     >
 {
   member1 value;
-  member2 localTable;
-  member3 last;
-  member4 globalTable;
-  member5 functionTable;
+  member2 localCtxt;
+  member3 globalCtxt;
 };
 
 
@@ -81,11 +83,11 @@ struct Expression : spirit::closure
 //
 struct InnerExpression : spirit::closure
     < InnerExpression
-    , TypedCode
+    , char
     , bool
     >
 {
-  member1 value;
+  member1 type;
   member2 implicit;   //mark if implicit last function call are possible within the expression
 };
 
@@ -120,7 +122,6 @@ public:  //structors
 
 private:  //typedefs 
 
-  typedef functor::LocalVar LocalVar;
   typedef functor::pusher<functor::LocalVar> LocalVarPusher;
   typedef functor::pusher<functor::GlobalVar> GlobalVarPusher;
   typedef functor::assigner<functor::LocalVar> LocalVarAssigner;
@@ -140,10 +141,9 @@ public:  //definition nested class
       using namespace phoenix;
 
       top 
-          =   expression( TypedCode(), self.last() ) 
+          =   expression( char(), third(self.localCtxt) )   //init expression.implicit to true if last defined
               [ 
-                first(self.value) = first(arg1),
-                second(self.value) = second(arg1)
+                second(self.value) = arg1                   //set expr type in the grammar closure
               ]
           ;
 
@@ -159,65 +159,91 @@ public:  //definition nested class
           ;
 
       local_assign_expr
-          =   spirit::lazy_p( unwrap(self.localTable) )
+          =   spirit::lazy_p( first(self.localCtxt) )   //use local VarTable (1st member of localCtxt)
               [ 
                 local_assign_expr.value = arg1 
               ]
           >>  '='
-          >>  expression( TypedCode(), expression.implicit )
+          >>  expression( char(), expression.implicit )
               [
-                expression.value = arg1,
-                first(expression.value) += construct_<LocalVarAssigner>
-                    (  construct_<LocalVar>( self.localTable, first(local_assign_expr.value) )  )
+                expression.type = arg1,
+                first(self.value) += construct_<LocalVarAssigner>( second(self.localCtxt) - first(local_assign_expr.value) )
               ]
           ;
 
       global_assign_expr
           =   spirit::str_p("global")
-          >>  spirit::lazy_p( unwrap( self.globalTable) )
+          >>  spirit::lazy_p( first(self.globalCtxt) )   //use global VarTable (1st member of globalCtxt)
               [
                 global_assign_expr.value = arg1
               ]
           >>  '='
-          >>  expression( TypedCode(), expression.implicit )
+          >>  expression( char(), expression.implicit )
               [
-                expression.value = arg1,
-                first(expression.value) += construct_<GlobalVarAssigner>( first(global_assign_expr.value) )
+                expression.type = arg1,
+                first(self.value) += construct_<GlobalVarAssigner>( first(global_assign_expr.value) )
               ]
           ;
 
       equality_expr
-          =   binary_op_p(mult_expr, self.add_op)
+          =   add_expr
               [
-                expression.value = arg1
+                expression.type = arg1
               ]
           >> !(   self.equality_op
                   [
-                    equality_expr.value = arg1
+                    equality_expr.value = arg1   //true if ==, else false
                   ]
-              >>  binary_op_p(mult_expr, self.add_op)
+              >>  add_expr
                   [
-                    bind(&Action::AppendEqualityOperation)(expression.value, arg1, equality_expr.value)
+                    first(self.value) += bind(&Action::GetEqualityOperation)(expression.type, arg1, equality_expr.value),
+                    --second(self.localCtxt)
                   ]
               )
           ;
-                  
+
+      add_expr
+          =   binary_op_p( mult_expr, self.add_op, binaryop_helper )
+              [
+                add_expr.value = arg1
+              ]
+          ;
 
       mult_expr
-          =   binary_op_p(atom_expr, self.mult_op) [ mult_expr.value = arg1 ];
+          =   binary_op_p( atom_expr, self.mult_op, binaryop_helper )
+              [
+                mult_expr.value = arg1
+              ]
+          ;
 
-      atom_expr                      //atom can be
-          =   (   literal            //a literal
-                  [ 
-                    atom_expr.value = construct_<TypedCode>(first(arg1), second(arg1)) 
+      binaryop_helper
+          =   spirit::eps_p 
+              [
+                first(self.value) += first(binaryop_helper.value),
+                --second(self.localCtxt)
+              ]
+          ;
+
+      atom_expr                        //atom can be
+          =   (   nested_expr          //a nested expr (ie ( expr ) )
+              |   call_expr            //a function call
+              |   (   literal          //a literal
+                      [ 
+                        first(self.value) += first(arg1),   //accumulate code
+                        atom_expr.value = second(arg1)      //update type
+                      ]
+                  |   local_var_expr   //a local variable (last counting as one)
+                      [
+                        first(self.value) += construct_<LocalVarPusher>( second(self.localCtxt) - arg1 )
+                      ]
+                  |   global_var_expr  //a global variable
+                  )
+                  [
+                    ++second(self.localCtxt)       //these 3 don't update stack size themselves
                   ]
-              |   nested_expr        //a nested expr (ie ( expr ) )
-              |   call_expr          //a function call
-              |   var_expr           //a variable
-              |   last_expr          //an explicit last
               )
               [
-                expression.implicit = val(false)
+                expression.implicit = val(false)   //deactivate implicit last for the following
               ]
           >> *(   subscript_helper( false )
               ||  infix_helper
@@ -226,83 +252,87 @@ public:  //definition nested class
 
       nested_expr
           =   '('
-          >>  expression( TypedCode(), false )
+          >>  expression( char(), false )
               [
                 atom_expr.value = arg1
               ]
           >>  ')'
           ;
 
-      var_expr
-          =   spirit::lazy_p( unwrap(self.localTable) )
+      local_var_expr
+          =   spirit::lazy_p( first(self.localCtxt) )    //use local VarTable (1st member of localCtxt)
               [
-                first(atom_expr.value) += construct_<LocalVarPusher>( construct_<LocalVar>(self.localTable, first(arg1)) ),
-                second(atom_expr.value) = second(arg1)
+                local_var_expr.value = first(arg1),
+                atom_expr.value = second(arg1)
               ]
-          |   !   spirit::str_p("global")
-          >>  spirit::lazy_p( unwrap(self.globalTable) )
+          |   spirit::str_p("last")
               [
-                first(atom_expr.value) += construct_<GlobalVarPusher>( first(arg1) ),
-                second(atom_expr.value) = second(arg1)
+                local_var_expr.value = bind(&Check::LastIsDefined)(third(self.localCtxt)),
+                atom_expr.value = val('c')
               ]
           ;
 
-      last_expr
-          =   spirit::str_p("last")
+      global_var_expr
+          =   !   spirit::str_p("global")
+          >>  spirit::lazy_p( first(self.globalCtxt) )   //use global VarTable (1st member of globalCtxt)
               [
-                first(atom_expr.value) += construct_<LocalVarPusher>
-                    (  construct_<LocalVar>( self.localTable, bind(&Check::LastIsDefined)( self.last ) )  ),
-                second(atom_expr.value) = val('c')
+                first(self.value) += construct_<GlobalVarPusher>( first(arg1) ),
+                atom_expr.value = second(arg1)
               ]
           ;
 
       call_expr
-          =   spirit::lazy_p( unwrap(self.functionTable) )
+          =   spirit::lazy_p( second(self.globalCtxt) )  //use the functionTable  (2nd member of globalCtxt)
               [
                 call_expr.functionPool = bind(&boost::reference_wrapper<function::Pool>::get_pointer)(arg1)
               ]
           >>  '('
-          >> !(   expression( TypedCode(), false )
+          >> !(   expression( char(), false )
                   [
-                    first(atom_expr.value) += first(arg1),
-                    call_expr.prototype += second(arg1)
+                    call_expr.prototype += arg1
                   ]
               %   ','
               )
           >>  spirit::ch_p(')')
               [
-                bind(&function::Pool::Resolve)(call_expr.functionPool, call_expr.prototype, atom_expr.value)
+                atom_expr.value = bind(&function::Pool::Resolve)(call_expr.functionPool, call_expr.prototype, first(self.value)),
+                second(self.localCtxt) -= bind(&std::string::size)(call_expr.prototype),
+                if_( atom_expr.value != val('v') )           //if don't return void
+                [
+                  ++second(self.localCtxt)                   //take return value into account for stack size
+                ]
               ]
           ;
 
       subscript_helper
           =  '['
-          >>  int_expr_helper
+          >>  expression( char(), false )
+              [
+                bind(&Check::TypeIsExpected)(arg1, val('i'))
+              ]
           >>  ','
           >>  (   spirit::str_p("end")
                   [
-                    subscript_helper.value = val(true)
+                    subscript_helper.value = val(true),
+                    --second(self.localCtxt)
                   ]
-              |   int_expr_helper
+              |   expression( char(), false )
+                  [
+                    bind(&Check::TypeIsExpected)(arg1, val('i')),
+                    second(self.localCtxt) -= 2
+                  ]
               )
           >>  spirit::ch_p(']')
               [
-                bind(&Action::AppendSubscriptOperation)(atom_expr.value, subscript_helper.value)
+                first(self.value) += bind(&Action::GetSubscriptOperation)(atom_expr.value, subscript_helper.value)
               ]
           ;
 
-      int_expr_helper
-          =   expression( TypedCode(), false )
-              [
-                bind(&Check::TypeIsExpected)(second(arg1), val('i')),
-                first(atom_expr.value) += first(arg1)
-              ]
-          ;
 
       infix_helper
           =   spirit::ch_p('.')
               [   //check if infix allowed (throw if not)                
-                infix_helper.value = bind(&Check::IsInfixable)(second(atom_expr.value))
+                infix_helper.value = bind(&Check::IsInfixable)(atom_expr.value)
               ]
               >>  call_expr( infix_helper.value )
           ;
@@ -319,12 +349,14 @@ public:  //definition nested class
     spirit::rule<ScannerT, closure::Value<TypedIndex>::context_t> local_assign_expr;
     spirit::rule<ScannerT, closure::Value<TypedIndex>::context_t> global_assign_expr;
     spirit::rule<ScannerT, closure::Value<bool>::context_t> equality_expr;
-    spirit::rule<ScannerT, closure::Value<TypedCode>::context_t> mult_expr;
-    spirit::rule<ScannerT, closure::Value<TypedCode>::context_t> atom_expr;
-    spirit::rule<ScannerT> nested_expr, var_expr, last_expr;
+    spirit::rule<ScannerT, closure::Value<char>::context_t> add_expr;
+    spirit::rule<ScannerT, closure::Value<char>::context_t> mult_expr;
+    spirit::rule<ScannerT, closure::Value<value::ElementalOpProxy>::context_t> binaryop_helper;
+    spirit::rule<ScannerT, closure::Value<char>::context_t> atom_expr;
+    spirit::rule<ScannerT> nested_expr, global_var_expr;
+    spirit::rule<ScannerT, closure::Value<int>::context_t> local_var_expr;
     spirit::rule<ScannerT, closure::FunctionCall::context_t> call_expr;
     spirit::rule<ScannerT, closure::Value<bool>::context_t> subscript_helper;
-    spirit::rule<ScannerT> int_expr_helper;
     spirit::rule<ScannerT, closure::Value<std::string>::context_t> infix_helper;
 
     Literal literal;

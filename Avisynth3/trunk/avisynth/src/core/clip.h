@@ -31,8 +31,10 @@
 #include <boost/enable_shared_from_this.hpp>
 
 
+#ifdef _MSC_VER
 //definitely get rid of warning 4250 : MI dominance decisions
 #pragma warning (disable : 4250)  
+#endif //_MSC_VER
 
 
 namespace avs {

@@ -21,21 +21,19 @@
 // General Public License cover the whole combination.
 
 
-//avisynth includes
-#include "../vframe_rgb24.h"
-#include "../vframe_rgb32.h"
-#include "../../colorspace.h"
+//avisynth include
+#include "rgb.h"
 
 
-namespace avs {
+namespace avs { namespace vframe {
 
 
-VideoFrame::RGB32::RGB32(RGB24 const& other)
-  : RGB( ColorSpace::rgb32(), other )
+RGB32::RGB32(RGB24 const& other)
+  : interleaved<4, 1>( ColorSpace::rgb32(), other )
 {
 
-  CWindowPtr src = other.GetMain().GetReadPtr();
-  WindowPtr dst = GetMain().GetWritePtr();
+  CWindowPtr src = other.GetMain().Read();
+  WindowPtr dst = GetMain().Write();
 
   for ( int y = dst.height; y-- > 0; src.pad(), dst.pad() ) 
   {
@@ -52,4 +50,4 @@ VideoFrame::RGB32::RGB32(RGB24 const& other)
 
 
 
-}; //namespace avs
+} } //namespace avs::vframe

@@ -55,7 +55,7 @@ class buffer_window
   Dimension dim_;              //dimension of the window
   int pitch_;
   int offset_;                 //offset from buffer start to window start
-  OwnedBlock buffer_;
+  owned_block<1> buffer_;      //buffer doesn't need to be aligned
 
   friend struct bw::SizeChanger;   //need internal knowledge to work
   //needed for the converting constructor to access other's members
@@ -79,17 +79,33 @@ public:  //structors
     , buffer_( env->NewOwnedBlock(pitch() * height() + Guard * 2, true) ) { }
  
   //constructor using a given block as buffer
-  buffer_window(Dimension const& dim, OwnedBlock const& buffer, int offset)
+  template <int alignOther>
+  buffer_window(Dimension const& dim, owned_block<alignOther> const& buffer, int offset = 0)
     : dim_( dim )
     , pitch_( RoundUp<Align>(width()) )
     , offset_( offset )
     , buffer_( buffer )
   {
-    assert( 0 <= offset && pitch() * height() + offset <= buffer.size() );
+    assert( IsLegal() );
 
     if ( MisAligned() )       //if given values make self not respect align and guard contracts
       ReAlign();              //realign (blit to correct)
   }
+
+  //same as above, but allows custom pitch (possibly negative, but not zero)
+  template <int alignOther>
+  buffer_window(Dimension const& dim, owned_block<alignOther> const& buffer, int offset, int pitch)
+    : dim_( dim )
+    , pitch_( pitch )
+    , offset_( offset )
+    , buffer_( buffer )
+  {
+    assert( IsLegal() && pitch_ != 0 );
+
+    if ( MisAligned() && std::max(pitch_, -pitch_) % Align != 0 )    //if do not respect guard and align contracts
+      ReAlign();                                                     //blit to correct
+  }
+
 
   //conversion from another buffer_window type
   template<int otherAlign, int otherGuard>
@@ -99,7 +115,7 @@ public:  //structors
     , offset_( other.offset_ )
     , buffer_( other.buffer_ )
   {
-    if ( MisAligned() && pitch_ % Align != 0 )    //if do not respect guard abd align contracts
+    if ( MisAligned() && pitch_ % Align != 0 )    //if do not respect guard and align contracts
       ReAlign();                                  //blit to correct
   }
 
@@ -135,7 +151,7 @@ public:  //access
   int pitch() const { return pitch_; }
   int width() const { return dim_.GetWidth(); }
   int height() const { return dim_.GetHeight(); }
-  int size() const { return pitch() * height(); }
+  int size() const { return std::max(pitch(), -pitch()) * height(); }
 
   //window_ptr methods
   CWindowPtr Read() const { return CWindowPtr( read(), pitch(), width(), height() ); }
@@ -157,11 +173,17 @@ public:  //comparison operators
 
 private:  //alignment stuff
 
+  int MinOffset() const { return pitch_ > 0 ? offset_ : offset_ + pitch_ * (height() - 1); }
+  int MaxOffset() const { return pitch_ > 0 ? offset_ + pitch_ * height() : offset_ - pitch_; }
+
+  //checks that the data is inside the buffer
+  bool IsLegal() const { return ! dim_.empty() && 0 <= MinOffset() && MaxOffset() <= buffer_.size(); }
+
   bool MisAligned() const
   {
-    return offset_ < Guard                               //not enough head space
-        || offset_ % Align != 0                          //data misaligned
-        || buffer_.size() < offset_ + size() + Guard;    //not enough toe space
+    return MinOffset() < Guard                           //not enough head space
+        || int(buffer_.get() + offset_) % Align != 0     //data misaligned
+        || buffer_.size() < MaxOffset() + Guard;         //not enough toe space
   }
 
   void ReAlign()

@@ -98,7 +98,7 @@ struct caller_impl<Function, 1>
   typename boost::function_traits<Function>::result_type
   operator()(VMState& state, Function * function)
   {
-    return function( extract<Function, 1>()(state, 0) );
+    return function( extract<Function, 1>()(state, 1) );
   }
 
 };
@@ -108,7 +108,7 @@ template <typename Function>
 struct caller_impl<Function, 2>
 {
 
-  enum { pos2 = 0, pos1 = extract<Function, 2>::consume, consume = pos1 + extract<Function, 1>::consume };
+  enum { pos2 = 1, pos1 = pos2 + extract<Function, 2>::consume, consume = pos1 + extract<Function, 1>::consume };
 
   typename boost::function_traits<Function>::result_type
   operator()(VMState& state, Function * function)

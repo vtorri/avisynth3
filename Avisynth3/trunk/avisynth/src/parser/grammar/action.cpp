@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -37,21 +37,14 @@ using namespace functor;
 void Action::CreateVarStatement(CodeCouple& code, LocalContext& localCtxt, value::Expression const& expr, VarTable& table, std::string const& name)
 {
 
-  code += expr.get<0>();                              //accumulate expr generation code
+  CleanOldLast(code, localCtxt, expr);                //get rid of old last
 
-  int index = table.DefineVar(name, expr.get<1>());   //defines the var in the given VarTable
+  int index = table.DefineVar(name, expr.template get<1>());      //defines the var in the given VarTable
 
-  if ( &table != &localCtxt.get<0>() )                //if a global var (table is not the local var Table)
+  if ( &table != &localCtxt.template get<0>() )       //if a global var (table is not the local var Table)
   {
     code += popassigner<GlobalVar>( index );          //assign global var and pop value
-    --localCtxt.get<1>();                             //update stack size
-  }
-
-  if ( !! localCtxt.get<2>() )                        //if was a last before
-  {
-    localCtxt.get<2>() = boost::detail::none_t();     //no last now
-
-    CleanOldLast( code, &table == &localCtxt.get<0>(), localCtxt.get<1>() );
+    --localCtxt.template get<1>();                    //update stack size
   }
 
 }
@@ -60,39 +53,33 @@ void Action::CreateVarStatement(CodeCouple& code, LocalContext& localCtxt, value
 void Action::ExprStatement(CodeCouple& code, LocalContext& localCtxt, value::Expression const& expr)
 {
 
-  bool oldLast = !! localCtxt.get<2>();           //mark if an old last has to be taken care of
-  bool stacking = true;                           //expect to stack something
+  CleanOldLast(code, localCtxt, expr);                         //get rid of old last
 
-  code += expr.get<0>();                          //accumulate expr generation code
-
-  if ( expr.get<1>() == 'c' && ! expr.get<2>() )  //if a non-assignment clip expr
-    localCtxt.get<2>() = localCtxt.get<0>().size();   //define a new last
+  if ( expr.get<1>() == 'c' && ! expr.template get<2>() )      //if a non-assignment clip expr
+    localCtxt.template get<2>() = localCtxt.template get<1>(); //define a new last
   else 
-  {
-    localCtxt.get<2>() = boost::detail::none_t(); //no last now
-
-    if ( expr.get<1>() != 'v' )                   //if expr actually stacked something
+    if ( expr.template get<1>() != 'v' )                       //if expr actually stacked something
     {
-      code += functor::popper<1>();               //get rid of it
-      --localCtxt.get<1>();                       //update stack size
+      code += functor::popper<1>();                            //get rid of it
+      --localCtxt.template get<1>();                           //update stack size
     }
-
-    stacking = false;                             //report that finally nothing was stacked
-  }
-
-  if ( oldLast )
-    CleanOldLast(code, stacking, localCtxt.get<1>());
-
 }
 
 
-void Action::CleanOldLast(CodeCouple& code, bool stacking, int& stackSize)
+void Action::CleanOldLast(CodeCouple& code, LocalContext& localCtxt, value::Expression const& expr)
 {
-  if ( stacking )                     //if something was stacked
-    code += functor::Swapper();       //make last top of stack
+  code += expr.template get<0>();          //accumulate expr generation code
 
-  code += functor::popper<1>();       //pop it
-  --stackSize;                        //update stack size
+  if ( !! localCtxt.template get<2>() )    //if there is an old last
+  {
+    localCtxt.template get<2>() = boost::detail::none_t();  //no last now
+
+    if ( expr.template get<1>() != 'v' )   //if expr actually stacked something
+      code += functor::Swapper();          //make old last top of stack
+    code += functor::popper<1>();          //pop it
+
+    --localCtxt.template get<1>();         //update stack size
+  }
 }
 
 

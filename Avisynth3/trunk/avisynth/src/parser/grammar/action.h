@@ -41,7 +41,7 @@ struct Action
 
 private:
 
-  static void CleanOldLast(CodeCouple& code, bool stacking, int& stackSize);
+  static void CleanOldLast(CodeCouple& code, LocalContext& localCtxt, value::Expression const& expr);
 
 };
 

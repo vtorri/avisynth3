@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,9 @@
 
 //avisynth include
 #include "blender.h"
+#include "../../define.h"              //for AVS_HAS_INTEL_INLINE_ASM
 #include "../ownedblock.h"
+
 
 namespace avs { namespace bw {
 
@@ -34,7 +36,7 @@ extern "C" void blender_mmx_nasm
 
 
 
-Blender<1>::Blender<1>(float factor)
+Blender<1>::Blender(float factor)
 {
   int weight = int( factor * 32767.0f );        //that is the weight of the blendFrom window
 
@@ -65,7 +67,7 @@ void Blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom
   CWindowPtr src = blendFrom.Read();
 
 
-#if defined(_INTEL_ASM) && ! defined(_FORCE_NASM)
+#if defined(AVS_HAS_INTEL_INLINE_ASM) && ! defined(_FORCE_NASM)
 
   static long long const rounder = 0x0000400000004000LL;		       //(0.5)<<15 in each dword
   int weight = weight_;
@@ -140,7 +142,7 @@ void Blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom
   //use nasm code
   blender_mmx_nasm(dst.ptr, dst.pitch, src.ptr, src.pitch, dst.width, dst.height, weight_);
 
-#endif //defined(_INTEL_ASM) && ! defined(_FORCE_NASM)
+#endif //defined(AVS_HAS_INTEL_INLINE_ASM) && ! defined(_FORCE_NASM)
 
 }
 

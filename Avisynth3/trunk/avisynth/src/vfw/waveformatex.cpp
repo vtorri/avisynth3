@@ -42,7 +42,10 @@ WaveFormatEx::WaveFormatEx(VideoInfo const& vi)
 }
 
 
-bool WaveFormatEx::IsVBR() const { return false; }
+bool WaveFormatEx::IsVBR() const 
+{ 
+  return wBitsPerSample == 0; 
+}
 
 
 } } //namespace avs::vfw

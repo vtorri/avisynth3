@@ -24,7 +24,7 @@
 //avisynth includes
 #include "levels.h"
 #include "lumamap.h"
-#include "../../../core/saturate.h"
+#include "../../../core/utility/saturate.h"
 
 //stl include
 #include <cmath>   //for floor, pow

@@ -124,7 +124,7 @@ struct decayer<R (T::*)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10) const>
 
 
 template <typename R, typename T, typename A1, typename A2, typename A3, typename A4, typename A5
-                                , typename A6, typename A7, typename A8, typename A9, typename A10>
+                                , typename A6, typename A7, typename A8, typename A9, typename A10
                                 , typename B1>
 struct decayer<R (T::*)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1) const>
 {
@@ -133,7 +133,7 @@ struct decayer<R (T::*)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1) const>
 
 
 template <typename R, typename T, typename A1, typename A2, typename A3, typename A4, typename A5
-                                , typename A6, typename A7, typename A8, typename A9, typename A10>
+                                , typename A6, typename A7, typename A8, typename A9, typename A10
                                 , typename B1, typename B2>
 struct decayer<R (T::*)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1, B2) const>
 {
@@ -142,7 +142,7 @@ struct decayer<R (T::*)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1, B2) const>
 
 
 template <typename R, typename T, typename A1, typename A2, typename A3, typename A4, typename A5
-                                , typename A6, typename A7, typename A8, typename A9, typename A10>
+                                , typename A6, typename A7, typename A8, typename A9, typename A10
                                 , typename B1, typename B2, typename B3>
 struct decayer<R (T::*)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1, B2, B3) const>
 {
@@ -151,7 +151,7 @@ struct decayer<R (T::*)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1, B2, B3) con
 
 
 template <typename R, typename T, typename A1, typename A2, typename A3, typename A4, typename A5
-                                , typename A6, typename A7, typename A8, typename A9, typename A10>
+                                , typename A6, typename A7, typename A8, typename A9, typename A10
                                 , typename B1, typename B2, typename B3, typename B4>
 struct decayer<R (T::*)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1, B2, B3, B4) const>
 {
@@ -160,7 +160,7 @@ struct decayer<R (T::*)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1, B2, B3, B4)
 
 
 template <typename R, typename T, typename A1, typename A2, typename A3, typename A4, typename A5
-                                , typename A6, typename A7, typename A8, typename A9, typename A10>
+                                , typename A6, typename A7, typename A8, typename A9, typename A10
                                 , typename B1, typename B2, typename B3, typename B4, typename B5>
 struct decayer<R (T::*)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1, B2, B3, B4, B5) const>
 {
@@ -169,7 +169,7 @@ struct decayer<R (T::*)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1, B2, B3, B4,
 
 
 template <typename R, typename T, typename A1, typename A2, typename A3, typename A4, typename A5
-                                , typename A6, typename A7, typename A8, typename A9, typename A10>
+                                , typename A6, typename A7, typename A8, typename A9, typename A10
                                 , typename B1, typename B2, typename B3, typename B4, typename B5
                                 , typename B6>
 struct decayer<R (T::*)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1, B2, B3, B4, B5, B6) const>
@@ -179,7 +179,7 @@ struct decayer<R (T::*)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1, B2, B3, B4,
 
 
 template <typename R, typename T, typename A1, typename A2, typename A3, typename A4, typename A5
-                                , typename A6, typename A7, typename A8, typename A9, typename A10>
+                                , typename A6, typename A7, typename A8, typename A9, typename A10
                                 , typename B1, typename B2, typename B3, typename B4, typename B5
                                 , typename B6, typename B7>
 struct decayer<R (T::*)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1, B2, B3, B4, B5, B6, B7) const>
@@ -189,7 +189,7 @@ struct decayer<R (T::*)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1, B2, B3, B4,
 
 
 template <typename R, typename T, typename A1, typename A2, typename A3, typename A4, typename A5
-                                , typename A6, typename A7, typename A8, typename A9, typename A10>
+                                , typename A6, typename A7, typename A8, typename A9, typename A10
                                 , typename B1, typename B2, typename B3, typename B4, typename B5
                                 , typename B6, typename B7, typename B8>
 struct decayer<R (T::*)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1, B2, B3, B4, B5, B6, B7, B8) const>
@@ -199,7 +199,7 @@ struct decayer<R (T::*)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1, B2, B3, B4,
 
 
 template <typename R, typename T, typename A1, typename A2, typename A3, typename A4, typename A5
-                                , typename A6, typename A7, typename A8, typename A9, typename A10>
+                                , typename A6, typename A7, typename A8, typename A9, typename A10
                                 , typename B1, typename B2, typename B3, typename B4, typename B5
                                 , typename B6, typename B7, typename B8, typename B9>
 struct decayer<R (T::*)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1, B2, B3, B4, B5, B6, B7, B8, B9) const>
@@ -209,7 +209,7 @@ struct decayer<R (T::*)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1, B2, B3, B4,
 
 
 template <typename R, typename T, typename A1, typename A2, typename A3, typename A4, typename A5
-                                , typename A6, typename A7, typename A8, typename A9, typename A10>
+                                , typename A6, typename A7, typename A8, typename A9, typename A10
                                 , typename B1, typename B2, typename B3, typename B4, typename B5
                                 , typename B6, typename B7, typename B8, typename B9, typename B10>
 struct decayer<R (T::*)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10) const>

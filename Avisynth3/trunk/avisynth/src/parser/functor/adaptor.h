@@ -28,11 +28,7 @@
 #include "caller.h"
 #include "popper.h"
 #include "pusher.h"
-#include "../../parser/stack.h"
-
-//boost includes
-#include <boost/variant/get.hpp>
-#include <boost/type_traits/function_traits.hpp>
+#include "../vmstate.h"
 
 
 namespace avs { namespace parser { namespace functor {
@@ -51,11 +47,11 @@ struct adaptor_impl
   adaptor_impl(Function * function)
     : caller( function ) { }
 
-  void operator()(Stack& stack) const
+  void operator()(VMState& state) const
   {
-    pusher<Result> push( caller(stack) );
-    popper<boost::function_traits<Function>::arity>()(stack);
-    push(stack);
+    pusher<Result> push( caller(state) );
+    popper<boost::function_traits<Function>::arity>()(state);
+    push(state);
   }
 
 };
@@ -70,10 +66,10 @@ struct adaptor_impl<Function, void>
   adaptor_impl(Function * function)
     : caller( function ) { }
 
-  void operator()(Stack& stack) const
+  void operator()(VMState& stack) const
   {
-    caller<Function>::operator()(stack);
-    popper<boost::function_traits<Function>::arity>()(stack);
+    caller<Function>::operator()(state);
+    popper<boost::function_traits<Function>::arity>()(state);
   }
 
 };

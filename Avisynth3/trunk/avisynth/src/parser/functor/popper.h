@@ -25,20 +25,25 @@
 #define __AVS_PARSER_FUNCTOR_POPPER_H__
 
 //avisynth include
-#include "../stack.h"
+#include "../vmstate.h"
 
 
 namespace avs { namespace parser { namespace functor {
 
 
 
+/////////////////////////////////////////////////////////////////////////////
+//  popper<n>
+//
+//  pops the stack n times
+//
 template <int n>
 struct popper 
 { 
-  void operator()(Stack& stack) const
+  void operator()(VMState& state) const
   {
-    stack.pop();
-    popper<n-1>()(stack);
+    state.pop();
+    popper<n-1>()(state);
   }
 };
 
@@ -46,7 +51,7 @@ struct popper
 template <>
 struct popper<0>
 {
-  void operator()(Stack& stack) const { }
+  void operator()(VMState& state) const { }
 };
 
 

@@ -25,7 +25,7 @@
 #define __AVS_PARSER_FUNCTOR_CALLER_H__
 
 //avisynth include
-#include "../stack.h"
+#include "../vmstate.h"
 
 //boost includes
 #include <boost/variant/get.hpp>
@@ -53,34 +53,42 @@ struct caller_impl { };
 template <typename Function>
 struct caller_impl<Function, 0>
 {
+
   typename boost::function_traits<Function>::result_type
-  operator()(Stack& stack, Function * function)
+  operator()(VMState& state, Function * function)
   {
     return function();
   }
+
 };
+
 
 template <typename Function>
 struct caller_impl<Function, 1> : public boost::function_traits<Function>
 {
+
   typename boost::function_traits<Function>::result_type
-  operator()(Stack& stack, Function * function)
+  operator()(VMState& state, Function * function)
   {
-    return function( boost::get<rem_ref<arg1_type>::type>(stack.top()) );
+    return function( boost::get<rem_ref<arg1_type>::type>(state.top()) );
   }
+
 };
+
 
 template <typename Function>
 struct caller_impl<Function, 2> : public boost::function_traits<Function>
 {
+
   typename boost::function_traits<Function>::result_type
-  operator()(Stack& stack, Function * function)
+  operator()(VMState& state, Function * function)
   {
     return function
-      ( boost::get<rem_ref<arg1_type>::type>(stack.peek(1))
-      , boost::get<rem_ref<arg2_type>::type>(stack.top())
+      ( boost::get<rem_ref<arg1_type>::type>(state.peek(1))
+      , boost::get<rem_ref<arg2_type>::type>(state.top())
       );
   }
+
 };
 
 
@@ -97,9 +105,9 @@ struct caller
     : function_( function ) { }
 
   typename boost::function_traits<Function>::result_type
-  operator()(Stack& stack) const
+  operator()(VMState& state) const
   {
-    return detail::caller_impl<Function, boost::function_traits<Function>::arity>()(stack, function_);
+    return detail::caller_impl<Function, boost::function_traits<Function>::arity>()(state, function_);
   }
 
 };

@@ -25,13 +25,18 @@
 #define __AVS_PARSER_FUNCTOR_PUSHER_H__
 
 //avisynth include
-#include "../stack.h"
+#include "../vmstate.h"
 
 
 namespace avs { namespace parser { namespace functor {
 
 
 
+//////////////////////////////////////////////////////////////////////////////
+//  pusher<Value>
+//
+//  pushs a value onto the stack
+//
 template <typename Value>
 struct pusher
 {
@@ -41,10 +46,9 @@ struct pusher
   pusher(Value const& value)
     : value_( value ) { }
 
-    void operator()(Stack& stack) const { stack.push(value_); }
+  void operator()(VMState& state) const { state.push(value_); }
 
 };
-
 
 
 

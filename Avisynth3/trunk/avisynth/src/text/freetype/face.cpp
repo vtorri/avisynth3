@@ -67,7 +67,7 @@ VecteurFP6 Face::GetKerning(unsigned leftGlyph, unsigned rightGlyph) const
   if ( error != 0 )
     throw avs::exception::Generic ("Error while retrieving the kerning.");
   
-  return reinterpret_cast<VecteurFP6&>(result);  //ok they have same layout
+  return VecteurFP6( FP6:Wrap(result.x), FP6:Wrap(result.y) );
 }
 
 
@@ -77,14 +77,14 @@ unsigned Face::GetCharIndex(unsigned charCode) const
 }
 
 
-void Face::SetCharSize(VecteurFP6 const& size, DimensionFP6 const& resolution)  
+void Face::SetCharSize(VecteurFP6 const& size, Dimension const& resolution)  
 {
   // FIXME: is this correct ?
   FT_Error error = FT_Set_Char_Size(this,
 				    size.x.get(),
 				    size.y.get(),
-				    resolution.GetWidth().get(),
-				    resolution.GetHeight().get());
+				    resolution.GetWidth(),
+				    resolution.GetHeight());
   
   if ( error != 0 )
     throw avs::exception::Generic ("Error while setting a character dimensions.");

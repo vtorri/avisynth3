@@ -66,7 +66,7 @@ public:  //Face interface
   
   unsigned GetCharIndex(unsigned charCode) const;
 
-  void SetCharSize(VecteurFP6 const& size, DimensionFP6 const& resolution);
+  void SetCharSize(VecteurFP6 const& size, Dimension const& resolution);
 
 
 public:  //factory method

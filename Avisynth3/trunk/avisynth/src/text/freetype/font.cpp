@@ -35,7 +35,7 @@ namespace avs { namespace text { namespace freetype {
 Font::Font(std::string const& name, int size)
   : face_( Face::Create(name) )
 {
-  face_->SetCharSize( VecteurFP6(0, size), DimensionFP6(FP6::Wrap(300), FP6::Wrap(300)) );
+  face_->SetCharSize( VecteurFP6(0, size), Dimension(300, 300) );
 }
 
 

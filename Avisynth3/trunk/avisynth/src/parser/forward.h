@@ -24,9 +24,6 @@
 #ifndef __AVS_PARSER_FORWARD_H__
 #define __AVS_PARSER_FORWARD_H__
 
-//boost include
-#include <boost/tuple/tuple.hpp>
-
 
 namespace avs { namespace parser {
 
@@ -40,9 +37,6 @@ typedef VMCode<void> ElementalCode;
 typedef VMCode<OpType> StatementCode;
 typedef VMOperation<void> ElementalOperation;
 typedef VMOperation<OpType> StatementOperation;
-
-typedef boost::tuples::tuple<ElementalCode, char> TypedCode;
-typedef boost::tuples::tuple<ElementalOperation, char> TypedOp;
 
 
 } } //namespace avs::parser

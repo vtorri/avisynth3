@@ -73,6 +73,11 @@ public:  //child changing clone
   virtual PClip clone(PClip const& child) const { return Create(child); }
 
 
+protected:  //GetKey method
+
+  WeakPClip GetKey() const { return GetChild(); }
+
+
 public:  //factory method
 
   static PClip Create(PClip const& child); // { return PClip( (Clip *)new KillAudio(child) ); }

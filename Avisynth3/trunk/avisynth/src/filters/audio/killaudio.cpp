@@ -22,10 +22,10 @@
 
 
 #include "killaudio.h"
-#include "killaudio/folded.h"
 #include "../source/voidclip.h"
 #include "../../core/videoinfo.h"
 #include "../../core/cow_shared_ptr.h"
+#include "../../clip/folded/make.h"
 
 
 namespace avs { namespace filters {
@@ -59,6 +59,10 @@ PClip KillAudio::Simplify() const
 }
 
 
-PClip KillAudio::Create(PClip const& child) { return PClip( (Clip *)new killaudio::Folded(child) ); }
+PClip KillAudio::Create(PClip const& child)
+{ 
+  return PClip( (Clip *)new clip::folded::Make<KillAudio, WeakPClip>(child) ); 
+}
+
 
 } } //namespace avs::filters

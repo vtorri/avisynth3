@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,8 @@
 //avisynth includes
 #include "interleaved.h"
 #include "../colorspace.h"
+#include "../bufferwindow/copier.h"
+#include "../bufferwindow/sizechanger.h"
 
 
 namespace avs { namespace vframe {
@@ -64,7 +66,7 @@ void InterleavedBase::ChangeSize(Vecteur const& topLeft, Vecteur const& bottomRi
   space.CheckVect(bottomRight, MaybeInterlaced());
 
   //make changes
-  GetMain().ChangeSize( space.ToPlaneVect(topLeft, NOT_PLANAR), space.ToPlaneVect(bottomRight, NOT_PLANAR) );
+  bw::SizeChanger()(GetMain(), space.ToPlaneVect(topLeft, NOT_PLANAR), space.ToPlaneVect(bottomRight, NOT_PLANAR) );
   SetDimension( Dimension(GetDimension()) += bottomRight - topLeft );
   //NB: space.Check test skipped, we know dim is ok since bottomRight and topLeft are
 }
@@ -76,7 +78,7 @@ void InterleavedBase::Copy(VideoFrame const& other, Vecteur const& coords)
   if ( other.GetColorSpace() == space )
   {
     space.CheckVect(coords, MaybeInterlaced());
-    GetMain().Copy( other[NOT_PLANAR], space.ToPlaneVect(coords, NOT_PLANAR) );
+    bw::Copier()( other[NOT_PLANAR], GetMain(), space.ToPlaneVect(coords, NOT_PLANAR) );
   }
 }
 

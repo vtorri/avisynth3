@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -21,11 +21,14 @@
 // General Public License cover the whole combination.
 
 
-//avisynth include
+//avisynth includes
 #include "planar_yuv.h"
+#include "../bufferwindow/copier.h"
+#include "../bufferwindow/sizechanger.h"
 
 
 namespace avs { namespace vframe {
+
 
 
 void PlanarYUV::ChangeSize(Vecteur const& topLeft, Vecteur const& bottomRight)
@@ -36,10 +39,12 @@ void PlanarYUV::ChangeSize(Vecteur const& topLeft, Vecteur const& bottomRight)
   space.CheckVect(topLeft, MaybeInterlaced());
   space.CheckVect(bottomRight, MaybeInterlaced());
 
+  bw::SizeChanger changeSize;
+
   //make changes
-  GetY().ChangeSize( space.ToPlaneVect(topLeft, PLANAR_Y), space.ToPlaneVect(bottomRight, PLANAR_Y) );
-  GetU().ChangeSize( space.ToPlaneVect(topLeft, PLANAR_U), space.ToPlaneVect(bottomRight, PLANAR_U) );
-  GetV().ChangeSize( space.ToPlaneVect(topLeft, PLANAR_V), space.ToPlaneVect(bottomRight, PLANAR_V) );
+  changeSize(GetY(), space.ToPlaneVect(topLeft, PLANAR_Y), space.ToPlaneVect(bottomRight, PLANAR_Y) );
+  changeSize(GetU(), space.ToPlaneVect(topLeft, PLANAR_U), space.ToPlaneVect(bottomRight, PLANAR_U) );
+  changeSize(GetV(), space.ToPlaneVect(topLeft, PLANAR_V), space.ToPlaneVect(bottomRight, PLANAR_V) );
   SetDimension( Dimension(GetDimension()) += bottomRight - topLeft );
   //NB: space.Check test skipped, we know dim is ok since bottomRight and topLeft are
 }
@@ -53,14 +58,13 @@ void PlanarYUV::Copy(VideoFrame const& other, Vecteur const& coords)
   {
     space.CheckVect(coords, MaybeInterlaced());
     
-    GetY().Copy( other[PLANAR_Y], space.ToPlaneVect(coords, PLANAR_Y) );
-    GetU().Copy( other[PLANAR_U], space.ToPlaneVect(coords, PLANAR_U) );
-    GetV().Copy( other[PLANAR_V], space.ToPlaneVect(coords, PLANAR_V) );
+    bw::Copier copier;
+
+    copier( other[PLANAR_Y], GetY(), space.ToPlaneVect(coords, PLANAR_Y) );
+    copier( other[PLANAR_U], GetU(), space.ToPlaneVect(coords, PLANAR_U) );
+    copier( other[PLANAR_V], GetV(), space.ToPlaneVect(coords, PLANAR_V) );
   }
 }
-
-
-
 
 
 

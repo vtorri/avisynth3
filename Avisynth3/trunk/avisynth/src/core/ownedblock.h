@@ -41,22 +41,15 @@ class OwnedBlock
   Block block_;             //underlying owned block
   PEnvironment env_;        //owning environment
 
-  using Block::recycle;
-
 
 public:  //structors
 
   //normal constructor
-  OwnedBlock(PEnvironment env, int size)
-    : block_( env->NewBlock(size) )
+  OwnedBlock(PEnvironment env, int size, bool recycle)
+    : block_( env->NewBlock(size, recycle) )
     , env_( env ) { }
 
-  //recycling constructor
-  OwnedBlock(PEnvironment env, int size, recycle r)   
-    : block_( env->NewBlock(size, r) )
-    , env_( env ) { }
-
-  //default copy constructor is fine
+  //generated copy constructor is fine
 
   //destructor
   ~OwnedBlock()
@@ -68,7 +61,7 @@ public:  //structors
 
 public:  //assignment
 
-  //default operator= is fine
+  //generated operator= is fine
 
   void swap(OwnedBlock& other)
   { 
@@ -79,8 +72,7 @@ public:  //assignment
 
 public:  //reset methods
 
-  void reset(int size) { OwnedBlock( env_, size ).swap(*this); }
-  void reset(int size, recycle r) { OwnedBlock( env_, size, r ).swap(*this); }
+  void reset(int size, bool recycle) { OwnedBlock( env_, size, recycle ).swap(*this); }
 
 
 public:  //read access
@@ -88,7 +80,7 @@ public:  //read access
   PEnvironment GetEnvironment() const { return env_; }
 
   BYTE * get() const { return block_.get(); }
-  int size() const { return env_->SizeOf(block_); }
+  int size() const { return block_.size(); }
 
   bool unique() const { return block_.unique(); }
 

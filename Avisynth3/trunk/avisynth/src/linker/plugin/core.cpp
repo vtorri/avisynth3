@@ -46,5 +46,7 @@ FunctionList Core::GetFunctionList() const
 Core Core::instance;
 
 
+PPlugin Core::Get() { return PPlugin( &instance, std::identity<void *>() ); }
+
 
 } } } //namespace avs::linker::plugin

@@ -65,7 +65,13 @@ private:  //sole instance
 
   friend function::Core;
 
+
+public:  //Get instance method
+
+  static PPlugin Get();
+
 };
+
 
 
 } } } //namespace avs::linker::plugin

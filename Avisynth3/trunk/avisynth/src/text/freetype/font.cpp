@@ -60,15 +60,10 @@ BoxFP6 Font::GetTextLineBoundingBox(std::string::const_iterator begin, std::stri
 {
   BoxFP6 result;
 
-  if ( begin != end )
+  while ( begin != end )
   {
-    result = walker.Reset(*begin++).GetControlBox();
-
-    while ( begin != end )
-    {
-      Outline const& outline = walker.LoadChar(*begin++);  //NB: extra line coz LoadChar must be done before reading pen
-      result |= outline.GetControlBox() + walker.pen;
-    }
+    Outline const& outline = walker.LoadChar(*begin++);  //NB: extra line coz LoadChar must be done before reading pen
+    result |= outline.GetControlBox() + walker.GetPen();
   }
 
   return result;

@@ -69,7 +69,7 @@ Dimension Font::GetTextBoundingBox(std::string const& text)
   if ( height == 0 )
     throw Exception("GetTextBoundingBox failure");
 
-  return Dimension( (r.right >> 3) + 8, (height >> 3) + 8);
+  return Dimension( (r.right + 7) >> 3, (height + 7) >> 3 );
 }
 
 

@@ -24,8 +24,12 @@
 //avisynth includes
 #include "staticimage.h"
 #include "../../core/videoinfo.h"
+#include "../../core/colorspace.h"
 #include "../../core/videoframe.h"
+#include "../../text/antialiaser.h"
 #include "../../core/cow_shared_ptr.h"
+#include "../../core/runtime_environment.h"
+#include "../../core/bufferwindow.h"
 
 
 namespace avs { namespace filters {
@@ -48,6 +52,27 @@ PEnvironment const& StaticImage::GetEnvironment() const { return frame_->GetEnvi
 void StaticImage::GetAudio(void * buffer, __int64 start, int count) const
 {
   VideoInfo::ThrowNoAudioException();
+}
+
+
+PClip StaticImage::CreateBlankClip(ColorSpace& space, Dimension const& dim, PEnvironment const& env)
+{
+  return Create( env->CreateFrame(space, dim, PROGRESSIVE) );
+}
+
+
+PClip StaticImage::CreateMessageClip(std::string const& msg, PEnvironment const& env)
+{
+  text::Font font("Arial", 50, false, false);
+  Dimension dim = font.GetTextBoundingBox(msg).Shift<4, 4>();
+
+  PVideoFrame frame = env->CreateFrame(ColorSpace::rgb32(), dim, PROGRESSIVE);
+
+  text::Antialiaser aliaser(dim, env, font);
+  aliaser.SetText(msg, Vecteur(dim.GetWidth() >> 1, 0), text::TOP_CENTER);
+  aliaser.Apply(*frame, 0xF0F0F0, 0);
+
+  return Create(frame); 
 }
 
 

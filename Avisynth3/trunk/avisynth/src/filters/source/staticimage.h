@@ -27,8 +27,20 @@
 //avisynth include
 #include "../../clip/nochild.h"
 
+//stl include
+#include <string>
 
-namespace avs { namespace filters {
+
+namespace avs { 
+  
+
+//declarations
+class Dimension;
+class ColorSpace;
+  
+  
+namespace filters {
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -62,6 +74,12 @@ public:  //clip general interface
 public:  //factory method
 
   static PClip Create(CPVideoFrame const& frame) { return PClip( (Clip *)new StaticImage(frame) ); }
+
+  static PClip CreateBlankClip(ColorSpace& space, Dimension const& dim, PEnvironment const& env);
+
+  static PClip CreateMessageClip(std::string const& msg, PEnvironment const& env);
+
+  static PClip CreateVersionClip(PEnvironment const& env) { return CreateMessageClip("Avisynth 3.0 alpha", env); }
 
 };
 

@@ -72,6 +72,12 @@ public:  //GlyphSlot interface
 
   //fetchs glyph outline
   POutline GetOutline() const;
+  //useful agglomerate of LoadGlyph and GetOutline
+  POutline GetOutline(unsigned glyphIndex)
+  {
+    LoadGlyph(glyphIndex);
+    return GetOutline();
+  }
     
 };
 

@@ -104,6 +104,10 @@ public:
   void RegisterCache(Cache * cache) { cacheVector.push_back(cache); }
   void UnRegisterCache(Cache * cache) { cacheVector.erase( find(cacheVector.begin(), cacheVector.end(), cache), cacheVector.end() ); }
 
+
+  /*
+   * General Stuff
+   */
 public:
   ScriptEnvironment();
   ScriptEnvironment(const ScriptEnvironment& other);
@@ -115,11 +119,11 @@ public:
   AVSValue Invoke(const string& functionName, const ArgVector& args);
   AVSValue Parse(const string& script);
 
-
   static long __stdcall GetCPUFlags();
 
+  bool operator==(const ScriptEnvironment& other) const { return this == &other; }
+  bool operator!=(const ScriptEnvironment& other) const { return this != &other; }
 };
-
 
 
 #endif   //#define  __ENVIRONMENT_H__

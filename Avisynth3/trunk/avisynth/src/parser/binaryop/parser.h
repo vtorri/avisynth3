@@ -41,30 +41,33 @@ namespace avs { namespace parser { namespace binaryop {
 
 
 
-template <typename TermT, typename OpT>
+template <typename TermT, typename OpT, typename ActT>
 class parser
 {
 
   typename spirit::as_parser<TermT>::type::embed_t term_;
   typename spirit::as_parser<OpT>::type::embed_t op_table_;
+  typename spirit::as_parser<ActT>::type::embed_t act_;
 
 
 public:  //constructor
 
-  parser(TermT const & term, OpT const & op_table)
+  parser(TermT const & term, OpT const & op_table, ActT const & act)
     : term_( term ) 
-    , op_table_( op_table ) { }
+    , op_table_( op_table )
+    , act_( act ) { }
 
 
 public:  //parser interface
 
-  typedef TypedCode result_t;
+  typedef char result_t;
 
   template <typename ScannerT>
   std::ptrdiff_t operator()(ScannerT const& scan, result_t& result) const
   {
 
     TypeMapped const * mappedOp;
+    ElementalOperation op;
 
     using namespace lazy;
     using namespace phoenix;
@@ -80,9 +83,9 @@ public:  //parser interface
                   ]
               >>  term_
                   [
-                    first(var(result)) += first(arg1),
-                    bind(&TypeMapped::AccumulateCode)(var(mappedOp), var(result), second(arg1))
+                    var(op) = bind(&TypeMapped::GetOperation)(var(mappedOp), var(result), arg1)
                   ]
+              >>  act_( var(op) )
               )                              
           ).parse(scan);
 
@@ -94,25 +97,28 @@ public:  //parser interface
 
 struct parser_gen
 {
-  template <typename TermT, typename OpT>
+  template <typename TermT, typename OpT, typename ActT>
   spirit::functor_parser<
 	    parser<
           typename spirit::as_parser<TermT>::type,
-          typename spirit::as_parser<OpT>::type
+          typename spirit::as_parser<OpT>::type,
+          typename spirit::as_parser<ActT>::type
       >
   >
-  operator()(TermT const & term, OpT const & op_table) const
+  operator()(TermT const & term, OpT const & op_table, ActT const & act) const
   {
   
     typedef typename spirit::as_parser<TermT>::type term_t;
     typedef typename spirit::as_parser<OpT>::type op_t;
-    typedef parser<term_t, op_t> functor_t;
+    typedef typename spirit::as_parser<ActT>::type act_t;
+    typedef parser<term_t, op_t, act_t> functor_t;
     typedef spirit::functor_parser<functor_t> return_t;
 
     return return_t(
         functor_t(
             spirit::as_parser<TermT>::convert(term),
-            spirit::as_parser<OpT>::convert(op_table)
+            spirit::as_parser<OpT>::convert(op_table),
+            spirit::as_parser<ActT>::convert(act)
         )
     );
   }

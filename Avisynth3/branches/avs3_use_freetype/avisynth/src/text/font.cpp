@@ -23,7 +23,7 @@
 
 //avisynth includes
 #include "font.h"
-//#include "../freetype/glyph.h"
+#include "../freetype/glyph.h"
 #include "../core/geometry/box.h" 
 #include "../core/exception/generic.h"
 
@@ -35,7 +35,7 @@ namespace avs { namespace text {
 Font::Font(std::string const& name, int size)
   : font_( name, size )
 {
-  font_.SetCharSize(Dimension(0, size), Dimension(300, 300));
+  font_.SetCharSize(Dimension(0, size << 6), Dimension(300, 300));
 }
 
 
@@ -49,9 +49,9 @@ Dimension Font::GetTextBoundingBox(std::string const& text)
 
   unsigned prevIndex = font_.GetCharIndex(text[0]);
 
-  Glyph glyph = font_.GetGlyph(prevIndex);
+  freetype::Glyph glyph = font_.GetGlyph(prevIndex);
 
-  Vecteur pen = glyph.GetAdvance(prevIndex);
+  Vecteur pen = glyph.GetAdvance();
   Box box = glyph.GetControlBox();
 
   for( int n = 1; n < glyphCount; ++n )
@@ -65,7 +65,7 @@ Dimension Font::GetTextBoundingBox(std::string const& text)
 
     box += glyph.GetControlBox() + pen;
     pen += glyph.GetAdvance();
-    previousIndex = glyphIndex;
+    prevIndex = glyphIndex;
   }
 
   return box.GetDimension();

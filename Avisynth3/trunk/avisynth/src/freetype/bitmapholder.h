@@ -58,7 +58,7 @@ public:  //Holder interface
   virtual int size() const;
   virtual BYTE * get() const;
 
-  virtual Holder * spawn(int size) const { return new block::holder::Standard(size, false); }
+  virtual Holder * spawn(int size, bool recycle) const { return new block::holder::Standard(size, false); }
 
 };
 

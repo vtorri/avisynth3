@@ -50,7 +50,9 @@ class Concrete : public virtual Caching
 public:  //structors
 
   Concrete(PEnvironment const& env)
-    : cache_( env->CreateCache(*this) ) { }
+  { 
+    cache_.reset( env->CreateCache(*this) );
+  }
 
   //generated destructor is fine
 

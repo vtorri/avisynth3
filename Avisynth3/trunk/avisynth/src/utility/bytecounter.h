@@ -67,6 +67,7 @@ public:  //assignemnt
   ByteCounter& operator=(ByteCounter const& other)
   {
     std::copy( other.count_, other.count_ + 256, count_ );
+    return *this;
   }
 
   void swap(ByteCounter& other)

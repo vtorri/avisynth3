@@ -38,6 +38,7 @@ namespace avs { namespace filters {
 //  Tweak
 //
 //
+//
 class Tweak : public clip::onechild::CachingPipeline
             , public clip::onechild::Concrete  
             , public clip::caching::Concrete
@@ -45,7 +46,7 @@ class Tweak : public clip::onechild::CachingPipeline
 
 protected:  //members
 
-  int Sin, Cos;         // = (int) sin, cos  ( (hue * 3.1415926) / 180.0 )
+  int Sin, Cos;         // = (int) sin, cos  ( (hue * 3.1415926) / 180.0 ) * 4096
   int Sat;              // = (int) sat * 512
   int Bright_p16;       // = (int) bright + 16        
   int Cont;             // = (int) cont * 512
@@ -72,7 +73,7 @@ public:  //child changing clone
 
 public:  //factory method 
 
-  static PClip Create(PClip child, double hue, double sat, double bright, double cont);
+  static PClip Create(PClip const& child, double hue, double sat, double bright, double cont);
 
 };
 

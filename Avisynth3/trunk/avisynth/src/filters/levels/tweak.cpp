@@ -66,22 +66,22 @@ PClip Tweak::clone(PClip const& child) const
 
   switch( space.id() )
   {
-  case ColorSpace::I_YUY2: return PClip( (Clip *)new tweak::YUY2(child, *this) );
-  case ColorSpace::I_YV12: return PClip( (Clip *)new tweak::YV12(child, *this) );
+  case ColorSpace::I_YUY2: return tweak::YUY2::Create(child, *this);
+  case ColorSpace::I_YV12: return tweak::YV12::Create(child, *this);
   }
 
   space.ThrowUnsupportedColorSpaceException();
 }
 
 
-PClip Tweak::Create(PClip child, double hue, double sat, double bright, double cont)
+PClip Tweak::Create(PClip const& child, double hue, double sat, double bright, double cont)
 {
   ColorSpace& space = child->GetVideoInfo()->GetColorSpace();
 
   switch( space.id() )
   {
-  case ColorSpace::I_YUY2: return PClip(new tweak::YUY2(child, hue, sat, bright, cont));
-  case ColorSpace::I_YV12: return PClip(new tweak::YV12(child, hue, sat, bright, cont));
+  case ColorSpace::I_YUY2: return tweak::YUY2::Create(child, hue, sat, bright, cont);
+  case ColorSpace::I_YV12: return tweak::YV12::Create(child, hue, sat, bright, cont);
   }
 
   space.ThrowUnsupportedColorSpaceException();

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -72,7 +72,7 @@ public:  //Function interface
 private:
 
   //defines self to execute the given code
-  void Define(StatementCode const& code);
+  void Define(StatementCode const& code, bool termRecursive);
 
   friend class Table;                            //so it can call the above
   friend struct functor::function::ForwardCall;  //so it can access op_

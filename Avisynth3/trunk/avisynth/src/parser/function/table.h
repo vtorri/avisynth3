@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -66,7 +66,7 @@ public:
 
   //declaration and definition of script functions
   void DeclareScriptFunction(FunctionId const& id);
-  void DefineScriptFunction(FunctionId const& id, StatementCode const& code);
+  void DefineScriptFunction(FunctionId const& id, StatementCode const& code, bool termRecursive);
 
 };
 

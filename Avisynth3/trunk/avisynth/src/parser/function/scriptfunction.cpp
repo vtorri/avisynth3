@@ -45,11 +45,11 @@ void ScriptFunction::AppendOperation(ElementalCode& appendTo) const
 }
 
 
-void ScriptFunction::Define(StatementCode const& code, bool recursive)
+void ScriptFunction::Define(StatementCode const& code, bool termRecursive)
 {
   int arity = id_.get<2>().size();
 
-  if ( recursive )
+  if ( termRecursive )
     if ( GetReturnType() == 'v' )
       op_ = functor::function::RecursiveCall<true>(arity, code);
     else

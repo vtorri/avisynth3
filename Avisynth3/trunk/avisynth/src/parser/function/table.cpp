@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -71,12 +71,12 @@ void Table::DeclareScriptFunction(FunctionId const& id)
 }
   
 
-void Table::DefineScriptFunction(FunctionId const& id, StatementCode const& code)
+void Table::DefineScriptFunction(FunctionId const& id, StatementCode const& code, bool termRecursive)
 {
   //fetch script function from undefs map
   UndefScriptFunctionMap::iterator it = undefsMap_.find(id);
 
-  it->second->Define(code);   //define it
+  it->second->Define(code, termRecursive);   //define it
 
   undefsMap_.erase(it);  //and remove it from undefs map
 }

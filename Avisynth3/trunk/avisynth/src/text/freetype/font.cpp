@@ -22,119 +22,56 @@
 
 
 //avisynth includes
-#include "font.h"
-#include "forward.h"
 #include "face.h"
-#include "glyphslot.h"
+#include "font.h"
 #include "outline.h"
-#include "monobitmap.h"
-#include "../../core/ownedblock.h"
+#include "glyphslot.h"
 
 
 namespace avs { namespace text { namespace freetype {
 
 
+
 Font::Font(std::string const& name, int size)
 {
-  font_ = Face::Create (name);
-  font_->SetCharSize (VecteurFP6 (0, size << 6),
-		      DimensionFP6 (300, 300));
+  face_ = Face::Create(name);
+  face_->SetCharSize( VecteurFP6(0, size << 6), DimensionFP6(300, 300) );
 }
 
-// Font API
 
-DimensionFP6 Font::GetTextBoundingBox(std::string const& text)
+
+BoxFP6 Font::GetTextBoundingBox(std::string const& text)
 {
-  if ( text.size() == 0 )   //if no text
-    return DimensionFP6();  //empty box
-
   int glyphCount = text.length();
-  bool useKerning = font_->HasKerning();
-  unsigned prevIndex = font_->GetCharIndex(text[0]);
 
-  GlyphSlot slot (font_);
-  slot.LoadGlyph (prevIndex);
-  VecteurFP6 pen = slot.GetAdvance ();
+  if ( glyphCount == 0 )   //if no text
+    return BoxFP6();       //empty box
 
-  POutline outline = slot.GetOutline();
-  BoxFP6 box = outline->GetControlBox();
+  GlyphSlot slot(face_);
+  bool useKerning = face_->HasKerning();
 
-  for( int n = 1; n < glyphCount; ++n )
+  unsigned prevIndex = face_->GetCharIndex(text[0]);
+  slot.LoadGlyph(prevIndex);
+
+  VecteurFP6 pen = slot.GetAdvance();
+  BoxFP6 box = slot.GetOutline()->GetControlBox();
+
+  for ( int n = 1; n < glyphCount; ++n, prevIndex = glyphIndex )
   {
-    unsigned glyphIndex = font_->GetCharIndex(text[n]);
+    unsigned glyphIndex = face_->GetCharIndex(text[n]);
+
+    slot.LoadGlyph(glyphIndex);
 
     if ( useKerning )
-      pen += font_->GetKerning(prevIndex, glyphIndex);
+      pen += face_->GetKerning(prevIndex, glyphIndex);
 
-    slot.LoadGlyph (glyphIndex);
-    outline = slot.GetOutline();
-
-    box |= outline->GetControlBox() + pen;
+    box |= slot.GetOutline()->GetControlBox() + pen;
     pen += slot.GetAdvance();
-    prevIndex = glyphIndex;
   }
 
-  return box.GetDimension();
+  return box;
 }
 
-// void Font::GetPositions (std::string const& text, VecteurFP6 *pos)
-// {
-//   bool useKerning = font_->HasKerning();
-//   unsigned prevIndex = 0;
-
-//   GlyphSlot slot (font_);
-//   VecteurFP6 pen(0,0);
-
-//   for ( unsigned int n = 0 ; n < text.length() ; n++)
-//     {
-//       unsigned glyphIndex = font_->GetCharIndex(text[0]);
-
-//       if ( useKerning  && prevIndex && glyphIndex)
-// 	pen += font_->GetKerning(prevIndex, glyphIndex);
-
-//       pos[n] = pen;
-//       slot.LoadGlyph (glyphIndex);
-//       pen += slot.GetAdvance ();
-//       prevIndex = glyphIndex;
-//     }
-// }
-
-void Font::RenderingText (std::string const& text,
-			  BufferWindow& result)
-{
-  if ( text.size() == 0 )   //if no text
-    return;
-
-  bool useKerning = font_->HasKerning();
-  unsigned int prevIndex = 0;
-
-  GlyphSlot slot (font_);
-  VecteurFP6 pen(0,0);  // one could add coords in the method and set pen to them
-  MonoBitmap bitmap(result);
-  POutline outline;
-  
-  // set the buffer to 0.
-  // if several call of RenderingText occurs on the same bw,
-  // only the last one is taken into account.
-  // Maybe one doesn't want that.
-  memset (result.write(), 0, result.size());
-
-  for (unsigned int n = 0 ; n < text.length() ; n++)
-    {
-      unsigned int glyphIndex = font_->GetCharIndex(text[n]);
-
-      if ( useKerning  && prevIndex && glyphIndex)
-	pen += font_->GetKerning(prevIndex, glyphIndex);
-
-      slot.LoadGlyph (glyphIndex);
-      outline = slot.GetOutline();
-      outline->Translate (pen);
-      outline->Draw (bitmap);
-      outline->Translate (-pen);
-      pen += slot.GetAdvance ();
-      prevIndex = glyphIndex;
-    }
-}
 
 
 } } } //namespace avs::text::freetype

@@ -24,11 +24,10 @@
 #ifndef __AVS_TEXT_FREETYPE_FONT_H__
 #define __AVS_TEXT_FREETYPE_FONT_H__
 
-//avisynth include
+//avisynth includes
 #include "forward.h"
 #include "../../core/geometry/box.h"
 #include "../../core/geometry/fixed_point.h"
-#include "../../core/bufferwindow.h"
 
 
 namespace avs { namespace text { namespace freetype {
@@ -38,12 +37,12 @@ namespace avs { namespace text { namespace freetype {
 ////////////////////////////////////////////////////////////////////////////////////////
 //  Font
 //
-//  wrapper class around a PFace
+//
 //
 class Font
 {
 
-  PFace font_;
+  PFace face_;
 
 public:
 
@@ -52,18 +51,19 @@ public:
   //generated copy constructor and destructor are fine
 
 
-public:  // Font API
+public:  //Font interface
   
-  DimensionFP6 GetTextBoundingBox(std::string const& text);
+  BoxFP6 GetTextBoundingBox(std::string const& text) const;
 
-/*   void GetPositions (std::string const& text, VecteurFP6 *pos); */
 
-  void RenderingText (std::string const& text,
-		      BufferWindow&      result);
+public:  //access
+
+  PFace const& GetFace() const { return face_; }
+
 };
 
 
 
 } } } //namespace avs::text::freetype
 
-#endif //__AVS_TEXT_FREETYPE_OUTLINE_H__
+#endif //__AVS_TEXT_FREETYPE_FONT_H__

@@ -21,104 +21,86 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __VIDEOFRAME_H__
-#define __VIDEOFRAME_H__
+#ifndef __AVS_VIDEOFRAME_H__
+#define __AVS_VIDEOFRAME_H__
+
+//avisynth includes
+#include "plane.h"
+#include "frametype.h"
+#include "smart_ref.h"
+
+//stl include
+#include <vector>
 
 
-#include "property.h" 
-#include "videoinfo.h"
-#include "bufferwindow.h"
+//class declarations
+struct Vecteur;
+class Property;
+class Dimension;
+class VideoFrame;                                     //defined here
+class ColorSpace;
+class PropertyKey;
+class BufferWindow;
+class FrameVideoProperties;
 
-
-//typedef smart_ref<FrameVideoProperties> PFrameVidProps;
-
-
-
-
-class PlaneMetrics {
-
-  Dimension dimension;
-  int pitch;
-
-public:
-  PlaneMetrics() { }
-  PlaneMetrics(const BufferWindow& bw) : dimension(bw.GetDimension()), pitch(bw.GetPitch()) { }
-  PlaneMetrics(const PlaneMetrics& other) : dimension(other.dimension), pitch(other.pitch) { }
-
-  const PlaneMetrics& operator=(const PlaneMetrics& other) { dimension = other.dimension; pitch = other.pitch; return *this; }
-
-  int GetRowSize() const { return dimension.GetWidth(); }
-  int GetAlignedRowSize() const { int r = ( GetRowSize() + FRAME_ALIGN - 1 ) & -FRAME_ALIGN; return r <= pitch ? r : GetRowSize(); }
-  int GetHeight() const { return dimension.GetHeight(); }
-  int GetPitch() const { return pitch; }
-};
+//typedefs
+typedef smart_ref<const Property> CPProperty;
+typedef std::vector<CPProperty> PropertyVector;
+typedef smart_ref<const VideoFrame> CPVideoFrame;     //const VideoFrame *
+typedef smart_ref<const FrameVideoProperties> CPFrameVidProps;
 
 
 
-/********************************************************************************************
- * Polymorphic VideoFrame class                                                             *
- ********************************************************************************************
-  VideoFrameBuffer no longer defined there (in videoframe.h)
-  VideoFrame still use them, but they are hidden by the VideoFrame API
+///////////////////////////////////////////////////////////////////////////////////////////
+//  VideoFrame
+//
+//  abstract base class of the VideoFrame hierarchy
+//
+class VideoFrame
+{
 
-  MakeWritable is no longer required : CPVideoFrame are never Writable, nor mutable in any sort
-  PVideoframe are always writable/mutable, and will copy buffers before returning Write Ptr if they are shared
-*/
-
-
-
-class VideoFrame;
-typedef smart_ptr<VideoFrame> PVideoFrame;
-typedef smart_ptr_to_cst<VideoFrame> CPVideoFrame;
+  CPFrameVidProps vidProps_;
+  PropertyVector propVector;
 
 
-class VideoFrame : public RefCounted {
+public:  //constructors
 
-  PFrameVidProps vidProps;
-  PropertySet propSet;
-
-public:
-  VideoFrame(PFrameVidProps _vidProps) : vidProps(_vidProps) { }
+  //normal constructor
+  VideoFrame(CPFrameVidProps vidProps)
+    : vidProps_( vidProps ) { }
+  
   //copy constructor
-  VideoFrame(const VideoFrame& other) : vidProps(other.vidProps), propSet(other.propSet)  { }
+  VideoFrame(const VideoFrame& other)
+    : vidProps_( other.vidProps_ )
+    , propVector( other.propVector )  { }
 
-  //clone method, expected by smart_ptrs for PVideoFrame/CPVideoFrame conversions
+
+public:  //clone method (expected by smart_ptrs for PVideoFrame/CPVideoFrame conversions)
+
   virtual VideoFrame * clone() const = 0; 
 
 
-  //static method to convert index in Plane enum, USE it !!!
-  //the NOT_PLANAR plane is provided in last position
-  //for cases where you process all planes in the same way (use with ColorSpace::HasPlane(Plane) )
-  inline static Plane IndexToPlane(int i) {
-    static Plane planes[] = { PLANAR_Y, PLANAR_U, PLANAR_V, NOT_PLANAR };
-    return planes[i];
-  }
+public:  //plane access (see BufferWindow)
+
+  virtual const BufferWindow& operator[](Plane plane) const = 0;
+  virtual BufferWindow& operator[](Plane plane) = 0;
 
 
-  PlaneMetrics GetMetrics(Plane plane) const throw(invalid_plane) { return PlaneMetrics(GetPlane(plane)); }
-
-  const BYTE * GetReadPtr(Plane plane) const throw(invalid_plane) { return GetPlane(plane).GetReadPtr(); }
-  BYTE * GetWritePtr(Plane plane) throw(invalid_plane) { return GetPlane(plane).GetWritePtr(); }
-
+public:  //general info (about the whole frame)
   
-  //methods to get some other general infos
-  const ColorSpace& GetColorSpace() const { return vidProps->GetColorSpace(); }
-  const Dimension& GetDimension() const { return vidProps->GetDimension(); }
-  FrameType GetFrameType() const { return vidProps->GetFrameType(); }
+  const ColorSpace& GetColorSpace() const;
+  const Dimension& GetDimension() const;
 
-  int GetWidth() const { return GetDimension().GetWidth(); }
-  int GetHeight() const { return GetDimension().GetHeight(); }
+  FrameType GetFrameType() const;
 
-  bool IsPlanar() const { return GetColorSpace().HasProperty(ColorSpace::PLANAR); }  
-
-  bool IsField() const { return vidProps->IsField(); }
-  bool IsFrame() const { return vidProps->IsFrame(); }
+  bool IsField() const { return GetFrameType() < PROGRESSIVE; }
+  bool IsFrame() const { return GetFrameType() >= PROGRESSIVE; }
 
 
+  void SetFrameType(FrameType type);
 
-  /************************************************************************************
-   *  various ToolBox methods now provided by the VideoFrame API                      *
-   ************************************************************************************/
+
+public:  //toolbox methods
 
   //ColorSpace conversion method
   virtual CPVideoFrame ConvertTo(const ColorSpace& space) const = 0;
@@ -131,10 +113,10 @@ public:
 
   //Copy other into self at the specified coords (in Pixels)
   //Only the overlapping part is copied
-  void Copy(const VideoFrame& other, const Vecteur& coords);
+  void Copy(CPVideoFrame other, const Vecteur& coords);
 
-  void StackHorizontal(const VideoFrame& other);  //both implemented using SizeChange and Copy       
-  void StackVertical(const VideoFrame& other);
+  void StackHorizontal(CPVideoFrame other);  //both implemented using SizeChange and Copy       
+  void StackVertical(CPVideoFrame other);
   
   virtual void FlipHorizontal() = 0;
   virtual void FlipVertical() = 0;
@@ -142,198 +124,21 @@ public:
   virtual void TurnLeft() = 0;  //how do we turn a YUY2 frame !?...
   virtual void TurnRight() = 0;
 
-  virtual void Blend(const VideoFrame& other, float factor) = 0;
-
-  //what else ???
-
-  /************************************************************************************
-   *  properties methods                                                              *
-   ************************************************************************************/
-
-  CPProperty GetProperty(const PropertyKey& key) const { propSet.Get(key); }
-
-  void SetProperty(const Property& prop) { propSet.Set(prop); }
-  void RemoveProperty(const PropertyKey& key) { propSet.Remove(key); }
+  virtual void Blend(CPVideoFrame other, float factor) = 0;
 
 
+public:  //property system
 
-protected:
-  //plane fetch methods (must be consistent together)
-  //throw the invalid plane exception if plane don't exist
-  //their existence allow to define many things at this level
-  virtual const BufferWindow& GetPlane(Plane plane) const = 0;   
-  virtual BufferWindow& GetPlane(Plane pane) = 0;
+  void SetProperty(CPProperty prop);
+  void RemoveProperty(const PropertyKey& key);
 
-  //check that self and other use same colorspace
-  //return this one for convenience (often u use it after those checks)
-  const ColorSpace& CheckCompatibleColorSpace(const VideoFrame& other)
-  {
-    const ColorSpace& space = GetColorSpace();
-    if ( space != other.GetColorSpace() )  
-      throw std::logic_error("Colorspaces don't match");
-    return space;
-  }
-};
-
-
-
-
-
-
-
-
-
-class InterleavedVideoFrame : public VideoFrame {
-
-protected:  
-  BufferWindow main;
-
-  virtual const BufferWindow& GetPlane(Plane plane) const throw(invalid_plane)
-  {
-    if (plane != NOT_PLANAR)
-      throw invalid_plane();
-    return main;
-  }
-
-  virtual BufferWindow& GetPlane(Plane plane) throw(invalid_plane)
-  {
-    if (plane != NOT_PLANAR)
-      throw invalid_plane();
-    return main;
-  }
-
-public:
-  InterleavedVideoFrame(const FrameVideoProperties& vidProps, PEnvironment env) : VideoFrame(vidProps), main(vidProps, NOT_PLANAR, env) { }
-  //copy constructor
-  InterleavedVideoFrame(const InterleavedVideoFrame& other) : VideoFrame(other), main(other.main) { }
-
-  virtual void FlipHorizontal() { main.FlipHorizontal(static_cast<const InterLeaved&>(GetColorSpace()).GetBytesPerPixel()); }
-  virtual void FlipVertical() { main.FlipVertical(); }
-
-  virtual void TurnLeft(); 
-  virtual void TurnRight();
-
-  virtual void Blend(const VideoFrame& other, float factor);
-};
-
-
-
-class RGBVideoFrame : public InterleavedVideoFrame {
-
-  //normal constructor, private to avoid construction with illegal colorspace props (unchecked)
-  RGBVideoFrame(const FrameVideoProperties& vidProps, PEnvironment env) : InterleavedVideoFrame(vidProps, env) { }
-
-public:
-  //copy constructor
-  RGBVideoFrame(const RGBVideoFrame& other) : InterleavedVideoFrame(other) { } 
-
-  virtual VideoFrame * clone() const { return new RGBVideoFrame(*this); }  
-
-  virtual CPVideoFrame ConvertTo(const ColorSpace& space) const;
+  boost::shared_ptr<const Property> GetProperty(const PropertyKey& key) const;
 
 };
 
 
 
 
-class YUY2VideoFrame : public InterleavedVideoFrame {
-         
-  YUY2VideoFrame(const FrameVideoProperties& vidProps, PEnvironment env) : InterleavedVideoFrame(vidProps, env) { }
-  
-public:
-  //copy constructor
-  YUY2VideoFrame(const YUY2VideoFrame& other) : InterleavedVideoFrame(other) { } 
-
-  virtual VideoFrame * clone() const { return new YUY2VideoFrame(*this); }
-
-  virtual CPVideoFrame ConvertTo(const ColorSpace& space) const;
-
-  virtual void FlipHorizontal();
-
-  virtual void TurnLeft(); 
-  virtual void TurnRight();
-
-};
 
 
-/**********************************************************************************************/
-/************************************ PlanarVideoFrame ****************************************/
-/**********************************************************************************************/
-
-class PlanarVideoFrame : public VideoFrame {
-
-protected:
-  BufferWindow y, u ,v;
-
-  virtual const BufferWindow& GetPlane(Plane plane) const throw(invalid_plane)
-  {
-    switch(plane) {
-      case PLANAR_Y: return y;
-      case PLANAR_U: return u;
-      case PLANAR_V: return v;
-    }
-    throw invalid_plane();
-  }
-
-  virtual BufferWindow& GetPlane(Plane plane) throw(invalid_plane)
-  {
-    switch(plane) {
-      case PLANAR_Y: return y;
-      case PLANAR_U: return u;
-      case PLANAR_V: return v;
-    }
-    throw invalid_plane();
-  }
-
-  //normal constructor
-  PlanarVideoFrame(const FrameVideoProperties& vidProps, PEnvironment env)
-    : VideoFrame(vidProps), y(vidProps, PLANAR_Y, env), u(vidProps, PLANAR_U, env), v(vidProps, PLANAR_V, env) { }
-
-public:
-  //copy constructor
-  PlanarVideoFrame(const PlanarVideoFrame& other) : VideoFrame(other), y(other.y), u(other.u), v(other.v) { }
-
-  
-
-
-  virtual void FlipHorizontal();
-  virtual void FlipVertical();
-
-  virtual void TurnLeft(); 
-  virtual void TurnRight();
-
-  virtual void Blend(const VideoFrame& other, float factor);
-
-  
-}; 
-
-/*
-class YV12VideoFrame : public PlanarVideoFrame {
-
-protected:
-  //normal constructor
-  YV12VideoFrame(const FrameVideoProperties& vidProps, ScriptEnvironment& env) : PlanarVideoFrame(vidProps, env) { }
-
-public:
-  //copy constructor
-  YV12VideoFrame(const YV12VideoFrame& other) : PlanarVideoFrame(other) { }
-
-  virtual VideoFrame * clone() const { return new YV12VideoFrame(*this); }
-
-  virtual CPVideoFrame ConvertTo(const ColorSpace& space) const;
-
-};
-
-class VFWYV12VideoFrame : public YV12VideoFrame {
-
-  VFWYV12VideoFrame(const FrameVideoProperties& vidProps) : YV12VideoFrame(vidProps) { }
-
-};
-
-class VFWI420VideoFrame : public YV12VideoFrame {
-
-  VFWI420VideoFrame(const FrameVideoProperties& vidProps) : YV12VideoFrame(vidProps) { std::swap(u, v); }
-};
-*/
-
-#endif  //ifndef __VIDEOFRAME_H__
+#endif  //__AVS_VIDEOFRAME_H__

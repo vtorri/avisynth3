@@ -21,57 +21,44 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_TEXT_FREETYPE_OUTLINE_H__
-#define __AVS_TEXT_FREETYPE_OUTLINE_H__
-
-//avisynth include
-#include "forward.h"
-#include "../../core/geometry/box.h"
-#include "../../core/geometry/fixed_point.h"
+#ifndef __AVS_TEXT_FREETYPE_MONOBITMAP_H__
+#define __AVS_TEXT_FREETYPE_MONOBITMAP_H__
 
 //freetype includes
 #include <ft2build.h>
-#include FT_OUTLINE_H
+#include FT_IMAGE_H
 
 
 namespace avs { namespace text { namespace freetype {
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////
-//  Outline
+/////////////////////////////////////////////////////////////////////////////////////////
+//  MonoBitmap
 //
-//  wrapper class around the native freetype FT_Outline
+//  helper class to gets the data of an avs frame buffer into an FT_Bitmap
 //
-class Outline : public FT_Outline
+class MonoBitmap : public FT_Bitmap
 {
 
-private:  //declared but not implemented
+public:  //structors
 
-  Outline();
-  ~Outline();
-  Outline(Outline const& other);
+  template <class BufferWindow>
+  MonoBitmap(BufferWindow& bw)
+  {
+    buffer     = bw.write();
+    pitch      = bw.pitch();
+    width      = bw.width() << 3;          //in pixels here
+    rows       = bw.height();
 
-  Outline& operator=(Outline const& other);
+    pixel_mode = FT_PIXEL_MODE_MONO;
+  }
 
-
-public:  //clone method
-
-  POutline clone() const;
-
-
-public:  //Outline interface
-
-  void Translate(VecteurFP6 const& shift);
-
-  BoxFP6 GetControlBox() const;
-
-  void Draw(MonoBitmap const& bitmap) const;
+  //generated copy constructor and destructor are fine
 
 };
 
 
-
 } } } //namespace avs::text::freetype
 
-#endif //__AVS_TEXT_FREETYPE_OUTLINE_H__
+#endif //__AVS_TEXT_FREETYPE_MONOBITMAP_H__

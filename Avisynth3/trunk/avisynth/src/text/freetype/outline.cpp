@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 //avisynth includes
 #include "outline.h"
 #include "library.h"
+#include "monobitmap.h"
 
 //assert include
 #include <assert.h>
@@ -62,26 +63,25 @@ POutline Outline::clone() const
   FT_Error error = FT_Outline_Copy(const_cast<Outline *>(this), result);
   assert( error == 0 );
 
-  return POutline( result, OutlineDeleter() );
+  return POutline( static_cast<Outline *>(result), OutlineDeleter() );
 }
 
 
-void Outline::Translate(long x, long y)
+void Outline::Translate(VecteurFP6 const& shift)
 {
-  FT_Outline_Translate(const_cast<Outline *>(this), x << 6, y << 6);
+  FT_Outline_Translate(const_cast<Outline *>(this), shift.x.get(), shift.y.get());
 }
 
 
-Box Outline::GetControlBox() const
+BoxFP6 Outline::GetControlBox() const
 {
   FT_BBox box;
+  FT_Outline_Get_CBox(const_cast<Outline *>(this), &box);        //can't fail: returns void
 
-  FT_Error error = FT_Outline_Get_BBox (const_cast<Outline *>(this), &box);
-  assert( error == 0 );
-
-  return Box(Vecteur(box.xMin >> 6, box.yMin >> 6),
-	     Vecteur(box.xMax >> 6, box.yMax >> 6));
+  return BoxFP6(VecteurFP6(box.xMin, box.yMin), VecteurFP6(box.xMax, box.yMax));
 }
+
+
 
 void Outline::Draw(MonoBitmap const& bitmap) const
 {

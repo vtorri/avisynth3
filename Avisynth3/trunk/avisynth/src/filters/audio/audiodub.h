@@ -51,19 +51,21 @@ public:  //constructor
 
   AudioDub(PClip const& video, PClip const& audio);
 
+  //generated destructor is fine
+
 
 public:  //clip general interface
 
+  virtual PEnvironment const& GetEnvironment() const { return GetChildEnvironment(); }
   virtual CPVideoInfo GetVideoInfo() const;
 
-  virtual CPVideoFrame GetFrame(int n) const { return GetRightFrame(n); }
+  virtual CPVideoFrame GetFrame(int n) const { return GetLeftFrame(n); }
+  virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const { return GetRightAudio(buffer, start, count); }
 
-  virtual BYTE * GetAudio(BYTE * buffer, long long start, int count) const { return GetLeftAudio(buffer, start, count); }
 
+public:  //childs changing clone method
 
-public:  //Simplify method
-
-  virtual PClip Simplify() const;
+  virtual PClip clone(PClip const& left, PClip const& right) const { return Create(left, right); }
 
 
 private:  //Refactor methods
@@ -76,6 +78,16 @@ public:  //read access
 
   PClip const& GetVideoChild() const { return GetLeftChild(); }
   PClip const& GetAudioChild() const { return GetRightChild(); }
+
+
+public:  //factory method and functor
+
+  static PClip Create(PClip const& video, PClip const& audio);
+
+  struct Creator
+  {
+    PClip operator()(PClip const& video, PClip const& audio) const { return Create(video, audio); }
+  };
 
 };
 

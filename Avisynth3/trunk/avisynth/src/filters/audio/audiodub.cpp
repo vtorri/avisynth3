@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,6 @@
 #include "killaudio.h"
 #include "killvideo.h"
 #include "../../core/videoinfo.h"
-#include "../../core/cow_shared_ptr.h"
 
 
 namespace avs { namespace filters {
@@ -52,28 +51,30 @@ CPVideoInfo AudioDub::GetVideoInfo() const
   return vi;
 }
   
-PClip AudioDub::Simplify() const
+
+
+PClip AudioDub::Refactor(KillAudio const& /*parent*/) const
 {
-  if ( ! GetVideoInfo()->HasAudio() ) //if no audio
-    return KillAudio::Create(GetVideoChild())->Simplify();
+  return KillAudio::Create( GetVideoChild() );
+}
 
-  if ( ! GetVideoInfo()->HasVideo() )
-    return KillVideo::Create(GetAudioChild())->Simplify();
-
-  return shared_from_this();
+PClip AudioDub::Refactor(KillVideo const& /*parent*/) const
+{
+  return KillVideo::Create( GetAudioChild() );
 }
 
 
-PClip AudioDub::Refactor(KillAudio const& parent) const
+PClip AudioDub::Create(PClip const& video, PClip const& audio)
 {
-  return parent.clone( GetVideoChild() );
+  if ( ! audio->GetVideoInfo()->HasAudio() )
+    return KillAudio::Create(video);
+
+  if ( ! video->GetVideoInfo()->HasVideo() )
+    return KillVideo::Create(audio);
+
+  return PClip( static_cast<Clip *>(new AudioDub(video, audio)) );
 }
 
-PClip AudioDub::Refactor(KillVideo const& parent) const
-{
-  return parent.clone( GetAudioChild() );
-}
 
-
-}; }; //namespace avs::filters
+} } //namespace avs::filters
 

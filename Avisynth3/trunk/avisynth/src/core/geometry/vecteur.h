@@ -113,9 +113,9 @@ inline void swap(vecteur<T>& left, vecteur<T>& right)
 
 //parallel min and max
 template <typename T>
-inline vecteur<T> min(vecteur<T> const& left, vecteur<T> const& right) { return vecteur<T>( std::min(left.x, right.x), std::min(left.y, right.y) ); }
+inline vecteur<T> pmin(vecteur<T> const& left, vecteur<T> const& right) { return vecteur<T>( std::min(left.x, right.x), std::min(left.y, right.y) ); }
 template <typename T>
-inline vecteur<T> max(vecteur<T> const& left, vecteur<T> const& right) { return vecteur<T>( std::max(left.x, right.x), std::max(left.y, right.y) ); }
+inline vecteur<T> pmax(vecteur<T> const& left, vecteur<T> const& right) { return vecteur<T>( std::max(left.x, right.x), std::max(left.y, right.y) ); }
 
 
 template <typename T>

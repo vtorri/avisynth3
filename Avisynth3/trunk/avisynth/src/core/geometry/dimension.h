@@ -52,7 +52,7 @@ template <typename T> class dimension
 
   static T CheckSign(T val)
   {
-    if ( val < 0 )
+    if ( val < T(0) )
       throw exception::BadDimension();
     return val;
   }

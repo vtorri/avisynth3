@@ -25,6 +25,7 @@
 #define __AVS_BW_LEFTTURNER_H__
 
 //avisynth includes
+#include "../ownedblock.h"
 #include "../bufferwindow.h"
 
 

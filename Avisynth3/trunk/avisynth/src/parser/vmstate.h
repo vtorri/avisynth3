@@ -35,10 +35,6 @@
 namespace avs { namespace parser {
 
 
-//declaration
-class ScopeEnforcer;
-
-
 
 /////////////////////////////////////////////////////////////////////////////////////
 //  VMState
@@ -77,15 +73,22 @@ public:  //stack behavior
 
   AVSValue& operator[](int index) { return stack_[index]; }
 
-  int size() const { return stack_.size(); }
-  void restore(int stackSize) { stack_.resize(stackSize); }
-
-  friend class ScopeEnforcer;
-
 
 public:  //access to globals
 
   AVSValue& global(int index) { return globals_[index]; }
+
+
+public:  //stack management
+
+  int size() const { return stack_.size(); }
+  void restore(int stackSize, int keepAtTop)
+  {
+    std::vector<AVSValue>::iterator beg = stack_.begin() + stackSize;
+    std::vector<AVSValue>::iterator end = stack_.end() - keepAtTop;
+
+    stack_.erase(beg, end);
+  }
 
 };
 

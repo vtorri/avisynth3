@@ -24,7 +24,7 @@
 #define __AVS_FILTERS_STACK_H__
 
 //avisynth includes
-#include "../../core/vecteur.h"
+#include "../../core/geometry/vecteur.h"
 #include "../../clip/caching/concrete.h"
 #include "../../clip/twochilds/concrete.h"
 

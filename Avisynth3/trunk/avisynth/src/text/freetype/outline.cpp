@@ -84,28 +84,31 @@ void Outline::Split(rasterizer::OutlineSplitter& splitter, VecteurFP6 const& pen
   FT_Vector const * ptIt = points;
   char * tagPtIt = tags;
   short * contourEndIt = contours;
+  
+  bool clockWiseFill = (flags & FT_OUTLINE_REVERSE_FILL) == 0;
 
-  for ( int i = n_contours; i-- > 0; )      //loop over the outline contours
+
+  for ( int i = n_contours; i-- > 0; )          //loop over the outline contours
   {
     //past the end end position for the list of points of the current contour
     FT_Vector const * ptItEnd = points + *contourEndIt + 1;
 
-    splitter.StartContour(pen + Wrap(*ptIt++));
+    splitter.StartContour(pen + Wrap(*ptIt++), clockWiseFill);
     ++tagPtIt;
 
     while ( ptIt < ptItEnd )
     {
-      VecteurFP3 pt1 = Wrap(*ptIt++);
-      if ( (*tagPtIt++ & 1) == 0 )            //if not a control point
-        splitter.LineTo( pt1 );               //just a line
+      VecteurFP3 pt1 = pen + Wrap(*ptIt++);
+      if ( (*tagPtIt++ & 1) != 0 )              //if not a control point
+        splitter.LineTo( pt1 );                 //just a line
       else
       {
-        VecteurFP3 pt2 = Wrap(*ptIt++);       //take a second pt
-        if ( (*tagPtIt++ & 1) == 0 )          //if not a control point
-          splitter.BezierCurveTo(pt2, pt1);   //2nr order Bezier
+        VecteurFP3 pt2 = pen + Wrap(*ptIt++);   //take a second pt
+        if ( (*tagPtIt++ & 1) != 0 )            //if not a control point
+          splitter.BezierCurveTo(pt2, pt1);     //2nd order Bezier
         else
         {
-          splitter.BezierCurveTo( Wrap(*ptIt++), pt2, pt1 );   //3rd order Bezier
+          splitter.BezierCurveTo( pen + Wrap(*ptIt++), pt2, pt1 );   //3rd order Bezier
           ++tagPtIt;
         }
       }

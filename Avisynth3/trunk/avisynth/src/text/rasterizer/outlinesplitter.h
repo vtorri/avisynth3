@@ -40,7 +40,7 @@ class OutlineSplitter
 
 public:  //interface
 
-  void StartContour(VecteurFP3 const& pt) { spanMaker_.StartPolygon(pt); }
+  void StartContour(VecteurFP3 const& pt, bool clockWiseFill) { spanMaker_.StartPolygon(pt, clockWiseFill); }
 
   void CloseContour() { spanMaker_.ClosePolygon(); }
   bool IsContourClosed() const { return spanMaker_.IsPolygonClosed(); }

@@ -59,17 +59,9 @@ class SpanMaker
   bool clockWiseFill_;      //flag indicating we fill clokwise or not
 
 
-public:  //structors
-
-  SpanMaker()
-    : clockWiseFill_( true ) { }
-
-  //generated copy constructor and destructor are fine
-
-
 public:  //interface
 
-  void StartPolygon(VecteurFP3 const& pt);
+  void StartPolygon(VecteurFP3 const& pt, bool clockWiseFill);
 
   void LineTo(VecteurFP3 const& pt);
 
@@ -77,10 +69,6 @@ public:  //interface
   void ClosePolygon();
   bool IsPolygonClosed() const { return lastPt_ == startPt_; }
 
-
-public:  //access
-
-  void SetFillConvention(bool clockWiseFill) { clockWiseFill_ = clockWiseFill; }
 
   VecteurFP3 const& GetLastPt() const { return lastPt_; }
 

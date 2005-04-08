@@ -30,11 +30,12 @@ namespace avs { namespace text { namespace rasterizer {
 
 
 
-void SpanMaker::StartPolygon(VecteurFP3 const& pt)
+void SpanMaker::StartPolygon(VecteurFP3 const& pt, bool clockWiseFill)
 {
-  ClosePolygon();              //ensure previous polygon (if there is any) is closed
+  ClosePolygon();                   //ensure previous polygon (if there is any) is closed
 
-  startPt_ = lastPt_ = pt;
+  startPt_ = lastPt_ = pt;          //update start and last pt
+  clockWiseFill_ = clockWiseFill;   //update fill convention
 }
 
 

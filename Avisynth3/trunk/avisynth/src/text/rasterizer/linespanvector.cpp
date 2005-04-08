@@ -39,18 +39,16 @@ namespace avs { namespace text { namespace rasterizer {
 
 LineSpanVector::LineSpanVector(FlipVectorPair const& flips)
 {
-  assert( flips.up.size() == flips.down.size() );
-
-  //NB: don't test if flips is empty: it shouldn't happen and the code is still right
+  assert( ! flips.enter.empty() && flips.enter.size() == flips.exit.size() );
 
   //sorts transitions into ascending order
-  std::sort(flips.up.begin(), flips.up.end());
-  std::sort(flips.down.begin(), flips.down.end());
+  std::sort(flips.enter.begin(), flips.enter.end());
+  std::sort(flips.exit.begin(), flips.exit.end());
 
-  FlipVector::const_iterator enterIt = flips.up.begin();
-  FlipVector::const_iterator exitIt = flips.down.begin();
+  FlipVector::const_iterator enterIt = flips.enter.begin();
+  FlipVector::const_iterator exitIt = flips.exit.begin();
     
-  FlipVector::const_iterator enterEnd = flips.up.end();
+  FlipVector::const_iterator enterEnd = flips.enter.end();
 
   while ( true )
   {

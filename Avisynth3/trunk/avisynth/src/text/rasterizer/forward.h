@@ -52,8 +52,8 @@ typedef std::vector<long> FlipVector;
 //definition
 struct FlipVectorPair 
 { 
-  mutable FlipVector up;
-  mutable FlipVector down; 
+  mutable FlipVector enter;
+  mutable FlipVector exit; 
 };
 
 

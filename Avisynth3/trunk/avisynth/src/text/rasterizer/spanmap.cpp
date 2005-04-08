@@ -64,6 +64,17 @@ SpanMap SpanMap::Thicken(float radius) const
 }
 
 
+void SpanMap::Remove(SpanMap const& other)
+{
+  for ( Map::const_iterator it = other.map_.begin(); it != other.map_.end(); ++it )
+  {
+    Map::iterator self = map_.find( it->first );       //search if we have something on same line
+    if ( self != map_.end() )                          //if we do
+      self->second.Remove( it->second );               //we make the substraction
+  }
+}
+
+
 
 void SpanMap::Realize(WindowPtr const& wp, int step) const
 {

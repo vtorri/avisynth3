@@ -61,6 +61,8 @@ public:
 
   SpanMap Thicken(float radius) const;
 
+  void Remove(SpanMap const& other);
+
   void Realize(WindowPtr const& wp, int step) const;
 
 };

@@ -70,6 +70,7 @@ void Rasterizer::operator()(std::string const& text, WindowPtr const& masks, fre
 
   rasterizer::SpanMap textMap( splitter.GetSpanMaker() );
   rasterizer::SpanMap haloMap = textMap.Thicken( radius_ );
+  haloMap.Remove(textMap);
 
   textMap.Realize( masks, 2 );
   haloMap.Realize( WindowPtr(masks) += 1, 2 );

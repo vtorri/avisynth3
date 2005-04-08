@@ -56,7 +56,7 @@ void SpanMaker::LineTo(VecteurFP3 const& pt)
     long long x = (lastPt_.x.get() << 13) + ((( (startY << 3) - lastPt_.y.get() ) * invSlope) >> 3);
 
     for ( long y = startY; y < endY; ++y, x += invSlope )
-      if ( dy > 0 && ClockWiseFill_ )        //if going up and clockwise fill
+      if ( dy > 0 && clockWiseFill_ )        //if going up and clockwise fill
         flipMap_[ y ].enter.push_back( static_cast<long>(RoundingShift<16>(x)) );   //enter transition
       else
         flipMap_[ y ].exit.push_back( static_cast<long>(RoundingShift<16>(x)) );    //else exit transition

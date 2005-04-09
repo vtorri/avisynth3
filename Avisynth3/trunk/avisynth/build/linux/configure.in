@@ -54,7 +54,7 @@ GST_REQS=0.8.7.1
 GSTPLUG_REQS=0.8.6.1
 
 dnl Default CFLAGS -- Big impact on overall speed
-our_cxxflags_defaults="-O2 -Wall"
+our_cxxflags_defaults="-O2 -Wall -fexceptions"
 our_cxxflags_defaults="$our_cxxflags_defaults -fstrength-reduce"
 our_cxxflags_defaults="$our_cxxflags_defaults -finline-functions"
 our_cxxflags_defaults="$our_cxxflags_defaults -ffast-math"
@@ -296,7 +296,7 @@ case "$target_os" in
 	AC_MSG_RESULT([ok])
 	STATIC_LIB="libavisynth.\$(STATIC_EXTENSION)"
 	SHARED_LIB="libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR).\$(API_MINOR)"
-	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR) -shared -lc -lm -lrt"
+	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR) -shared -lc -lm -lrt -ldl"
 	SPECIFIC_CFLAGS="-pthread -fPIC"
 	GEN_SOURCES="/com\\\\/d;/vfw\\\\/d;"
 	;;
@@ -495,6 +495,32 @@ case "$target_os" in
       AC_CHECK_HEADER(
          [pthread.h],
          [],
+         [AC_MSG_ERROR(Missing header file)])
+      AC_CHECK_HEADER(
+         [time.h],
+         [AC_CHECK_LIB(
+            [rt],
+            [clock_gettime],
+            [],
+            [AC_MSG_ERROR(Missing function: clock_gettime)])],
+         [AC_MSG_ERROR(Missing header file)])
+      AC_CHECK_HEADER(
+         [dlfcn.h],
+         [AC_CHECK_LIB(
+            [dl],
+            [dlopen],
+            [],
+            [AC_MSG_ERROR(Missing function: dlopen)])
+          AC_CHECK_LIB(
+            [dl],
+            [dlclose],
+            [],
+            [AC_MSG_ERROR(Missing function: dlclose)])
+          AC_CHECK_LIB(
+            [dl],
+            [dlsym],
+            [],
+            [AC_MSG_ERROR(Missing function: dlsym)])],
          [AC_MSG_ERROR(Missing header file)])
    ;;
    [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)

@@ -1,7 +1,7 @@
 dnl Configure path for FFMPEG
 dnl Vincent Torri 2005-01-06
 dnl
-dnl AM_CHECK_FFMEG([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
+dnl AM_CHECK_FFMPEG([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for FFMPEG, and define FFMPEG_LIBS, FFMPEG_CFLAGS, FFMPEG_DEBUG_MODE_CFLAGS and
 dnl FFMPEG_SOURCE_FILE_ADD (should be removed later).
 dnl

@@ -87,29 +87,38 @@ void Outline::Split(rasterizer::OutlineSplitter& splitter, VecteurFP6 const& pen
   
   bool clockWiseFill = (flags & FT_OUTLINE_REVERSE_FILL) == 0;
 
-
-  for ( int i = n_contours; i-- > 0; )          //loop over the outline contours
+  //loop over the outline contours
+  for ( int i = n_contours; i-- > 0; ++contourEndIt, ++ptIt, ++tagPtIt )
   {
     //past the end end position for the list of points of the current contour
     FT_Vector const * ptItEnd = points + *contourEndIt + 1;
 
-    splitter.StartContour(pen + Wrap(*ptIt++), clockWiseFill);
-    ++tagPtIt;
+    splitter.StartContour(pen + Wrap(*ptIt), clockWiseFill);
 
     while ( ptIt < ptItEnd )
     {
-      VecteurFP3 pt1 = pen + Wrap(*ptIt++);
-      if ( (*tagPtIt++ & 1) != 0 )              //if not a control point
-        splitter.LineTo( pt1 );                 //just a line
+      VecteurFP3 pt1 = pen + Wrap(*++ptIt);       //take a pt
+      
+      if ( (*++tagPtIt & 1) != 0 )                //if not a control point
+        splitter.LineTo( pt1 );                   //just a line
       else
       {
-        VecteurFP3 pt2 = pen + Wrap(*ptIt++);   //take a second pt
-        if ( (*tagPtIt++ & 1) != 0 )            //if not a control point
-          splitter.BezierCurveTo(pt2, pt1);     //2nd order Bezier
+        VecteurFP3 pt2 = pen + Wrap(*++ptIt);     //take a second pt
+      
+        if ( (*++tagPtIt & 1) != 0 )              //if not a control point
+          splitter.BezierCurveTo(pt2, pt1);       //2nd order Bezier
         else
         {
-          splitter.BezierCurveTo( pen + Wrap(*ptIt++), pt2, pt1 );   //3rd order Bezier
-          ++tagPtIt;
+          VecteurFP3 pt3 = pen + Wrap(*++ptIt);   //take a 3rd pt
+
+          if ( (*tagPtIt++ & 2) != 0 )            //if previous pt is a 3rd ordre control pt
+            splitter.BezierCurveTo( pt3, pt2, pt1 );   //3rd order Bezier
+          else
+          {
+            //2  2nd order bezier
+            splitter.BezierCurveTo( ( splitter.GetSpanMaker().GetLastPt() + pt3 ) / 2, pt1 );
+            splitter.BezierCurveTo( pt3, pt2 );
+          }
         }
       }
     }

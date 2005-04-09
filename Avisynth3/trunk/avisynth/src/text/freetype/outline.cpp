@@ -91,52 +91,73 @@ void Outline::Split(rasterizer::OutlineSplitter& splitter, VecteurFP6 const& pen
   bool clockWiseFill = (flags & FT_OUTLINE_REVERSE_FILL) == 0;
 
   //loop over the outline contours
-  for ( int i = n_contours; i-- > 0; ++contourEndIt )
+  for ( int i = n_contours; i-- > 0; ++contourEndIt, ++ptIt, ++tagPtIt )
   {
-    //past the end end position for the list of points of the current contour
-    FT_Vector const * ptItEnd = points + *contourEndIt + 1;
+    FT_Vector const * ptItLast = points + *contourEndIt;
 
     splitter.StartContour(pen + Wrap(*ptIt), clockWiseFill);
-    ++ptIt;
-    ++tagPtIt;
 
-    for ( ; ptIt < ptItEnd; ++ptIt, ++tagPtIt )
+    while ( true )
     {
-      VecteurFP3 pt1 = pen + Wrap(*ptIt);         //take a pt
-      
-      if ( (*tagPtIt & FT_Curve_Tag_On) == FT_Curve_Tag_On )  //if on the curve
-        splitter.LineTo( pt1 );                   //just a line
-      else
+      if ( ptIt == ptItLast )                      //if current pt (on curve) is the last one
       {
-        ++ptIt;
-        ++tagPtIt;                                //move to next pt
-        VecteurFP3 pt2 = pen + Wrap(*ptIt);       //take a second pt
+        splitter.CloseContour();                   //close with a line
+        break;
+      }
+
+      ++ptIt;
+      ++tagPtIt;                                   //move to next pt, exists since previous is not last
+      VecteurFP3 pt1 = pen + Wrap(*ptIt);          //take it
       
-        if ( (*tagPtIt & FT_Curve_Tag_On) == FT_Curve_Tag_On )  //if on the curve
-          splitter.BezierCurveTo(pt2, pt1);       //2nd order Bezier
+      if ( (*tagPtIt & 1) == FT_Curve_Tag_On )     //if on the curve
+      {
+        splitter.LineTo( pt1 );                    //just a line
+        continue;
+      }
+
+      if ( ptIt == ptItLast )                      //if our control pt is the last pt
+      {
+        splitter.BezierClose(pt1);                 //close with a 2nd order bezier
+        break;
+      }
+      
+      ++ptIt;
+      ++tagPtIt;                                   //move to next pt  ... 
+      VecteurFP3 pt2 = pen + Wrap(*ptIt);          //and take it
+      
+      if ( (*tagPtIt & 1) == FT_Curve_Tag_On )     //if on the curve
+      {
+        splitter.BezierCurveTo(pt2, pt1);          //2nd order Bezier
+        continue;
+      }
+
+      if ( ptIt == ptItLast )                      //if our 2nd control pt is the last pt
+      {
+        if ( (*tagPtIt & 2) == FT_Curve_Tag_Cubic )   //and 3rd order   
+          splitter.BezierClose(pt2, pt1);             //close with 3rd order Bezier
         else
         {
-          ++ptIt;                                 //move to next pt
-          VecteurFP3 pt3 = pen + Wrap(*ptIt);     //take a 3rd pt
-          
-          //if previous pt is a 3rd order control pt
-          if ( (*tagPtIt & FT_Curve_Tag_Cubic) == FT_Curve_Tag_Cubic )  
-            splitter.BezierCurveTo( pt3, pt2, pt1 );   //3rd order Bezier
-          else
-          {
-            //2  2nd order bezier
-            splitter.BezierCurveTo( ( splitter.GetSpanMaker().GetLastPt() + pt3 ) / 2, pt1 );
-            splitter.BezierCurveTo( pt3, pt2 );
-          }
-
-          ++tagPtIt;
+          splitter.BezierCurveTo( (pt1 +pt2) / 2, pt1 );
+          splitter.BezierClose(pt2);                  //close with two 2nd order Bezier
         }
+        break;
       }
-    }
 
-    splitter.CloseContour();
+      ++ptIt;                                       //move to next pt  ...
+      VecteurFP3 pt3 = pen + Wrap(*ptIt);           //take a 3rd pt
+
+      if ( (*tagPtIt & 2) == FT_Curve_Tag_Cubic )   //if previous pt is a 3rd order control pt
+        splitter.BezierCurveTo( pt3, pt2, pt1 );    //3rd order Bezier
+      else
+      {
+        splitter.BezierCurveTo( (pt1 + pt2) / 2, pt1 );
+        splitter.BezierCurveTo( pt3, pt2 );         //two 2nd order Bezier
+      }
+      ++tagPtIt;                                    //resynch with ptIt
+    }      
   }
 }
+
 
 
 } } } //namespace avs::text::freetype

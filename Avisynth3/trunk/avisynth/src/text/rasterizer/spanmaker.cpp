@@ -25,6 +25,9 @@
 #include "spanmaker.h"
 #include "../../core/utility/round.h"
 
+//assert include
+#include <assert.h>
+
 
 namespace avs { namespace text { namespace rasterizer {
 
@@ -32,7 +35,7 @@ namespace avs { namespace text { namespace rasterizer {
 
 void SpanMaker::StartPolygon(VecteurFP3 const& pt, bool clockWiseFill)
 {
-  ClosePolygon();                   //ensure previous polygon (if there is any) is closed
+  assert(IsPolygonClosed());        //ensure previous polygon (if there is any) is closed
 
   startPt_ = lastPt_ = pt;          //update start and last pt
   clockWiseFill_ = clockWiseFill;   //update fill convention
@@ -65,12 +68,6 @@ void SpanMaker::LineTo(VecteurFP3 const& pt)
   lastPt_ = pt;          //update last point
 }
 
-
-void SpanMaker::ClosePolygon()
-{
-  if ( ! IsPolygonClosed() )      //if not closed
-    LineTo(startPt_);             //add a line to close it
-}
 
 
 } } } //namespace avs::text::rasterizer

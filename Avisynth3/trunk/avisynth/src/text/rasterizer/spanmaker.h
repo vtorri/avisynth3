@@ -65,12 +65,13 @@ public:  //interface
 
   void LineTo(VecteurFP3 const& pt);
 
-  //ensure current polygon is closed
-  void ClosePolygon();
   bool IsPolygonClosed() const { return lastPt_ == startPt_; }
 
 
+public:  //access
+
   VecteurFP3 const& GetLastPt() const { return lastPt_; }
+  VecteurFP3 const& GetStartPt() const { return startPt_; }
 
 
 private:  //helpers for SpanMap constructor

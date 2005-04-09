@@ -42,12 +42,15 @@ public:  //interface
 
   void StartContour(VecteurFP3 const& pt, bool clockWiseFill) { spanMaker_.StartPolygon(pt, clockWiseFill); }
 
-  void CloseContour() { spanMaker_.ClosePolygon(); }
-  bool IsContourClosed() const { return spanMaker_.IsPolygonClosed(); }
-
   void LineTo(VecteurFP3 const& pt) { spanMaker_.LineTo(pt); }
   void BezierCurveTo(VecteurFP3 const& pt2, VecteurFP3 const& pt1);
   void BezierCurveTo(VecteurFP3 const& pt3, VecteurFP3 const& pt2, VecteurFP3 const& pt1);
+
+  bool IsContourClosed() const { return spanMaker_.IsPolygonClosed(); }
+
+  void CloseContour() { LineTo(spanMaker_.GetStartPt()); }
+  void BezierClose(VecteurFP3 const& pt1) { BezierCurveTo(spanMaker_.GetStartPt(), pt1); }
+  void BezierClose(VecteurFP3 const& pt2, VecteurFP3 const& pt1) { BezierCurveTo(spanMaker_.GetStartPt(), pt2, pt1); }
 
 
 public:  //access

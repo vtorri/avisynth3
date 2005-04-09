@@ -29,6 +29,9 @@
 //assert include
 #include <assert.h>
 
+//freetype include
+#include FT_IMAGE_H
+
 
 namespace avs { namespace text { namespace freetype {
 
@@ -88,30 +91,36 @@ void Outline::Split(rasterizer::OutlineSplitter& splitter, VecteurFP6 const& pen
   bool clockWiseFill = (flags & FT_OUTLINE_REVERSE_FILL) == 0;
 
   //loop over the outline contours
-  for ( int i = n_contours; i-- > 0; ++contourEndIt, ++ptIt, ++tagPtIt )
+  for ( int i = n_contours; i-- > 0; ++contourEndIt )
   {
     //past the end end position for the list of points of the current contour
     FT_Vector const * ptItEnd = points + *contourEndIt + 1;
 
     splitter.StartContour(pen + Wrap(*ptIt), clockWiseFill);
+    ++ptIt;
+    ++tagPtIt;
 
-    while ( ptIt < ptItEnd )
+    for ( ; ptIt < ptItEnd; ++ptIt, ++tagPtIt )
     {
-      VecteurFP3 pt1 = pen + Wrap(*++ptIt);       //take a pt
+      VecteurFP3 pt1 = pen + Wrap(*ptIt);         //take a pt
       
-      if ( (*++tagPtIt & 1) != 0 )                //if not a control point
+      if ( (*tagPtIt & FT_Curve_Tag_On) == FT_Curve_Tag_On )  //if on the curve
         splitter.LineTo( pt1 );                   //just a line
       else
       {
-        VecteurFP3 pt2 = pen + Wrap(*++ptIt);     //take a second pt
+        ++ptIt;
+        ++tagPtIt;                                //move to next pt
+        VecteurFP3 pt2 = pen + Wrap(*ptIt);       //take a second pt
       
-        if ( (*++tagPtIt & 1) != 0 )              //if not a control point
+        if ( (*tagPtIt & FT_Curve_Tag_On) == FT_Curve_Tag_On )  //if on the curve
           splitter.BezierCurveTo(pt2, pt1);       //2nd order Bezier
         else
         {
-          VecteurFP3 pt3 = pen + Wrap(*++ptIt);   //take a 3rd pt
-
-          if ( (*tagPtIt++ & 2) != 0 )            //if previous pt is a 3rd ordre control pt
+          ++ptIt;                                 //move to next pt
+          VecteurFP3 pt3 = pen + Wrap(*ptIt);     //take a 3rd pt
+          
+          //if previous pt is a 3rd order control pt
+          if ( (*tagPtIt & FT_Curve_Tag_Cubic) == FT_Curve_Tag_Cubic )  
             splitter.BezierCurveTo( pt3, pt2, pt1 );   //3rd order Bezier
           else
           {
@@ -119,6 +128,8 @@ void Outline::Split(rasterizer::OutlineSplitter& splitter, VecteurFP6 const& pen
             splitter.BezierCurveTo( ( splitter.GetSpanMaker().GetLastPt() + pt3 ) / 2, pt1 );
             splitter.BezierCurveTo( pt3, pt2 );
           }
+
+          ++tagPtIt;
         }
       }
     }

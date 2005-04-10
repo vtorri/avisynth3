@@ -54,6 +54,8 @@ public:  //structors
 
 public:  //interface
 
+  //LoadChar updates the pen to be the origin of the loaded char considering previous char (if there is any)
+  //ie GetPen must be made AFTER the call to LoadChar
   Outline const& LoadChar(unsigned charCode);
 
 

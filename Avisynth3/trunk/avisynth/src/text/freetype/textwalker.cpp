@@ -42,9 +42,12 @@ Outline const& TextWalker::LoadChar(unsigned charCode)
 {
   unsigned index = slot_.GetFace()->GetCharIndex(charCode);
 
-  pen_ += slot_.GetAdvance();
-  if ( hasKerning_ && glyphIndex_ )
-    pen_ += slot_.GetFace()->GetKerning( *glyphIndex_, index );
+  if ( glyphIndex_ )
+  {
+    pen_ += slot_.GetAdvance();
+    if ( hasKerning_ )
+      pen_ += slot_.GetFace()->GetKerning( *glyphIndex_, index );
+  }
 
   slot_.LoadGlyph(index);
   glyphIndex_ = index;
@@ -56,10 +59,7 @@ Outline const& TextWalker::LoadChar(unsigned charCode)
 void TextWalker::operator()(iterator begin, iterator end, rasterizer::OutlineSplitter& splitter)
 {
   while ( begin != end )
-  {
-    VecteurFP6 pen = GetPen();                    //NB: beware LoadChar changes pen, so it must be read before
-    LoadChar( *begin++ ).Split( splitter, pen );
-  }
+    LoadChar( *begin++ ).Split( splitter, GetPen() );
 }
 
 

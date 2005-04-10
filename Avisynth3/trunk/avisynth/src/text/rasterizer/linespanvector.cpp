@@ -166,6 +166,7 @@ void LineSpanVector::Remove(LineSpanVector const& other)
       //push the part before *ItOther
       result.push_back( LineSpan(span.begin, itOther->begin) );
       span.begin = itOther->end;                    //update span to be the part after
+      ++itOther;                                    //and move on
     }
     
     result.push_back(span);                         //push what we have left of span

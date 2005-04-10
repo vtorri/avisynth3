@@ -80,6 +80,7 @@ void SpanMap::Realize(WindowPtr const& wp_, int step) const
 {
   WindowPtr wp = wp_;
   wp.toBottom();
+  wp.pitch = -wp.pitch;
 
   Map::const_iterator it = map_.lower_bound(0);
   Map::const_iterator end = map_.upper_bound( (wp.height << 3) - 1 );

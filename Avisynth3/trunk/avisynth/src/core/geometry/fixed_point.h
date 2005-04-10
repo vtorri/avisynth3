@@ -95,7 +95,7 @@ public:  //comparison operators
 
 public:  //operators
 
-  FixedPointType operator-() const { return FixedPointType(-value_); }
+  FixedPointType operator-() const { return Wrap(-value_); }
 
   FixedPointType& operator+=(FixedPointType const& other) { value_ += other.value_; return *this; }
   FixedPointType& operator-=(FixedPointType const& other) { value_ -= other.value_; return *this; }

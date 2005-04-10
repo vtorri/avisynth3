@@ -144,26 +144,31 @@ void LineSpanVector::Remove(LineSpanVector const& other)
     if ( itOther == other.end() )
       break;
 
-    LineSpan span = *itThis++;                      //take span from this
+    LineSpan span = *itThis;                        //take span from this
+    ++itThis;                                       //and move on
 
-    if ( span < *itOther )                          //if span from other is after span
-      result.push_back(span);                       //we just use it
-    else                                            //it's neither before, nor after: it overlaps
-    { 
-      if ( itOther->begin <= span.begin )           //if other's span starts before span
-        span.begin = itOther->end;                  //remove it from span (which may become illegally empty)
-
-      while ( itOther->end < span.end )             //while other's span ends before span (implies span is not illegal)
-      {
-        result.push_back( LineSpan(span.begin, itOther->begin) );    //there is part to push    
-        span.begin = itOther->end;                  //update span
-      
-        if ( ++itOther == other.end() )
-          break;
-      }
-      if ( itOther == other.end() )
-        break;
+    if ( span < *itOther )                          //if *itOther is after span
+    {
+      result.push_back(span);                       //span is good 
+      continue;
     }
+    
+    //it's neither before, nor after: ie it overlaps
+    if ( itOther->begin <= span.begin )             //if other's span starts before span
+    {
+      span.begin = itOther->end;                    //remove it from span (which may become illegally empty)
+      ++itOther;                                    //and move on
+    }
+
+    //while there is spans in other ending before span (which implies that span was not made illegal before)
+    while ( itOther != other.end() && itOther->end < span.end )
+    {
+      //push the part before *ItOther
+      result.push_back( LineSpan(span.begin, itOther->begin) );
+      span.begin = itOther->end;                    //update span to be the part after
+    }
+    
+    result.push_back(span);                         //push what we have left of span
   }
 
   result.insert(result.end(), itThis, end());

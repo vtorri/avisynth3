@@ -59,7 +59,7 @@ public:  //structors
 
   template <typename T>
   explicit fixed_point(T value)
-  : value_( static_cast<BaseType>(value * (1 << fractionPart)) ) { }
+    : value_( static_cast<BaseType>(value * (1 << fractionPart)) ) { }
 
   //generated copy constructor and destructor are fine
 

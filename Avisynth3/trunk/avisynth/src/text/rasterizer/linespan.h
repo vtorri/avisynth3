@@ -55,7 +55,7 @@ public:  //structors
   LineSpan() { }
   LineSpan(long begin_, long end_) : begin( begin_ ), end( end_ ) { }
 
-  //gerenated copy constructor and destructor are fine
+  //generated copy constructor and destructor are fine
 
 
 public:

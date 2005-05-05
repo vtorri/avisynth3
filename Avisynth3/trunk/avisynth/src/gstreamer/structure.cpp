@@ -25,40 +25,43 @@
 
 //avisynth includes
 #include "structure.h"
-#include "../core/exception/generic.h"
+
+//assert include
+#include <assert.h>
 
 
 namespace avs { namespace gstreamer {
 
-
-namespace {
-
-
-void ThrowNoSuchField(char const * name)
-{
-  throw exception::Generic("field not found");
-}
-
-
-} //namespace anonymous
 
 
 int Structure::GetIntField(char const * name) const
 {
   int result;
 
-  if ( gst_structure_get_int(const_cast<Structure *>(this), name, &result) == 0 )
-    ThrowNoSuchField(name);
+  bool success =  gst_structure_get_int(const_cast<Structure *>(this), name, &result) != 0; 
+  assert( success );
 
   return result;
 }
- 
+
+
 double Structure::GetDoubleField(char const * name) const
 {
   double result;
 
-  if ( gst_structure_get_double(const_cast<Structure *>(this), name, &result) == 0 )
-    ThrowNoSuchField(name);
+  bool success =  gst_structure_get_double(const_cast<Structure *>(this), name, &result) != 0;
+  assert( success );
+
+  return result;
+}
+
+
+unsigned long Structure::GetFourCCField(char const * name) const
+{
+  unsigned long result;
+
+  bool success = gst_structure_get_fourcc(const_cast<Structure *>(this), name, &result) != 0;
+  assert( success );
 
   return result;
 }

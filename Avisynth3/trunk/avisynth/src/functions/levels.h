@@ -41,6 +41,7 @@ struct Levels
 {
 
   static linker::core::Function tweak;
+  static linker::core::Function rgbadjust;
 
 
 private:  //functions register method

@@ -25,7 +25,8 @@
 #include "levels.h"
 #include "../parser/adapt.h"
 #include "../linker/core/plugin.h"
-#include "../filters/levels/tweak.h"
+//#include "../filters/levels/tweak.h"
+#include "../filters/levels/rgbadjust.h"
 
 
 namespace avs { namespace functions {
@@ -35,12 +36,14 @@ using parser::adapt;
 using linker::core::Function;
 
 
-Function Levels::tweak( 'c', "Tweak", "cdddd", adapt( &filters::Tweak::Create ) );
+//Function Levels::tweak( 'c', "Tweak", "cdddd", adapt( &filters::Tweak::Create ) );
+Function Levels::rgbadjust( 'c', "RGBAdjust", "cdddd", adapt( &filters::RGBAdjust::Create ) );
 
 
 void functions::Levels::RegisterAll(linker::core::Plugin& core)
 {
-  core.Register(&tweak);
+  //core.Register(&tweak);
+  core.Register(&rgbadjust);
 }
 
 

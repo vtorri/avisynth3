@@ -58,7 +58,7 @@ double Structure::GetDoubleField(char const * name) const
 
 unsigned long Structure::GetFourCCField(char const * name) const
 {
-  unsigned long result;
+  guint32 result;
 
   bool success = gst_structure_get_fourcc(const_cast<Structure *>(this), name, &result) != 0;
   assert( success );

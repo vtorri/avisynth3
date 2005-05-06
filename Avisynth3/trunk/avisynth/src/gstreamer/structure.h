@@ -46,8 +46,14 @@ private:  //declared but not implemented
   ~Structure();
 
 
-public:  //get field methods
+public:  //access
+  
+  char const * GetName() const
+  {
+    return gst_structure_get_name(static_cast<Structure *>(this));
+  }
 
+  //get field methods
   int GetIntField(char const * name) const;
   double GetDoubleField(char const * name) const;
   unsigned long GetFourCCField(char const * name) const;

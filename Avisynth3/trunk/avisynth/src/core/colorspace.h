@@ -162,15 +162,8 @@ public:  //factory methods
   static PColorSpace yv24();
   static PColorSpace yv45();
 
-  static PColorSpace FromString(std::string const& name);
-
-
-public:  //small helper for 4cc
-
-  static unsigned long MakeFourCC(unsigned long c0, unsigned long c1, unsigned long c2, unsigned long c3) 
-  { 
-    return c0 <<24 | c1 << 16 | c2 << 8 | c3; 
-  }
+  static PColorSpace FromName(std::string const& name);
+  static PColorSpace FromFourCC(unsigned long fourCC);
 
 };
 

@@ -46,7 +46,7 @@ PColorSpace ColorSpace::yv24() { return map.yv24(); }
 PColorSpace ColorSpace::yv45() { return map.yv45(); }
 
 
-PColorSpace ColorSpace::FromString(std::string const& name) { return map[name]; }
+PColorSpace ColorSpace::FromName(std::string const& name) { return map[name]; }
 
 
 

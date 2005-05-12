@@ -42,11 +42,16 @@ class YV12 : public yuv::Planar
            , public yuv::Depth8
 {
 
+public:
+
+  enum { fourCC = '21VY' };
+
+
 public:  //ColorSpace interface
 
   virtual ID id() const { return I_YV12; }
   virtual char const * GetName() const { return "YV12"; }
-  virtual unsigned long GetFourCC() const { return MakeFourCC('Y', 'V', '1', '2'); }
+  virtual unsigned long GetFourCC() const { return fourCC; }
   virtual long GetBitsPerPixel() const { return 12; }
 
   virtual long GetBitmapSize(Dimension const& dim) const;

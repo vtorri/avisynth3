@@ -43,11 +43,16 @@ class YUY2 : public interleaved<2, 1, vframe::concrete::YUY2>
            , public yuv::Depth8
 {
 
+public:
+
+  enum { fourCC = '2YUY' };
+
+
 public:  //ColorSpace interface
 
   virtual ID id() const { return I_YUY2; }
   virtual char const * GetName() const { return "YUY2"; }
-  virtual unsigned long GetFourCC() const { return MakeFourCC('Y', 'U', 'Y', '2'); }
+  virtual unsigned long GetFourCC() const { return fourCC; }
 
   virtual bool HasProperty(Property prop) const;
 

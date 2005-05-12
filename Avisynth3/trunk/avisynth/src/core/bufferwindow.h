@@ -114,14 +114,14 @@ public:  //structors
   //normal constructor
   buffer_window(Dimension const& dim, typename BufferType::Creator const& create)
     : dim_( dim )
-    , pitch_( RoundUp<Align>(width()) )
+    , pitch_( utility::RoundUp<Align>(width()) )
     , offset_( Guard )
     , buffer_( create(pitch() * height() + Guard * 2, true) ) { }
  
   //spawning constructor
   buffer_window(Dimension const& dim, BufferWindowType const& other)
     : dim_( dim )
-    , pitch_( RoundUp<Align>(width()) )
+    , pitch_( utility::RoundUp<Align>(width()) )
     , offset_( Guard )
     , buffer_( other.buffer_.spawn(pitch() * height() + Guard * 2, true) ) { }
 
@@ -129,7 +129,7 @@ public:  //structors
   template <class BufferOther>
   buffer_window(Dimension const& dim, BufferOther const& buffer, int offset)
     : dim_( dim )
-    , pitch_( RoundUp<Align>(width()) )
+    , pitch_( utility::RoundUp<Align>(width()) )
     , offset_( offset )
     , buffer_( buffer )
   {

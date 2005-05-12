@@ -56,7 +56,7 @@ public:  //ColorSpace interface
 
   virtual long GetBitmapSize(Dimension const& dim) const
   {
-    return RoundUp<4>( dim.GetWidth() * bpp ) * dim.GetHeight();
+    return utility::RoundUp<4>( dim.GetWidth() * bpp ) * dim.GetHeight();
   }
 
   virtual void Check(long /*x*/, long y, bool interlaced) const

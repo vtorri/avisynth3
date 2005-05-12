@@ -47,7 +47,7 @@ PColorSpace ColorSpace::yv45() { return map.yv45(); }
 
 
 PColorSpace ColorSpace::FromName(std::string const& name) { return map[name]; }
-
+PColorSpace ColorSpace::FromFourCC(unsigned long fourCC) { return map[fourCC]; }
 
 
 } //namespace avs

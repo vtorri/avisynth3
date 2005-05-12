@@ -21,14 +21,14 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_ROUND_H__
-#define __AVS_ROUND_H__
+#ifndef __AVS_UTILITY_ROUND_H__
+#define __AVS_UTILITY_ROUND_H__
 
 //boost include
 #include <boost/utility/enable_if.hpp>
 
 
-namespace avs {
+namespace avs { namespace utility {
 
 
 
@@ -113,6 +113,7 @@ RoundingDownShift(T value)
 }
 
 
-} //namespace avs
 
-#endif //__AVS_ROUND_H__
+} } //namespace avs
+
+#endif //__AVS_UTILITY_ROUND_H__

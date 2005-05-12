@@ -51,34 +51,40 @@ Map::Map()
   , yv24_( &Create<YV24> )
   , yv45_( &Create<YV45> )
 {
-  internalMap_["RGB24"] = &rgb24_;
-  internalMap_["RGB32"] = &rgb32_;
-  internalMap_["RGB45"] = &rgb45_;
-  internalMap_["YUY2"] = &yuy2_;
-  internalMap_["YV12"] = &yv12_;
-  internalMap_["YV24"] = &yv24_;
-  internalMap_["YV45"] = &yv45_;
+  nameMap_["RGB24"] = &rgb24_;
+  nameMap_["RGB32"] = &rgb32_;
+  nameMap_["RGB45"] = &rgb45_;
+  nameMap_["YUY2"] = &yuy2_;
+  nameMap_["YV12"] = &yv12_;
+  nameMap_["YV24"] = &yv24_;
+  nameMap_["YV45"] = &yv45_;
 }
 
 
 PColorSpace Map::operator[](std::string const& name) const
 {
-  Lock lick(mutex_);
+  Lock lock(mutex_);
 
-  //1st: search internal colorspace map
-  InternalColorSpaceMap::const_iterator iit = internalMap_.find(name);  
-  if ( iit != internalMap_.end() )        //if found inside
-    return (*iit->second)();              //makes the InternalCreator do its work
+  //search name to colorspace map
+  NameToColorSpaceMap::const_iterator it = nameMap_.find(name);  
+  if ( it != nameMap_.end() )            //if found inside
+    return it->second->Get(); 
 
-  PColorSpace result;
+  return PColorSpace();
+}
 
-  //2nd: search external colorspace map
-  ExternalColorSpaceMap::iterator eit = externalMap_.find(name);
-  if ( eit != externalMap_.end() )        //if in the map
-    if ( ! (result = eit->second()) )     //if creator fetchs an invalid value (empty)
-      externalMap_.erase(eit);            //erase obsolete map entry
 
-  return result;                          //return result
+PColorSpace Map::operator[](unsigned long fourcc) const
+{
+  Lock lock(mutex_);
+
+  switch ( fourcc )
+  {
+  case YV12::fourCC: return yv12_.Get();
+  case YUY2::fourCC: return yuy2_.Get();
+
+  default: return PColorSpace();
+  }
 }
 
 

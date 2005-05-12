@@ -41,7 +41,7 @@ unsigned long YV45::GetFourCC() const
 
 long YV45::GetBitmapSize(Dimension const& dim) const
 {
-  return 3 * RoundUp<4>(dim.GetWidth() * 2) * dim.GetHeight();
+  return 3 * utility::RoundUp<4>(dim.GetWidth() * 2) * dim.GetHeight();
 }
 
 

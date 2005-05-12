@@ -25,9 +25,8 @@
 #define __AVS_COLORSPACE_CONCRETE_MAP_H__
 
 //avisynth includes
-#include "../../forward.h"      //for PColorSpace
-#include "externalcreator.h"
-#include "internalcreator.h"
+#include "../../forward.h"               //for PColorSpace
+#include "../../utility/valuecache.h"
 
 //stl includes
 #include <map>
@@ -51,15 +50,14 @@ class Map
   
   typedef boost::mutex Mutex;
   typedef Mutex::scoped_lock Lock;
-  typedef std::map<std::string, InternalCreator *> InternalColorSpaceMap;
-  typedef std::map<std::string, ExternalCreator> ExternalColorSpaceMap;
+  typedef utility::ValueCache<ColorSpace const> ColorSpaceCache;
+  typedef std::map<std::string, ColorSpaceCache *> NameToColorSpaceMap;
 
   mutable Mutex mutex_;
   
-  InternalCreator rgb24_, rgb32_, rgb45_, yuy2_, yv12_, yv24_, yv45_;
+  ColorSpaceCache rgb24_, rgb32_, rgb45_, yuy2_, yv12_, yv24_, yv45_;
 
-  InternalColorSpaceMap internalMap_;
-  mutable ExternalColorSpaceMap externalMap_;   //mutable coz it can remove obsolete entries at all time
+  NameToColorSpaceMap nameMap_;
 
 
 public:  //structors
@@ -73,17 +71,15 @@ public:  //Map interface
   
   //map like read access
   PColorSpace operator[](std::string const& name) const;
+  PColorSpace operator[](unsigned long fourcc) const;
 
-  //adds a (external) colorspace to the map
-  void Register(PColorSpace const& space);
-
-  PColorSpace rgb24() const { Lock lock(mutex_); return rgb24_(); }
-  PColorSpace rgb32() const { Lock lock(mutex_); return rgb32_(); }
-  PColorSpace rgb45() const { Lock lock(mutex_); return rgb45_(); }
-  PColorSpace yuy2() const { Lock lock(mutex_); return yuy2_(); }
-  PColorSpace yv12() const { Lock lock(mutex_); return yv12_(); }
-  PColorSpace yv24() const { Lock lock(mutex_); return yv24_(); }
-  PColorSpace yv45() const { Lock lock(mutex_); return yv45_(); }
+  PColorSpace rgb24() const { Lock lock(mutex_); return rgb24_.Get(); }
+  PColorSpace rgb32() const { Lock lock(mutex_); return rgb32_.Get(); }
+  PColorSpace rgb45() const { Lock lock(mutex_); return rgb45_.Get(); }
+  PColorSpace yuy2() const { Lock lock(mutex_); return yuy2_.Get(); }
+  PColorSpace yv12() const { Lock lock(mutex_); return yv12_.Get(); }
+  PColorSpace yv24() const { Lock lock(mutex_); return yv24_.Get(); }
+  PColorSpace yv45() const { Lock lock(mutex_); return yv45_.Get(); }
 
 };
 

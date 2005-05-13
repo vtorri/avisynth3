@@ -50,7 +50,7 @@ public:  //access
   
   char const * GetName() const
   {
-    return gst_structure_get_name(static_cast<Structure *>(this));
+    return gst_structure_get_name(const_cast<Structure *>(this));
   }
 
   //get field methods

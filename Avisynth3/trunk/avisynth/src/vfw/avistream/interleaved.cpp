@@ -36,7 +36,7 @@ void Interleaved::ReadFrame(VideoFrame const& frame, BYTE * ptr)
 {
   CWindowPtr src = frame.ReadFrom(NOT_PLANAR);  
     
-  Blitter::Get()(src, ptr, RoundUp<4>(src.width));  // BMP scanlines are always dword-aligned
+  Blitter::Get()(src, ptr, utility::RoundUp<4>(src.width));  // BMP scanlines are always dword-aligned
 }
 
 

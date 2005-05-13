@@ -26,6 +26,8 @@
 //avisynth includes
 #include "videostructure.h"
 #include "../core/videoinfo.h"
+#include "../core/colorspace.h"
+#include "../core/exception/colorspace/unknown.h"
 
 
 namespace avs { namespace gstreamer {
@@ -41,7 +43,7 @@ PColorSpace VideoStructure::GetColorSpace() const
     {
     case 24: return ColorSpace::rgb24();
     case 32: return ColorSpace::rgb32();    
-    default:
+    default: break;
     }  
     
   if ( name == "video/x-raw-yuv" )

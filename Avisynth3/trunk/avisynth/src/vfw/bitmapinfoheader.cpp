@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -55,22 +55,17 @@ BitmapInfoHeader::BitmapInfoHeader(VideoInfo const& vi)
 
 PColorSpace BitmapInfoHeader::GetColorSpace() const
 {
-  switch( biCompression )
-  {
-  case BI_RGB:
+  if ( biCompression == BI_RGB )
     switch( biBitCount )
     {
     case 24: return ColorSpace::rgb24();
     case 32: return ColorSpace::rgb32();
-
-    default: return PColorSpace();
+    
+    default: 
     }
 
-  case '2YUY': return ColorSpace::yuy2();
-  case '21VY': return ColorSpace::yv12();
-
-  default: return PColorSpace();
-  }
+  //handles the default above by throwing
+  return ColorSpace::FromFourCC(biCompression);
 }
 
 
@@ -86,9 +81,6 @@ void BitmapInfoHeader::SetDimension(Dimension const& dim)
 {
   biWidth       = dim.GetWidth();
   biHeight      = dim.GetHeight();
-
-  if ( PColorSpace space = GetColorSpace() )
-    biSizeImage = space->GetBitmapSize(dim);
 }
 
 

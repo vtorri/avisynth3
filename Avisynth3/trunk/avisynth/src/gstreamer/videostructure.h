@@ -21,65 +21,35 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_VFW_BITMAPINFOHEADER_H__
-#define __AVS_VFW_BITMAPINFOHEADER_H__
+#ifndef __AVS_GSTREAMER_VIDEOSTRUCTURE_H__
+#define __AVS_GSTREAMER_VIDEOSTRUCTURE_H__
 
 //avisynth includes
-#include "../core/forward.h"
-#include "../core/geometry/dimension.h"
+#include "structure.h"
+#include "../core/forward.h"               //for Dimension, PColorSpace
+#include "../core/geometry/dimension.h"    //so Dimension is defined
 
-//windows includes
-#ifndef NOMINMAX
-#define NOMINMAX          //prevents generation of min and max macros
-#endif //NOMINMAX
-#include <windows.h>
-#include <wingdi.h>
+//boost include
+#include <boost/shared_ptr.hpp>            //so PColorSpace is defined
 
 
-namespace avs { namespace vfw {
+namespace avs { namespace gstreamer {
 
 
 
-/////////////////////////////////////////////////////////////////////////////////
-//  BitmapInfoHeader
-//
-//  a more friendly replacement for VFW BITMAPINFOHEADER
-//
-class BitmapInfoHeader : public BITMAPINFOHEADER
+class VideoStructure : public Structure
 {
 
-public:  //structors
+public:
 
-  BitmapInfoHeader(Dimension const& dim);
-  BitmapInfoHeader(VideoInfo const& vi);
-
-  //generated copy constructor and destructor are fine
-
-
-public:  //read access
-
-  //throws cspace::Unknown if matchs none
   PColorSpace GetColorSpace() const;
-  Dimension GetDimension() const { return Dimension(biWidth, biHeight); }
-
-
-public:  //write access
-
-  void SetColorSpace(PColorSpace const& space);
-
-
-private:
-
-  void SetDimension(Dimension const& dim);
-
-
-public:  //comparison operator
-
-  bool operator==(BitmapInfoHeader const& other) const;
+  Dimension GetDimension() const;
+  Fraction GetFPS() const; 
 
 };
 
 
-} } //namespace avs::vfw
 
-#endif //__AVS_VFW_BITMAPINFOHEADER_H__
+} } //namespace avs::gstreamer
+
+#endif //__AVS_GSTREAMER_VIDEOSTRUCTURE_H__

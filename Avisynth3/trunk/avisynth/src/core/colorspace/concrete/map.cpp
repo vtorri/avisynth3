@@ -28,6 +28,7 @@
 #include "yv12.h"
 #include "yv24.h"
 #include "yv45.h"
+#include "../../exception/colorspace/unknown.h"
 
 
 namespace avs { namespace cspace { namespace concrete {
@@ -70,7 +71,7 @@ PColorSpace Map::operator[](std::string const& name) const
   if ( it != nameMap_.end() )            //if found inside
     return it->second->Get(); 
 
-  return PColorSpace();
+  throw exception::cspace::Unknown();
 }
 
 
@@ -83,7 +84,7 @@ PColorSpace Map::operator[](unsigned long fourcc) const
   case YV12::fourCC: return yv12_.Get();
   case YUY2::fourCC: return yuy2_.Get();
 
-  default: return PColorSpace();
+  default: throw exception::cspace::Unknown();
   }
 }
 

@@ -21,15 +21,11 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_EXCEPTION_COLORSPACE_UNSUPPORTED_H__
-#define __AVS_EXCEPTION_COLORSPACE_UNSUPPORTED_H__
+#ifndef __AVS_EXCEPTION_COLORSPACE_UNKNOWN_H__
+#define __AVS_EXCEPTION_COLORSPACE_UNKNOWN_H__
 
-//avisynth includes
+//avisynth include
 #include "../../exception.h"
-#include "../../colorspace.h"
-
-//boost include
-#include <boost/format.hpp>
 
 
 namespace avs { namespace exception { namespace cspace {
@@ -37,30 +33,22 @@ namespace avs { namespace exception { namespace cspace {
 
 
 //////////////////////////////////////////////////////////////////////////////////////
-//  cspace::Unsupported
+//  cspace::Unknown
 //
-//  reports that the given ColorSpace is not supported by the attempted operation
+//  reports a failure to find an avs colorspace
 //
-class Unsupported : public Exception
+class Unknown : public Exception
 {
-
-  PColorSpace space_;
-
 
 public:  //structors
 
-  Unsupported(PColorSpace const& space)
-    : space_( space ) { }
-
-  virtual ~Unsupported() throw() { }
+  Unknown() { }
+  virtual ~Unknown() throw() { }
 
 
 public:  //diagnotic message
 
-  virtual std::string msg() const
-  {
-    return str( boost::format("%s is not supported") % space_->GetName() );
-  }
+  virtual char const * what() const throw() { return "not an avs colorspace"; }
 
 };
 
@@ -69,4 +57,4 @@ public:  //diagnotic message
 
 } } } //namespace avs::exception::cspace
 
-#endif //__AVS_EXCEPTION_COLORSPACE_UNSUPPORTED_H__
+#endif //__AVS_EXCEPTION_COLORSPACE_UNKNOWN_H__

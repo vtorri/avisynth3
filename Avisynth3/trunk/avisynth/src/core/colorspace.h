@@ -162,6 +162,7 @@ public:  //factory methods
   static PColorSpace yv24();
   static PColorSpace yv45();
 
+  //throw exception::cspace::Unknown if none can be found
   static PColorSpace FromName(std::string const& name);
   static PColorSpace FromFourCC(unsigned long fourCC);
 

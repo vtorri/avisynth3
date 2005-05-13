@@ -61,7 +61,7 @@ PColorSpace BitmapInfoHeader::GetColorSpace() const
     case 24: return ColorSpace::rgb24();
     case 32: return ColorSpace::rgb32();
     
-    default: 
+    default: break;
     }
 
   //handles the default above by throwing

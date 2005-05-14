@@ -36,7 +36,7 @@ enum { Align = 16 };       //alignment of memory allocated
 
 
 //alignment helper methods
-template <typename T> inline T AlignValue(T value) { return RoundUp<Align>(value); }
+template <typename T> inline T AlignValue(T value) { return utility::RoundUp<Align>(value); }
 template <typename T> inline bool IsAligned(T value) { return value % Align == 0; }
 
 

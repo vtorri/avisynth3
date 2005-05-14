@@ -44,7 +44,7 @@ void StreamChooser::PadDetected(Pad& pad, NotifyCapsCallBack callBack, VideoInfo
 
 Pad& StreamChooser::GetChosenPad() const
 {
-  return *static_cast<Pad*>( GST_PAD(&notifyCaps_->GetObject()) );
+  return *static_cast<Pad*>( GST_PAD(&notifyCaps_->GetTarget()) );
 }
 
 

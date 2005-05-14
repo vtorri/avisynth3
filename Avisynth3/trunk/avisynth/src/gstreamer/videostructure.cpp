@@ -41,7 +41,7 @@ namespace avs { namespace gstreamer {
 void VideoStructure::FillVideoInfo(VideoInfo& vi) const
 {
   vi.AddVideo( GetColorSpace()
-             , Dimension(GetIntField("width"), GetIntField("height")
+             , Dimension(GetIntField("width"), GetIntField("height"))
              , 0
              , Fraction( static_cast<long>(GetDoubleField("framerate") * 1000000), 1000000 )
              );

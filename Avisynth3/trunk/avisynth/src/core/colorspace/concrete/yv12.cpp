@@ -35,7 +35,7 @@ namespace avs { namespace cspace { namespace concrete {
 
 long YV12::GetBitmapSize(Dimension const& dim) const
 {
-  return 3 * RoundUp<4>(dim.GetWidth()) * dim.GetHeight() / 2;
+  return 3 * utility::RoundUp<4>(dim.GetWidth()) * dim.GetHeight() / 2;
 }
 
 

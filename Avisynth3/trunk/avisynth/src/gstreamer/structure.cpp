@@ -38,10 +38,21 @@ int Structure::GetIntField(char const * name) const
 {
   int result;
 
-  bool success =  gst_structure_get_int(const_cast<Structure *>(this), name, &result) != 0; 
+  bool success = gst_structure_get_int(const_cast<Structure *>(this), name, &result) != 0; 
   assert( success );
 
   return result;
+}
+
+
+bool Structure::GetBoolField(char const * name) const
+{
+  gboolean result;
+
+  bool success = gst_structure_get_boolean(const_cast<Structure *>(this), name, &result) != 0;
+  asser( success );
+
+  return result == TRUE;
 }
 
 
@@ -49,7 +60,7 @@ double Structure::GetDoubleField(char const * name) const
 {
   double result;
 
-  bool success =  gst_structure_get_double(const_cast<Structure *>(this), name, &result) != 0;
+  bool success = gst_structure_get_double(const_cast<Structure *>(this), name, &result) != 0;
   assert( success );
 
   return result;

@@ -37,10 +37,10 @@ interleaved<2, 4>::interleaved<2, 4>(PEnvironment const& env, Filter const& filt
 {
   Maker make(filter, subrange, size);
 
-  size = RoundUp<2>(size);                //rounds up size to a multiple of 2
+  size = utility::RoundUp<2>(size);                //rounds up size to a multiple of 2
 
-  int realCount = make.count();           //true number of coeffs
-  int count = RoundUp<4>(realCount + 1);  //padded up to a multiple of 4 (we add at least one zero coeff)
+  int realCount = make.count();                    //true number of coeffs
+  int count = utility::RoundUp<4>(realCount + 1);  //padded up to a multiple of 4 (we add at least one zero coeff)
 
   init( count, size * (1 + count /2) );
 

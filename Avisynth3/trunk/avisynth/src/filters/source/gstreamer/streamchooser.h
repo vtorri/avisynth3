@@ -51,7 +51,7 @@ class StreamChooser
   int count_;
   int index_;
 
-  boost::scoped_ptr<gstreamer::SignalHandler> notifyCaps_;
+  boost::scoped_ptr<avs::gstreamer::SignalHandler> notifyCaps_;
 
 
 public:  //structors

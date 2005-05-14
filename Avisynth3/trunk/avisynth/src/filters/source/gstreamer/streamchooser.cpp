@@ -37,7 +37,7 @@ namespace avs { namespace filters { namespace source { namespace gstreamer {
 void StreamChooser::PadDetected(Pad& pad, NotifyCapsCallBack callBack, VideoInfo& vi)
 {
   if ( index_ == count_ || ! notifyCaps_ )
-    notifyCaps.reset( new SignalHandler(G_OBJECT(&pad), "notify-caps", G_CALLBACK(callBack), &vi) );
+    notifyCaps_.reset( new SignalHandler(G_OBJECT(&pad), "notify-caps", G_CALLBACK(callBack), &vi) );
 
   ++count_;
 }

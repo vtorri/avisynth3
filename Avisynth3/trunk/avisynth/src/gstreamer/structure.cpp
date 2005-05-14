@@ -50,7 +50,7 @@ bool Structure::GetBoolField(char const * name) const
   gboolean result;
 
   bool success = gst_structure_get_boolean(const_cast<Structure *>(this), name, &result) != 0;
-  asser( success );
+  assert( success );
 
   return result == TRUE;
 }

@@ -27,11 +27,25 @@
 #include "videostructure.h"
 #include "../core/videoinfo.h"
 #include "../core/colorspace.h"
+#include "../core/geometry/dimension.h"            //so Dimension is defined
 #include "../core/exception/colorspace/unknown.h"
+
+//stl include
+#include <string>
 
 
 namespace avs { namespace gstreamer {
 
+
+
+void VideoStructure::FillVideoInfo(VideoInfo& vi) const
+{
+  vi.AddVideo( GetColorSpace()
+             , Dimension(GetIntField("width"), GetIntField("height")
+             , 0
+             , Fraction( static_cast<long>(GetDoubleField("framerate") * 1000000), 1000000 )
+             );
+}
 
 
 PColorSpace VideoStructure::GetColorSpace() const
@@ -50,18 +64,6 @@ PColorSpace VideoStructure::GetColorSpace() const
     return ColorSpace::FromFourCC( GetFourCCField("format") );
 
   throw exception::cspace::Unknown();
-}
-
-
-Dimension VideoStructure::GetDimension() const
-{
-  return Dimension(GetIntField("width"), GetIntField("height");
-}
-
-
-Fraction VideoStructure::GetFPS() const
-{
-  return Fraction( static_cast<long>(GetDoubleField("framerate") * 1000000), 1000000 );
 }
 
 

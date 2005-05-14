@@ -26,8 +26,7 @@
 
 //avisynth includes
 #include "structure.h"
-#include "../core/forward.h"               //for Dimension, PColorSpace
-#include "../core/geometry/dimension.h"    //so Dimension is defined
+#include "../core/forward.h"               //for VideoInfo, PColorSpace
 
 //boost include
 #include <boost/shared_ptr.hpp>            //so PColorSpace is defined
@@ -40,11 +39,14 @@ namespace avs { namespace gstreamer {
 class VideoStructure : public Structure
 {
 
-public:
+public:  //VideoStructure interface
+
+  void FillVideoInfo(VideoInfo& vi) const;
+
+
+private:  //helper
 
   PColorSpace GetColorSpace() const;
-  Dimension GetDimension() const;
-  Fraction GetFPS() const; 
 
 };
 

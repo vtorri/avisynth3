@@ -33,11 +33,13 @@
 namespace avs { namespace filters { namespace source { namespace gstreamer {
 
 
+using namespace avs::gstreamer;
+
 
 void StreamChooser::PadDetected(Pad& pad, NotifyCapsCallBack callBack, VideoInfo& vi)
 {
   if ( index_ == count_ || ! notifyCaps_ )
-    notifyCaps_.reset( new SignalHandler(G_OBJECT(&pad), "notify-caps", G_CALLBACK(callBack), &vi) );
+    notifyCaps_.reset( new SignalHandler(*G_OBJECT(&pad), "notify-caps", G_CALLBACK(callBack), &vi) );
 
   ++count_;
 }
@@ -50,16 +52,16 @@ Pad& StreamChooser::GetChosenPad() const
 
 void StreamChooser::NotifyVideoCapsCallBack(GObject * o, GstPad * pad, int last, void * data)
 {
-  PVideoStructure vidStruct = 
-      boost::static_pointer_cast<gstreamer::VideoStructure>(static_cast<Pad *>(pad)->GetStructure());
+  boost::shared_ptr<VideoStructure const> vidStruct = 
+      boost::static_pointer_cast<VideoStructure const>(static_cast<Pad *>(pad)->GetStructure());
   
   vidStruct->FillVideoInfo(*static_cast<VideoInfo*>(data));
 }
 
 void StreamChooser::NotifyAudioCapsCallBack(GObject * o, GstPad * pad, int last, void * data)
 {
-  PVideoStructure audStruct = 
-      boost::static_pointer_cast<gstreamer::AudioStructure>(static_cast<Pad *>(pad)->GetStructure());
+  boost::shared_ptr<AudioStructure const> audStruct = 
+      boost::static_pointer_cast<AudioStructure const>(static_cast<Pad *>(pad)->GetStructure());
   
   audStruct->FillVideoInfo(*static_cast<VideoInfo*>(data));
 }

@@ -96,6 +96,14 @@ typedef boost::weak_ptr<Clip const> WeakPClip;
 typedef boost::weak_ptr<RuntimeEnvironment> WeakPEnvironment;
 
 
+#ifdef _WIN32
+
+namespace vfw { class Interfacer; }
+typedef boost::shared_ptr<vfw::Interfacer> PInterfacer;
+
+#endif //_WIN32
+
+
 } //namespace avs
 
 #endif //__AVS_FORWARD_H__

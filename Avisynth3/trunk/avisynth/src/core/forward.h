@@ -98,8 +98,8 @@ typedef boost::weak_ptr<RuntimeEnvironment> WeakPEnvironment;
 
 #ifdef _WIN32
 
-namespace vfw { class Interfacer; }
-typedef boost::shared_ptr<vfw::Interfacer const> PInterfacer;
+namespace vfw { class Exporter; }
+typedef boost::shared_ptr<vfw::Exporter const> PExporter;
 
 #endif //_WIN32
 

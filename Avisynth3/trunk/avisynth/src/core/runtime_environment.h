@@ -82,8 +82,6 @@ public:  //various Create or access methods
   //create a cache based on the passed FrameMaker
   virtual Cache * CreateCache(FrameMaker const& maker) = 0;
 
-  virtual PVideoInfo CreateVideoInfo() const;
-
   virtual PVideoFrame CreateFrame(PColorSpace const& space, Dimension const& dim, FrameType type);
   //fetch infos from VideoInfo to call the above
   virtual PVideoFrame CreateFrame(VideoInfo const& vi, FrameType type);

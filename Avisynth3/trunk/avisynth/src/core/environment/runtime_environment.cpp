@@ -40,12 +40,6 @@ OwnedBlock RuntimeEnvironment::NewOwnedBlock(int size, bool recycle)
 }
 
 
-PVideoInfo RuntimeEnvironment::CreateVideoInfo() const
-{
-  return VideoInfo::Create();
-}
-
-
 PVideoFrame RuntimeEnvironment::CreateFrame(PColorSpace const& space, Dimension const& dim, FrameType type)
 {
   return space->CreateFrame( shared_from_this(), dim, type );

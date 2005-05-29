@@ -21,33 +21,32 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_VFW_FORWARD_H__
-#define __AVS_VFW_FORWARD_H__
+#ifdef _WIN32
+
+//avisynth includes
+#include "interleaved.h"
+#include "../../core/ownedblock.h"
+#include "../../core/bufferwindow.h"
 
 
-namespace boost {
+namespace avs { namespace vfw { namespace importer {
 
 
-template <typename T> class shared_ptr;
+
+PVideoFrame Interleaved::CreateFrame(Dimension const& dim, OwnedBlock const& block) const
+{
+  //create a 4-bytes aligned frame buffer of the expected size by promoting the block
+  //since we respected guards into the block it shouldn't blit
+  buffer_window<4> main( space_->ToPlaneDim(dim, NOT_PLANAR), block, BufferWindow::Guard );
+
+  //use space_ to transform the frame buffer into a frame
+  //if the size was favorable the conversion from buffer_window<4>
+  //to buffer_window<block::Align> (ie BufferWindow) may not blit
+  return space_->CreateFrame(dim, UNKNOWN, main);
+}
 
 
-} //namespace boost
 
+} } } //namespace avs::vfw::importer
 
-namespace avs { namespace vfw {
-
-
-//declarations
-class Importer;
-class WaveFormatEx;
-class BitmapInfoHeader;
-
-//typedefs
-typedef boost::shared_ptr<Importer const> PImporter;
-typedef boost::shared_ptr<WaveFormatEx> PWaveFormatEx;
-typedef boost::shared_ptr<BitmapInfoHeader> PBitmapInfoHeader;
-
-
-} } //namespace avs::vfw
-
-#endif //__AVS_VFW_FORWARD_H__
+#endif //_WIN32

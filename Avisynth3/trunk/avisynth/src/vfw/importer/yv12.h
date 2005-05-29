@@ -21,33 +21,35 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_VFW_FORWARD_H__
-#define __AVS_VFW_FORWARD_H__
+#ifndef __AVS_VFW_IMPORTER_YV12_H__
+#define __AVS_VFW_IMPORTER_YV12_H__
+
+//avisynth include
+#include "../importer.h"
 
 
-namespace boost {
+namespace avs { namespace vfw { namespace importer {
 
 
-template <typename T> class shared_ptr;
+
+///////////////////////////////////////////////////////////////////////////////////////////
+//  importer::YV12
+//
+//
+//
+class YV12 : public Importer
+{
+
+public:  //Importer interface
+
+  virtual PColorSpace GetColorSpace() const;
+
+  virtual PVideoFrame CreateFrame(Dimension const& dim, OwnedBlock const& block) const;
+
+};
 
 
-} //namespace boost
 
+} } } //namespace avs::vfw::importer
 
-namespace avs { namespace vfw {
-
-
-//declarations
-class Importer;
-class WaveFormatEx;
-class BitmapInfoHeader;
-
-//typedefs
-typedef boost::shared_ptr<Importer const> PImporter;
-typedef boost::shared_ptr<WaveFormatEx> PWaveFormatEx;
-typedef boost::shared_ptr<BitmapInfoHeader> PBitmapInfoHeader;
-
-
-} } //namespace avs::vfw
-
-#endif //__AVS_VFW_FORWARD_H__
+#endif //__AVS_VFW_IMPORTER_YV12_H__

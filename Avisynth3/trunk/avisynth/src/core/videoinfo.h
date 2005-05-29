@@ -63,7 +63,6 @@ public:  //clone method
 
 public:  //factory method
 
-  //plugin writers use RuntimeEnvironment::CreateVideoInfo()
   static PVideoInfo Create();
 
 

@@ -21,33 +21,45 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_VFW_FORWARD_H__
-#define __AVS_VFW_FORWARD_H__
+#ifndef __AVS_VFW_IMPORTER_H__
+#define __AVS_VFW_IMPORTER_H__
 
+//avisynth includes
+#include "forward.h"                    //for BitmapInfoHeader, PImporter
+#include "../define.h"                  //for AVS_NOVTABLE
+#include "../core/forward.h"            //for PColorSpace, Dimension, OwnedBlock
 
-namespace boost {
-
-
-template <typename T> class shared_ptr;
-
-
-} //namespace boost
+//boost include
+#include <boost/shared_ptr.hpp>         //so PColorSpace, PImporter are defined
 
 
 namespace avs { namespace vfw {
 
 
-//declarations
-class Importer;
-class WaveFormatEx;
-class BitmapInfoHeader;
 
-//typedefs
-typedef boost::shared_ptr<Importer const> PImporter;
-typedef boost::shared_ptr<WaveFormatEx> PWaveFormatEx;
-typedef boost::shared_ptr<BitmapInfoHeader> PBitmapInfoHeader;
+////////////////////////////////////////////////////////////////////////////////////////
+//  Importer
+//
+//
+//
+class AVS_NOVTABLE Importer
+{
+
+public:  //Importer interface
+
+  virtual PColorSpace GetColorSpace() const = 0;
+
+  virtual PVideoFrame CreateFrame(Dimension const& dim, OwnedBlock const& block) const = 0;
+
+
+public:
+
+  static PImporter Get(BitmapInfoHeader const& bih);
+
+};
+
 
 
 } } //namespace avs::vfw
 
-#endif //__AVS_VFW_FORWARD_H__
+#endif //__AVS_VFW_IMPORTER_H__

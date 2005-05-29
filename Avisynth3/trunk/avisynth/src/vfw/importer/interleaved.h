@@ -21,33 +21,48 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_VFW_FORWARD_H__
-#define __AVS_VFW_FORWARD_H__
+#ifndef __AVS_VFW_IMPORTER_INTERLEAVED_H__
+#define __AVS_VFW_IMPORTER_INTERLEAVED_H__
+
+//avisynth includes
+#include "../importer.h"
+#include "../../core/colorspace/interleaved.h"
 
 
-namespace boost {
+
+namespace avs { namespace vfw { namespace importer {
 
 
-template <typename T> class shared_ptr;
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+//  importer::Interleaved
+//
+//
+//
+class Interleaved : public Importer
+{
+
+  boost::shared_ptr<cspace::Interleaved const> space_;
 
 
-} //namespace boost
+public:  //structors
+
+  Interleaved(boost::shared_ptr<cspace::Interleaved const> const& space)
+    : space_( space ) { }
+
+  //generated destructor is fine
 
 
-namespace avs { namespace vfw {
+public:  //Importer interface
+
+  virtual PColorSpace GetColorSpace() const { return space_; }
+
+  virtual PVideoFrame CreateFrame(Dimension const& dim, OwnedBlock const& block) const;
+
+};
 
 
-//declarations
-class Importer;
-class WaveFormatEx;
-class BitmapInfoHeader;
 
-//typedefs
-typedef boost::shared_ptr<Importer const> PImporter;
-typedef boost::shared_ptr<WaveFormatEx> PWaveFormatEx;
-typedef boost::shared_ptr<BitmapInfoHeader> PBitmapInfoHeader;
+} } } //namespace avs::vfw::importer
 
-
-} } //namespace avs::vfw
-
-#endif //__AVS_VFW_FORWARD_H__
+#endif //__AVS_VFW_IMPORTER_INTERLEAVED_H__

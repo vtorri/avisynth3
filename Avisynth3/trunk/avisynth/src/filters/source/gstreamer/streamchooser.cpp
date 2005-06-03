@@ -37,7 +37,7 @@ namespace avs { namespace filters { namespace source { namespace gstreamer {
 
 
 
-StreamChooser::StreamChooser(int index, Pad& sinkPad, void (*callBack)(GObject * o, GParamSpec *pspec, void * data) )
+StreamChooser::StreamChooser(int index, GstElement& sink, void (*callBack)(GObject * o, GParamSpec *pspec, void * data) )
   : count_( 0 )
   , index_( index )
   , currentPad_( NULL )

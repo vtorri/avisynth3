@@ -21,57 +21,76 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_FILTERS_SOURCE_GSTREAMER_STREAMCHOOSER_H__
-#define __AVS_FILTERS_SOURCE_GSTREAMER_STREAMCHOOSER_H__
+#ifndef __AVS_FILTERS_SOURCE_GSTREAMER_PIPELINE_H__
+#define __AVS_FILTERS_SOURCE_GSTREAMER_PIPELINE_H__
 
 //avisynth includes
-#include "forward.h"                            //for Pad, Factory declarations
-#include "../../../gstreamer/signalhandler.h"
+#include "forward.h"
+
+//stlport include
+#include <string>
+
+//boost include
+#include <boost/shared_ptr.hpp>                //so PPipeline is defined
+
+//gstreamer includes
+#include <glib.h>
+#include <gst/gstpipeline.h>
 
 
 namespace avs { namespace filters { namespace source { namespace gstreamer {
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////////
-//  StreamChooser
+//  Pipeline
 //
-//  helper class for Factory
+//  wrapper class around the pipeline
 //
-class StreamChooser
+
+class Pipeline : public GstPipeline
 {
 
-  int count_;
-  int index_;
+private:  //declared but not implemented
 
-  Pad * currentPad_;
-  avs::gstreamer::SignalHandler notifyCaps_;
-
-
-public:  //structors
-
-  StreamChooser(int index, GstElement& sink, void (*callBack)(GObject * o, GParamSpec *pspec, void * data), Factory& factory);
-
-  //generated destructor is fine
+  Pipeline() ;
+  ~Pipeline();
+  
+public: // factory methods
+  
+  void CreateVideoSink();
+  void CreateAudioSink();
 
 
-public:  //interface  
+public:
 
-  void PadDetected(Pad& sourcePad);
+  GObject& GetDecoder();
+  GstElement& GetVideoSink();
+  GstElement& GetAudioSink();
+  
 
-  bool HasChosen() const { return currentPad_; }
-  Pad& GetChosenPad() const { return *currentPad_; }
+public: // set state
 
+  void SetStateNull ();
+  void SetStateReady ();
+  void SetStatePaused ();
+  void SetStatePlaying ();
 
-public:  //callbacks to use with PadDetected
+public: // iteration
 
-  static void NotifyVideoCapsCallBack(GObject * o, GParamSpec *pspec, void * data);
-  static void NotifyAudioCapsCallBack(GObject * o, GParamSpec *pspec, void * data);
+  bool Iterate();
 
+public:  //factory method
+
+  static PPipeline Create(std::string const& name);
+
+  void GoToFrame (int frame_number, Fraction& fps);
+
+  int QueryVideoLength(Fraction& fps);
+  int QueryAudioLength(int samplerate);
+  
 };
-
 
 
 } } } } // namespace avs::filters::source::gstreamer
 
-#endif // __AVS_FILTERS_SOURCE_GSTREAMER_STREAMCHOOSER_H__
+#endif // __AVS_FILTERS_SOURCE_GSTREAMER_PIPELINE_H__

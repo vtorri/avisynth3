@@ -24,52 +24,43 @@
 #ifndef __AVS_FILTERS_SOURCE_GSTREAMER_FACTORY_H__
 #define __AVS_FILTERS_SOURCE_GSTREAMER_FACTORY_H__
 
-//avisynth include
+//avisynth includes
 #include "forward.h"
-#include "../../../core/forward.h"
-#include "../../../core/geometry/dimension.h"
-
-//boost include
-#include "../../../core/cow_shared_ptr.h"
+#include "streamchooser.h"
+#include "../../../core/forward.h"             //for PVideoInfo typedef
+#include "../../../core/cow_shared_ptr.h"      //so PVideoInfo is defined
 
 //stl include
-#include <sstream>
 #include <string>
-#include <deque>
 
-// gstreamer include
+//gstreamer includes
 #include <gst/gstelement.h>
 #include <gst/gstpad.h>
 
 
 namespace avs { namespace filters { namespace source { namespace gstreamer {
 
-  struct PipelineDestructor
-  {
-    void operator () (GstElement *pipeline)
-    {
-    }
-  };
 
   
 class Factory
 {
-private:
   
-  PPipeline      pipeline_;
-  PStreamChooser videoChooser_;
-  PStreamChooser audioChooser_;
-
+  PPipeline pipeline_;
   PVideoInfo vi_;
+
+  StreamChooser videoChooser_;
+  StreamChooser audioChooser_;
 
   // test 
   unsigned int end_test;
-  
+
+
 public:  //structors
-  Factory(std::string const& name,
-	  int video_stream_index = 0,
-	  int audio_stream_index = 0);
+  
+  Factory(std::string const& name, int videoIndex, int audioIndex);
+  
   ~Factory() {};
+
 
 public: // Access methods
 
@@ -80,20 +71,19 @@ public: // Access methods
 /*   CPVideoInfo FillVideoInfo() const; */
 
 
-public: // Fill the informations;
+public:
   
-  void Factory::SetPads (Pad& pad);
+  void PadDetected(Pad& pad);
+
 
 private: // Fill the informations;
   
   void SetStreamLength();
   
-
 };
   
   
 
 } } } } // namespace avs::filters::source::gstreamer
-
 
 #endif //__AVS_FILTERS_SOURCE_GSTREAMER_FACTORY_H__

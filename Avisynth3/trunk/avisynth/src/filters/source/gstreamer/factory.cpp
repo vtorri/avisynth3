@@ -23,10 +23,9 @@
 
 
 // avisynth includes
-#include "factory.h"
 #include "pad.h"
+#include "factory.h"
 #include "pipeline.h"
-#include "streamchooser.h"
 #include "../../../gstreamer/structure.h"
 #include "../../../core/videoinfo.h"
 #include "../../../core/exception/generic.h"
@@ -35,56 +34,51 @@
 #include <gst/gst.h>
 
 
-using namespace avs::exception;
-using namespace avs::gstreamer;
-
-
-
 namespace avs { namespace filters { namespace source { namespace gstreamer {
+
+
 
 namespace {
 
-static void DetectPadsCallback(GObject  *obj,
-			       GstPad   *pad,
-			       gboolean  last,
-			       gpointer  data)
+
+static void DetectPadsCallback(GObject * obj, GstPad * pad, gboolean last, gpointer data)
 {
-  static_cast<Factory *>(data)->SetPads (static_cast<Pad&>( *pad ));
+  static_cast<Factory *>(data)->PadDetected( static_cast<Pad&>(*pad) );
 }
   
-static void NoMorePadsCallBack(GObject  *obj,
-			       GstPad   *pad,
-			       gboolean  last,
-			       gpointer  data)
+static void NoMorePadsCallBack(GObject * obj, GstPad * pad, gboolean last, gpointer data)
 {
-  static_cast<Pipeline *>(data)->SetStatePaused ();
+  static_cast<Pipeline *>(data)->SetStatePaused();
 }
+
 
 } // anonymous namespace
 
 
-  Factory::Factory (std::string const&  name,
-		    int  video_stream_index, // start from 0
-		    int  audio_stream_index) // start from 0
-    : videoChooser_( new StreamChooser( video_stream_index ) )
-    , audioChooser_( new StreamChooser( audio_stream_index ) )
-    , vi_ ( VideoInfo::Create() )
-  {
-    GObject    *decoder;
-    
+
+Factory::Factory(std::string const& name, int videoIndex, int audioIndex)
+  : pipeline_( Pipeline::Create(name) )
+  , vi_( VideoInfo::Create() )
+  , videoChooser_( videoIndex, pipeline_->GetVideoSink(), *this )
+  , audioChooser_( audioIndex, pipeline_->GetAudioSink(), *this )  
+{
     // Gstreamer init
     gst_init (NULL, NULL);
 
-    // Set the pipeline and the dimension and fps of the video
-    // and the rate and channels of the audio
-    pipeline_ = Pipeline::Create (name);
-    decoder = &pipeline_->GetDecoder ();
-    SignalHandler padDetected(*decoder, "new-decoded-pad", G_CALLBACK(&DetectPadsCallback), this);
-    SignalHandler noMorePads(*decoder, "no-more-pads", G_CALLBACK(&NoMorePadsCallBack), pipeline_);
-    pipeline_->SetStatePlaying ();
-    for ( int i = 40; (i-- > 0) && pipeline_->Iterate(); ) {
-      g_print ("I : %d\n", 40-i);
-    }
+  // Set the pipeline and the dimension and fps of the video
+  // and the rate and channels of the audio
+  
+
+  GObject& decoder = pipeline_->GetDecoder();
+  SignalHandler padDetected(decoder, "new-decoded-pad", G_CALLBACK(&DetectPadsCallback), this);
+  SignalHandler noMorePads(decoder, "no-more-pads", G_CALLBACK(&NoMorePadsCallBack), pipeline_);
+
+  pipeline_->SetStatePlaying ();
+    
+  for ( int i = 40; i-- > 0 && pipeline_->Iterate(); ) 
+  {
+    g_print ("I : %d\n", 40-i);
+  }
 
 
     // Set framecount and samplecount of (resp) the video and
@@ -97,21 +91,17 @@ static void NoMorePadsCallBack(GObject  *obj,
 
   }
 
-  void Factory::SetPads (Pad& pad)
-  {
-    std::string mimeType = pad.GetStructure()->GetName();
+
+void Factory::PadDetected(Pad& pad)
+{
+  std::string mimeType = pad.GetStructure()->GetName();
     
-    if ( g_str_has_prefix(mimeType.c_str(), "video/") )
-      videoChooser_->PadDetected (pad,
-				  &StreamChooser::NotifyVideoCapsCallBack,
-				  pipeline_->GetSinkSourcePad ("vsink"),
-				  const_cast<VideoInfo&>(*vi_));
-    else if ( g_str_has_prefix(mimeType.c_str(), "audio/") )
-      audioChooser_->PadDetected (pad,
-				  &StreamChooser::NotifyAudioCapsCallBack,
-				  pipeline_->GetSinkSourcePad ("asink"),
-				  const_cast<VideoInfo&>(*vi_));
-  }
+  if ( g_str_has_prefix(mimeType.c_str(), "video/") )
+    videoChooser_->PadDetected(pad);
+  else 
+    if ( g_str_has_prefix(mimeType.c_str(), "audio/") )
+      audioChooser_->PadDetected(pad);
+}
 
   
   void Factory::SetStreamLength()

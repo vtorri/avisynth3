@@ -29,79 +29,80 @@
 #include "../../../gstreamer/videostructure.h"
 #include "../../../gstreamer/audiostructure.h"
 
+//gstreamer includes
+#include <gst/gstelement.h>
+
 
 namespace avs { namespace filters { namespace source { namespace gstreamer {
 
 
-using namespace avs::gstreamer;
+
+StreamChooser::StreamChooser(int index, Pad& sinkPad, void (*callBack)(GObject * o, GParamSpec *pspec, void * data) )
+  : count_( 0 )
+  , index_( index )
+  , currentPad_( NULL )
+  , notifyCaps_( *GST_OBJECT(gst_element_get_pad(&sinkPad, "sink")), callBack, &factory ) { }
 
 
-void StreamChooser::PadDetected(Pad& pad, NotifyCapsCallBack callBack, VideoInfo& vi)
+
+void StreamChooser::PadDetected(Pad& sourcePad, NotifyCapsCallBack callBack, VideoInfo& vi)
 {
-  if ( index_ == count_ || ! notifyCaps_ )
-    notifyCaps_.reset( new SignalHandler(*G_OBJECT(&pad), "notify-caps", G_CALLBACK(callBack), &vi) );
+  //if target stream found or first stream
+  if ( index_ == count_ || currentPad_ == NULL )
+  {
+    //  +-----------------------------------+
+    //  |             Decodebin             |
+    //  |                                   |
+    //  |   +---------------+               |
+    //  |   |               |               |
+    //  |   |    Decoder    |               |
+    //  |   |               |               |
+    //  |   |    +----------|               |
+    //  |   |    | True Pad |\              |
+    //  |   |    +----------| \             |   +-----------------+
+    //  |   +---------------+  \            |   |            Sink |
+    //  |                       +-----------|   |----------+      |
+    //  |                       | sourcePad |---| sinkPad_ |      |
+    //  |                       +-----------|   |----------+      |
+    //  |                                   |   +-----------------+
+    //  +-----------------------------------+
+    //
+    // sourcePad is a ghost pad of the True Pad of the decoder, like
+    // a symbolic link to the True Pad.
+    // We link sourcePad and sinkPad_
+    // We attach the notify::caps signal on sinkPad_
+  
+    //unlink current if there is one
+    if ( currentPad_ != NULL )
+	    gst_pad_unlink( GST_PAD(currentPad_), GST_PAD(&notifyCaps_.GetTarget()) );
 
-  ++count_;
+    //link new one
+    currentPad_ = &sourcePad;
+    gst_pad_link( GST_PAD(currentPad_), GST_PAD(&notifyCaps_.GetTarget()) );    
+  }
+
+  ++count_;   //update stream count
 }
 
-Pad& StreamChooser::GetChosenPad() const
-{
-  return *static_cast<Pad*>( GST_PAD(&notifyCaps_->GetTarget()) );
-}
 
 
-void StreamChooser::NotifyVideoCapsCallBack(GObject * o, GstPad * pad, int last, void * data)
+
+void StreamChooser::NotifyVideoCapsCallBack(GObject * o, GParamSpec *pspec, void * data)
 {
   boost::shared_ptr<VideoStructure const> vidStruct = 
-      boost::static_pointer_cast<VideoStructure const>(static_cast<Pad *>(pad)->GetStructure());
+      boost::static_pointer_cast<VideoStructure const>(static_cast<Pad *>(GST_PAD(o))->GetNegotiatedStructure());
   
   vidStruct->FillVideoInfo(*static_cast<VideoInfo*>(data));
 }
 
-void StreamChooser::NotifyAudioCapsCallBack(GObject * o, GstPad * pad, int last, void * data)
+void StreamChooser::NotifyAudioCapsCallBack(GObject * o, GParamSpec *pspec, void * data)
 {
   boost::shared_ptr<AudioStructure const> audStruct = 
-      boost::static_pointer_cast<AudioStructure const>(static_cast<Pad *>(pad)->GetStructure());
+      boost::static_pointer_cast<AudioStructure const>(static_cast<Pad *>(GST_PAD(o))->GetNegotiatedStructure());
   
   audStruct->FillVideoInfo(*static_cast<VideoInfo*>(data));
 }
 
-
-/*
-
-PVideoInfo StreamCounter::operator()(Pipeline& pipeline)
-{
-  GObject& decoder = pipeline.GetDecoder();
-  SignalHandler padDetected(decoder, "new-decoded-pad", G_CALLBACK(&DetectPadsCallBack), this);
-  SignalHandler noMorePads(decoder, "no-more-pads", G_CALLBACK(&NoMorePadsCallBack), &pipeline_);
-  
-  pipeline_.SetStatePlaying();       //set pipeline to play mode
-
-  //and iterate to find streams
-  //callbacks registered before take care of updating counts
-  for ( int i = 40; (i-- > 0) && pipeline_.Iterate(); ) { }
-
-  pipeline_.SetStateReady();
-
-  return std::make_pair(audio_.pad_, video_.pad_);
-}
-
-
-void StreamCounter::PadDetected(Pad& pad)
-{
-  PGstStructure str = pad.GetStructure();
-  
-  gchar const * mimeType = gst_structure_get_name(str.get());
-  //g_print ("mimetype : %s\n", mimeType);
-  
-  if ( g_str_has_prefix(mimeType, "video/") )
-    video_.PadDetected(pad, G_CALLBACK(&FillVideoInfoCallBack), *vi_);
-  else
-    if ( g_str_has_prefix(mimeType, "audio/") )
-      audio_.PadDetected(pad, G_CALLBACK(&FillAudioInfoCallBack), *vi_););
-}
-
-*/
 
 } } } } //namespace avs::filters::source::gstreamer
 

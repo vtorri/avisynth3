@@ -33,10 +33,10 @@
 namespace avs { namespace gstreamer {
 
 
-
-SignalHandler::SignalHandler(GObject& target, char const * signalName, void (*callBack)(), void * data)
-  : target_( target )
-  , signalId_( g_signal_connect(&target, signalName, callBack, data) ) { }
+void SignalHandler::Init(char const * signalName, void (*callBack)(), void * data)
+{
+  signalId_ = g_signal_connect(&target, signalName, callBack, data);
+}
 
 
 SignalHandler::~SignalHandler()

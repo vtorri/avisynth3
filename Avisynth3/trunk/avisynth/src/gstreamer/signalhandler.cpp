@@ -23,7 +23,8 @@
 
 #ifndef _WIN32
 
-//avisynth include
+//avisynth includes
+#include "object.h"
 #include "signalhandler.h"
 
 //glib include
@@ -33,9 +34,9 @@
 namespace avs { namespace gstreamer {
 
 
-void SignalHandler::Init(char const * signalName, void (*callBack)(), void * data)
+unsigned long SignalHandler::Connect(Object& target, char const * signalName, void (*callBack)(), void * data)
 {
-  signalId_ = g_signal_connect(&target, signalName, callBack, data);
+  return g_signal_connect(&target, signalName, callBack, data);
 }
 
 

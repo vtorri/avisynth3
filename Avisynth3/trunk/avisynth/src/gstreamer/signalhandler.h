@@ -47,7 +47,7 @@ class SignalHandler : public boost::noncopyable
   Object& target_;
   unsigned long signalId_;
 
-  void Init(char const * signalName, void (*callBack)(), void * data);
+  static unsigned long Connect(Object& target, char const * signalName, void (*callBack)(), void * data);
 
 
 public:  //structors
@@ -55,9 +55,7 @@ public:  //structors
   template <typename CallBack>
   SignalHandler(Object& target, char const * signalName, CallBack callBack, void * data)
     : target_( target )
-  {
-    Init(signalName, reinterpret_cast<void (*)()>(callBack), data);
-  }
+    , signalId_( Connect(target, signalName, reinterpret_cast<void (*)()>(callBack), data) ) { }
   
   ~SignalHandler();
 

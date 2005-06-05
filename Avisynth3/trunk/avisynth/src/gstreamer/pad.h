@@ -48,8 +48,8 @@ class Pad : public GstPad
 
 private:  //declared but not implemented
 
-  Pad() ;
-  ~Pad() {};
+  Pad();
+  ~Pad();
 
 
 public:
@@ -60,7 +60,7 @@ public:
 
 public:  //cast
 
-  operator GObject&() { return *GST_OBJECT(this); }
+  operator Object&() { return static_cast<Object&>(*GST_OBJECT(this)); }
 
 };
 

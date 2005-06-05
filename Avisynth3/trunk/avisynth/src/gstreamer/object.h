@@ -21,48 +21,29 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_GSTREAMER_ELEMENT_H__
-#define __AVS_GSTREAMER_ELEMENT_H__
+#ifndef __AVS_GSTREAMER_OBJECT_H__
+#define __AVS_GSTREAMER_OBJECT_H__
 
-//assert include
-#include <assert.h>
-
-//gstreamer include
-#include <gst/gstelement.h>
+//glib include
+#include <glib-object.h>
 
 
 namespace avs { namespace gstreamer {
 
 
- 
-class Element : public GstElement
+
+class Object : public GObject
 {
 
 private:  //declared but not implemented
 
-  Element();
-  ~Element();
+  Object();
+  ~Object();
 
 
 public:
 
-  Pad * GetPad(char const * name) { return static_cast<Pad *>( gst_element_get_pad(this, name) ); }
-
-
-public:  //cast
-
-  operator Object&() { return static_cast<Object&>( *G_OBJECT(this) ); }
-
-
-public:  //factory method
-
-  static Element * Create(char const * type, char const * name)
-  {
-    GstElement * result = gst_element_factory_make(type, name);   
-    assert( result != NULL );
-    return static_cast<Element *>(result);
-  }
-
+  void Set(char const * key, char const * value);
 
 };
 
@@ -70,4 +51,4 @@ public:  //factory method
 
 } } //namespace avs::gstreamer
 
-#endif //__AVS_GSTREAMER_ELEMENT_H__
+#endif //__AVS_GSTREAMER_OBJECT_H__

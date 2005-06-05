@@ -24,11 +24,12 @@
 #ifndef __AVS_GSTREAMER_SIGNALHANDLER_H__
 #define __AVS_GSTREAMER_SIGNALHANDLER_H__
 
+//avs include
+#include "forward.h"                 //for Object declaration
+
 //boost include
 #include <boost/noncopyable.hpp>
 
-//glib forward declaration
-typedef struct _GObject GObject;
 
 
 namespace avs { namespace gstreamer {
@@ -43,7 +44,7 @@ namespace avs { namespace gstreamer {
 class SignalHandler : public boost::noncopyable
 {
 
-  GObject& target_;
+  Object& target_;
   unsigned long signalId_;
 
   void Init(char const * signalName, void (*callBack)(), void * data);
@@ -52,7 +53,7 @@ class SignalHandler : public boost::noncopyable
 public:  //structors
 
   template <typename CallBack>
-  SignalHandler(GObject& target, char const * signalName, CallBack callBack, void * data)
+  SignalHandler(Object& target, char const * signalName, CallBack callBack, void * data)
     : target_( target )
   {
     Init(signalName, reinterpret_cast<void (*)()>(callBack), data);
@@ -63,7 +64,7 @@ public:  //structors
 
 public:  //access
 
-  GObject& GetTarget() const { return target_; }
+  Object& GetTarget() const { return target_; }
 
 };
 

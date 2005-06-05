@@ -26,22 +26,20 @@
 //avisynth includes
 #include "pad.h"
 #include "streamchooser.h"
+#include "../../../gstreamer/element.h"
 #include "../../../gstreamer/videostructure.h"
 #include "../../../gstreamer/audiostructure.h"
-
-//gstreamer includes
-#include <gst/gstelement.h>
 
 
 namespace avs { namespace filters { namespace source { namespace gstreamer {
 
 
 
-StreamChooser::StreamChooser(int index, GstElement& sink, void (*callBack)(GObject * o, GParamSpec *pspec, void * data) )
+StreamChooser::StreamChooser(int index, Element& sink, void (*callBack)(GObject * o, GParamSpec *pspec, void * data) )
   : count_( 0 )
   , index_( index )
   , currentPad_( NULL )
-  , notifyCaps_( *GST_OBJECT(gst_element_get_pad(&sinkPad, "sink")), callBack, &factory ) { }
+  , notifyCaps_( *sink.GetPad("sink"), "notify::caps", callBack, &factory ) { }
 
 
 

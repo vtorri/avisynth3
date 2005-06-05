@@ -21,16 +21,16 @@
 // General Public License cover the whole combination.
 
 //avisynth includes
-#include "pad.h"
 #include "factory.h"
 #include "pipeline.h"
-#include "../../../core/exception/generic.h"
+#include "../../../gstreamer/pad.h"
+#include "../../../gstreamer/element.h"
 
 //gstreamer includes
 #include <gst/gst.h>
 
-
-using namespace avs::exception;
+//assert include
+#include <assert.h>
 
 
 namespace avs { namespace filters { namespace source { namespace gstreamer {
@@ -49,39 +49,37 @@ namespace avs { namespace filters { namespace source { namespace gstreamer {
 
 PPipeline Pipeline::Create(std::string const& name)
 {
-  GstElement *pipeline = gst_pipeline_new ("pipeline");
+  GstElement * pipeline = gst_pipeline_new("pipeline");
+  assert( pipeline != NULL );
 
-  if (!pipeline)
-    throw Generic("Factory: alocation of the pipeline failed");
+  // file source  
+  Element * fileSrc = Element::FactoryMake("filesrc", "disk_source");
 
-  // file source
-  GstElement *filesrc = gst_element_factory_make ("filesrc", "disk_source");
-  assert (filesrc != NULL);
-  g_object_set (G_OBJECT (filesrc), "location", name.c_str(), NULL);
+  static_cast<Object&>(*fileSrc).Set("location", name.c_str());
 
   // decodebin
   // FIXME: the gstreamer decoder has issues with mpeg streams
   //        must check for updates / API changes
-  GstElement *decoder = gst_element_factory_make ("decodebin", "decoder");
-  assert(decoder != NULL);
+  Element * decoder = Element::FactoryMake("decodebin", "decoder");
 
-  GstElement *vsink = gst_element_factory_make ("fakesink", "vsink");
-  GstElement *asink = gst_element_factory_make ("fakesink", "asink");
+  Element * vsink = Element::FactoryMake("fakesink", "vsink");
+  Element * asink = Element::FactoryMake("fakesink", "asink");
 
   // link and add elements in the pipeline
   gst_element_link (filesrc, decoder);
   gst_bin_add_many (GST_BIN (pipeline),
 		    filesrc, decoder, vsink, asink, NULL);
 
-  gst_bin_sync_children_state (GST_BIN (pipeline));
+  gst_bin_sync_children_state( GST_BIN(pipeline) );
 
   return PPipeline( static_cast<Pipeline *>(GST_PIPELINE (pipeline)) );
 }
 
+
 Pipeline::~Pipeline()
 {
   g_print ("FIN\n");
-  SetStateNull ();
+  SetStateNull();
   gst_object_unref (GST_OBJECT (this));
 }
 
@@ -102,31 +100,33 @@ GstElement& Pipeline::GetAudioSink()
 }
 
 
-void Pipeline::SetStateNull ()
+void Pipeline::SetStateNull()
 {
-  gst_element_set_state (GST_ELEMENT (this), GST_STATE_NULL);
+  gst_element_set_state( GST_ELEMENT(this), GST_STATE_NULL );
 }
 
-void Pipeline::SetStateReady ()
+void Pipeline::SetStateReady()
 {
-  gst_element_set_state (GST_ELEMENT (this), GST_STATE_READY);
+  gst_element_set_state( GST_ELEMENT(this), GST_STATE_READY );
 }
 
-void Pipeline::SetStatePaused ()
+void Pipeline::SetStatePaused()
 {
-  gst_element_set_state (GST_ELEMENT (this), GST_STATE_PAUSED);
+  gst_element_set_state( GST_ELEMENT(this), GST_STATE_PAUSED );
 }
 
-void Pipeline::SetStatePlaying ()
+void Pipeline::SetStatePlaying()
 {
-  gst_element_set_state (GST_ELEMENT (this), GST_STATE_PLAYING);
+  gst_element_set_state( GST_ELEMENT(this), GST_STATE_PLAYING );
 }
+
 
 bool Pipeline::Iterate()
 {
-  return (gst_bin_iterate (GST_BIN (this)) != 0);
+  return gst_bin_iterate( GST_BIN(this) ) != 0;
 }
 
+/*
 void Pipeline::CreateVideoSink()
 {
   GstElement *videobin = gst_bin_new ("videobin");
@@ -155,7 +155,7 @@ void Pipeline::CreateAudioSink()
 			     gst_element_get_pad (conv, "sink"), "sink");
   
   gst_bin_add (GST_BIN (this), audiobin);
-}
+}*/
 
 
 void Pipeline::GoToFrame (int frame_number, Fraction& fps)

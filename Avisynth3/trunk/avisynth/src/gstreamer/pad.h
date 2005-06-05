@@ -21,73 +21,51 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_FILTERS_SOURCE_GSTREAMER_PIPELINE_H__
-#define __AVS_FILTERS_SOURCE_GSTREAMER_PIPELINE_H__
+#ifndef __AVS_GSTREAMER_PAD_H__
+#define __AVS_GSTREAMER_PAD_H__
 
-//avisynth includes
-#include "forward.h"
-
-//stlport include
-#include <string>
+//avisynth include
+#include "forward.h"                 //for PStructure declaration
 
 //boost include
-#include <boost/shared_ptr.hpp>                //so PPipeline is defined
+#include <boost/shared_ptr.hpp>      //so PStructure is defined
 
-//gstreamer includes
-#include <glib.h>
-#include <gst/gstpipeline.h>
+//gstreamer include
+#include <gst/gstpad.h>
 
 
 namespace avs { namespace filters { namespace source { namespace gstreamer {
 
 
-////////////////////////////////////////////////////////////////////////////////////////
-//  Pipeline
-//
-//  wrapper class around the pipeline
-//
 
-class Pipeline : public GstPipeline
+////////////////////////////////////////////////////////////////////////////////////////
+//  Pad
+//
+// 
+//
+class Pad : public GstPad
 {
 
 private:  //declared but not implemented
 
-  Pipeline() ;
-  ~Pipeline();
+  Pad() ;
+  ~Pad() {};
 
 
 public:
 
-  GObject& GetDecoder();
-  GstElement& GetVideoSink();
-  GstElement& GetAudioSink();
-  
-
-public:  //set state methods
-
-  void SetStateNull ();
-  void SetStateReady ();
-  void SetStatePaused ();
-  void SetStatePlaying ();
+  PStructure GetStructure();
+  PStructure GetNegotiatedStructure();
 
 
-public:  //iteration
+public:  //cast
 
-  bool Iterate();
+  operator GObject&() { return *GST_OBJECT(this); }
 
-
-public:  //factory method
-
-  static PPipeline Create(std::string const& name);
-
-  void GoToFrame (int frame_number, Fraction& fps);
-
-  int QueryVideoLength(Fraction& fps);
-  int QueryAudioLength(int samplerate);
-  
 };
 
 
-} } } } // namespace avs::filters::source::gstreamer
 
-#endif // __AVS_FILTERS_SOURCE_GSTREAMER_PIPELINE_H__
+} } // namespace avs::gstreamer
+
+#endif // __AVS_GSTREAMER_PAD_H__

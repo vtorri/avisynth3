@@ -25,7 +25,8 @@
 #define __AVS_FILTERS_SOURCE_GSTREAMER_STREAMCHOOSER_H__
 
 //avisynth includes
-#include "forward.h"                            //for Pad, Factory declarations
+#include "forward.h"                            //for Factory declaration
+#include "../../../gstreamer/forward.h"         //for Pad, Element declarations
 #include "../../../gstreamer/signalhandler.h"
 
 
@@ -50,7 +51,7 @@ class StreamChooser
 
 public:  //structors
 
-  StreamChooser(int index, GstElement& sink, void (*callBack)(GObject * o, GParamSpec *pspec, void * data), Factory& factory);
+  StreamChooser(int index, Element& sink, void (*callBack)(GObject * o, GParamSpec *pspec, void * data), Factory& factory);
 
   //generated destructor is fine
 

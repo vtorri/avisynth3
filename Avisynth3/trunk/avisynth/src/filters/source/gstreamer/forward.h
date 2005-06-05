@@ -25,27 +25,19 @@
 #define __AVS_FILTERS_SOURCE_GSTREAMER_FORWARD_H__
 
 
-//gstreamer declaration
-typedef struct _GObject GObject;
-
-
 //declaration of shared_ptr
 namespace boost { template <typename T> class shared_ptr; }
 
-namespace avs { namespace gstreamer { class Structure; } }
 
 namespace avs { namespace filters { namespace source { namespace gstreamer {
 
 
 //declarations
-class Pad;
 class Factory;
 class Pipeline;
 class StreamChooser;
   
-//typedefs
-typedef boost::shared_ptr<Pad> PPad;
-typedef boost::shared_ptr<avs::gstreamer::Structure> PStructure;
+//typedef
 typedef Pipeline * PPipeline;
 
 

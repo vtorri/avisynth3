@@ -34,7 +34,7 @@
 #include <gst/gstpad.h>
 
 
-namespace avs { namespace filters { namespace source { namespace gstreamer {
+namespace avs { namespace gstreamer {
 
 
 

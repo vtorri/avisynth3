@@ -21,53 +21,22 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_GSTREAMER_ELEMENT_H__
-#define __AVS_GSTREAMER_ELEMENT_H__
+#ifndef _WIN32
 
-//assert include
-#include <assert.h>
-
-//gstreamer include
-#include <gst/gstelement.h>
+//avisynth includes
+#include "pad.h"
+#include "element.h"
 
 
 namespace avs { namespace gstreamer {
 
 
- 
-class Element : public GstElement
-{
-
-private:  //declared but not implemented
-
-  Element();
-  ~Element();
-
-
-public:
-
-  Pad * GetPad(char const * name);
-
-
-public:  //cast
-
-  operator Object&() { return static_cast<Object&>( *G_OBJECT(this) ); }
-
-
-public:  //factory method
-
-  static Element * Create(char const * type, char const * name)
-  {
-    GstElement * result = gst_element_factory_make(type, name);   
-    assert( result != NULL );
-    return static_cast<Element *>(result);
-  }
-
-
-};
-
+Pad * Element::GetPad(char const * name)
+{ 
+  return static_cast<Pad *>( gst_element_get_pad(this, name) ); 
+}
 
 
 } } //namespace avs::gstreamer
 
-#endif //__AVS_GSTREAMER_ELEMENT_H__
+#endif //_WIN32

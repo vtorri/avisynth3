@@ -25,7 +25,7 @@
 #define __AVS_GSTREAMER_PAD_H__
 
 //avisynth include
-#include "forward.h"                 //for PStructure declaration
+#include "forward.h"                 //for PStructure typedef
 
 //boost include
 #include <boost/shared_ptr.hpp>      //so PStructure is defined

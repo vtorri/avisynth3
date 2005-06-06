@@ -22,6 +22,8 @@
 // General Public License cover the whole combination.
 
 
+#ifndef _WIN32
+
 // avisynth includes
 #include "pad.h"
 #include "factory.h"
@@ -122,3 +124,5 @@ void Factory::PadDetected(Pad& pad)
 
 
 } } } } // namespace avs::filters::source::gstreamer
+
+#endif //_WIN32

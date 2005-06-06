@@ -43,7 +43,10 @@ private:  //declared but not implemented
 
 public:
 
-  void Set(char const * key, char const * value);
+  void Set(char const * key, char const * value)
+  {
+    g_object_set(this, key, value, NULL);
+  }
 
 };
 

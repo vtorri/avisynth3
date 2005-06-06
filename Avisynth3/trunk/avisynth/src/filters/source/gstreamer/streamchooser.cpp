@@ -24,8 +24,8 @@
 #ifndef _WIN32
 
 //avisynth includes
-#include "pad.h"
 #include "streamchooser.h"
+#include "../../../gstreamer/pad.h"
 #include "../../../gstreamer/element.h"
 #include "../../../gstreamer/videostructure.h"
 #include "../../../gstreamer/audiostructure.h"
@@ -38,7 +38,7 @@ namespace avs { namespace filters { namespace source { namespace gstreamer {
 StreamChooser::StreamChooser(int index, Element& sink, void (*callBack)(GObject * o, GParamSpec *pspec, void * data) )
   : count_( 0 )
   , index_( index )
-  , currentPad_( NULL )
+  , sourcePad_( NULL )
   , notifyCaps_( *sink.GetPad("sink"), "notify::caps", callBack, &factory ) { }
 
 
@@ -60,7 +60,7 @@ void StreamChooser::PadDetected(Pad& sourcePad, NotifyCapsCallBack callBack, Vid
     //  |   |    +----------| \             |   +-----------------+
     //  |   +---------------+  \            |   |            Sink |
     //  |                       +-----------|   |----------+      |
-    //  |                       | sourcePad |---| sinkPad_ |      |
+    //  |                       | sourcePad |---| sinkPad  |      |
     //  |                       +-----------|   |----------+      |
     //  |                                   |   +-----------------+
     //  +-----------------------------------+
@@ -70,13 +70,15 @@ void StreamChooser::PadDetected(Pad& sourcePad, NotifyCapsCallBack callBack, Vid
     // We link sourcePad and sinkPad_
     // We attach the notify::caps signal on sinkPad_
   
+    Pad& sinkPad = static_cast<Pad&>(notifyCaps_.GetTarget());
+
     //unlink current if there is one
-    if ( currentPad_ != NULL )
-	    gst_pad_unlink( GST_PAD(currentPad_), GST_PAD(&notifyCaps_.GetTarget()) );
+    if ( sourcePad_ != NULL )
+      sourcePad_->Unlink(sinkPad);
 
     //link new one
-    currentPad_ = &sourcePad;
-    gst_pad_link( GST_PAD(currentPad_), GST_PAD(&notifyCaps_.GetTarget()) );    
+    sourcePad_ = &sourcePad;
+    sourcePad_->Link(sinkPad);
   }
 
   ++count_;   //update stream count

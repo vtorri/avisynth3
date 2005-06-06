@@ -42,11 +42,14 @@ namespace avs { namespace filters { namespace source { namespace gstreamer {
 class StreamChooser
 {
 
+  using avs::gstreamer::Pad;
+  using avs::gstreamer::Element;
+  using avs::gstreamer::SignalHandler;
+
   int count_;
   int index_;
-
-  Pad * currentPad_;
-  avs::gstreamer::SignalHandler notifyCaps_;
+  Pad * sourcePad_;
+  SignalHandler notifyCaps_;
 
 
 public:  //structors

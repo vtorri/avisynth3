@@ -24,13 +24,12 @@
 
 #ifndef _WIN32
 
-// avisynth includes
-#include "pad.h"
+//avisynth includes
 #include "factory.h"
 #include "pipeline.h"
+#include "../../../gstreamer/pad.h"
 #include "../../../gstreamer/structure.h"
 #include "../../../core/videoinfo.h"
-#include "../../../core/exception/generic.h"
 
 //gstreamer includes
 #include <gst/gst.h>

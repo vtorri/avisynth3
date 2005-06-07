@@ -25,17 +25,17 @@
 #define __AVS_FILTERS_SOURCE_GSTREAMER_FACTORY_H__
 
 //avisynth includes
-#include "forward.h"
+#include "forward.h"                           //for PPipeline typedef
 #include "streamchooser.h"
 #include "../../../core/forward.h"             //for PVideoInfo typedef
+#include "../../../gstreamer/forward.h"        //for Pad declaration
 #include "../../../core/cow_shared_ptr.h"      //so PVideoInfo is defined
+
+//boost include
+//#include <boost/shared_ptr.hpp>                //so PPipeline is defined
 
 //stl include
 #include <string>
-
-//gstreamer includes
-#include <gst/gstelement.h>
-#include <gst/gstpad.h>
 
 
 namespace avs { namespace filters { namespace source { namespace gstreamer {
@@ -73,7 +73,7 @@ public: // Access methods
 
 public:
   
-  void PadDetected(Pad& pad);
+  void PadDetected(avs::gstreamer::Pad& pad);
 
 
 private: // Fill the informations;

@@ -63,8 +63,8 @@ public:  //interface
 
   void PadDetected(Pad& sourcePad);
 
-  bool HasChosen() const { return currentPad_; }
-  Pad& GetChosenPad() const { return *currentPad_; }
+  bool HasChosen() const { return sourcePad_; }
+  Pad& GetChosenPad() const { return *sourcePad_; }
 
 
 public:  //callbacks to use with PadDetected

@@ -24,7 +24,8 @@
 #ifndef __AVS_GSTREAMER_PAD_H__
 #define __AVS_GSTREAMER_PAD_H__
 
-//avisynth include
+//avisynth includes
+#include "object.h"
 #include "forward.h"                 //for PStructure typedef
 
 //boost include
@@ -50,6 +51,12 @@ private:  //declared but not implemented
 
   Pad();
   ~Pad();
+
+
+public:  //link/unlink
+
+  bool Link(Pad& sink) { return gst_pad_link(this, &sink) != 0; }
+  void Unlink(Pad& sink) { gst_pad_unlink(this, &sink); }
 
 
 public:

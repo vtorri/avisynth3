@@ -126,7 +126,7 @@ struct extractor<PColorSpace const&>
 
   PColorSpace operator()(VMState& state, int pos) const
   {
-    return ColorSpace::FromString( boost::get<std::string>(state.peek(pos)) );
+    return ColorSpace::FromName( boost::get<std::string>(state.peek(pos)) );
   }
 
 };

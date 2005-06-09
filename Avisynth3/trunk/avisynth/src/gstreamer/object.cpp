@@ -21,42 +21,29 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_GSTREAMER_OBJECT_H__
-#define __AVS_GSTREAMER_OBJECT_H__
+#ifndef _WIN32
 
-//glib include
-#include <glib-object.h>
+//avisynth includes
+#include "pad.h"
+#include "object.h"
+
+//assert include
+#include <assert.h>
 
 
 namespace avs { namespace gstreamer {
 
 
 
-class Object : public GObject
+Pad& Object::AsPad()
 {
+  assert( GST_IS_PAD(this) != 0 );
 
-private:  //declared but not implemented
-
-  Object();
-  ~Object();
-
-
-public:
-
-  void Set(char const * key, char const * value)
-  {
-    g_object_set(this, key, value, NULL);
-  }
-
-
-public:
-
-  Pad& AsPad();
-
-};
+  return static_cast<Pad&>( *GST_PAD(this) );
+}
 
 
 
 } } //namespace avs::gstreamer
 
-#endif //__AVS_GSTREAMER_OBJECT_H__
+#endif //_WIN32

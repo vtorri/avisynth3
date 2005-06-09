@@ -67,7 +67,7 @@ public:
 
 public:  //cast
 
-  operator Object&() { return static_cast<Object&>(*GST_OBJECT(this)); }
+  operator Object&() { return static_cast<Object&>(*G_OBJECT(this)); }
 
 };
 

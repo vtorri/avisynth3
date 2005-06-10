@@ -47,7 +47,7 @@ private:  //declared but not implemented
 public:
 
   Element& AddNewElement(char const * type, char const * name);
-  Element * GetByName(char const * name)
+  Element * GetByName(char const * name);
 
 
 public:

@@ -35,7 +35,7 @@ namespace avs { namespace filters { namespace source { namespace gstreamer {
 
 
 
-StreamChooser::StreamChooser(int index, Element& sink, void (*callBack)(GObject * o, GParamSpec *pspec, void * data), Factory& factory)
+StreamChooser::StreamChooser(int index, Element& sink, void (*callBack)(GObject * o, GParamSpec * pspec, void * data), Factory& factory)
   : count_( 0 )
   , index_( index )
   , sourcePad_( NULL )
@@ -46,7 +46,7 @@ StreamChooser::StreamChooser(int index, Element& sink, void (*callBack)(GObject 
 void StreamChooser::PadDetected(Pad& sourcePad, NotifyCapsCallBack callBack, VideoInfo& vi)
 {
   //if target stream found or first stream
-  if ( index_ == count_ || currentPad_ == NULL )
+  if ( index_ == count_ || sourcePad_ == NULL )
   {
     //  +-----------------------------------+
     //  |             Decodebin             |
@@ -70,7 +70,7 @@ void StreamChooser::PadDetected(Pad& sourcePad, NotifyCapsCallBack callBack, Vid
     // We link sourcePad and sinkPad_
     // We attach the notify::caps signal on sinkPad_
   
-    Pad& sinkPad = static_cast<Pad&>(notifyCaps_.GetTarget());
+    Pad& sinkPad = notifyCaps_.GetTarget().AsPad();
 
     //unlink current if there is one
     if ( sourcePad_ != NULL )
@@ -84,24 +84,6 @@ void StreamChooser::PadDetected(Pad& sourcePad, NotifyCapsCallBack callBack, Vid
   ++count_;   //update stream count
 }
 
-
-
-
-void StreamChooser::NotifyVideoCapsCallBack(GObject * o, GParamSpec *pspec, void * data)
-{
-  boost::shared_ptr<VideoStructure const> vidStruct = 
-      boost::static_pointer_cast<VideoStructure const>(static_cast<Pad *>(GST_PAD(o))->GetNegotiatedStructure());
-  
-  vidStruct->FillVideoInfo(*static_cast<VideoInfo*>(data));
-}
-
-void StreamChooser::NotifyAudioCapsCallBack(GObject * o, GParamSpec *pspec, void * data)
-{
-  boost::shared_ptr<AudioStructure const> audStruct = 
-      boost::static_pointer_cast<AudioStructure const>(static_cast<Pad *>(GST_PAD(o))->GetNegotiatedStructure());
-  
-  audStruct->FillVideoInfo(*static_cast<VideoInfo*>(data));
-}
 
 
 } } } } //namespace avs::filters::source::gstreamer

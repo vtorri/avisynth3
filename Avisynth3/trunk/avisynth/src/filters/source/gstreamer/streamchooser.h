@@ -54,7 +54,7 @@ class StreamChooser
 
 public:  //structors
 
-  StreamChooser(int index, Element& sink, void (*callBack)(GObject * o, GParamSpec *pspec, void * data), Factory& factory);
+  StreamChooser(int index, Element& sink, void (*callBack)(GObject * o, GParamSpec * pspec, void * data), Factory& factory);
 
   //generated destructor is fine
 
@@ -65,12 +65,6 @@ public:  //interface
 
   bool HasChosen() const { return sourcePad_; }
   Pad& GetChosenPad() const { return *sourcePad_; }
-
-
-public:  //callbacks to use with PadDetected
-
-  static void NotifyVideoCapsCallBack(GObject * o, GParamSpec *pspec, void * data);
-  static void NotifyAudioCapsCallBack(GObject * o, GParamSpec *pspec, void * data);
 
 };
 

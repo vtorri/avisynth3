@@ -24,6 +24,9 @@
 #ifndef __AVS_GSTREAMER_OBJECT_H__
 #define __AVS_GSTREAMER_OBJECT_H__
 
+//aviynth include
+#include "forward.h"                    //for Pad declaration
+
 //glib include
 #include <glib-object.h>
 

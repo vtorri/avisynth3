@@ -46,17 +46,8 @@ private:  //declared but not implemented
 
 public:
 
-  Element& AddNewElement(char const * type, char const * name)
-  {
-    Element * element = Element::Create(type, name);  
-    gst_bin_add(this, element);
-    return *element;
-  }
-
+  Element& AddNewElement(char const * type, char const * name);
   Element * GetByName(char const * name)
-  {
-    return static_cast<Element *>( gst_bin_get_by_name(this, name) );
-  }
 
 
 public:

@@ -24,6 +24,9 @@
 #ifndef __AVS_GSTREAMER_ELEMENT_H__
 #define __AVS_GSTREAMER_ELEMENT_H__
 
+//avisynth include
+#include "object.h"
+
 //assert include
 #include <assert.h>
 
@@ -49,6 +52,24 @@ public:
   Pad * GetPad(char const * name);
 
 
+public:  //state stuff
+
+  void SetStateNull() { gst_element_set_state( this, GST_STATE_NULL ); }
+  void SetStateReady() { gst_element_set_state( this, GST_STATE_READY ); }
+  void SetStatePaused() { gst_element_set_state( this, GST_STATE_PAUSED ); }
+  void SetStatePlaying() { gst_element_set_state( this, GST_STATE_PLAYING ); }
+
+
+public:
+
+  void Seek(GstSeekType type, long long time) { gst_element_seek(this, type, time); }
+
+  bool QueryTotal(GstFormat fmt, long long& result)
+  {
+    return gst_element_query(this, GST_QUERY_TOTAL, &fmt, &result) != 0;
+  }
+
+
 public:  //cast
 
   operator Object&() { return static_cast<Object&>( *G_OBJECT(this) ); }
@@ -62,7 +83,6 @@ public:  //factory method
     assert( result != NULL );
     return static_cast<Element *>(result);
   }
-
 
 };
 

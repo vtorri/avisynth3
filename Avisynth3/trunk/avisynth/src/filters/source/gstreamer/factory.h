@@ -28,11 +28,11 @@
 #include "forward.h"                           //for PPipeline typedef
 #include "streamchooser.h"
 #include "../../../core/forward.h"             //for PVideoInfo typedef
-#include "../../../gstreamer/forward.h"        //for Pad declaration
+#include "../../../gstreamer/forward.h"        //for Pad declaration, PImporter typedef
 #include "../../../core/cow_shared_ptr.h"      //so PVideoInfo is defined
 
 //boost include
-//#include <boost/shared_ptr.hpp>                //so PPipeline is defined
+#include <boost/shared_ptr.hpp>                //so PImporter, PPipeline are defined
 
 //stl include
 #include <string>
@@ -41,10 +41,16 @@
 namespace avs { namespace filters { namespace source { namespace gstreamer {
 
 
-  
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//  Factory
+//
+//
+//
 class Factory
 {
   
+  avs::gstreamer::PImporter importer_;
   PPipeline pipeline_;
   PVideoInfo vi_;
 
@@ -59,21 +65,26 @@ public:  //structors
   
   Factory(std::string const& name, int videoIndex, int audioIndex);
   
-  ~Factory() {};
+  //generated destructor is fine
 
 
-public: // Access methods
+public:  //interface
 
-  PPipeline GetPipeline() { return pipeline_; }
-
-  PVideoInfo GetVideoInfo() { return vi_; }
-
-/*   CPVideoInfo FillVideoInfo() const; */
+  /*PClip*/ void operator()();
 
 
-public:
+public:  //used by callbacks
   
   void PadDetected(avs::gstreamer::Pad& pad);
+
+  void Set(avs::gstreamer::VideoStructure const& video);
+  void Set(avs::gstreamer::AudioStructure const& audio);
+
+
+public:  //access
+
+  PVideoInfo GetVideoInfo() { return vi_; }
+  PPipeline GetPipeline() { return pipeline_; }
 
 
 private: // Fill the informations;

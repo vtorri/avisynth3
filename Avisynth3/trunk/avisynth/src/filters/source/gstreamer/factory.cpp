@@ -42,14 +42,29 @@ namespace avs { namespace filters { namespace source { namespace gstreamer {
 namespace {
 
 
-static void DetectPadsCallback(GObject * obj, GstPad * pad, gboolean last, gpointer data)
+static void DetectPadsCallback(GObject * obj, GstPad * pad, gboolean last, void * data)
 {
   static_cast<Factory *>(data)->PadDetected( static_cast<Pad&>(*pad) );
 }
   
-static void NoMorePadsCallBack(GObject * obj, GstPad * pad, gboolean last, gpointer data)
+static void NoMorePadsCallBack(GObject * obj, GstPad * pad, gboolean last, void * data)
 {
-  static_cast<Pipeline *>(data)->SetStatePaused();
+  static_cast<Element *>(data)->SetStatePaused();
+}
+
+
+void NotifyVideoCapsCallBack(GObject * o, GParamSpec * pspec, void * data)
+{
+  PStructure structure = static_cast<Object *>(o)->AsPad()->GetNegotiatedStructure();
+
+  static_cast<Factory *>(data)->Set(static_cast<VideoStructure const&>(*structure));
+}
+
+void NotifyAudioCapsCallBack(GObject * o, GParamSpec * pspec, void * data)
+{
+  PStructure structure = static_cast<Object *>(o)->AsPad()->GetNegotiatedStructure();
+  
+  static_cast<Factory *>(data)->Set(static_cast<AudioStructure const&>(*structure));
 }
 
 
@@ -60,26 +75,24 @@ static void NoMorePadsCallBack(GObject * obj, GstPad * pad, gboolean last, gpoin
 Factory::Factory(std::string const& name, int videoIndex, int audioIndex)
   : pipeline_( Pipeline::Create(name) )
   , vi_( VideoInfo::Create() )
-  , videoChooser_( videoIndex, pipeline_->GetVideoSink(), *this )
-  , audioChooser_( audioIndex, pipeline_->GetAudioSink(), *this )  
+  , videoChooser_( videoIndex, pipeline_->GetVideoSink(), &NotifyVideoCapsCallBack, *this )
+  , audioChooser_( audioIndex, pipeline_->GetAudioSink(), &NotifyAudioCapsCallBack, *this ) { }
+
+// Gstreamer init
+//    gst_init (NULL, NULL);
+
+
+void Factory::operator()()
 {
-    // Gstreamer init
-    gst_init (NULL, NULL);
+  Element& elementPipeline = *pipeline_;
 
-  // Set the pipeline and the dimension and fps of the video
-  // and the rate and channels of the audio
-  
+  avs::gstreamer::Object& decoder = pipeline_->GetDecoder();
+  SignalHandler padDetected(decoder, "new-decoded-pad", &DetectPadsCallback, this);
+  SignalHandler noMorePads(decoder, "no-more-pads", &NoMorePadsCallBack, &elementPipeline);
 
-  GObject& decoder = pipeline_->GetDecoder();
-  SignalHandler padDetected(decoder, "new-decoded-pad", G_CALLBACK(&DetectPadsCallback), this);
-  SignalHandler noMorePads(decoder, "no-more-pads", G_CALLBACK(&NoMorePadsCallBack), pipeline_);
-
-  pipeline_->SetStatePlaying ();
+  elementPipeline.SetStatePlaying();
     
-  for ( int i = 40; i-- > 0 && pipeline_->Iterate(); ) 
-  {
-    g_print ("I : %d\n", 40-i);
-  }
+  pipeline_->operator Bin&().Iterate(40);
 
 
     // Set framecount and samplecount of (resp) the video and
@@ -87,21 +100,18 @@ Factory::Factory(std::string const& name, int videoIndex, int audioIndex)
     SetStreamLength();
 
     // Set the pipeline ready to read the video
-    Fraction fps = vi_->GetFPS();
-    pipeline_->GoToFrame (0, fps);
+    pipeline_->GoToFrame (0, vi_->GetFPS());
+}
 
-  }
-
-
-void Factory::PadDetected(Pad& pad)
+void Factory::PadDetected(avs::gstreamer::Pad& pad)
 {
-  std::string mimeType = pad.GetStructure()->GetName();
+  char const * mimeType = pad.GetStructure()->GetName();
     
-  if ( g_str_has_prefix(mimeType.c_str(), "video/") )
-    videoChooser_->PadDetected(pad);
+  if ( g_str_has_prefix(mimeType, "video/") )
+    videoChooser_.PadDetected(pad);
   else 
-    if ( g_str_has_prefix(mimeType.c_str(), "audio/") )
-      audioChooser_->PadDetected(pad);
+    if ( g_str_has_prefix(mimeType, "audio/") )
+      audioChooser_.PadDetected(pad);
 }
 
   

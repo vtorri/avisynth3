@@ -26,6 +26,7 @@
 
 //avisynth includes
 #include "forward.h"
+#include "../../../gstreamer/forward.h"        //for Object, Bin, Element declarations
 
 //stlport include
 #include <string>
@@ -56,24 +57,17 @@ private:  //declared but not implemented
   ~Pipeline();
 
 
-public:
+public:  //access to elements
 
-  GObject& GetDecoder();
-  GstElement& GetVideoSink();
-  GstElement& GetAudioSink();
+  Object& GetDecoder();
+  Element& GetVideoSink();
+  Element& GetAudioSink();
   
 
-public:  //set state methods
+public:  //casts
 
-  void SetStateNull ();
-  void SetStateReady ();
-  void SetStatePaused ();
-  void SetStatePlaying ();
-
-
-public:  //iteration
-
-  bool Iterate();
+  operator Bin&();
+  operator Element&();
 
 
 public:  //factory method

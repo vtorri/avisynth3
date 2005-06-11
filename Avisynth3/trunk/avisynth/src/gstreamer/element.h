@@ -44,9 +44,14 @@ private:  //declared but not implemented
   ~Element();
 
 
-public:
+public:  //access to pads
 
   Pad * GetPad(char const * name);
+
+
+public:  //link
+
+  bool Link(Element& target) { return gst_element_link(this, &target) != 0; }
 
 
 public:  //state stuff

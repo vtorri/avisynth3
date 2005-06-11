@@ -51,27 +51,26 @@ PPipeline Pipeline::Create(std::string const& name)
   GstElement * pipeline = gst_pipeline_new("pipeline");
   assert( pipeline != NULL );
 
-  Bin& bin = pipeline->AsBin();
+  avs::gstreamer::Bin& binPipeline = *pipeline;
 
   //file source  
-  Element& fileSrc = bin.AddNewElement("filesrc", "disk_source");
-  static_cast<avs::gstreamer::Object&>(*fileSrc).Set("location", name.c_str());
+  avs::gstreamer::Element& fileSrc = binPipeline.AddNewElement("filesrc", "disk_source");
+  static_cast<avs::gstreamer::Object&>(fileSrc).Set("location", name.c_str());
 
   // decodebin
   // FIXME: the gstreamer decoder has issues with mpeg streams
   //        must check for updates / API changes
-  Element& decoder = bin.AddNewElement("decodebin", "decoder");
+  avs::gstreamer::Element& decoder = binPipeline.AddNewElement("decodebin", "decoder");
   gst_element_link (filesrc, decoder);
 
 
-  bin.AddNewElement("fakesink", "vsink");
-  bin.AddNewElement("fakesink", "asink");
+  binPipeline.AddNewElement("fakesink", "vsink");
+  binPipeline.AddNewElement("fakesink", "asink");
 
-  bin.SyncChildrenState();
+  binPipeline.SyncChildrenState();
 
   return PPipeline( static_cast<Pipeline *>(GST_PIPELINE (pipeline)) );
 }
-
 
 
 Object& Pipeline::GetDecoder()

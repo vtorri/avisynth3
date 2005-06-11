@@ -25,10 +25,7 @@
 #define __AVS_GSTREAMER_ELEMENT_H__
 
 //avisynth include
-#include "object.h"
-
-//assert include
-#include <assert.h>
+#include "forward.h"             //for Pad, Object, Pipeline declarations
 
 //gstreamer include
 #include <gst/gstelement.h>
@@ -70,19 +67,16 @@ public:
   }
 
 
-public:  //cast
+public:  //casts
 
-  operator Object&() { return static_cast<Object&>( *G_OBJECT(this) ); }
+  operator Object&();
+
+  Pipeline& AsPipeline();
 
 
 public:  //factory method
 
-  static Element * Create(char const * type, char const * name)
-  {
-    GstElement * result = gst_element_factory_make(type, name);   
-    assert( result != NULL );
-    return static_cast<Element *>(result);
-  }
+  static Element * Create(char const * type, char const * name);
 
 };
 

@@ -25,16 +25,44 @@
 
 //avisynth includes
 #include "pad.h"
+#include "object.h"
 #include "element.h"
+#include "pipeline.h"
+
+//assert include
+#include <assert.h>
 
 
 namespace avs { namespace gstreamer {
+
 
 
 Pad * Element::GetPad(char const * name)
 { 
   return static_cast<Pad *>( gst_element_get_pad(this, name) ); 
 }
+
+
+Element::operator Object&()
+{
+  return *static_cast<Object *>( G_OBJECT(this) );
+}
+
+Pipeline& Element::AsPipeline()
+{
+  assert( GST_IS_PIPELINE(this) != 0 );
+
+  return *static_cast<Pipeline *>( GST_PIPELINE(this) );
+}
+
+
+static Element * Element::Create(char const * type, char const * name)
+{
+  GstElement * result = gst_element_factory_make(type, name);   
+  assert( result != NULL );
+  return static_cast<Element *>(result);
+}
+
 
 
 } } //namespace avs::gstreamer

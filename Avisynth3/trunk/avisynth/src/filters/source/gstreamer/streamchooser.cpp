@@ -43,7 +43,7 @@ StreamChooser::StreamChooser(int index, Element& sink, void (*callBack)(GObject 
 
 
 
-void StreamChooser::PadDetected(Pad& sourcePad, NotifyCapsCallBack callBack, VideoInfo& vi)
+void StreamChooser::PadDetected(Pad& sourcePad)
 {
   //if target stream found or first stream
   if ( index_ == count_ || sourcePad_ == NULL )

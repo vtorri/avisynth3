@@ -38,7 +38,7 @@ class Pipeline;
 class StreamChooser;
   
 //typedef
-typedef Pipeline * PPipeline;
+typedef boost::shared_ptr<Pipeline> PPipeline;
 
 
 } } } } // namespace avs::filters::source::gstreamer

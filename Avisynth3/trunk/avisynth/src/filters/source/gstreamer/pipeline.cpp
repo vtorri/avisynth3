@@ -48,8 +48,7 @@ namespace avs { namespace filters { namespace source { namespace gstreamer {
 
 PPipeline Pipeline::Create(std::string const& name)
 {
-  GstElement * pipeline = gst_pipeline_new("pipeline");
-  assert( pipeline != NULL );
+  PPipeline pipeline = boost::static_pointer_cast<Pipeline>( avs::gstreamer::Pipeline::Create() );
 
   avs::gstreamer::Bin& binPipeline = *pipeline;
 
@@ -69,24 +68,13 @@ PPipeline Pipeline::Create(std::string const& name)
 
   binPipeline.SyncChildrenState();
 
-  return PPipeline( static_cast<Pipeline *>(GST_PIPELINE (pipeline)) );
+  return pipeline;
 }
 
 
-Object& Pipeline::GetDecoder()
-{
-  return operator Bin&().GetByName("decoder");
-}
-
-Element& Pipeline::GetVideoSink()
-{
-  return operator Bin&().GetByName("vsink");
-}
-
-Element& Pipeline::GetAudioSink()
-{
-  return operator Bin&().GetByName("asink");
-}
+avs::gstreamer::Element& Pipeline::GetDecoder() { return operator Bin&().GetByName("decoder"); }
+avs::gstreamer::Element& Pipeline::GetVideoSink() { return operator Bin&().GetByName("vsink"); }
+avs::gstreamer::Element& Pipeline::GetAudioSink() { return operator Bin&().GetByName("asink"); }
 
 
 

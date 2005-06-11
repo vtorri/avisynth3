@@ -25,18 +25,15 @@
 #define __AVS_FILTERS_SOURCE_GSTREAMER_PIPELINE_H__
 
 //avisynth includes
-#include "forward.h"
-#include "../../../gstreamer/forward.h"        //for Object, Bin, Element declarations
-
-//stlport include
-#include <string>
+#include "forward.h"                           //for PPipeline
+#include "../../../gstreamer/forward.h"        //for Element declaration
+#include "../../../gstreamer/pipeline.h"
 
 //boost include
 #include <boost/shared_ptr.hpp>                //so PPipeline is defined
 
-//gstreamer includes
-#include <glib.h>
-#include <gst/gstpipeline.h>
+//stl include
+#include <string>
 
 
 namespace avs { namespace filters { namespace source { namespace gstreamer {
@@ -46,29 +43,17 @@ namespace avs { namespace filters { namespace source { namespace gstreamer {
 ////////////////////////////////////////////////////////////////////////////////////////
 //  Pipeline
 //
-//  wrapper class around the pipeline
+//  
 //
-class Pipeline : public GstPipeline
+class Pipeline : public avs::gstreamer::Pipeline
 {
-
-private:  //declared but not implemented
-
-  Pipeline() ;
-  ~Pipeline();
-
 
 public:  //access to elements
 
-  avs::gstreamer::Object& GetDecoder();
+  avs::gstreamer::Element& GetDecoder();
   avs::gstreamer::Element& GetVideoSink();
   avs::gstreamer::Element& GetAudioSink();
   
-
-public:  //casts
-
-  operator avs::gstreamer::Bin&();
-  operator avs::gstreamer::Element&();
-
 
 public:  //factory method
 

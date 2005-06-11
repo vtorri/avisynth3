@@ -60,7 +60,7 @@ public:  //casts
 
 public:  //factory method
 
-  boost::shared_ptr<Pipeline> Create();
+  static boost::shared_ptr<Pipeline> Create();
 
 };
 

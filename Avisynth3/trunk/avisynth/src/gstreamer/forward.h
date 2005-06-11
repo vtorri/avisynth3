@@ -25,13 +25,8 @@
 #define __AVS_GSTREAMER_FORWARD_H__
 
 
-namespace boost {
-
-
-template <typename T> class shared_ptr;
-
-
-} //namespace boost
+//declaration of shared_ptr
+namespace boost { template <typename T> class shared_ptr; }
 
 
 namespace avs { namespace gstreamer {
@@ -42,10 +37,12 @@ class Bin;
 class Pad;
 class Object;
 class Element;
+class Importer;
 class Pipeline;
 class Structure;
 
 //typedef
+typedef boost::shared_ptr<Importer> PImporter;
 typedef boost::shared_ptr<Structure> PStructure;
 
 

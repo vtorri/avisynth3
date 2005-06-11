@@ -42,12 +42,12 @@
 namespace avs { namespace filters { namespace source { namespace gstreamer {
 
 
+
 ////////////////////////////////////////////////////////////////////////////////////////
 //  Pipeline
 //
 //  wrapper class around the pipeline
 //
-
 class Pipeline : public GstPipeline
 {
 
@@ -59,15 +59,15 @@ private:  //declared but not implemented
 
 public:  //access to elements
 
-  Object& GetDecoder();
-  Element& GetVideoSink();
-  Element& GetAudioSink();
+  avs::gstreamer::Object& GetDecoder();
+  avs::gstreamer::Element& GetVideoSink();
+  avs::gstreamer::Element& GetAudioSink();
   
 
 public:  //casts
 
-  operator Bin&();
-  operator Element&();
+  operator avs::gstreamer::Bin&();
+  operator avs::gstreamer::Element&();
 
 
 public:  //factory method
@@ -80,6 +80,7 @@ public:  //factory method
   int QueryAudioLength(int samplerate);
   
 };
+
 
 
 } } } } // namespace avs::filters::source::gstreamer

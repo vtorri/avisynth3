@@ -56,12 +56,11 @@ PPipeline Pipeline::Create(std::string const& name)
   avs::gstreamer::Element& fileSrc = binPipeline.AddNewElement("filesrc", "disk_source");
   static_cast<avs::gstreamer::Object&>(fileSrc).Set("location", name.c_str());
 
-  // decodebin
-  // FIXME: the gstreamer decoder has issues with mpeg streams
-  //        must check for updates / API changes
-  avs::gstreamer::Element& decoder = binPipeline.AddNewElement("decodebin", "decoder");
-  gst_element_link (filesrc, decoder);
+  //links fileSrc to a decoder
+  fileSrc.Link( binPipeline.AddNewElement("decodebin", "decoder") );
 
+  // FIXME: the gstreamer decoder has issues with mpeg streams
+  //        must check for updates / API changes  
 
   binPipeline.AddNewElement("fakesink", "vsink");
   binPipeline.AddNewElement("fakesink", "asink");
@@ -72,9 +71,9 @@ PPipeline Pipeline::Create(std::string const& name)
 }
 
 
-avs::gstreamer::Element& Pipeline::GetDecoder() { return operator Bin&().GetByName("decoder"); }
-avs::gstreamer::Element& Pipeline::GetVideoSink() { return operator Bin&().GetByName("vsink"); }
-avs::gstreamer::Element& Pipeline::GetAudioSink() { return operator Bin&().GetByName("asink"); }
+avs::gstreamer::Element& Pipeline::GetDecoder() { return *operator Bin&().GetByName("decoder"); }
+avs::gstreamer::Element& Pipeline::GetVideoSink() { return *operator Bin&().GetByName("vsink"); }
+avs::gstreamer::Element& Pipeline::GetAudioSink() { return *operator Bin&().GetByName("asink"); }
 
 
 

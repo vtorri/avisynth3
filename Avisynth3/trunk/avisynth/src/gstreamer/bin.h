@@ -52,14 +52,12 @@ public:
 
 public:
 
-  void SyncChildrenState()
-  {
-    gst_bin_sync_children_state(this);
-  }
+  void SyncChildrenState() { gst_bin_sync_children_state(this); }
 
-  bool Iterate()
-  {
-    return gst_bin_iterate(this) != 0;
+  bool Iterate() { return gst_bin_iterate(this) != 0; }
+  void Iterate(int count) 
+  { 
+    while ( count-- > 0 && Iterate() ) { } 
   }
 
 };

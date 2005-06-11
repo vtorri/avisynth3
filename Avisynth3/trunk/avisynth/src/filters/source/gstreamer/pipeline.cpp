@@ -50,11 +50,11 @@ PPipeline Pipeline::Create(std::string const& name)
 {
   PPipeline pipeline = boost::static_pointer_cast<Pipeline>( avs::gstreamer::Pipeline::Create() );
 
-  avs::gstreamer::Bin& binPipeline = *pipeline;
+  avs::gstreamer::Bin& binPipeline = pipeline->operator avs::gstreamer::Bin&();
 
   //file source  
   avs::gstreamer::Element& fileSrc = binPipeline.AddNewElement("filesrc", "disk_source");
-  static_cast<avs::gstreamer::Object&>(fileSrc).Set("location", name.c_str());
+  fileSrc.operator avs::gstreamer::Object&().Set("location", name.c_str());
 
   //links fileSrc to a decoder
   fileSrc.Link( binPipeline.AddNewElement("decodebin", "decoder") );

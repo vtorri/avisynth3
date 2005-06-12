@@ -24,7 +24,7 @@
 #ifndef _WIN32
 
 //avisynth includes
-#include "pad.h"
+#include "bin.h"
 #include "element.h"
 #include "pipeline.h"
 
@@ -36,12 +36,12 @@ namespace avs { namespace gstreamer {
 
 
 
-operator Pipeline::Bin&()
+Pipeline::operator Bin&()
 {
   return static_cast<Bin&>( *GST_BIN(this) );
 }
 
-operator Pipeline::Element&()
+Pipeline::operator Element&()
 {
   return static_cast<Element&>( *GST_ELEMENT(this) );
 }

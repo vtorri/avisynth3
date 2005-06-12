@@ -21,51 +21,32 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_GSTREAMER_PIPELINE_H__
-#define __AVS_GSTREAMER_PIPELINE_H__
+#ifndef _WIN32
 
-//avisynth include
-#include "forward.h"                //for Bin, Element, PPipeline
-
-//boost include
-#include <boost/shared_ptr.hpp>
-
-//gstreamer include
-#include <gst/gstpipeline.h>
+//avisynth includes
+#include "pad.h"
+#include "element.h"
+#include "pipeline.h"
 
 
 namespace avs { namespace gstreamer {
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////
-//  Pipeline
-//
-//
-//
-class Pipeline : public GstPipeline
+operator Pipeline::Bin&()
 {
+  return static_cast<Bin&>( *GST_BIN(this) );
+}
 
-private:  //declared but not implemented
-
-  Pipeline();
-  ~Pipeline();
-
-
-public:  //casts
-
-  operator Bin&();
-  operator Element&();
+operator Pipeline::Element&()
+{
+  return static_cast<Element&>( *GST_ELEMENT(this) );
+}
 
 
-public:  //factory method
-
-  static boost::shared_ptr<Pipeline> Create();
-
-};
 
 
 
 } } //namespace avs::gstreamer
 
-#endif //__AVS_GSTREAMER_PIPELINE_H__
+#endif //_WIN32

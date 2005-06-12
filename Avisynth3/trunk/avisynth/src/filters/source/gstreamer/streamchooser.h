@@ -29,6 +29,10 @@
 #include "../../../gstreamer/forward.h"         //for Pad, Element declarations
 #include "../../../gstreamer/signalhandler.h"
 
+//some gstreamer forward declarations
+typedef struct _GObject GObject;
+typedef struct _GParamSpec GParamSpec;
+
 
 namespace avs { namespace filters { namespace source { namespace gstreamer {
 

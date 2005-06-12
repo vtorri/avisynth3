@@ -71,9 +71,9 @@ PPipeline Pipeline::Create(std::string const& name)
 }
 
 
-avs::gstreamer::Element& Pipeline::GetDecoder() { return *operator Bin&().GetByName("decoder"); }
-avs::gstreamer::Element& Pipeline::GetVideoSink() { return *operator Bin&().GetByName("vsink"); }
-avs::gstreamer::Element& Pipeline::GetAudioSink() { return *operator Bin&().GetByName("asink"); }
+avs::gstreamer::Element& Pipeline::GetDecoder() { return *operator avs::gstreamer::Bin&().GetByName("decoder"); }
+avs::gstreamer::Element& Pipeline::GetVideoSink() { return *operator avs::gstreamer::Bin&().GetByName("vsink"); }
+avs::gstreamer::Element& Pipeline::GetAudioSink() { return *operator avs::gstreamer::Bin&().GetByName("asink"); }
 
 
 

@@ -102,10 +102,11 @@ void Factory::operator()()
     
   pipeline_->operator avs::gstreamer::Bin&().Iterate(40);
 
+  if ( videoChooser_.HasChosen() )
+    pipeline_->SetFrameCount(*vi_);
 
-    // Set framecount and samplecount of (resp) the video and
-    // the audio streams
-    SetStreamLength();
+  if ( audioChooser_.HasChosen() )
+    pipeline_->SetSampleCount(*vi_);
 
     // Set the pipeline ready to read the video
     //pipeline_->GoToFrame (0, vi_->GetFPS());
@@ -122,23 +123,7 @@ void Factory::PadDetected(avs::gstreamer::Pad& pad)
       audioChooser_.PadDetected(pad);
 }
 
-/*  
-  void Factory::SetStreamLength()
-  {
-    end_test = 0;
-    for ( int i = 30; (i-- > 0) && pipeline_->Iterate(); ) {
-      g_print ("l I : %d \n", 40-i);
-      Fraction fps = vi_->GetFPS();
-      vi_->SetFrameCount (pipeline_->QueryVideoLength (fps));
-      vi_->SetSampleCount (pipeline_->QueryAudioLength (vi_->GetSampleRate()));
-      
-      // Lengths are found, no need to continue searching
-      // 	if (AreStreamsFound ())
-      // 	  pipeline_->SetStatePaused ();
-      
-    }
-  }
-*/
+
 
 } } } } // namespace avs::filters::source::gstreamer
 

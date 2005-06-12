@@ -61,8 +61,8 @@ public:  //factory method
 
   void GoToFrame (int frame_number, Fraction& fps);
 
-  int QueryVideoLength(Fraction& fps);
-  int QueryAudioLength(int samplerate);
+  void SetFrameCount(VideoInfo& vi);
+  void SetSampleCount(VideoInfo& vi);
   
 };
 

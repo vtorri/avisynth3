@@ -125,7 +125,7 @@ void Pipeline::GoToFrame (int frame_number, Fraction& fps)
 int Pipeline::QueryVideoLength(Fraction& fps)
 {
   long long length;
-  Element& vsink = GetVideoSink();
+  avs::gstreamer::Element& vsink = GetVideoSink();
 
   if ( vsink.QueryTotal(GST_FORMAT_DEFAULT, length) )
     return length;
@@ -138,7 +138,7 @@ int Pipeline::QueryVideoLength(Fraction& fps)
 int Pipeline::QueryAudioLength(int samplerate)
 {
   long long length;
-  Element & asink = GetAudioSink();
+  avs::gstreamer::Element & asink = GetAudioSink();
 
   if ( asink.QueryTotal(GST_FORMAT_DEFAULT, length) )
     return length;

@@ -28,11 +28,9 @@
 #include "factory.h"
 #include "pipeline.h"
 #include "../../../gstreamer/pad.h"
+#include "../../../gstreamer/element.h"
 #include "../../../gstreamer/structure.h"
 #include "../../../core/videoinfo.h"
-
-//gstreamer includes
-#include <gst/gst.h>
 
 
 namespace avs { namespace filters { namespace source { namespace gstreamer {
@@ -44,27 +42,27 @@ namespace {
 
 static void DetectPadsCallback(GObject * obj, GstPad * pad, gboolean last, void * data)
 {
-  static_cast<Factory *>(data)->PadDetected( static_cast<Pad&>(*pad) );
+  static_cast<Factory *>(data)->PadDetected( static_cast<avs::gstreamer::Pad&>(*pad) );
 }
   
 static void NoMorePadsCallBack(GObject * obj, GstPad * pad, gboolean last, void * data)
 {
-  static_cast<Element *>(data)->SetStatePaused();
+  static_cast<avs::gstreamer::Element *>(data)->SetStatePaused();
 }
 
 
 void NotifyVideoCapsCallBack(GObject * o, GParamSpec * pspec, void * data)
 {
-  PStructure structure = static_cast<Object *>(o)->AsPad()->GetNegotiatedStructure();
+  avs::gstreamer::PStructure structure = static_cast<avs::gstreamer::Object *>(o)->AsPad()->GetNegotiatedStructure();
 
-  static_cast<Factory *>(data)->Set(static_cast<VideoStructure const&>(*structure));
+  static_cast<Factory *>(data)->Set(static_cast<avs::gstreamer::VideoStructure const&>(*structure));
 }
 
 void NotifyAudioCapsCallBack(GObject * o, GParamSpec * pspec, void * data)
 {
-  PStructure structure = static_cast<Object *>(o)->AsPad()->GetNegotiatedStructure();
+  avs::gstreamer::PStructure structure = static_cast<avs::gstreamer::Object *>(o)->AsPad()->GetNegotiatedStructure();
   
-  static_cast<Factory *>(data)->Set(static_cast<AudioStructure const&>(*structure));
+  static_cast<Factory *>(data)->Set(static_cast<avs::gstreamer::AudioStructure const&>(*structure));
 }
 
 
@@ -84,15 +82,15 @@ Factory::Factory(std::string const& name, int videoIndex, int audioIndex)
 
 void Factory::operator()()
 {
-  Element& elementPipeline = *pipeline_;
+  avs::gstreamer::Element& elementPipeline = pipeline_->operator avs::gstreamer::Element&();
 
   avs::gstreamer::Object& decoder = pipeline_->GetDecoder();
-  SignalHandler padDetected(decoder, "new-decoded-pad", &DetectPadsCallback, this);
-  SignalHandler noMorePads(decoder, "no-more-pads", &NoMorePadsCallBack, &elementPipeline);
+  avs::gstreamer::SignalHandler padDetected(decoder, "new-decoded-pad", &DetectPadsCallback, this);
+  avs::gstreamer::SignalHandler noMorePads(decoder, "no-more-pads", &NoMorePadsCallBack, &elementPipeline);
 
   elementPipeline.SetStatePlaying();
     
-  pipeline_->operator Bin&().Iterate(40);
+  pipeline_->operator avs::gstreamer::Bin&().Iterate(40);
 
 
     // Set framecount and samplecount of (resp) the video and
@@ -100,7 +98,7 @@ void Factory::operator()()
     SetStreamLength();
 
     // Set the pipeline ready to read the video
-    pipeline_->GoToFrame (0, vi_->GetFPS());
+    //pipeline_->GoToFrame (0, vi_->GetFPS());
 }
 
 void Factory::PadDetected(avs::gstreamer::Pad& pad)

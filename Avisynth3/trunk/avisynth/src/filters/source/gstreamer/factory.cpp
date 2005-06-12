@@ -28,6 +28,7 @@
 #include "factory.h"
 #include "pipeline.h"
 #include "../../../gstreamer/pad.h"
+#include "../../../gstreamer/object.h"
 #include "../../../gstreamer/element.h"
 #include "../../../gstreamer/structure.h"
 #include "../../../core/videoinfo.h"
@@ -82,7 +83,7 @@ Factory::Factory(std::string const& name, int videoIndex, int audioIndex)
 
 void Factory::operator()()
 {
-  avs::gstreamer::Element& elementPipeline = pipeline_->operator avs::gstreamer::Element&();
+  avs::gstreamer::Element& elementPipeline = *pipeline_;
 
   avs::gstreamer::Object& decoder = pipeline_->GetDecoder();
   avs::gstreamer::SignalHandler padDetected(decoder, "new-decoded-pad", &DetectPadsCallback, this);

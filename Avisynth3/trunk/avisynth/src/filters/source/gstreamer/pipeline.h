@@ -61,8 +61,13 @@ public:  //factory method
 
   void GoToFrame (int frame_number, Fraction& fps);
 
-  void SetFrameCount(VideoInfo& vi);
-  void SetSampleCount(VideoInfo& vi);
+  void Setlengths(VideoInfo& vi);
+
+
+private:  //helpers for SetLengths
+
+  bool SetFrameCount(VideoInfo& vi);
+  bool SetSampleCount(VideoInfo& vi);
   
 };
 

@@ -89,38 +89,63 @@ void Pipeline::GoToFrame (int frame_number, Fraction& fps)
   GetAudioSink().Seek(type, time);
 }
 
+
+
+void Pipeline::SetLengths(VideoInfo& vi)
+{
+  int i = 30;
+  avs::gstreamer::Bin& bin = *this;
+
+  bool handleVideo = vi.HasVideo();
+  bool handleAudio = vi.HasAudio();
+
+  do
+  {
+    if ( handleVideo )
+      handleVideo = ! SetFrameCount(vi);
+    if ( handleAudio )
+      handleAudio = ! SetSampleCount(vi);
+  }
+  while( i-- > 0 && (handleVideo || handleAudio) && bin.Iterate() );
+
+  //throw if handleVideo or handleAudio is still true !?
+}
+
+
 void Pipeline::SetFrameCount(VideoInfo& vi)
 {
   avs::gstreamer::Element& vsink = GetVideoSink();
+
   long long length;
 
-  //TODO: handle cases where there is no video
-
-  if ( vsink.QueryTotal(GST_FORMAT_DEFAULT, length) )
+  if ( ! vsink.QueryTotal(GST_FORMAT_DEFAULT, length) )
+    if ( ! vsink.QueryTotal(GST_FORMAT_TIME, length) )
+      return false;
+    else
     {
-      vi.SetFrameCount((int)length);
-      return;
+      length *= vi.GetFPSNumerator();
+      length /= vi.GetFPSDenominator() * 1000000000;
     }
-
-  vsink.QueryTotal(GST_FORMAT_TIME, length);
-  vi.SetFrameCount( (length * vi.GetFPSNumerator() / vi.GetFPSDenominator() ) / 1000000000);
+           
+  vi.SetFrameCount( static_cast<int>(length) );
+  return true;
 }
+
 
 void Pipeline::SetSampleCount(VideoInfo& vi)
 {
   avs::gstreamer::Element& asink = GetAudioSink();
+
   long long length;
 
-  //TODO: handle cases where there is no audio
+  if ( ! asink.QueryTotal(GST_FORMAT_DEFAULT, length) )
+    if ( ! asink.QueryTotal(GST_FORMAT_TIME, length) )
+      return false;
+    else
+      length = length * vi.GetSampleRate() / 1000000000;
 
-  if ( asink.QueryTotal(GST_FORMAT_DEFAULT, length) )
-    {
-      vi.SetSampleCount(length);
-      return;
-    }
-
-  asink.QueryTotal(GST_FORMAT_TIME, length);
-  vi.SetSampleCount(length * vi.GetSampleRate() / 1000000000);
+  vi.SetSampleCount(length);
+  return true;
 }
 
 

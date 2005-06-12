@@ -23,6 +23,7 @@
 //avisynth includes
 #include "factory.h"
 #include "pipeline.h"
+#include "../../../core/videoinfo.h"
 #include "../../../gstreamer/bin.h"
 #include "../../../gstreamer/pad.h"
 #include "../../../gstreamer/object.h"
@@ -76,40 +77,6 @@ avs::gstreamer::Element& Pipeline::GetVideoSink() { return *operator avs::gstrea
 avs::gstreamer::Element& Pipeline::GetAudioSink() { return *operator avs::gstreamer::Bin&().GetByName("asink"); }
 
 
-
-
-/*
-void Pipeline::CreateVideoSink()
-{
-  GstElement *videobin = gst_bin_new ("videobin");
-  GstElement *vcs = gst_element_factory_make ("ffmpegcolorspace", NULL);
-  GstElement *vsink = gst_element_factory_make ("fakesink", "vsink");
-
-  gst_bin_add_many (GST_BIN (videobin),
-		    vcs, vsink, NULL);
-  gst_element_link_many (vcs, vsink, NULL);
-  gst_element_add_ghost_pad (videobin,
-			     gst_element_get_pad (vcs, "sink"), "sink");
-  gst_bin_add (GST_BIN (this), videobin);
-}
-  
-void Pipeline::CreateAudioSink()
-{
-  GstElement *audiobin = gst_bin_new ("audiobin");
-  GstElement *conv = gst_element_factory_make ("audioconvert", NULL);
-  GstElement *scale = gst_element_factory_make ("audioscale", NULL);
-  GstElement *asink = gst_element_factory_make ("fakesink", "asink");
-
-  gst_bin_add_many (GST_BIN (audiobin),
-		    conv, scale, asink, NULL);
-  gst_element_link_many (conv, scale, asink, NULL);
-  gst_element_add_ghost_pad (audiobin,
-			     gst_element_get_pad (conv, "sink"), "sink");
-  
-  gst_bin_add (GST_BIN (this), audiobin);
-}*/
-
-
 void Pipeline::GoToFrame (int frame_number, Fraction& fps)
 {
   GstSeekType type = (GstSeekType)(GST_FORMAT_TIME     |
@@ -122,30 +89,38 @@ void Pipeline::GoToFrame (int frame_number, Fraction& fps)
   GetAudioSink().Seek(type, time);
 }
 
-int Pipeline::QueryVideoLength(Fraction& fps)
+void Pipeline::SetFrameCount(VideoInfo& vi)
 {
-  long long length;
   avs::gstreamer::Element& vsink = GetVideoSink();
+  long long length;
+
+  //TODO: handle cases where there is no video
 
   if ( vsink.QueryTotal(GST_FORMAT_DEFAULT, length) )
-    return length;
+    {
+      vi.SetFrameCount((int)length);
+      return;
+    }
 
   vsink.QueryTotal(GST_FORMAT_TIME, length);
-
-  return length * fps.numerator() / fps.denominator() / 1000000000;
+  vi.SetFrameCount( (length * vi.GetFPSNumerator() / vi.GetFPSDenominator() ) / 1000000000);
 }
 
-int Pipeline::QueryAudioLength(int samplerate)
+void Pipeline::SetSampleCount(VideoInfo& vi)
 {
+  avs::gstreamer::Element& asink = GetAudioSink();
   long long length;
-  avs::gstreamer::Element & asink = GetAudioSink();
+
+  //TODO: handle cases where there is no audio
 
   if ( asink.QueryTotal(GST_FORMAT_DEFAULT, length) )
-    return length;
+    {
+      vi.SetSampleCount(length);
+      return;
+    }
 
   asink.QueryTotal(GST_FORMAT_TIME, length);
-  
-  return length * samplerate / 1000000000;
+  vi.SetSampleCount(length * vi.GetSampleRate() / 1000000000);
 }
 
 

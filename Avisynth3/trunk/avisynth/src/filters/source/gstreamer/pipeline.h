@@ -66,8 +66,6 @@ public:  //factory method
 
 private:  //helpers for SetLengths
 
-  bool SetFrameCount(VideoInfo& vi);
-  bool SetSampleCount(VideoInfo& vi);
   
 };
 

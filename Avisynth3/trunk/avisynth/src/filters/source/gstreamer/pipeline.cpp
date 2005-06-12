@@ -90,37 +90,16 @@ void Pipeline::GoToFrame (int frame_number, Fraction& fps)
 }
 
 
+namespace {
 
-void Pipeline::SetLengths(VideoInfo& vi)
+
+bool SetFrameCount(VideoInfo& vi, avs::gstreamer::Element& sink)
 {
-  int i = 30;
-  avs::gstreamer::Bin& bin = *this;
-
-  bool handleVideo = vi.HasVideo();
-  bool handleAudio = vi.HasAudio();
-
-  do
-  {
-    if ( handleVideo )
-      handleVideo = ! SetFrameCount(vi);
-    if ( handleAudio )
-      handleAudio = ! SetSampleCount(vi);
-  }
-  while( i-- > 0 && (handleVideo || handleAudio) && bin.Iterate() );
-
-  //throw if handleVideo or handleAudio is still true !?
-}
-
-
-void Pipeline::SetFrameCount(VideoInfo& vi)
-{
-  avs::gstreamer::Element& vsink = GetVideoSink();
-
   long long length;
 
-  if ( ! vsink.QueryTotal(GST_FORMAT_DEFAULT, length) )
-    if ( ! vsink.QueryTotal(GST_FORMAT_TIME, length) )
-      return false;
+  if ( ! sink.QueryTotal(GST_FORMAT_DEFAULT, length) )
+    if ( ! sink.QueryTotal(GST_FORMAT_TIME, length) )
+      return true;
     else
     {
       length *= vi.GetFPSNumerator();
@@ -128,25 +107,51 @@ void Pipeline::SetFrameCount(VideoInfo& vi)
     }
            
   vi.SetFrameCount( static_cast<int>(length) );
-  return true;
+  return false;
 }
 
 
-void Pipeline::SetSampleCount(VideoInfo& vi)
+bool SetSampleCount(VideoInfo& vi, avs::gstreamer::Element& sink)
 {
-  avs::gstreamer::Element& asink = GetAudioSink();
-
   long long length;
 
-  if ( ! asink.QueryTotal(GST_FORMAT_DEFAULT, length) )
-    if ( ! asink.QueryTotal(GST_FORMAT_TIME, length) )
-      return false;
+  if ( ! sink.QueryTotal(GST_FORMAT_DEFAULT, length) )
+    if ( ! sink.QueryTotal(GST_FORMAT_TIME, length) )
+      return true;
     else
       length = length * vi.GetSampleRate() / 1000000000;
 
   vi.SetSampleCount(length);
-  return true;
+  return false;
 }
+
+
+} //namespace anonymous
+
+
+
+void Pipeline::SetLengths(VideoInfo& vi)
+{
+  avs::gstreamer::Bin& bin = *this;
+  avs::gstreamer::Element& vsink = GetVideoSink();
+  avs::gstreamer::Element& asink = GetAudioSink();
+
+  int i = 30;
+  bool handleVideo = vi.HasVideo();
+  bool handleAudio = vi.HasAudio();
+
+  do
+  {
+    if ( handleVideo )
+      handleVideo = SetFrameCount(vi, vsink);
+    if ( handleAudio )
+      handleAudio = SetSampleCount(vi, asink);
+  }
+  while( i-- > 0 && (handleVideo || handleAudio) && bin.Iterate() );
+
+  //throw if handleVideo or handleAudio is still true !?
+}
+
 
 
 } } } } // namespace avs::filters::source::gstreamer

@@ -35,6 +35,9 @@
 #include "../../../gstreamer/videostructure.h"
 #include "../../../gstreamer/audiostructure.h"
 
+//gstreamer include
+#include <gst/gst.h>              //for gst_init
+
 
 namespace avs { namespace filters { namespace source { namespace gstreamer {
 

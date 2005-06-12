@@ -27,11 +27,13 @@
 //avisynth includes
 #include "factory.h"
 #include "pipeline.h"
+#include "../../../core/videoinfo.h"
+#include "../../../gstreamer/bin.h"
 #include "../../../gstreamer/pad.h"
 #include "../../../gstreamer/object.h"
 #include "../../../gstreamer/element.h"
-#include "../../../gstreamer/structure.h"
-#include "../../../core/videoinfo.h"
+#include "../../../gstreamer/videostructure.h"
+#include "../../../gstreamer/audiostructure.h"
 
 
 namespace avs { namespace filters { namespace source { namespace gstreamer {
@@ -54,17 +56,24 @@ static void NoMorePadsCallBack(GObject * obj, GstPad * pad, gboolean last, void 
 
 void NotifyVideoCapsCallBack(GObject * o, GParamSpec * pspec, void * data)
 {
-  avs::gstreamer::PStructure structure = static_cast<avs::gstreamer::Object *>(o)->AsPad()->GetNegotiatedStructure();
+  avs::gstreamer::PStructure structure = static_cast<avs::gstreamer::Object *>(o)->AsPad().GetNegotiatedStructure();
 
   static_cast<Factory *>(data)->Set(static_cast<avs::gstreamer::VideoStructure const&>(*structure));
 }
 
 void NotifyAudioCapsCallBack(GObject * o, GParamSpec * pspec, void * data)
 {
-  avs::gstreamer::PStructure structure = static_cast<avs::gstreamer::Object *>(o)->AsPad()->GetNegotiatedStructure();
+  avs::gstreamer::PStructure structure = static_cast<avs::gstreamer::Object *>(o)->AsPad().GetNegotiatedStructure();
   
   static_cast<Factory *>(data)->Set(static_cast<avs::gstreamer::AudioStructure const&>(*structure));
 }
+
+
+//gstreamer initialisation
+struct GstInit
+{
+  GstInit() { gst_init(NULL, NULL); }
+} init;
 
 
 } // anonymous namespace
@@ -76,9 +85,6 @@ Factory::Factory(std::string const& name, int videoIndex, int audioIndex)
   , vi_( VideoInfo::Create() )
   , videoChooser_( videoIndex, pipeline_->GetVideoSink(), &NotifyVideoCapsCallBack, *this )
   , audioChooser_( audioIndex, pipeline_->GetAudioSink(), &NotifyAudioCapsCallBack, *this ) { }
-
-// Gstreamer init
-//    gst_init (NULL, NULL);
 
 
 void Factory::operator()()
@@ -113,7 +119,7 @@ void Factory::PadDetected(avs::gstreamer::Pad& pad)
       audioChooser_.PadDetected(pad);
 }
 
-  
+/*  
   void Factory::SetStreamLength()
   {
     end_test = 0;
@@ -129,7 +135,7 @@ void Factory::PadDetected(avs::gstreamer::Pad& pad)
       
     }
   }
-
+*/
 
 } } } } // namespace avs::filters::source::gstreamer
 

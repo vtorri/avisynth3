@@ -28,6 +28,9 @@
 #include "element.h"
 #include "pipeline.h"
 
+//assert include
+#include <assert.h>
+
 
 namespace avs { namespace gstreamer {
 
@@ -44,6 +47,25 @@ operator Pipeline::Element&()
 }
 
 
+namespace {
+
+
+struct PipelineDestructor
+{
+  void operator()(Pipeline * pipeline) { }
+};
+
+
+} //namespace anonymous
+
+
+boost::shared_ptr<Pipeline> Pipeline::Create()
+{
+  GstElement * pipeline = gst_pipeline_new("pipeline");
+  assert( pipeline != NULL );
+
+  return boost::shared_ptr<Pipeline>( &pipeline->AsPipeline(), PipelineDestructor() );
+}
 
 
 

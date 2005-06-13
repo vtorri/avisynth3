@@ -56,7 +56,7 @@ Pipeline& Element::AsPipeline()
 }
 
 
-static Element * Element::Create(char const * type, char const * name)
+Element * Element::Create(char const * type, char const * name)
 {
   GstElement * result = gst_element_factory_make(type, name);   
   assert( result != NULL );

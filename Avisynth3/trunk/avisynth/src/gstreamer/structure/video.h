@@ -49,6 +49,11 @@ public:  //structure::Video interface
 
   PImporter SetVideoInfo(VideoInfo& vi) const;
 
+
+private:  //helper method
+
+  PImporter GetImporter() const;
+
 };
 
 

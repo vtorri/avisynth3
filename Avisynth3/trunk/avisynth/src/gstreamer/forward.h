@@ -40,10 +40,15 @@ class Element;
 class Importer;
 class Pipeline;
 class Structure;
-class VideoStructure;
-class AudioStructure;
 
-//typedef
+namespace structure {
+
+class Video;
+class Audio;
+
+} //namespace structure
+
+//typedefs
 typedef boost::shared_ptr<Structure> PStructure;
 typedef boost::shared_ptr<Importer const> PImporter;
 

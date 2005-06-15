@@ -24,25 +24,25 @@
 #ifndef _WIN32
 
 //avisynth includes
-#include "audiostructure.h"
-#include "../core/videoinfo.h"
-#include "../core/exception/generic.h"
+#include "audio.h"
+#include "../../core/videoinfo.h"
+#include "../../core/exception/generic.h"
 
 //stl include
 #include <string>
 
 
-namespace avs { namespace gstreamer {
+namespace avs { namespace gstreamer { namespace structure {
 
 
 
-void AudioStructure::FillVideoInfo(VideoInfo& vi) const
+void Audio:SetVideoInfo(VideoInfo& vi) const
 {
   vi.AddAudio(GetSampleType(), GetIntField("rate"), 0, GetIntField("channels"));
 }
 
 
-SampleType AudioStructure::GetSampleType() const
+SampleType Audio::GetSampleType() const
 {
   std::string name = GetName();
 
@@ -72,6 +72,6 @@ SampleType AudioStructure::GetSampleType() const
 
 
 
-} } //namespace avs::gstreamer
+} } } //namespace avs::gstreamer::structure
 
 #endif //_WIN32

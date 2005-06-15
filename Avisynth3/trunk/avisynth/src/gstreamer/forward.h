@@ -44,8 +44,8 @@ class VideoStructure;
 class AudioStructure;
 
 //typedef
-typedef boost::shared_ptr<Importer> PImporter;
 typedef boost::shared_ptr<Structure> PStructure;
+typedef boost::shared_ptr<Importer const> PImporter;
 
 
 

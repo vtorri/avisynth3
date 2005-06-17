@@ -36,7 +36,7 @@ namespace avs { namespace gstreamer { namespace structure {
 
 
 
-void Audio:SetVideoInfo(VideoInfo& vi) const
+void Audio::SetVideoInfo(VideoInfo& vi) const
 {
   vi.AddAudio(GetSampleType(), GetIntField("rate"), 0, GetIntField("channels"));
 }

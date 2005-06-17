@@ -21,43 +21,48 @@
 // General Public License cover the whole combination.
 
 
-#ifndef _WIN32
+#ifndef __AVS_GSTREAMER_IMPORTER_INTERLEAVED_H__
+#define __AVS_GSTREAMER_IMPORTER_INTERLEAVED_H__
 
 //avisynth includes
-#include "i420.h"
-#include "../../core/colorspace.h"
-#include "../../core/ownedblock.h"
-#include "../../core/bufferwindow.h"
-#include "../../core/videoframe/concrete/yv12.h"
+#include "../importer.h"
+#include "../../core/colorspace/interleaved.h"
+
 
 
 namespace avs { namespace gstreamer { namespace importer {
 
 
 
-PColorSpace I420::GetColorSpace() const
+//////////////////////////////////////////////////////////////////////////////////////////////
+//  importer::Interleaved
+//
+//
+//
+class Interleaved : public Importer
 {
-  return ColorSpace::yv12();
-}
+
+  boost::shared_ptr<cspace::Interleaved const> space_;
 
 
-PVideoFrame I420::CreateFrame(Dimension const& dim, OwnedBlock const& block) const
-{
-  Dimension dimUV = dim.Divide<2, 2>();
+public:  //structors
 
-  //promote the block into frame buffers with the proper alignment
-  //they are overlapping, thus breaking the guard requirement
-  //but it's not a problem because since they are sharing the same memory block
-  //they will blit on write, restoring the guards at this time (supposing align stuff didn't already blit)
-  buffer_window<4> y( dim, block, 0 );
-  buffer_window<4> v( dimUV, block, y.size() );
-  buffer_window<4> u( dimUV, block, y.size() + v.size() );
+  Interleaved(boost::shared_ptr<cspace::Interleaved const> const& space)
+    : space_( space ) { }
 
-  return CPVideoFrame( static_cast<VideoFrame *>(new vframe::concrete::YV12(dim, UNKNOWN, y, v, u)) );
-}
+  //generated destructor is fine
+
+
+public:  //Importer interface
+
+  virtual PColorSpace GetColorSpace() const { return space_; }
+
+  virtual PVideoFrame CreateFrame(Dimension const& dim, OwnedBlock const& block) const;
+
+};
 
 
 
 } } } //namespace avs::gstreamer::importer
 
-#endif //_WIN32
+#endif //__AVS_GSTREAMER_IMPORTER_INTERLEAVED_H__

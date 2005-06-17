@@ -21,43 +21,29 @@
 // General Public License cover the whole combination.
 
 
-#ifndef _WIN32
 
 //avisynth includes
-#include "i420.h"
-#include "../../core/colorspace.h"
+#include "interleaved.h"
 #include "../../core/ownedblock.h"
 #include "../../core/bufferwindow.h"
-#include "../../core/videoframe/concrete/yv12.h"
 
 
 namespace avs { namespace gstreamer { namespace importer {
 
 
 
-PColorSpace I420::GetColorSpace() const
+PVideoFrame Interleaved::CreateFrame(Dimension const& dim, OwnedBlock const& block) const
 {
-  return ColorSpace::yv12();
-}
+  //create a 4-bytes aligned frame buffer of the expected size by promoting the block
+  //since we respected guards into the block it shouldn't blit
+  buffer_window<4> main( space_->ToPlaneDim(dim, NOT_PLANAR), block, 0 );
 
-
-PVideoFrame I420::CreateFrame(Dimension const& dim, OwnedBlock const& block) const
-{
-  Dimension dimUV = dim.Divide<2, 2>();
-
-  //promote the block into frame buffers with the proper alignment
-  //they are overlapping, thus breaking the guard requirement
-  //but it's not a problem because since they are sharing the same memory block
-  //they will blit on write, restoring the guards at this time (supposing align stuff didn't already blit)
-  buffer_window<4> y( dim, block, 0 );
-  buffer_window<4> v( dimUV, block, y.size() );
-  buffer_window<4> u( dimUV, block, y.size() + v.size() );
-
-  return CPVideoFrame( static_cast<VideoFrame *>(new vframe::concrete::YV12(dim, UNKNOWN, y, v, u)) );
+  //use space_ to transform the frame buffer into a frame
+  //if the size was favorable the conversion from buffer_window<4>
+  //to buffer_window<block::Align> (ie BufferWindow) may not blit
+  return space_->CreateFrame(dim, UNKNOWN, main);
 }
 
 
 
 } } } //namespace avs::gstreamer::importer
-
-#endif //_WIN32

@@ -24,7 +24,7 @@
 #ifndef _WIN32
 
 //avisynth includes
-#include "i420.h"
+#include "yv12.h"
 #include "../../core/colorspace.h"
 #include "../../core/ownedblock.h"
 #include "../../core/bufferwindow.h"
@@ -35,13 +35,13 @@ namespace avs { namespace gstreamer { namespace importer {
 
 
 
-PColorSpace I420::GetColorSpace() const
+PColorSpace YV12::GetColorSpace() const
 {
   return ColorSpace::yv12();
 }
 
 
-PVideoFrame I420::CreateFrame(Dimension const& dim, OwnedBlock const& block) const
+PVideoFrame YV12::CreateFrame(Dimension const& dim, OwnedBlock const& block) const
 {
   Dimension dimUV = dim.Divide<2, 2>();
 
@@ -50,10 +50,10 @@ PVideoFrame I420::CreateFrame(Dimension const& dim, OwnedBlock const& block) con
   //but it's not a problem because since they are sharing the same memory block
   //they will blit on write, restoring the guards at this time (supposing align stuff didn't already blit)
   buffer_window<4> y( dim, block, 0 );
-  buffer_window<4> v( dimUV, block, y.size() );
-  buffer_window<4> u( dimUV, block, y.size() + v.size() );
+  buffer_window<4> u( dimUV, block, y.size() );
+  buffer_window<4> v( dimUV, block, y.size() + u.size() );
 
-  return CPVideoFrame( static_cast<VideoFrame *>(new vframe::concrete::YV12(dim, UNKNOWN, y, v, u)) );
+  return CPVideoFrame( static_cast<VideoFrame *>(new vframe::concrete::YV12(dim, UNKNOWN, y, u, v)) );
 }
 
 

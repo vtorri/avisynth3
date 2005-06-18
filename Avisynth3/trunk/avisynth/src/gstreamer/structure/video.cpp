@@ -115,7 +115,7 @@ PImporter Video::GetImporter() const
 	  case 'I420': return i420.Get();
     case 'YUY2': return yuy2.Get();
 	  default: break;
-
+	  }
   throw exception::cspace::Unknown();
 }
 

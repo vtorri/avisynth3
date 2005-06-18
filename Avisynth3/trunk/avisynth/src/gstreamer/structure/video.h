@@ -42,7 +42,7 @@ namespace avs { namespace gstreamer { namespace structure {
 //
 //
 //
-class VideoStructure : public Structure
+class Video : public Structure
 {
 
 public:  //structure::Video interface

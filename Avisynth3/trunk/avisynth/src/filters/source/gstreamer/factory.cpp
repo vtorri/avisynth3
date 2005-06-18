@@ -102,10 +102,10 @@ void Factory::operator()()
     
   pipeline_->operator avs::gstreamer::Bin&().Iterate(40);
 
-  if ( videoChooser_.HasChosen() )
+  if ( vi_->HasVideo() )
     pipeline_->SetFrameCount(*vi_);
 
-  if ( audioChooser_.HasChosen() )
+  if ( vi_->HasAudio() )
     pipeline_->SetSampleCount(*vi_);
 
     // Set the pipeline ready to read the video

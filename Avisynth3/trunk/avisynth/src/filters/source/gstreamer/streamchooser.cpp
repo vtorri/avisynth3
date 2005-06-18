@@ -27,8 +27,6 @@
 #include "streamchooser.h"
 #include "../../../gstreamer/pad.h"
 #include "../../../gstreamer/element.h"
-#include "../../../gstreamer/videostructure.h"
-#include "../../../gstreamer/audiostructure.h"
 
 
 namespace avs { namespace filters { namespace source { namespace gstreamer {

@@ -32,8 +32,8 @@
 #include "../../../gstreamer/pad.h"
 #include "../../../gstreamer/object.h"
 #include "../../../gstreamer/element.h"
-#include "../../../gstreamer/videostructure.h"
-#include "../../../gstreamer/audiostructure.h"
+#include "../../../gstreamer/structure/video.h"
+#include "../../../gstreamer/structure/audio.h"
 
 //gstreamer include
 #include <gst/gst.h>              //for gst_init
@@ -61,14 +61,14 @@ void NotifyVideoCapsCallBack(GObject * o, GParamSpec * pspec, void * data)
 {
   avs::gstreamer::PStructure structure = static_cast<avs::gstreamer::Object *>(o)->AsPad().GetNegotiatedStructure();
 
-  static_cast<Factory *>(data)->Set(static_cast<avs::gstreamer::VideoStructure const&>(*structure));
+  static_cast<Factory *>(data)->Set(static_cast<avs::gstreamer::structure::Video const&>(*structure));
 }
 
 void NotifyAudioCapsCallBack(GObject * o, GParamSpec * pspec, void * data)
 {
   avs::gstreamer::PStructure structure = static_cast<avs::gstreamer::Object *>(o)->AsPad().GetNegotiatedStructure();
   
-  static_cast<Factory *>(data)->Set(static_cast<avs::gstreamer::AudioStructure const&>(*structure));
+  static_cast<Factory *>(data)->Set(static_cast<avs::gstreamer::structure::Audio const&>(*structure));
 }
 
 

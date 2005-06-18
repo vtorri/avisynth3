@@ -77,8 +77,8 @@ public:  //used by callbacks
   
   void PadDetected(avs::gstreamer::Pad& pad);
 
-  void Set(avs::gstreamer::VideoStructure const& video);
-  void Set(avs::gstreamer::AudioStructure const& audio);
+  void Set(avs::gstreamer::structure::Video const& video);
+  void Set(avs::gstreamer::structure::Audio const& audio);
 
 
 public:  //access

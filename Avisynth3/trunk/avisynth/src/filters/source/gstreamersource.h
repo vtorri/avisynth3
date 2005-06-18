@@ -30,6 +30,9 @@
 #include "../../gstreamer/importer.h"         //for PImporter
 #include "../../clip/framemaker/concrete.h"
 
+//stl include
+#include <string>
+
 
 namespace avs { namespace filters {
 
@@ -51,7 +54,7 @@ class GstreamerSource : public clip::NoChild
 
 private:  //structors
 
-  GstreamerSource(CPVideoInfo const& vi, gstreamer::PImporter const& importer, gstreamer::PPipeline const& pipeline);
+  GstreamerSource(std::string const& fileName, PEnvironment const& env);
 
   //generated destructor is fine
 
@@ -66,13 +69,14 @@ public:  //FrameMaker interface
   CPVideoFrame MakeFrame(int n) const;
 
 
-public:  //factory method and functor
-
-  static PClip Create(std::string const& fileName, PEnvironment const& env);
+public:  //factory functor
 
   struct Creator
   {
-    PClip operator()(std::string const& fileName, PEnvironment const& env) const { return Create(fileName, env); }
+    PClip operator()(std::string const& fileName, PEnvironment const& env) const 
+    { 
+      return PClip( static_cast<Clip *>(new GstreamerSource(fileName, env) );  
+    }
   };
 
 };

@@ -49,7 +49,7 @@ struct StructureDestructor
 
   void operator()(Structure * structure) const
   {
-    gst_free_caps(caps_);
+    gst_caps_free(caps_);
   }
 };
 

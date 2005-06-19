@@ -99,7 +99,7 @@ Factory::Factory(std::string const& name, int videoIndex, int audioIndex)
     
   pipeline_->operator avs::gstreamer::Bin&().Iterate(40);
 
-  pipeline_->SetLenghts(*vi);
+  pipeline_->SetLengths(*vi);
 }
 
 

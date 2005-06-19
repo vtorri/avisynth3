@@ -72,7 +72,7 @@ public:  //access
 
   PVideoInfo const& vi() const { return vi_; }
   PPipeline const& pipeline() const { return pipeline_; }
-  PImporter const& importer() const { return importer_; }
+  avs::gstreamer::PImporter const& importer() const { return importer_; }
   
 
 public:  //used by callbacks

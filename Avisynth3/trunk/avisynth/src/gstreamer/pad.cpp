@@ -70,7 +70,7 @@ PStructure Pad::GetNegotiatedStructure()
 {
   G_CONST_RETURN GstCaps * caps = gst_pad_get_negotiated_caps(this);
 
-  return PStructure( static_cast<Structure *>(gst_caps_get_structure(caps, 0)), StructureDestructor(caps) );
+  return PStructure( static_cast<Structure *>(gst_caps_get_structure(caps, 0)), std::identity<void *>() );
 }
 
 

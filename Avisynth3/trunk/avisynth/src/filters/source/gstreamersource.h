@@ -54,7 +54,7 @@ class GstreamerSource : public clip::NoChild
 
 private:  //structors
 
-  GstreamerSource(std::string const& fileName, PEnvironment const& env);
+  GstreamerSource(gstreamer::Factory const& factory, PEnvironment const& env);
 
   //generated destructor is fine
 
@@ -73,10 +73,7 @@ public:  //factory functor
 
   struct Creator
   {
-    PClip operator()(std::string const& fileName, PEnvironment const& env) const 
-    { 
-      return PClip( static_cast<Clip *>(new GstreamerSource(fileName, env) );  
-    }
+    PClip operator()(std::string const& fileName, PEnvironment const& env) const; 
   };
 
 };

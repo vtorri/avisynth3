@@ -32,12 +32,11 @@ namespace avs { namespace filters {
 
 
 
-GstreamerSource::GstreamerSource(std::string const& fileName, PEnvironment const& env)
-  : clip::framemaker::Concrete(env)
-{
-
-
-}
+GstreamerSource::GstreamerSource(gstreamer::Factory const& factory, PEnvironment const& env)
+  : clip::framemaker::Concrete( env )
+  , vi_( factory.vi() )
+  , importer_( factory.importer() )
+  , pipeline_( factory.pipeline() ) { }
 
 
 } } //namespace avs::filters

@@ -68,10 +68,12 @@ public:  //structors
   //generated destructor is fine
 
 
-public:  //interface
+public:  //access
 
-  /*PClip*/ void operator()();
-
+  PVideoInfo const& vi() const { return vi_; }
+  PPipeline const& pipeline() const { return pipeline_; }
+  PImporter const& importer() const { return importer_; }
+  
 
 public:  //used by callbacks
   
@@ -80,17 +82,6 @@ public:  //used by callbacks
   void Set(avs::gstreamer::structure::Video const& video);
   void Set(avs::gstreamer::structure::Audio const& audio);
 
-
-public:  //access
-
-  PVideoInfo GetVideoInfo() { return vi_; }
-  PPipeline GetPipeline() { return pipeline_; }
-
-
-private: // Fill the informations;
-  
-  void SetStreamLength();
-  
 };
   
   

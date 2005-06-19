@@ -87,11 +87,8 @@ Factory::Factory(std::string const& name, int videoIndex, int audioIndex)
   : pipeline_( Pipeline::Create(name) )
   , vi_( VideoInfo::Create() )
   , videoChooser_( videoIndex, pipeline_->GetVideoSink(), &NotifyVideoCapsCallBack, *this )
-  , audioChooser_( audioIndex, pipeline_->GetAudioSink(), &NotifyAudioCapsCallBack, *this ) { }
-
-
-void Factory::operator()()
-{
+  , audioChooser_( audioIndex, pipeline_->GetAudioSink(), &NotifyAudioCapsCallBack, *this ) 
+{ 
   avs::gstreamer::Element& elementPipeline = *pipeline_;
 
   avs::gstreamer::Object& decoder = pipeline_->GetDecoder();
@@ -102,15 +99,10 @@ void Factory::operator()()
     
   pipeline_->operator avs::gstreamer::Bin&().Iterate(40);
 
-  if ( vi_->HasVideo() )
-    pipeline_->SetFrameCount(*vi_);
-
-  if ( vi_->HasAudio() )
-    pipeline_->SetSampleCount(*vi_);
-
-    // Set the pipeline ready to read the video
-    //pipeline_->GoToFrame (0, vi_->GetFPS());
+  pipeline_->SetLenghts(*vi);
 }
+
+
 
 void Factory::PadDetected(avs::gstreamer::Pad& pad)
 {

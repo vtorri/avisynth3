@@ -32,7 +32,7 @@ namespace avs { namespace filters {
 
 
 
-GstreamerSource::GstreamerSource(gstreamer::Factory const& factory, PEnvironment const& env)
+GstreamerSource::GstreamerSource(source::gstreamer::Factory const& factory, PEnvironment const& env)
   : clip::framemaker::Concrete( env )
   , vi_( factory.vi() )
   , importer_( factory.importer() )

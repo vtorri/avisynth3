@@ -26,7 +26,7 @@
 
 //avisynth includes
 #include "gstreamer/forward.h"                //for PPipeline
-#include "../../../clip/nochild.h"
+#include "../../clip/nochild.h"
 #include "../../gstreamer/importer.h"         //for PImporter
 #include "../../clip/framemaker/concrete.h"
 
@@ -49,12 +49,12 @@ class GstreamerSource : public clip::NoChild
 
   CPVideoInfo vi_;
   gstreamer::PImporter importer_;
-  gstreamer::PPipeline pipeline_;
+  source::gstreamer::PPipeline pipeline_;
 
 
 private:  //structors
 
-  GstreamerSource(gstreamer::Factory const& factory, PEnvironment const& env);
+  GstreamerSource(source::gstreamer::Factory const& factory, PEnvironment const& env);
 
   //generated destructor is fine
 

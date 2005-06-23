@@ -115,6 +115,16 @@ void Factory::PadDetected(avs::gstreamer::Pad& pad)
       audioChooser_.PadDetected(pad);
 }
 
+void Factory::Set(avs::gstreamer::structure::Video const& video)
+{
+  importer_ = video.SetVideoInfo(*vi_);
+}
+
+void Factory::Set(avs::gstreamer::structure::Audio const& audio)
+{
+  audio.SetVideoInfo(*vi_);
+}
+
 
 
 } } } } // namespace avs::filters::source::gstreamer

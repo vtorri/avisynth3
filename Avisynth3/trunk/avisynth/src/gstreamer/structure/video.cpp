@@ -111,9 +111,9 @@ PImporter Video::GetImporter() const
   if ( name == "video/x-raw-yuv" )
     switch ( GetFourCCField("format") )
 	  {
-	  case 'YV12': return yv12.Get();
-	  case 'I420': return i420.Get();
-	  case 'YUY2': return yuy2.Get();
+	  case '21VY': return yv12.Get();
+	  case '024I': return i420.Get();
+	  case '2YUY': return yuy2.Get();
 	  default: break;
 	  }
   throw exception::cspace::Unknown();

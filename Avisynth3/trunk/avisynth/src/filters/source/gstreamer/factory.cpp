@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2005 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 // This file is Copyleft Vincent Torri
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2005 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 // This file is Copyleft Vincent Torri
 
@@ -57,9 +57,6 @@ class Factory
   StreamChooser videoChooser_;
   StreamChooser audioChooser_;
 
-  // test 
-  unsigned int end_test;
-
 
 public:  //structors
   
@@ -78,9 +75,7 @@ public:  //access
 public:  //used by callbacks
   
   void PadDetected(avs::gstreamer::Pad& pad);
-
   void Set(avs::gstreamer::structure::Video const& video);
-
   void Set(avs::gstreamer::structure::Audio const& audio);
 
 };

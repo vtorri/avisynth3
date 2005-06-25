@@ -42,11 +42,10 @@ class OwnedHolder : public holder::OwnedBase
 
   GstBuffer& buffer_;
 
+
 public:  //structors
 
   OwnedHolder(PEnvironment const& env, GstBuffer& buffer);
-//    : holder::OwnedBase( env, buffer.size ) { }
-
   virtual ~OwnedHolder();
 
 
@@ -55,6 +54,11 @@ public:  //OwnedHolder interface
   virtual BYTE * get() const;
 
   virtual bool unique() const;
+
+
+public:  //Align initial guarantee, needed by block::base
+
+  enum { Align = 1 };
 
 };
 

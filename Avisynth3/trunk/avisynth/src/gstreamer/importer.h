@@ -27,7 +27,7 @@
 //avisynth includes
 #include "forward.h"                    //for PImporter
 #include "../define.h"                  //for AVS_NOVTABLE
-#include "../core/forward.h"            //for PColorSpace, Dimension, OwnedBlock
+#include "../core/forward.h"            //for PColorSpace, Dimension, owned_block template
 
 //boost include
 #include <boost/shared_ptr.hpp>         //so PColorSpace, PImporter are defined
@@ -49,7 +49,7 @@ public:  //Importer interface
 
   virtual PColorSpace GetColorSpace() const = 0;
 
-  virtual PVideoFrame CreateFrame(Dimension const& dim, OwnedBlock const& block) const = 0;
+  virtual PVideoFrame CreateFrame(Dimension const& dim, owned_block<1> const& block) const = 0;
 
 };
 

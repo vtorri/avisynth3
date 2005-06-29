@@ -49,9 +49,9 @@ PVideoFrame YV12::CreateFrame(Dimension const& dim, OwnedBlock const& block) con
   //they are overlapping, thus breaking the guard requirement
   //but it's not a problem because since they are sharing the same memory block
   //they will blit on write, restoring the guards at this time (supposing align stuff didn't already blit)
-  buffer_window<4> y( dim, block, BufferWindow::Guard );
-  buffer_window<2> u( dimUV, block, BufferWindow::Guard + y.size() );
-  buffer_window<2> v( dimUV, block, BufferWindow::Guard + y.size() + u.size() );
+  buffer_window<4, Guard> y( dim, block, Guard );
+  buffer_window<2, Guard> u( dimUV, block, Guard + y.size() );
+  buffer_window<2, Guard> v( dimUV, block, Guard + y.size() + u.size() );
 
   return CPVideoFrame( static_cast<VideoFrame *>(new vframe::concrete::YV12(dim, UNKNOWN, y, u, v)) );
 }

@@ -37,11 +37,11 @@ PVideoFrame Interleaved::CreateFrame(Dimension const& dim, OwnedBlock const& blo
 {
   //create a 4-bytes aligned frame buffer of the expected size by promoting the block
   //since we respected guards into the block it shouldn't blit
-  buffer_window<4> main( space_->ToPlaneDim(dim, NOT_PLANAR), block, BufferWindow::Guard );
+  buffer_window<4, Guard> main( space_->ToPlaneDim(dim, NOT_PLANAR), block, Guard );
 
   //use space_ to transform the frame buffer into a frame
-  //if the size was favorable the conversion from buffer_window<4>
-  //to buffer_window<block::Align> (ie BufferWindow) may not blit
+  //if the size was favorable the conversion 
+  //from buffer_window<4, Guard> to BufferWindow may not blit
   return space_->CreateFrame(dim, UNKNOWN, main);
 }
 

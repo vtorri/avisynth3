@@ -25,12 +25,13 @@
 #define __AVS_VFW_IMPORTER_H__
 
 //avisynth includes
-#include "forward.h"                    //for BitmapInfoHeader, PImporter
-#include "../define.h"                  //for AVS_NOVTABLE
-#include "../core/forward.h"            //for PColorSpace, Dimension, OwnedBlock
+#include "forward.h"                        //for BitmapInfoHeader, PImporter
+#include "../define.h"                      //for AVS_NOVTABLE
+#include "../core/forward.h"                //for PColorSpace, Dimension, OwnedBlock, BufferWindow
+#include "../core/bufferwindow/guard_of.h"
 
 //boost include
-#include <boost/shared_ptr.hpp>         //so PColorSpace, PImporter are defined
+#include <boost/shared_ptr.hpp>             //so PColorSpace, PImporter are defined
 
 
 namespace avs { namespace vfw {
@@ -47,9 +48,14 @@ class AVS_NOVTABLE Importer
 
 public:  //Importer interface
 
+  //fetchs target colorspace
   virtual PColorSpace GetColorSpace() const = 0;
 
+  //creates a frame of given dimension using data from block
   virtual PVideoFrame CreateFrame(Dimension const& dim, OwnedBlock const& block) const = 0;
+
+  //offset where starts real data in the above block
+  enum { Guard = bw::guard_of<BufferWindow>::value };
 
 
 public:

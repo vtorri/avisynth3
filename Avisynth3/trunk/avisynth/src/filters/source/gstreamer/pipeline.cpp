@@ -20,6 +20,9 @@
 // combined work based on Avisynth.  Thus, the terms and conditions of the GNU
 // General Public License cover the whole combination.
 
+
+#ifndef _WIN32
+
 //avisynth includes
 #include "factory.h"
 #include "pipeline.h"
@@ -155,3 +158,5 @@ void Pipeline::SetLengths(VideoInfo& vi)
 
 
 } } } } // namespace avs::filters::source::gstreamer
+
+#endif //_WIN32

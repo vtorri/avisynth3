@@ -67,7 +67,7 @@ public:  //interface
 
   void PadDetected(Pad& sourcePad);
 
-  bool HasChosen() const { return sourcePad_; }
+  bool HasChosen() const { return sourcePad_ != NULL; }
   Pad& GetChosenPad() const { return *sourcePad_; }
 
 };

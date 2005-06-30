@@ -23,6 +23,9 @@
 
 #ifndef _WIN32
 
+//avisynth include
+#include "ownedholder.h"
+
 
 namespace avs { namespace filters { namespace gstreamer {
 

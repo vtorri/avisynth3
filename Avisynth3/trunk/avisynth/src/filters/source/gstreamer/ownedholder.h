@@ -27,6 +27,9 @@
 //avisynth include
 #include "../../../core/block/holder/ownedbase.h"
 
+//gstreamer forward declaration
+typedef struct _GstBuffer GstBuffer;
+
 
 namespace avs { namespace filters { namespace gstreamer {
 
@@ -51,13 +54,11 @@ public:  //structors
 
 public:  //OwnedHolder interface
 
-  virtual BYTE * get() const;
+  virtual BYTE * Get() const;
 
-  virtual bool unique() const;
+  virtual bool Unique() const;
 
-
-public:  //Align initial guarantee, needed by block::base
-
+  //expected by block::base template
   enum { Align = 1 };
 
 };

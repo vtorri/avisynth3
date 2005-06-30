@@ -26,6 +26,9 @@
 //avisynth include
 #include "ownedholder.h"
 
+//gstreamer include
+#include <gst/gstbuffer.h>
+
 
 namespace avs { namespace filters { namespace gstreamer {
 
@@ -45,12 +48,12 @@ OwnedHolder::~OwnedHolder()
 }
 
 
-BYTE * OwnedHolder::get() const 
+BYTE * OwnedHolder::Get() const 
 { 
   return buffer_.data; 
 }
 
-bool OwnedHolder::unique() const 
+bool OwnedHolder::Unique() const 
 { 
   gst_buffer_is_writable(&buffer_) != 0; 
 }

@@ -25,9 +25,8 @@
 
 //avisynth includes
 #include "video.h"
-#include "../importer/yv12.h"
-#include "../importer/i420.h"
 #include "../importer/interleaved.h"
+#include "../importer/yv12andi420.h"
 #include "../../core/videoinfo.h"
 #include "../../core/colorspace.h"
 #include "../../core/utility/valuecache.h"
@@ -81,8 +80,8 @@ Importer const * CreateYUY2Importer()
       );
 }
 
-Importer const * CreateYV12Importer() { return new importer::YV12(); }
-Importer const * CreateI420Importer() { return new importer::I420(); }
+Importer const * CreateYV12Importer() { return new importer::YV12AndI420(false); }
+Importer const * CreateI420Importer() { return new importer::YV12AndI420(true); }
 
 
 utility::ValueCache<Importer const> rgb24( &CreateRGB24Importer );

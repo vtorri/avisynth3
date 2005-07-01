@@ -132,6 +132,8 @@ public:  //others
 
   template <long xShift, long yShift> dimension<T> Shift() const { return dimension<T>(x_ + xShift, y_ + yShift); }
 
+  template <long Align> T BMPSize() const { return x_ * utility::RoundUp<Align>(y_); }
+
 };
 
 

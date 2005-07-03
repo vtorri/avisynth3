@@ -33,12 +33,12 @@ namespace avs { namespace utility {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-//  ValueCache<T, Creator>
+//  ValueCache<T, Creator, Synchronizer>
 //
 //
 //
-template <typename T, typename Creator = T * (*)()>
-class ValueCache
+template <typename T, typename Synchronizer = synchronizer::None, typename Creator = T * (*)()>
+class value_cache
 {
 
   Creator create_;
@@ -47,7 +47,7 @@ class ValueCache
 
 public:  //structors
 
-  ValueCache(Creator create)
+  value_cache(Creator create)
     : create_( create ) { }
 
   //generated destructor is fine
@@ -57,9 +57,12 @@ public:  //interface
 
   boost::shared_ptr<T> Get() const
   {
+    Synchronizer synchronizer();
+
     boost::shared_ptr<T> result = cached_.lock();
     if ( ! result )
       cached_ = result = boost::shared_ptr<T>( create_() );
+
     return result;
   }
 

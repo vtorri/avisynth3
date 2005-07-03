@@ -25,25 +25,17 @@
 #define __AVS_VFW_FORWARD_H__
 
 
-namespace boost {
-
-
-template <typename T> class shared_ptr;
-
-
-} //namespace boost
+namespace boost { template <typename T> class shared_ptr; }
 
 
 namespace avs { namespace vfw {
 
 
 //declarations
-class Importer;
 class WaveFormatEx;
 class BitmapInfoHeader;
 
 //typedefs
-typedef boost::shared_ptr<Importer const> PImporter;
 typedef boost::shared_ptr<WaveFormatEx> PWaveFormatEx;
 typedef boost::shared_ptr<BitmapInfoHeader> PBitmapInfoHeader;
 

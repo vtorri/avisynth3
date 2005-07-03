@@ -25,12 +25,12 @@
 #define __AVS_GSTREAMER_STRUCTURE_VIDEO_H__
 
 //avisynth includes
-#include "../forward.h"                    //for Pimporter
 #include "../structure.h"
-#include "../../core/forward.h"            //for VideoInfo, PColorSpace
+#include "../../core/forward.h"                   //for VideoInfo, PColorSpace
+#include "../../filters/source/video/forward.h"   //for Pimporter
 
 //boost include
-#include <boost/shared_ptr.hpp>            //so PImporter, PColorSpace are defined
+#include <boost/shared_ptr.hpp>                   //so PImporter, PColorSpace are defined
 
 
 namespace avs { namespace gstreamer { namespace structure {
@@ -44,10 +44,15 @@ namespace avs { namespace gstreamer { namespace structure {
 //
 class Video : public Structure
 {
+  
+public:  //typedef of the lazy guy
+
+  typedef filters::source::video::PImporter PImporter;
+
 
 public:  //structure::Video interface
 
-  PImporter SetVideoInfo(VideoInfo& vi) const;
+  filters::source::video::PImporter SetVideoInfo(VideoInfo& vi) const;
 
 
 private:  //helper method

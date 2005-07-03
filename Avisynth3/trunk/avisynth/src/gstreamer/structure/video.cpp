@@ -25,13 +25,12 @@
 
 //avisynth includes
 #include "video.h"
-#include "../importer/interleaved.h"
-#include "../importer/yv12andi420.h"
 #include "../../core/videoinfo.h"
 #include "../../core/colorspace.h"
-#include "../../core/utility/valuecache.h"
 #include "../../core/geometry/dimension.h"            //so Dimension is defined
 #include "../../core/exception/colorspace/unknown.h"
+#include "../../filters/source/video/importer/interleaved.h"
+#include "../../filters/source/video/importer/gstyv12andi420.h"
 
 //stl include
 #include <string>
@@ -41,7 +40,7 @@ namespace avs { namespace gstreamer { namespace structure {
 
 
 
-PImporter Video::SetVideoInfo(VideoInfo& vi) const
+Video::PImporter Video::SetVideoInfo(VideoInfo& vi) const
 {
   PImporter importer = GetImporter();
 
@@ -56,63 +55,27 @@ PImporter Video::SetVideoInfo(VideoInfo& vi) const
 
 
 
-namespace {
 
-
-Importer const * CreateRGB24Importer()
+Video::PImporter Video::GetImporter() const
 {
-  return new importer::Interleaved
-      ( boost::dynamic_pointer_cast<cspace::Interleaved const>( ColorSpace::rgb24() ) 
-      );
-}
+  using namespace avs::filters::source::video::importer;
 
-Importer const * CreateRGB32Importer()
-{
-  return new importer::Interleaved
-      ( boost::dynamic_pointer_cast<cspace::Interleaved const>( ColorSpace::rgb32() ) 
-      );
-}
-
-Importer const * CreateYUY2Importer()
-{
-  return new importer::Interleaved
-      ( boost::dynamic_pointer_cast<cspace::Interleaved const>( ColorSpace::yuy2() ) 
-      );
-}
-
-Importer const * CreateYV12Importer() { return new importer::YV12AndI420(false); }
-Importer const * CreateI420Importer() { return new importer::YV12AndI420(true); }
-
-
-utility::ValueCache<Importer const> rgb24( &CreateRGB24Importer );
-utility::ValueCache<Importer const> rgb32( &CreateRGB32Importer );
-utility::ValueCache<Importer const> yuy2( &CreateYUY2Importer );
-utility::ValueCache<Importer const> yv12( &CreateYV12Importer );
-utility::ValueCache<Importer const> i420( &CreateI420Importer );
-
-
-} //namespace anonymous
-
-
-
-PImporter Video::GetImporter() const
-{
   std::string name = GetName();
   
   if ( name == "video/x-raw-rgb" )
     switch ( GetIntField("bpp") )
     {
-    case 24: return rgb24.Get();
-    case 32: return rgb32.Get();
+    case 24: return Interleaved::rgb24.Get();
+    case 32: return Interleaved::rgb32.Get();
     default: break;
     }   
     
   if ( name == "video/x-raw-yuv" )
     switch ( GetFourCCField("format") )
 	  {
-	  case '21VY': return yv12.Get();
-	  case '024I': return i420.Get();
-	  case '2YUY': return yuy2.Get();
+	  case '21VY': return GstYV12AndI420::yv12.Get();
+    case '024I': return GstYV12AndI420::i420.Get();
+	  case '2YUY': return Interleaved::yuy2.Get();
 	  default: break;
 	  }
   throw exception::cspace::Unknown();

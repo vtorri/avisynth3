@@ -57,12 +57,12 @@ public:  //Importer interface
 
   virtual PColorSpace GetColorSpace() const { return space_; }
 
-  virtual PVideoFrame CreateFrame(Dimension const& dim, owned_block<1> const& block) const;
+  virtual CPVideoFrame CreateFrame(Dimension const& dim, owned_block<1> const& block) const;
 
 
 public:
 
-  typedef value_cache<Importer const, synchronizer::lock<Importer> > ValueCache;
+  typedef utility::value_cache<Importer const, utility::synchronizer::lock<Importer> > ValueCache;
 
   static ValueCache const rgb24;
   static ValueCache const rgb32;

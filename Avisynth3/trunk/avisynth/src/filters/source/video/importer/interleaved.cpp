@@ -31,11 +31,11 @@ namespace avs { namespace filters { namespace source { namespace video { namespa
 
 
 
-Interleaved::Interleaved(PColorspace const& space)
+Interleaved::Interleaved(PColorSpace const& space)
   : space_( boost::dynamic_pointer_cast<cspace::Interleaved const>(space) ) { }
 
 
-PVideoFrame Interleaved::CreateFrame(Dimension const& dim, owned_block<1> const& block) const
+CPVideoFrame Interleaved::CreateFrame(Dimension const& dim, owned_block<1> const& block) const
 {
   //create a 4-bytes aligned frame buffer of the expected size by promoting the block
   //should not blit, since block is supposed to be 4-aligned

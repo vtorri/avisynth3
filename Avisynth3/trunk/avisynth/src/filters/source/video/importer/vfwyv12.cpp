@@ -41,7 +41,7 @@ PColorSpace VFWYV12::GetColorSpace() const
 }
 
 
-PVideoFrame YV12::CreateFrame(Dimension const& dim, owned_block<1> const& block) const
+CPVideoFrame YV12::CreateFrame(Dimension const& dim, owned_block<1> const& block) const
 {
   Dimension dimUV = dim.Divide<2, 2>();
 

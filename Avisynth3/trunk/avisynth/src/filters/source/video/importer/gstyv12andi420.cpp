@@ -42,7 +42,7 @@ PColorSpace GstYV12AndI420::GetColorSpace() const
 }
 
 
-PVideoFrame GstYV12AndI420::CreateFrame(Dimension const& dim, owned_block<1> const& block) const
+CPVideoFrame GstYV12AndI420::CreateFrame(Dimension const& dim, owned_block<1> const& block) const
 {
   Dimension dimUV = dim.Divide<2, 2>();
 

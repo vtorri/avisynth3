@@ -51,7 +51,7 @@ public:  //Importer interface
 
 public:
 
-  typedef value_cache<Importer const, synchronizer::lock<Importer> > ValueCache;
+  typedef utility::value_cache<Importer const, utility::synchronizer::lock<Importer> > ValueCache;
 
   static ValueCache const yv12;
 

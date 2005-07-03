@@ -55,7 +55,7 @@ public:  //structors
 
 
 template <typename Tag>
-boost::mutex mutex_;
+boost::mutex lock<Tag>::mutex_;
 
 
 

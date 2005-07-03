@@ -31,6 +31,9 @@
 namespace avs { namespace utility {
 
 
+namespace synchronizer { struct None { }; }
+
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //  ValueCache<T, Creator, Synchronizer>

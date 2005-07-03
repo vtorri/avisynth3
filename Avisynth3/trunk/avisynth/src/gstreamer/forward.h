@@ -37,7 +37,6 @@ class Bin;
 class Pad;
 class Object;
 class Element;
-class Importer;
 class Pipeline;
 class Structure;
 
@@ -50,7 +49,6 @@ class Audio;
 
 //typedefs
 typedef boost::shared_ptr<Structure> PStructure;
-typedef boost::shared_ptr<Importer const> PImporter;
 
 
 

@@ -40,7 +40,7 @@ namespace avs { namespace filters { namespace gstreamer {
 //
 //  
 //
-class OwnedHolder : public holder::OwnedBase
+class OwnedHolder : public block::holder::OwnedBase
 {
 
   GstBuffer& buffer_;

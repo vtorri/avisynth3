@@ -35,7 +35,8 @@ namespace avs { namespace filters { namespace gstreamer {
 
 
 OwnedHolder::OwnedHolder(PEnvironment const& env, GstBuffer& buffer)
-  : holder::OwnedBase( env, buffer.size )
+  : buffer_(buffer)
+  , block::holder::OwnedBase( env, buffer.size )
 {
   //increase buffer ref count
   gst_buffer_ref(&buffer_);

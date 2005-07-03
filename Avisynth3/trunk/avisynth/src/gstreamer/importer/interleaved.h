@@ -57,7 +57,7 @@ public:  //Importer interface
 
   virtual PColorSpace GetColorSpace() const { return space_; }
 
-  virtual PVideoFrame CreateFrame(Dimension const& dim, OwnedBlock const& block) const;
+  virtual PVideoFrame CreateFrame(Dimension const& dim, owned_block<1> const& block) const;
 
 };
 

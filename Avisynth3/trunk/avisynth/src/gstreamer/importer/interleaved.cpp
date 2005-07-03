@@ -32,7 +32,7 @@ namespace avs { namespace gstreamer { namespace importer {
 
 
 
-PVideoFrame Interleaved::CreateFrame(Dimension const& dim, OwnedBlock const& block) const
+PVideoFrame Interleaved::CreateFrame(Dimension const& dim, owned_block<1> const& block) const
 {
   //create a 4-bytes aligned frame buffer of the expected size by promoting the block
   //since we respected guards into the block it shouldn't blit

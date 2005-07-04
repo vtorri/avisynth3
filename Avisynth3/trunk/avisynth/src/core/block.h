@@ -78,6 +78,9 @@ public:  //structors
   explicit block_(block_<alignOther> const& other)
     : BaseBlockType( other ) { }
 
+  block_(BaseBlockType const& base)
+    : BaseBlockType( base ) { }
+
   //generated copy constructor and destructor are fine
 
 
@@ -100,10 +103,7 @@ public:  //misc
     create(size).swap(*this);
   }
 
-  BlockType Split(int splitSize)
-  {
-    return static_cast<BlockType>( BaseBlockType::Split(splitSize) );
-  }
+  //Split inherited from Superclass
 
 };
 

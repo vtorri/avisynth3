@@ -68,6 +68,9 @@ public:  //structors
   explicit owned_block(owned_block<alignOther> const& other)
     : BaseBlockType( other ) { }
 
+  owned_block(BaseBlockType const& base)
+    : BaseBlockType( base ) { }
+
   //generated copy constructor and destructor are fine
 
 
@@ -90,10 +93,7 @@ public:  //misc
     create(size).swap(*this);
   }
 
-  BlockType Split(int splitSize)
-  {
-    return static_cast<BlockType&>( BaseBlockType::Split(splitSize) );
-  }
+  //Split inherited from superclass
 
 };
 

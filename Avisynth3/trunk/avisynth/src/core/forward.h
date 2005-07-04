@@ -63,7 +63,7 @@ template <typename T> class vecteur;
 template <typename T> class dimension;
 template <class Data> struct window_ptr;
 template <typename T> class cow_shared_ptr;
-template <int align, int guard = block::Align, class Buffer = owned_block<1> > class buffer_window;
+template <int align, int guard = 0, class Buffer = owned_block<1> > class buffer_window;
 
 //typedefs
 typedef unsigned char BYTE;
@@ -74,8 +74,13 @@ typedef window_ptr<BYTE> WindowPtr;
 typedef window_ptr<BYTE const> CWindowPtr;
 typedef block_<block::Align> Block;
 typedef owned_block<block::Align> OwnedBlock;
-typedef buffer_window<block::Align> BufferWindow;
 typedef boost::rational<long> Fraction;
+
+#ifdef AVS_DEBUG_BUFFERWINDOW_USE_GUARD
+typedef buffer_window<block::Align, block::Align> BufferWindow;
+#else
+typedef buffer_window<block::Align> BufferWindow;
+#endif
 
 //ptr typedefs
 typedef boost::shared_ptr<Key const> PKey;

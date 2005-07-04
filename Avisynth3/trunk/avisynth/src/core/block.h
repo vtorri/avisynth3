@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -63,23 +63,20 @@ class block_ : public block::base<block::Holder, align>
 public:  //typedefs
 
   typedef block_<align> BlockType;
-  typedef block::base<block::Holder, align> BaseBlockType;
   typedef typename boost::enable_if<block::align_compatible<block::Align, align>, block::Creator>::type Creator;
 
 
 public:  //structors
   
+  block_(int size, bool recycle);
+
   template <class Holder>
   explicit block_(Holder * holder)
-    :  BaseBlockType( holder ) { }
+    : BaseBlockType( holder ) { }
 
   template <int alignOther>
   explicit block_(block_<alignOther> const& other)
     : BaseBlockType( other ) { }
-
-  //spawning constructor
-  block_(BlockType const& other, int size, bool recycle)
-    : BaseBlockType( other, size, recycle ) { }
 
   //generated copy constructor and destructor are fine
 
@@ -89,7 +86,7 @@ public:  //assignemnt
   template <int alignOther>
   BlockType& operator=(block_<alignOther> const& other)
   {
-    return static_cast<BlockType>( BaseBlockType::operator=(other) );
+    return static_cast<BlockType&>( BaseBlockType::operator=(other) );
   }
 
   //generated operator= is fine
@@ -98,76 +95,14 @@ public:  //assignemnt
 
 public:  //misc
 
-  void reset(int size, bool recycle)
+  void Reset(int size, Creator create)
   {
-    spawn(size, recycle).swap(*this);
+    create(size).swap(*this);
   }
 
-  BlockType spawn(int size, bool recycle) const
+  BlockType Split(int splitSize)
   {
-    return BlockType(*this, size, recycle);
-  }
-
-};
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////
-//  block_<block::Align>
-//
-//  specialisation for the avs nominal align, adds a constructor using avs memory pool
-//
-template <> 
-class block_<block::Align> : public block::base<block::Holder, block::Align>
-{
-
-public:  //typedefs
-
-  typedef block_<block::Align> BlockType;
-  typedef block::Creator Creator;
-
-
-public:  //structors
-  
-  explicit block_(int size, bool recycle);
-
-  template <class Holder>
-  explicit block_(Holder * holder)
-    :  BaseBlockType( holder ) { }
-
-  template <int alignOther>
-  explicit block_(block_<alignOther> const& other)
-    : BaseBlockType( other ) { }
-
-  //spawning constructor
-  block_(BlockType const& other, int size, bool recycle)
-    : BaseBlockType( other, size, recycle ) { }
-
-  //generated copy constructor and destructor are fine
-
-
-public:  //assignemnt
-
-  template <int alignOther>
-  BlockType& operator=(block_<alignOther> const& other)
-  {
-    return static_cast<BlockType>( BaseBlockType::operator=(other) );
-  }
-
-  //generated operator= is fine
-  //swap inherited from superclass
-
-
-public:  //misc
-
-  void reset(int size, bool recycle)
-  { 
-    spawn(size, recycle).swap(*this); 
-  }
-  
-  BlockType spawn(int size, bool recycle) const 
-  { 
-    return BlockType(*this, size, recycle); 
+    return static_cast<BlockType>( BaseBlockType::Split(splitSize) );
   }
 
 };
@@ -188,11 +123,24 @@ namespace block {
 class Creator
 {
 
-public:
+  bool recycle_;
 
-  block_<block::Align> operator()(int size, bool recycle) const
+
+public:  //structors
+
+  Creator(bool recycle = true) : recycle_( recycle ) { }
+
+  template <int align>
+    explicit Creator(block_<align> const&, bool recycle = true) : recycle_( recycle ) { }
+
+  //generated destructor is fine
+
+
+public:  //block creation method
+
+  block_<block::Align> operator()(int size) const
   {
-    return block_<block::Align>(size, recycle);
+    return block_<block::Align>(size, recycle_);
   }
 
 };

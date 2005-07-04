@@ -27,7 +27,7 @@
 //avisynth includes
 #include "blitter.h"
 #include "window_ptr.h"
-#include "geometry/dimension.h"
+#include "geometry/dimension.h"         //so Dimension is defined
 
 //assert include
 #include <assert.h>
@@ -41,38 +41,61 @@ struct SizeChanger;
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-//  bw::realigner<align, guard>
+////////////////////////////////////////////////////////////////////////////////////////////
+//  bw::misAligned<align>
 //
-//  helper struct to help  buffer_window enforce its align and guard guarantee
+//  helper struct to detect misalignment
 //
-//  code has been moved to an external struct so it could be specialised on border cases
-//
-template <int align, int guard> struct realigner
+template <int align> struct misAligned
 {
-
-  template <class Buffer>
-  void operator()(buffer_window<align, guard, Buffer> & bw) const
+  template <typename BW> bool operator()(BW const& bw) const
   {
-    if (  std::max(bw.pitch_, -bw.pitch_) % align != 0      //pitch non aligned
-       || int(bw.buffer_.get() + bw.offset_) % align != 0   //data non aligned
-       || bw.MinOffset() < guard                            //not enough head space
-       || bw.buffer_.size() < bw.MaxOffset() + guard        //not enough toe space
-        )
-      bw.SelfBlit();
+    return std::max(bw.Pitch(), -bw.Pitch()) % align != 0       //pitch non aligned
+        || reinterpret_cast<int>( bw.read() ) % align != 0;     //data non aligned
+  }
+};
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+//  bw::misAligned<1>
+//
+//  border case specialisation of the above
+//
+template <> struct misAligned<1>
+{
+  template <typename BW> bool operator()(BW const& bw) const
+  {
+    return false;
+  }
+};
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+//  bw::misGuarded<guard>
+//
+//  helper struct to detect misguarding
+//
+template <int guard> struct misGuarded
+{
+  template <typename BW> bool operator()(BW const& bw) const
+  {
+    return bw.MinOffset() < guard                            //not enough head space
+        || bw.buffer_.Size() < bw.MaxOffset() + guard;       //not enough toe space        
   }
 };
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-//  bw::realigner<1, 0>
+//  bw::misGuarded<0>
 //
-//  specialisation for no alignment, no guard, ie no realigning ever
+//  specialisation on border case of the above
 //
-template <> struct realigner<1, 0>
+template <> struct misGuarded<0>
 {
-  template <class Buffer>
-  void operator()(buffer_window<1, 0, Buffer> & buffer) const { }
+  template <typename BW> bool operator()(BW const& bw) const
+  {
+    return false;
+  }
 };
 
 
@@ -103,7 +126,7 @@ public:  //declarations and typedef
   typedef buffer_window<align, guard, Buffer> BufferWindowType;
 
   friend struct bw::SizeChanger;   //need internal knowledge to work
-  friend struct bw::realigner<align, guard>;
+  friend struct bw::misGuarded<guard>;
 
   //needed for the converting constructor to access other's members
   template <int alignOther, int guardOther, class BufferOther> friend class buffer_window;
@@ -114,28 +137,21 @@ public:  //structors
   //normal constructor
   buffer_window(Dimension const& dim, typename BufferType::Creator const& create)
     : dim_( dim )
-    , pitch_( utility::RoundUp<Align>(width()) )
+    , pitch_( utility::RoundUp<Align>(Width()) )
     , offset_( Guard )
-    , buffer_( create(pitch() * height() + Guard * 2, true) ) { }
+    , buffer_( create(Pitch() * Height() + Guard * 2) ) { }
  
-  //spawning constructor
-  buffer_window(Dimension const& dim, BufferWindowType const& other)
-    : dim_( dim )
-    , pitch_( utility::RoundUp<Align>(width()) )
-    , offset_( Guard )
-    , buffer_( other.buffer_.spawn(pitch() * height() + Guard * 2, true) ) { }
-
   //constructor using a given buffer
   template <class BufferOther>
   buffer_window(Dimension const& dim, BufferOther const& buffer, int offset)
     : dim_( dim )
-    , pitch_( utility::RoundUp<Align>(width()) )
+    , pitch_( utility::RoundUp<Align>(Width()) )
     , offset_( offset )
     , buffer_( buffer )
   {
     assert( IsLegal() );
 
-    bw::realigner<align, guard>()(*this);
+    ReAlign();
   }
 
   //same as above, but allows custom pitch (possibly negative, but not zero)
@@ -148,7 +164,7 @@ public:  //structors
   {
     assert( IsLegal() && pitch_ != 0 );
 
-    bw::realigner<align, guard>()(*this);
+    ReAlign();
   }
 
 
@@ -160,7 +176,7 @@ public:  //structors
     , offset_( other.offset_ )
     , buffer_( other.buffer_ )
   {
-    bw::realigner<align, guard>()(*this);
+    ReAlign();
   }
 
   //generated copy constructor and destructor are fine
@@ -172,16 +188,12 @@ public:  //assignment
 
   void swap(BufferWindowType& other)  //no throw
   {
-    dim_.swap(other.dim_);
-    std::swap(pitch_, other.pitch_);
-    std::swap(offset_, other.offset_);
-    buffer_.swap(other.buffer_);
-  }
+    using std::swap;
 
-  //spawn method
-  BufferWindowType spawn(Dimension const& dim) const
-  {
-    return BufferWindowType(dim, *this);
+    swap(dim_, other.dim_);
+    swap(pitch_, other.pitch_);
+    swap(offset_, other.offset_);
+    swap(buffer_, other.buffer_);
   }
 
 
@@ -190,22 +202,22 @@ public:  //access
   PEnvironment const& GetEnvironment() const { return buffer_.GetEnvironment(); }
   Dimension const& GetDimension() const { return dim_; }
 
-  BYTE const * read() const { return buffer_.get() + offset_; }
+  BYTE const * read() const { return buffer_.Get() + offset_; }
   BYTE * write()
   {
-    if ( ! buffer_.unique() )                      //if data is shared
+    if ( ! buffer_.Unique() )                      //if data is shared
       SelfBlit();                                  //blit it so we become sole owner
-    return buffer_.get() + offset_;
+    return buffer_.Get() + offset_;
   }
 
-  int pitch() const { return pitch_; }
-  int width() const { return dim_.GetWidth(); }
-  int height() const { return dim_.GetHeight(); }
-  int size() const { return std::max(pitch(), -pitch()) * height(); }
+  int Pitch() const { return pitch_; }
+  int Width() const { return dim_.GetWidth(); }
+  int Height() const { return dim_.GetHeight(); }
+  int Size() const { return std::max(Pitch(), -Pitch()) * Height(); }
 
   //window_ptr methods
-  CWindowPtr Read() const { return CWindowPtr( read(), pitch(), width(), height() ); }
-  WindowPtr Write() { BYTE * ptr = write(); return WindowPtr( ptr, pitch(), width(), height() ); }
+  CWindowPtr Read() const { return CWindowPtr( read(), Pitch(), Width(), Height() ); }
+  WindowPtr Write() { BYTE * ptr = write(); return WindowPtr( ptr, Pitch(), Width(), Height() ); }
 
 
 public:  //comparison operators
@@ -223,17 +235,23 @@ public:  //comparison operators
 
 private:  //implementation details
 
-  int MinOffset() const { return pitch_ > 0 ? offset_ : offset_ + pitch_ * (height() - 1); }
-  int MaxOffset() const { return pitch_ > 0 ? offset_ + pitch_ * height() : offset_ - pitch_; }
+  int MinOffset() const { return pitch_ > 0 ? offset_ : offset_ + pitch_ * (Height() - 1); }
+  int MaxOffset() const { return pitch_ > 0 ? offset_ + pitch_ * Height() : offset_ - pitch_; }
 
   //checks that the data is inside the buffer
-  bool IsLegal() const { return ! dim_.empty() && 0 <= MinOffset() && MaxOffset() <= buffer_.size(); }
+  bool IsLegal() const { return ! dim_.empty() && 0 <= MinOffset() && MaxOffset() <= buffer_.Size(); }
+
+  void ReAlign()
+  {
+    if ( bw::misAligned<Align>()(*this) || bw::misAligned<Guard>()(*this) )
+      SelfBlit();
+  }
 
   void SelfBlit()
   {
-    BufferWindowType temp(dim_, *this);              //make a new buffer (using spawning contructor)
-    Blitter::Get()(Read(), temp.Write(), dim_);      //blit the data into it
-    swap(temp);                                      //and replace self
+    BufferWindowType temp( dim_, Buffer::Creator(buffer_) );  //make a new buffer
+    Blitter::Get()(Read(), temp.Write(), dim_);               //blit the data into it
+    swap(temp);                                               //and replace self
   }
 
 };

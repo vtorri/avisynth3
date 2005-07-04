@@ -121,7 +121,7 @@ public:  //queries
   bool Unique() const { return block_.unique() && block_->Unique(); }
 
 
-protected:  //block splitting
+public:  //block splitting
 
   BaseBlockType Split(int splitSize)
   {

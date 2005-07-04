@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,9 @@
 //boost includes
 #include <boost/shared_ptr.hpp>          //for shared_ptr
 #include <boost/utility/enable_if.hpp>   //for enable_if_c
+
+//assert include
+#include <assert.h>
 
 
 namespace avs { namespace block {
@@ -71,15 +74,15 @@ private:  //member
   //NB: need only friendship with those with same BaseHolder, but it doesn't hurt
 
 
-public:  //structors
+protected:  //structors
 
-  //construction from a Deleter
-  //defined only if the Holder satisifies our alignment requirement
+  //construction from a Holder
+  //defined only if the Holder satisfies our alignment requirement
   template <class Holder>
   explicit base( Holder * holder
                , typename boost::enable_if<align_compatible<Holder::Align, Align>, void>::type * dummy = NULL
                )
-    : block_( holder ) { }
+    : block_( static_cast<BaseHolder *>(holder) ) { }
 
   //construction from a block using a different align
   //as above, only possible if it satisfies our alignment guarantee
@@ -89,10 +92,9 @@ public:  //structors
                )
     : block_( other.block_ ) { }
 
-  //spawning constructor
-  //spawns a holder for this from the one of an already existing block
-  base( BaseBlockType const& other, int size, bool recycle )
-    : block_( other.block_->spawn(size, recycle) ) { }
+  //constructor used by Split method for the 2nd block
+  explicit base(boost::shared_ptr<BaseHolder> const& block)
+    : block_( block ) { }
 
   //generated copy constructor and destructor are fine
 
@@ -112,13 +114,22 @@ public:  //assignment
 
 public:  //queries
 
-  BYTE * get() const { return block_->get(); }
-
-  bool unique() const { return block_.unique(); }
-
-  int size() const { return block_->size(); }
-
+  int Size() const { return block_->Size(); }
+  BYTE * Get() const { return block_->Get(); }
   PEnvironment const& GetEnvironment() const { return block_->GetEnvironment(); }
+
+  bool Unique() const { return block_.unique() && block_->Unique(); }
+
+
+protected:  //block splitting
+
+  BaseBlockType Split(int splitSize)
+  {
+    //checks splitSize is a reasonable value and respects alignment
+    assert( 0 <= splitSize && splitSize <= Size() && splitSize % Align == 0 );
+
+    return BaseBlockType( block_->Split(splitSize, block_) );
+  }
 
 };
 
@@ -132,13 +143,13 @@ void swap(base<BaseHolder, align>& left, base<BaseHolder, align>& right) { left.
 template <class BaseHolder, int align>
 bool operator==(base<BaseHolder, align> const& left, base<BaseHolder, align> const& right)
 {
-  return left.get() == right.get();
+  return left.Get() == right.Get();
 }
 
 template <class BaseHolder, int align>
 bool operator!=(base<BaseHolder, align> const& left, base<BaseHolder, align> const& right)
 {
-  return left.get() != right.get();
+  return left.Get() != right.Get();
 }
 
 

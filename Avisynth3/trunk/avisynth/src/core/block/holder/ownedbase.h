@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -48,7 +48,7 @@ class AVS_NOVTABLE OwnedBase : public OwnedHolder
 public:  //structors
 
   OwnedBase(PEnvironment const& env, int size)
-    : size_( std::max(size, 0) )
+    : size_( size )
     , env_( env )
   { 
     env_->MemoryAllocated( size_ );
@@ -59,7 +59,7 @@ public:  //structors
 
 public:  //OwnedHolder interface
 
-  virtual int size() const { return size_; }
+  virtual int Size() const { return size_; }
   virtual PEnvironment const& GetEnvironment() const { return env_; }
 
 };

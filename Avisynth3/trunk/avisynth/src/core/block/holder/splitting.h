@@ -21,50 +21,60 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_BLOCK_HOLDER_OWNEDSTANDARD_H__
-#define __AVS_BLOCK_HOLDER_OWNEDSTANDARD_H__
+#ifndef __AVS_BLOCK_HOLDER_SPLITTING_H__
+#define __AVS_BLOCK_HOLDER_SPLITTING_H__
 
 //avisynth include
-#include "ownedbase.h"
-#include "../align.h"                //for block::Align
+#include "../holder.h"
+
+//boost include
+#include <boost/shared_ptr.hpp>
 
 
 namespace avs { namespace block { namespace holder {
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//  holder::OwnedStandard
+////////////////////////////////////////////////////////////////////////////////////
+//  holder::Splitting
 //
-//  OwnedHolder implementation used by avisynth
+//  holder implementation to handle splits
 //
-class OwnedStandard : public OwnedBase
+class Splitting : public Holder
 {
 
-  BYTE * ptr_;
-  bool recycle_;
+  int offset_;                        //offset of mem piece
+  int size_;                          //size of mem piece
+  boost::shared_ptr<Holder> holder_;  //underlying mem holder
 
 
 public:  //structors
 
-  OwnedStandard(PEnvironment const& env, int size, bool recycle);
-  virtual ~OwnedStandard();
+  struct LeftTag { };
+  struct RightTag { };
+
+  Splitting(boost::shared_ptr<Holder> const& holder, int splitSize, LeftTag tag);
+  Splitting(boost::shared_ptr<Holder> const& holder, int splitSize, RightTag tag);
+
+  Splitting(Splitting const& other, int splitSize, LeftTag tag);
+  Splitting(Splitting const& other, int splitSize, RightTag tag);
+
+  //generated destructor is fine
 
 
 public:  //Holder interface
 
-  virtual BYTE * Get() const { return ptr_; }
+  virtual int Size() const { return size_; }
+  virtual BYTE * Get() const { return holder_->Get() + offset_; }
 
-  virtual bool Unique() const { return true; }
+  virtual bool Unique() const { return holder_->Unique(); }
 
-  //expected by block::base template
-  enum { Align = block::Align };
+  virtual boost::shared_ptr<Holder> Split(int splitSize, boost::shared_ptr<Holder>& self) const;
 
 };
 
 
 
-
 } } } //namespace avs::block::holder
 
-#endif //__AVS_BLOCK_HOLDER_OWNEDSTANDARD_H__
+#endif //__AVS_BLOCK_HOLDER_SPLITTING_H__

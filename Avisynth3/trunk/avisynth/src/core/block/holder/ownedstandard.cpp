@@ -21,50 +21,26 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_BLOCK_HOLDER_OWNEDSTANDARD_H__
-#define __AVS_BLOCK_HOLDER_OWNEDSTANDARD_H__
-
-//avisynth include
-#include "ownedbase.h"
-#include "../align.h"                //for block::Align
+//avisynth includes
+#include "ownedstandard.h"
+#include "../recycler.h"
 
 
 namespace avs { namespace block { namespace holder {
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//  holder::OwnedStandard
-//
-//  OwnedHolder implementation used by avisynth
-//
-class OwnedStandard : public OwnedBase
+OwnedStandard::OwnedStandard(PEnvironment const& env, int size, bool recycle)
+  : OwnedBase( env, size )
+  , ptr_( Recycler::instance.Acquire(size) )
+  , recycle_( recycle ) { }
+
+
+OwnedStandard::~OwnedStandard()
 {
-
-  BYTE * ptr_;
-  bool recycle_;
-
-
-public:  //structors
-
-  OwnedStandard(PEnvironment const& env, int size, bool recycle);
-  virtual ~OwnedStandard();
-
-
-public:  //Holder interface
-
-  virtual BYTE * Get() const { return ptr_; }
-
-  virtual bool Unique() const { return true; }
-
-  //expected by block::base template
-  enum { Align = block::Align };
-
-};
-
+  Recycler::instance.Return( ptr_, Size(), recycle_ );
+}
 
 
 
 } } } //namespace avs::block::holder
-
-#endif //__AVS_BLOCK_HOLDER_OWNEDSTANDARD_H__

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA, or visit
 // http://www.gnu.org/copyleft/gpl.html .
+//
+// Linking Avisynth statically or dynamically with other modules is making a
+// combined work based on Avisynth.  Thus, the terms and conditions of the GNU
+// General Public License cover the whole combination.
 
 
 //avisynth includes
@@ -28,15 +32,14 @@ namespace avs {
 
 
 
+template <>
 block_<block::Align>::block_(int size, bool recycle)
-: BaseBlockType( block::holder::Standard::Create(size, recycle) ) { }
+  : BaseBlockType( new block::holder::Standard(size, recycle) ) { }
 
 
-owned_block<block::Align>::owned_block(PEnvironment const& env, bool recycle)
-  : BaseBlockType( block::holder::OwnedStandard::Create(env, 0, recycle) ) { }
-
+template <>
 owned_block<block::Align>::owned_block(PEnvironment const& env, int size, bool recycle)
-  : BaseBlockType( block::holder::OwnedStandard::Create(env, size, recycle) ) { }
+  : BaseBlockType( new block::holder::OwnedStandard(env, size, recycle) ) { }
 
 
 

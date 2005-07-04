@@ -21,50 +21,29 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_BLOCK_HOLDER_OWNEDSTANDARD_H__
-#define __AVS_BLOCK_HOLDER_OWNEDSTANDARD_H__
-
-//avisynth include
-#include "ownedbase.h"
-#include "../align.h"                //for block::Align
+//avisynth includes
+#include "holder.h"
+#include "holder/splitting.h"
 
 
-namespace avs { namespace block { namespace holder {
+namespace avs { namespace block {
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//  holder::OwnedStandard
-//
-//  OwnedHolder implementation used by avisynth
-//
-class OwnedStandard : public OwnedBase
+boost::shared_ptr<Holder> Holder::Split(int splitSize, boost::shared_ptr<Holder>& self) const
 {
+  using holder::Splitting;
+  using holder::Splitting::LeftTag;
+  using holder::Splitting::RightTag;
 
-  BYTE * ptr_;
-  bool recycle_;
+  boost::shared_ptr<Holder> result( static_cast<Holder *>(new Splitting(self, splitSize, RightTag())) );
 
+  //NB: this line normally happens to destroy this, therefore order matters
+  self.reset( static_cast<Holder *>(new Splitting(self, splitSize, LeftTag())) );
 
-public:  //structors
-
-  OwnedStandard(PEnvironment const& env, int size, bool recycle);
-  virtual ~OwnedStandard();
-
-
-public:  //Holder interface
-
-  virtual BYTE * Get() const { return ptr_; }
-
-  virtual bool Unique() const { return true; }
-
-  //expected by block::base template
-  enum { Align = block::Align };
-
-};
+  return result;
+}
 
 
 
-
-} } } //namespace avs::block::holder
-
-#endif //__AVS_BLOCK_HOLDER_OWNEDSTANDARD_H__
+} } //namespace avs::block

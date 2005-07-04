@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -52,23 +52,21 @@ class owned_block : public block::base<block::OwnedHolder, align>
 public:  //typedefs
 
   typedef owned_block<align> BlockType;
-  typedef block::base<block::OwnedHolder, align> BaseBlockType;
   typedef typename boost::enable_if<block::align_compatible<block::Align, align>, block::OwnedCreator>::type Creator;
 
 
 public:  //structors
 
+  //normal constructor
+  owned_block(PEnvironment const& env, int size, bool recycle);
+
   template <class Holder>
   explicit owned_block(Holder * holder)
-    :  BaseBlockType( holder ) { }
+    : BaseBlockType( holder ) { }
 
   template <int alignOther>
   explicit owned_block(owned_block<alignOther> const& other)
     : BaseBlockType( other ) { }
-
-  //spawning constructor
-  owned_block(BlockType const& other, int size, bool recycle)
-    : BaseBlockType( other, size, recycle ) { }
 
   //generated copy constructor and destructor are fine
 
@@ -87,88 +85,17 @@ public:  //assignment
 
 public:  //misc
 
-  void reset(int size, bool recycle)
+  void Reset(int size, Creator const& create)
   { 
-    spawn(size, recycle).swap(*this);
+    create(size).swap(*this);
   }
 
-  //spawn method, just calls the spawning constructor, but is more explicit
-  BlockType spawn(int size, bool recycle) const 
-  { 
-    return BlockType(*this, size, recycle); 
-  }
-
-};
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-//  owned_block<block::Align>
-//
-//  specialisation of the above
-//  
-//  Just adds two constructors, allocating memory from avisynth
-//  Everything else is the same
-//
-template <>
-class owned_block<block::Align> : public block::base<block::OwnedHolder, block::Align>
-{
-
-public:  //typedefs
-
-  typedef owned_block<block::Align> BlockType;
-  typedef block::OwnedCreator Creator;
-
-
-public:  //structors
-
-  explicit owned_block(PEnvironment const& env, bool recycle);
-
-  //normal constructor
-  owned_block(PEnvironment const& env, int size, bool recycle);
-
-  template <class Holder>
-  explicit owned_block(Holder * holder)
-    :  BaseBlockType( holder ) { }
-
-  template <int alignOther>
-  explicit owned_block(owned_block<alignOther> const& other)
-    : BaseBlockType( other ) { }
-
-  //spawning constructor
-  owned_block(BlockType const& other, int size, bool recycle)
-    : BaseBlockType( other, size, recycle ) { }
-
-  //generated copy constructor and destructor are fine
-
-
-public:  //assignment
-
-  template <int alignOther>
-  BlockType& operator=(owned_block<alignOther> const& other)
+  BlockType Split(int splitSize)
   {
-    return static_cast<BlockType>( BaseBlockType::operator=(other) );
-  }
-
-  //generated operator= is fine
-  //swap inherited from superclass
-
-
-public:  //misc
-
-  void reset(int size, bool recycle)
-  { 
-    spawn(size, recycle).swap(*this); 
-  }
-
-  //spawn method, just calls the spawning constructor, but is more explicit
-  BlockType spawn(int size, bool recycle) const 
-  { 
-    return BlockType(*this, size, recycle); 
+    return static_cast<BlockType>( BaseBlockType::Split(splitSize) );
   }
 
 };
-
 
 
 
@@ -191,26 +118,29 @@ namespace block {
 class OwnedCreator
 {
 
+  bool recycle_;
   PEnvironment env_;
 
 
 public:  //structors
 
-  OwnedCreator(PEnvironment const& env)
-    : env_( env ) { }
+  OwnedCreator(PEnvironment const& env, bool recycle = true)
+    : recycle_( recycle )
+    , env_( env ) { }
 
   template <int align>
-  OwnedCreator(owned_block<align> const& block)
-    : env_( block.GetEnvironment() ) { }
+  explicit OwnedCreator(owned_block<align> const& block, bool recycle = true)
+    : recycle_( recycle )
+    , env_( block.GetEnvironment() ) { }
 
   //generated copy constructor and destructor are fine
 
 
 public:  //operator(), the block creation method
 
-  owned_block<block::Align> operator()(int size, bool recycle) const 
+  owned_block<block::Align> operator()(int size) const 
   { 
-    return owned_block<block::Align>(env_, size, recycle); 
+    return owned_block<block::Align>(env_, size, recycle_); 
   }
 
 };

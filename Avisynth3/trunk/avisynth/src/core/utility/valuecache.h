@@ -36,7 +36,7 @@ namespace synchronizer { struct None { }; }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-//  ValueCache<T, Creator, Synchronizer>
+//  ValueCache<T, Synchronizer, Creator>
 //
 //
 //
@@ -60,7 +60,7 @@ public:  //interface
 
   boost::shared_ptr<T> Get() const
   {
-    Synchronizer synchronizer();
+    Synchronizer synchronizer;
 
     boost::shared_ptr<T> result = cached_.lock();
     if ( ! result )

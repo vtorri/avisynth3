@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -38,6 +38,9 @@ namespace avs { namespace block {
 //
 //  polymorphic interface of the block template memory holder
 //
+//  NB: the block::base constructor expects an Align enum member to be defined
+//      which must be provided by subclassses
+//
 class AVS_NOVTABLE Holder
 {
 
@@ -49,16 +52,12 @@ public:  //structors
 
 public:  //Holder interface
 
-  virtual int size() const = 0;
-  virtual BYTE * get() const = 0;
+  virtual int Size() const = 0;
+  virtual BYTE * Get() const = 0;
 
-  //spawns a new holder of the same type holding mem of the asked size
-  virtual Holder * spawn(int size, bool recycle) const = 0;
+  virtual bool Unique() const = 0;
 
-
-public:  //definition for subclasses
-
-  enum { Align = 1 };               //default alignment guarantee (ie not aligned)
+  virtual boost::shared_ptr<Holder> Split(int splitSize, boost::shared_ptr<Holder>& self) const;
 
 };
 

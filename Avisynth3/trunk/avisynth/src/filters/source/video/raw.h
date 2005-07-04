@@ -29,6 +29,7 @@
 #include "../../../define.h"                   //for AVS_NOVTABLE
 #include "../../../clip/nochild.h"
 #include "../../../core/framemaker.h"
+#include "../../../core/ownedblock.h"
 
 //boost include
 #include <boost/shared_ptr.hpp>                //so PImporter is defined
@@ -71,6 +72,6 @@ private:
 
 
 
-} } } //namespace avs::filters::source
+} } } } //namespace avs::filters::source::video
 
 #endif //__AVS_FILTERS_SOURCE_VIDEO_RAW_H__

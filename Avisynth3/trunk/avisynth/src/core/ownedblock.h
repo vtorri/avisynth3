@@ -92,7 +92,7 @@ public:  //misc
 
   BlockType Split(int splitSize)
   {
-    return static_cast<BlockType>( BaseBlockType::Split(splitSize) );
+    return static_cast<BlockType&>( BaseBlockType::Split(splitSize) );
   }
 
 };

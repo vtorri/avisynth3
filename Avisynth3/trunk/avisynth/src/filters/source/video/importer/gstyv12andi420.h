@@ -47,7 +47,7 @@ class GstYV12AndI420 : public Importer
 
 public:  //structors
 
-  YV12AndI420(bool swapUV) : swapUV_( swapUV ) { }
+  GstYV12AndI420(bool swapUV) : swapUV_( swapUV ) { }
 
   //generated destructor is fine
 

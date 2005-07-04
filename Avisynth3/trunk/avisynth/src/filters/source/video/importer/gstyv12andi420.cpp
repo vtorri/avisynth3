@@ -32,7 +32,7 @@
 
 
 
-namespace avs { namespace gstreamer { namespace importer {
+namespace avs { namespace filters { namespace source { namespace video { namespace importer {
 
 
 
@@ -78,6 +78,6 @@ GstYV12AndI420::ValueCache const GstYV12AndI420::i420(CreateI420Importer);
 
 
 
-} } } //namespace avs::gstreamer::importer
+} } } } } //namespace avs::filters::source::video::importer
 
 #endif //_WIN32

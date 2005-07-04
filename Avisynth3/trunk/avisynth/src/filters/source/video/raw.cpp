@@ -24,6 +24,7 @@
 //avisynth includes
 #include "raw.h"
 #include "importer.h"
+#include "../../../../core/videoinfo.h"
 
 
 namespace avs { namespace filters { namespace source { namespace video {

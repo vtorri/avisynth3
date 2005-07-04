@@ -25,9 +25,13 @@
 #define __AVS_FILTERS_SOURCE_VIDEO_RAW_H__
 
 //avisynth includes
+#include "forward.h"                           //for PImporter
 #include "../../../define.h"                   //for AVS_NOVTABLE
 #include "../../../clip/nochild.h"
 #include "../../../core/framemaker.h"
+
+//boost include
+#include <boost/shared_ptr.hpp>                //so PImporter is defined
 
 
 namespace avs { namespace filters { namespace source { namespace video {

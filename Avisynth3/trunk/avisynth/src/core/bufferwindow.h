@@ -123,6 +123,7 @@ public:  //declarations and typedef
   enum { Align = align, Guard = guard };
 
   typedef Buffer BufferType;
+  typedef typename Buffer::Creator BufferCreator;
   typedef buffer_window<align, guard, Buffer> BufferWindowType;
 
   friend struct bw::SizeChanger;   //need internal knowledge to work
@@ -135,7 +136,7 @@ public:  //declarations and typedef
 public:  //structors
 
   //normal constructor
-  buffer_window(Dimension const& dim, typename BufferType::Creator const& create)
+  buffer_window(Dimension const& dim, BufferCreator const& create)
     : dim_( dim )
     , pitch_( utility::RoundUp<Align>(Width()) )
     , offset_( Guard )
@@ -249,9 +250,9 @@ private:  //implementation details
 
   void SelfBlit()
   {
-    BufferWindowType temp( dim_, Buffer::Creator(buffer_) );  //make a new buffer
-    Blitter::Get()(Read(), temp.Write(), dim_);               //blit the data into it
-    swap(temp);                                               //and replace self
+    BufferWindowType temp( dim_, BufferCreator(buffer_) );  //make a new buffer
+    Blitter::Get()(Read(), temp.Write(), dim_);             //blit the data into it
+    swap(temp);                                             //and replace self
   }
 
 };

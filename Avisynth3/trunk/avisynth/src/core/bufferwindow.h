@@ -243,7 +243,7 @@ private:  //implementation details
 
   void ReAlign()
   {
-    if ( bw::misAligned<Align>()(*this) || bw::misAligned<Guard>()(*this) )
+    if ( bw::misAligned<Align>()(*this) || bw::misGuarded<Guard>()(*this) )
       SelfBlit();
   }
 

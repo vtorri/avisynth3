@@ -144,7 +144,7 @@ public:  //audio methods
     audio_ = AudioProperties(CheckSampleType(sampleType), CheckSampleRate(sampleRate), CheckSampleCount(sampleCount), CheckChannelCount(channelCount));
   }
 
-  virtual void KillAudio() { audio_ .reset(); }
+  virtual void KillAudio() { audio_.reset(); }
 
   virtual void MergeAudio(VideoInfo const& other) { audio_ = static_cast<Concrete const&>(other).audio_; }
 

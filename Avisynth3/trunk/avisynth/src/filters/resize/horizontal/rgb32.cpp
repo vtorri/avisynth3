@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -43,8 +43,8 @@ void RGB32::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
   CWindowPtr src = source.ReadFrom(NOT_PLANAR);
   WindowPtr dst = target.WriteTo(NOT_PLANAR);  
   
-  int count = GetPattern().count();       //coeff count
-  int const * pptr = GetPattern().get();  //pattern ptr
+  int count = GetPattern().Count();       //coeff count
+  int const * pptr = GetPattern().Get();  //pattern ptr
 
 
 #if defined(AVS_HAS_INTEL_INLINE_ASM) && ! defined(AVS_ALWAYS_USE_NASM)

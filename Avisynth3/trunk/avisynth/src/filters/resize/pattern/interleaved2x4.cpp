@@ -32,7 +32,7 @@ namespace avs { namespace filters { namespace resize { namespace pattern {
 
 
 
-interleaved<2, 4>::interleaved<2, 4>(PEnvironment const& env, Filter const& filter, SubRange const& subrange, int size)
+interleaved<2, 4>::interleaved(PEnvironment const& env, Filter const& filter, SubRange const& subrange, int size)
   : Base( env )
 {
   Maker make(filter, subrange, size);

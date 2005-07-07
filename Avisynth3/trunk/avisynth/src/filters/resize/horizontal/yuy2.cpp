@@ -51,14 +51,14 @@ void YUY2::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
 
   //creating temp buffers using env (both 8 bytes aligned)
   Block block = GetEnvironment()->TempBlock( src.width * 8 * 2 + 16 );
-  BYTE * tempY = block.get();
+  BYTE * tempY = block.Get();
   BYTE * tempUV = tempY + src.width * 8 + 8;
 
-  int const * pptrY  = luma_.get();
-  int const * pptrUV = chroma_.get();
+  int const * pptrY  = luma_.Get();
+  int const * pptrUV = chroma_.Get();
 
-  int countY  = luma_.count() >> 2;       //we use 4 coeffs per  Y loop
-  int countUV = chroma_.count() >> 1;     //we use 2 coeffs per UV loop 
+  int countY  = luma_.Count() >> 2;       //we use 4 coeffs per  Y loop
+  int countUV = chroma_.Count() >> 1;     //we use 2 coeffs per UV loop 
 
   
   for( int y = dst.height; y-- > 0; src.to(0, 1), dst.to(0, 1) )

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -44,8 +44,8 @@ Base::Base(int memMax)
 Block Base::TempBlock(int size)
 {
   //if internal block is shared or too small
-  if ( ! temp_.unique() || temp_.size() < size )
-    temp_.reset( size, false );          //we reset it
+  if ( ! temp_.Unique() || temp_.Size() < size )
+    temp_.Reset( size, block::Creator(false) );          //we reset it
 
   return temp_;
 }

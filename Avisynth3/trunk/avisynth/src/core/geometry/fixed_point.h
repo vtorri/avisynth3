@@ -119,7 +119,7 @@ public:  //access
 
   BaseType GetRoundedUp() const { return utility::RoundingUpShift<fractionPart>(value_); }
   BaseType GetRounded() const { return utility::RoundingShift<fractionPart>(value_); }
-  BaseType GetRoundedDown() const { return utility::RoundingDown<fractionPart>(value_); }
+  BaseType GetRoundedDown() const { return utility::RoundingDownShift<fractionPart>(value_); }
 
 };
 

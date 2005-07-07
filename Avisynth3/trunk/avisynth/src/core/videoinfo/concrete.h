@@ -119,7 +119,7 @@ public:  //video methods
     video_ = VideoProperties(space, dim, CheckFrameCount(frameCount), fps, frameClip);
   }
 
-  virtual void KillVideo() { video_ = boost::detail::none_t(); }
+  virtual void KillVideo() { video_.reset(); }
 
 
 public:  //audio methods
@@ -144,7 +144,7 @@ public:  //audio methods
     audio_ = AudioProperties(CheckSampleType(sampleType), CheckSampleRate(sampleRate), CheckSampleCount(sampleCount), CheckChannelCount(channelCount));
   }
 
-  virtual void KillAudio() { audio_ = boost::detail::none_t(); }
+  virtual void KillAudio() { audio_ .reset(); }
 
   virtual void MergeAudio(VideoInfo const& other) { audio_ = static_cast<Concrete const&>(other).audio_; }
 

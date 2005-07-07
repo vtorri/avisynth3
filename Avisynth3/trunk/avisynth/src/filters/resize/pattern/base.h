@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -47,7 +47,7 @@ class Base
 protected:  //structors
 
   Base(PEnvironment const& env)
-    : pattern_( env, false ) { }
+    : pattern_( env, 0, false ) { }
 
   Base(Base const& other)
     : count_( other.count_ )
@@ -74,17 +74,21 @@ protected:  //assignment
 public:  //access
 
   //gets pattern data
-  int const * get() const { return reinterpret_cast<int *>(pattern_.get()); }
+  int const * Get() const { return reinterpret_cast<int *>(pattern_.Get()); }
 
   //always return the coeffs count per pixel, not the number of loops expected    
-  int count() const { return count_; }
+  int Count() const { return count_; }
 
 
 protected:  //at the disposition of subclasses constructor
 
-  void init(int count, int size) { count_ = count; pattern_.reset(size << 2, false); }
+  void Init(int count, int size) 
+  { 
+    count_ = count; 
+    pattern_.Reset( size << 2, block::OwnedCreator(pattern_, false) ); 
+  }
 
-  int * get() { return reinterpret_cast<int *>(pattern_.get()); }
+  int * Get() { return reinterpret_cast<int *>(pattern_.Get()); }
 
 };
 

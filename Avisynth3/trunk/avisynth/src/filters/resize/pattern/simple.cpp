@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -36,9 +36,9 @@ Simple::Simple(PEnvironment const& env, Filter const& filter, SubRange const& su
   Maker make(filter, subrange, size);
 
   int count = make.count();  
-  init( count, size * (1 + count) );
+  Init( count, size * (1 + count) );
 
-  int * ptr = get();
+  int * ptr = Get();
 
   for ( int i = size; i-- > 0; )
   {

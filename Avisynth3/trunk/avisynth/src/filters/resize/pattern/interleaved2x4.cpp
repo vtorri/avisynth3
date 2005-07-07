@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -42,10 +42,10 @@ interleaved<2, 4>::interleaved<2, 4>(PEnvironment const& env, Filter const& filt
   int realCount = make.count();                    //true number of coeffs
   int count = utility::RoundUp<4>(realCount + 1);  //padded up to a multiple of 4 (we add at least one zero coeff)
 
-  init( count, size * (1 + count /2) );
+  Init( count, size * (1 + count /2) );
 
-  packer<2, 2> zero( 0, get() );
-  packer<2, 2> one( 1, get() + 1 );
+  packer<2, 2> zero( 0, Get() );
+  packer<2, 2> one( 1, Get() + 1 );
 
 
   for ( int i = 0; i < size; ++i )

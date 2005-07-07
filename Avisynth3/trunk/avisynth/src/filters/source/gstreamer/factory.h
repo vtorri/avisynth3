@@ -27,6 +27,7 @@
 //avisynth includes
 #include "forward.h"                           //for PPipeline typedef
 #include "streamchooser.h"
+#include "../video/forward.h"                  //for PImporter typedef
 #include "../../../core/forward.h"             //for PVideoInfo typedef
 #include "../../../gstreamer/forward.h"        //for Pad declaration, PImporter typedef
 #include "../../../core/cow_shared_ptr.h"      //so PVideoInfo is defined
@@ -50,7 +51,7 @@ namespace avs { namespace filters { namespace source { namespace gstreamer {
 class Factory
 {
   
-  avs::gstreamer::PImporter importer_;
+  video::PImporter importer_;
   PPipeline pipeline_;
   PVideoInfo vi_;
 
@@ -69,7 +70,7 @@ public:  //access
 
   PVideoInfo const& vi() const { return vi_; }
   PPipeline const& pipeline() const { return pipeline_; }
-  avs::gstreamer::PImporter const& importer() const { return importer_; }
+  video::PImporter const& importer() const { return importer_; }
   
 
 public:  //used by callbacks

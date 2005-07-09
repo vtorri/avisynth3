@@ -30,14 +30,14 @@
 #include "../../bufferwindow.h"
 
 
-namespace avs { namespace vframe { namespace concrete {
+namespace avs { namespace videoframe { namespace concrete {
 
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //  Interleaved
 //
-//  VideoFrame factorisation superclass for interleaved colorspaces (YUY2, RGB24, RGB32, RGB45)
+//  VideoFrame factorisation superclass for interleaved colorspaces (YUY2, RGB24, RGB32)
 //  where all the data is in only one frame buffer
 //
 class AVS_NOVTABLE Interleaved : public Base
@@ -64,8 +64,8 @@ public:  //fetch environment method
 
 public:  //plane access
 
-  virtual BufferWindow& operator[](Plane plane);
-  virtual BufferWindow const& operator[](Plane plane) const;
+  virtual BufferWindow& operator[](char plane);
+  virtual BufferWindow const& operator[](char plane) const;
 
   BufferWindow& GetMain() { ClearStaticProperties(); return main_; }
   BufferWindow const& GetConstMain() const { return main_; }
@@ -74,6 +74,6 @@ public:  //plane access
 
 
 
-} } } //namespace avs::vframe::concrete
+} } } //namespace avs::videoframe::concrete
 
 #endif //__AVS_VIDEOFRAME_CONCRETE_INTERLEAVED_H__

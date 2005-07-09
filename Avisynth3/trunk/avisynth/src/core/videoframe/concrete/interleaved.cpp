@@ -30,7 +30,8 @@
 #include <assert.h>
 
 
-namespace avs { namespace vframe { namespace concrete {
+namespace avs { namespace videoframe { namespace concrete {
+
 
 
 Interleaved::Interleaved(PColorSpace const& space, Dimension const& dim, FrameType type, PEnvironment const& env)
@@ -47,17 +48,17 @@ Interleaved::Interleaved(PColorSpace const& space, Dimension const& dim, FrameTy
 
 
 
-BufferWindow& Interleaved::operator[](Plane plane)
+BufferWindow& Interleaved::operator[](char plane)
 {
-  if ( plane != NOT_PLANAR )
+  if ( plane != '\0' )
     throw exception::NoSuchPlane(GetColorSpace(), plane);
   return GetMain();
 }
 
 
-BufferWindow const& Interleaved::operator[](Plane plane) const
+BufferWindow const& Interleaved::operator[](char plane) const
 {
-  if ( plane != NOT_PLANAR )
+  if ( plane != '\0' )
     throw exception::NoSuchPlane(GetColorSpace(), plane);
   return GetConstMain();
 }

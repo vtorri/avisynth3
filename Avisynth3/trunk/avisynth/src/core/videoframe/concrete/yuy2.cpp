@@ -23,21 +23,21 @@
 
 //avisynth includes
 #include "yuy2.h"
-#include "../../colorspace.h"
+#include "../../colorspace/get.h"
 #include "../../../utility/bytemap.h"
 #include "../../../utility/bytecounter.h"
 
 
-namespace avs { namespace vframe { namespace concrete {
+namespace avs { namespace videoframe { namespace concrete {
 
 
 
 YUY2::YUY2(Dimension const& dim, FrameType type, PEnvironment env)
-  : Interleaved( ColorSpace::yuy2(), dim, type, env ) { }
+  : Interleaved( colorspace::Get::YUY2(), dim, type, env ) { }
 
 
 YUY2::YUY2(Dimension const& dim, FrameType type, BufferWindow const& main)
-  : Interleaved( ColorSpace::yuy2(), dim, type, main ) { }
+  : Interleaved( colorspace::Get::YUY2(), dim, type, main ) { }
 
 
 
@@ -47,18 +47,18 @@ CPVideoFrame YUY2::clone() const
 }
 
 
-PColorSpace YUY2::GetColorSpace() const { return ColorSpace::yuy2(); }
+PColorSpace YUY2::GetColorSpace() const { return colorspace::Get::YUY2(); }
 
 
 
-void YUY2::CountY(ByteCounter& y) const { y.Count<2>( ReadFrom(NOT_PLANAR) ); }
-void YUY2::CountU(ByteCounter& u) const { u.Count<4>( ReadFrom(NOT_PLANAR) += 1 ); }
-void YUY2::CountV(ByteCounter& v) const { v.Count<4>( ReadFrom(NOT_PLANAR) += 3 ); }
+void YUY2::CountY(ByteCounter& y) const { y.Count<2>( ReadFrom('\0') ); }
+void YUY2::CountU(ByteCounter& u) const { u.Count<4>( ReadFrom('\0') += 1 ); }
+void YUY2::CountV(ByteCounter& v) const { v.Count<4>( ReadFrom('\0') += 3 ); }
 
-void YUY2::ApplyToY(ByteMap const& y) { y.ApplyTo<2>( ReadFrom(NOT_PLANAR) ); }
-void YUY2::ApplyToU(ByteMap const& u) { u.ApplyTo<4>( ReadFrom(NOT_PLANAR) += 1 ); }
-void YUY2::ApplyToV(ByteMap const& v) { v.ApplyTo<4>( ReadFrom(NOT_PLANAR) += 3 ); }
+void YUY2::ApplyToY(ByteMap const& y) { y.ApplyTo<2>( ReadFrom('\0') ); }
+void YUY2::ApplyToU(ByteMap const& u) { u.ApplyTo<4>( ReadFrom('\0') += 1 ); }
+void YUY2::ApplyToV(ByteMap const& v) { v.ApplyTo<4>( ReadFrom('\0') += 3 ); }
 
 
 
-} } } //namespace avs::vframe::concrete
+} } } //namespace avs::videoframe::concrete

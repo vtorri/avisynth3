@@ -28,7 +28,7 @@
 #include "../../colorspace.h"
 
 
-namespace avs { namespace cspace { namespace yuv {
+namespace avs { namespace colorspace { namespace yuv {
 
 
 
@@ -42,13 +42,13 @@ class AVS_NOVTABLE Planar : public virtual ColorSpace
 
 public:  //ColorSpace interface
 
-  virtual bool HasPlane(Plane plane) const 
+  virtual bool HasPlane(char plane) const 
   { 
     switch ( plane )
     {
-    case PLANAR_Y:
-    case PLANAR_U:
-    case PLANAR_V: return true;
+    case 'Y':
+    case 'U':
+    case 'V': return true;
     
     default: return false;
     }
@@ -64,6 +64,6 @@ public:  //yuv::Planar interface
 
 
 
-} } } //namespace avs::cspace::yuv
+} } } //namespace avs::colorspace::yuv
 
 #endif //__AVS_COLORSPACE_YUV_PLANAR_H__

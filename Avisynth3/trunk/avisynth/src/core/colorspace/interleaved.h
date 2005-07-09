@@ -28,7 +28,7 @@
 #include "../colorspace.h"
 
 
-namespace avs { namespace cspace {
+namespace avs { namespace colorspace {
 
 
 
@@ -37,12 +37,12 @@ namespace avs { namespace cspace {
 //
 //  ColorSpace sub interface for interleaved color spaces
 //
-class Interleaved : public virtual ColorSpace
+class AVS_NOVTABLE Interleaved : public virtual ColorSpace
 {
 
 public:  //ColorSpace interface
 
-  virtual bool HasPlane(Plane plane) const { return plane == NOT_PLANAR; }
+  virtual bool HasPlane(char plane) const { return plane == '\0'; }
 
 
 public:  //Interleaved interface
@@ -54,6 +54,6 @@ public:  //Interleaved interface
 
 
 
-} } //namespace avs::cspace
+} } //namespace avs::colorspace
 
 #endif //__AVS_COLORSPACE_INTERLEAVED_H__

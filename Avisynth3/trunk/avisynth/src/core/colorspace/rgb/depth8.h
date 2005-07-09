@@ -28,7 +28,7 @@
 #include "../../colorspace.h"
 
 
-namespace avs { namespace cspace { namespace rgb {
+namespace avs { namespace colorspace { namespace rgb {
 
 
 
@@ -45,6 +45,6 @@ class AVS_NOVTABLE Depth8 : public virtual ColorSpace
 
 
 
-} } } //namespace avs::cspace::rgb
+} } } //namespace avs::colorspace::rgb
 
 #endif //__AVS_COLORSPACE_RGB_DEPTH8_H__

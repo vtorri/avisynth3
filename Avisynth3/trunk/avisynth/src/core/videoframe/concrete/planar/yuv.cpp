@@ -30,7 +30,7 @@
 #include <assert.h>
 
 
-namespace avs { namespace vframe { namespace concrete { namespace planar {
+namespace avs { namespace videoframe { namespace concrete { namespace planar {
 
 
 
@@ -55,26 +55,26 @@ YUV::YUV(PColorSpace const& space, Dimension const& dim, FrameType type, BufferW
 
 
 
-BufferWindow& YUV::operator[](Plane plane)  
+BufferWindow& YUV::operator[](char plane)  
 {
   switch( plane )
   {
-  case PLANAR_Y: return GetY();
-  case PLANAR_U: return GetU();
-  case PLANAR_V: return GetV();
+  case 'Y': return GetY();
+  case 'U': return GetU();
+  case 'V': return GetV();
     
   default: throw exception::NoSuchPlane(GetColorSpace(), plane);  
   }   
 }
 
 
-BufferWindow const& YUV::operator[](Plane plane) const
+BufferWindow const& YUV::operator[](char plane) const
 {
   switch( plane )
   {
-  case PLANAR_Y: return GetConstY();
-  case PLANAR_U: return GetConstU();
-  case PLANAR_V: return GetConstV();
+  case 'Y': return GetConstY();
+  case 'U': return GetConstU();
+  case 'V': return GetConstV();
 
   default: throw exception::NoSuchPlane(GetColorSpace(), plane);  
   }  
@@ -82,4 +82,4 @@ BufferWindow const& YUV::operator[](Plane plane) const
 
 
 
-} } } } //namespace avs::vframe::concrete::planar
+} } } } //namespace avs::videoframe::concrete::planar

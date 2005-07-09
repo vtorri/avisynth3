@@ -30,8 +30,7 @@
 #include "../../../bufferwindow.h"  //those two so BufferWindow is defined
 
 
-
-namespace avs { namespace vframe { namespace concrete { namespace planar {
+namespace avs { namespace videoframe { namespace concrete { namespace planar {
 
 
 
@@ -79,7 +78,6 @@ public:  //plane access
 
 
 
-
-} } } } //namespace avs::vframe::concrete::planar
+} } } } //namespace avs::videoframe::concrete::planar
 
 #endif //__AVS_VIDEOFRAME_CONCRETE_PLANAR_YUV_H__

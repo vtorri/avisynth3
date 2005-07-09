@@ -29,7 +29,7 @@
 #include "planar/yuv8.h"
 
 
-namespace avs { namespace vframe { namespace concrete {
+namespace avs { namespace videoframe { namespace concrete {
 
 
 
@@ -66,7 +66,6 @@ public:  //general frame info
 
 
 
-
-} } } //namespace avs::vframe::concrete
+} } } //namespace avs::videoframe::concrete
 
 #endif //__AVS_VIDEOFRAME_CONCRETE_YV12_H__

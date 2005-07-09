@@ -23,19 +23,19 @@
 
 //avisynth includes
 #include "yv24.h"
-#include "../../colorspace.h"
+#include "../../colorspace/get.h"
 
 
-namespace avs { namespace vframe { namespace concrete {
+namespace avs { namespace videoframe { namespace concrete {
 
 
 
 YV24::YV24(Dimension const& dim, FrameType type, PEnvironment env)
-  : planar::YUV( ColorSpace::yv24(), dim, type, env ) { }
+  : planar::YUV( colorspace::Get::YV24(), dim, type, env ) { }
 
 
 YV24::YV24(Dimension const& dim, FrameType type, BufferWindow const& y, BufferWindow const& u, BufferWindow const& v)
-  : planar::YUV( ColorSpace::yv24(), dim, type, y, u, v ) { }
+  : planar::YUV( colorspace::Get::YV24(), dim, type, y, u, v ) { }
 
 
 
@@ -47,7 +47,7 @@ CPVideoFrame YV24::clone() const
 
 PColorSpace YV24::GetColorSpace() const
 {
-  return ColorSpace::yv24();
+  return colorspace::Get::YV24();
 }
 
 

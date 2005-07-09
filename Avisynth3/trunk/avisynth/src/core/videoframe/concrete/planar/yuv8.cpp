@@ -27,19 +27,19 @@
 #include "../../../../utility/bytecounter.h"
 
 
-namespace avs { namespace vframe { namespace concrete { namespace planar {
+namespace avs { namespace videoframe { namespace concrete { namespace planar {
 
 
 
-void YUV8::CountY(ByteCounter& y) const { y.Count<1>( ReadFrom(PLANAR_Y) ); }
-void YUV8::CountU(ByteCounter& u) const { u.Count<1>( ReadFrom(PLANAR_U) ); }
-void YUV8::CountV(ByteCounter& v) const { v.Count<1>( ReadFrom(PLANAR_V) ); }
+void YUV8::CountY(ByteCounter& y) const { y.Count<1>( ReadFrom('Y') ); }
+void YUV8::CountU(ByteCounter& u) const { u.Count<1>( ReadFrom('U') ); }
+void YUV8::CountV(ByteCounter& v) const { v.Count<1>( ReadFrom('V') ); }
 
 
-void YUV8::ApplyToY(ByteMap const& y) { y.ApplyTo<1>( WriteTo(PLANAR_Y) ); } 
-void YUV8::ApplyToU(ByteMap const& u) { u.ApplyTo<1>( WriteTo(PLANAR_U) ); } 
-void YUV8::ApplyToV(ByteMap const& v) { v.ApplyTo<1>( WriteTo(PLANAR_V) ); } 
+void YUV8::ApplyToY(ByteMap const& y) { y.ApplyTo<1>( WriteTo('Y') ); } 
+void YUV8::ApplyToU(ByteMap const& u) { u.ApplyTo<1>( WriteTo('U') ); } 
+void YUV8::ApplyToV(ByteMap const& v) { v.ApplyTo<1>( WriteTo('V') ); } 
 
 
 
-} } } } //namespace avs::vframe::concrete::planar
+} } } } //namespace avs::videoframe::concrete::planar

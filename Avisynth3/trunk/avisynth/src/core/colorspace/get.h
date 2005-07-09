@@ -25,7 +25,10 @@
 #define __AVS_COLORSPACE_EXTERNAL_H__
 
 //avisynth include
-#include "../colorspace.h"
+#include "../forward.h"           //for PColorSpace typedef
+
+//boost include
+#include <boost/shared_ptr.hpp>   //so PColorSpace is defined
 
 
 namespace avs { namespace colorspace {
@@ -33,24 +36,21 @@ namespace avs { namespace colorspace {
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
-//  colorspace::External
+//  colorspace::Get
 //
-//  ColorSpace subinterface that external colorspaces MUST implement as well
+//  
 //
-class AVS_NOVTABLE External : public virtual ColorSpace
+struct Get
 {
 
+  static PColorSpace RGB24();
+  static PColorSpace RGB232();
+  static PColorSpace YUY2();
+  static PColorSpace YV12();
+  static PColorSpace YV24();
 
-public:  //ColorSpace interface
-
-  virtual ID id() const { return I_EXTERNAL; }
-
-
-public:  //cspace::External interface
-
-  //conversion methods
-  virtual PClip ConvertTo(PClip const& clip, PColorSpace const& target) const = 0;
-  virtual PClip ConvertFrom(PClip const& clip, PColorSpace const& source) const = 0;
+  //throw exception::cspace::Unknown if none can be found
+  static PColorSpace FromName(std::string const& name);
 
 };
 

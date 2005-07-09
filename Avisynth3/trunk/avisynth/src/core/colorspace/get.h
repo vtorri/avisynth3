@@ -44,7 +44,7 @@ struct Get
 {
 
   static PColorSpace RGB24();
-  static PColorSpace RGB232();
+  static PColorSpace RGB32();
   static PColorSpace YUY2();
   static PColorSpace YV12();
   static PColorSpace YV24();

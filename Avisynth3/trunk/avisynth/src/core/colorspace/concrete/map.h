@@ -50,7 +50,7 @@ class Map
   
   typedef boost::mutex Mutex;
   typedef Mutex::scoped_lock Lock;
-  typedef utility::ValueCache<ColorSpace const> ColorSpaceCache;
+  typedef utility::value_cache<ColorSpace const> ColorSpaceCache;
   typedef std::map<std::string, ColorSpaceCache *> NameToColorSpaceMap;
 
   mutable Mutex mutex_;

@@ -23,20 +23,21 @@
 
 //avisynth includes
 #include "rgb24.h"
-#include "../../colorspace.h"
+#include "../../colorspace/get.h"
 #include "../../../utility/bytemap.h"
 #include "../../../utility/bytecounter.h"
 
 
-namespace avs { namespace vframe { namespace concrete {
+namespace avs { namespace videoframe { namespace concrete {
+
 
 
 RGB24::RGB24(Dimension const& dim, FrameType type, PEnvironment const& env)
-  : Interleaved( ColorSpace::rgb24(), dim, type, env ) { }
+  : Interleaved( colorspace::Get::RGB24(), dim, type, env ) { }
 
 
 RGB24::RGB24(Dimension const& dim, FrameType type, BufferWindow const& main)
-  : Interleaved( ColorSpace::rgb24(), dim, type, main ) { }
+  : Interleaved( colorspace::Get::RGB24(), dim, type, main ) { }
 
 
 
@@ -46,12 +47,12 @@ CPVideoFrame RGB24::clone() const
 }
 
 
-PColorSpace RGB24::GetColorSpace() const { return ColorSpace::rgb24(); }
+PColorSpace RGB24::GetColorSpace() const { return colorspace::Get::RGB24(); }
 
 
-void RGB24::ApplyToR(ByteMap const& r) { r.ApplyTo<3>( WriteTo(NOT_PLANAR) ); }
-void RGB24::ApplyToG(ByteMap const& g) { g.ApplyTo<3>( WriteTo(NOT_PLANAR) += 1 ); }
-void RGB24::ApplyToB(ByteMap const& b) { b.ApplyTo<3>( WriteTo(NOT_PLANAR) += 2 ); }
+void RGB24::ApplyToR(ByteMap const& r) { r.ApplyTo<3>( WriteTo('\0') ); }
+void RGB24::ApplyToG(ByteMap const& g) { g.ApplyTo<3>( WriteTo('\0') += 1 ); }
+void RGB24::ApplyToB(ByteMap const& b) { b.ApplyTo<3>( WriteTo('\0') += 2 ); }
 
 
 

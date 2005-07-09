@@ -29,7 +29,7 @@
 #include "../rgb/depth8.h"
 
 
-namespace avs { namespace vframe { namespace concrete {
+namespace avs { namespace videoframe { namespace concrete {
 
 
 
@@ -75,6 +75,6 @@ public:  //rgb::Depth8 interface
 
 
 
-} } } //namespace avs::vframe::concrete
+} } } //namespace avs::videoframe::concrete
 
 #endif //__AVS_VIDEOFRAME_CONCRETE_RGB24_H__

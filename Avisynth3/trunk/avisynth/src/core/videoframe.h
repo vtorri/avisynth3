@@ -25,7 +25,6 @@
 #define __AVS_VIDEOFRAME_H__
 
 //avisynth includes
-#include "plane.h"
 #include "forward.h"
 #include "frametype.h"
 #include "../define.h"             //for AVS_NOVTABLE
@@ -86,14 +85,14 @@ public:  //fetch environment method
 
 public:  //plane data access
 
-  virtual WindowPtr WriteTo(Plane plane);
-  virtual CWindowPtr ReadFrom(Plane plane) const;
+  virtual WindowPtr WriteTo(char plane);
+  virtual CWindowPtr ReadFrom(char plane) const;
 
 
 public:  //plane access (can do more with them than with the above)
 
-  virtual BufferWindow& operator[](Plane plane) = 0;
-  virtual BufferWindow const& operator[](Plane plane) const = 0;
+  virtual BufferWindow& operator[](char plane) = 0;
+  virtual BufferWindow const& operator[](char plane) const = 0;
 
 
 public:  //property system
@@ -110,6 +109,7 @@ public:  //property system
   virtual void RemoveFlowProperties(PKey const& key) = 0;
 
 };
+
 
 
 } //namespace avs

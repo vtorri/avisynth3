@@ -63,8 +63,8 @@ public:  //fetch environment method
 
 public:  //plane access
 
-  virtual BufferWindow& operator[](Plane plane);
-  virtual BufferWindow const& operator[](Plane plane) const;
+  virtual BufferWindow& operator[](char plane);
+  virtual BufferWindow const& operator[](char plane) const;
 
   BufferWindow& GetY() { ClearStaticProperties(); return y_; }
   BufferWindow& GetU() { ClearStaticProperties(); return u_; }

@@ -25,7 +25,6 @@
 #define __AVS_COLORSPACE_H__
 
 //avisynth includes
-#include "plane.h"
 #include "forward.h"
 #include "frametype.h"
 #include "../define.h"             //for AVS_NOVTABLE
@@ -58,22 +57,9 @@ public:
     I_EXTERNAL,       //reports an external colorspace (defined by a plugin)
     I_RGB24,
     I_RGB32,
-    I_RGB45,
     I_YUY2,
     I_YV12,
     I_YV24,
-    I_YV45
-  };
-
-  //ColorSpace properties
-  enum Property
-  {
-    P_RGB,
-    P_YUV,
-    P_INTERLEAVED,
-    P_PLANAR,
-    P_DEPTH8,
-    P_DEPTH15
   };
 
 
@@ -87,13 +73,15 @@ public:  //ColorSpace interface
 
   virtual ID id() const = 0;
   virtual char const * GetName() const = 0;
-  virtual unsigned long GetFourCC() const = 0;
-  virtual long GetBitsPerPixel() const = 0;
-  
-  virtual long GetBitmapSize(Dimension const& dim) const = 0;  //NB: bitmaps are 4 bytes aligned
 
-  virtual bool HasProperty(Property prop) const = 0;
-  virtual bool HasPlane(Plane plane) const = 0;
+  virtual bool HasProperty(char const * prop) const = 0;
+  virtual bool HasPlane(char plane) const = 0;
+  
+  //  virtual unsigned long GetFourCC() const = 0;
+//  virtual long GetBitsPerPixel() const = 0;
+  
+//  virtual long GetBitmapSize(Dimension const& dim) const = 0;  //NB: bitmaps are 4 bytes aligned
+
 
   virtual void Check(long x, long y, bool interlaced = false) const = 0;
 
@@ -104,17 +92,17 @@ public:  //ColorSpace interface
 
   //method to convert frame coords into to plane coords
   //unlike the above, it does not check validity, but just perform the operation   
-  virtual void ToPlane(long& x, long& y, Plane plane) const = 0;
+  virtual void ToPlane(long& x, long& y, char plane) const = 0;
  
   //convenience versions of ToPlane
-  Dimension ToPlaneDim(Dimension const& dim, Plane plane) const
+  Dimension ToPlaneDim(Dimension const& dim, char plane) const
   {
     long x = dim.GetWidth(), y = dim.GetHeight();
     ToPlane(x, y, plane);
     return Dimension(x, y);
   }
   
-  Vecteur ToPlaneVect(Vecteur const& vect, Plane plane) const
+  Vecteur ToPlaneVect(Vecteur const& vect, char plane) const
   {
     Vecteur result(vect);
     ToPlane(result.x, result.y, plane);
@@ -137,39 +125,20 @@ public:  //helper queries
 
   bool IsRGB24() const { return id() == I_RGB24; }
   bool IsRGB32() const { return id() == I_RGB32; }
-  bool IsRGB45() const { return id() == I_RGB45; }
 
   bool IsYUY2() const { return id() == I_YUY2; }
   bool IsYV12() const { return id() == I_YV12; }
   bool IsYV24() const { return id() == I_YV24; }
-  bool IsYV45() const { return id() == I_YV45; }
 
-  bool IsRGB() const { return HasProperty(P_RGB); }
-  bool IsYUV() const { return HasProperty(P_YUV); }
-  bool IsInterleaved() const { return HasProperty(P_INTERLEAVED); }
-  bool IsPlanar() const { return HasProperty(P_PLANAR); }
-  bool IsDepth8() const { return HasProperty(P_DEPTH8); }
-  bool IsDepth15() const { return HasProperty(P_DEPTH15); }
-
-
-public:  //factory methods
-
-  static PColorSpace rgb24();
-  static PColorSpace rgb32();
-  static PColorSpace rgb45();
-  static PColorSpace yuy2();
-  static PColorSpace yv12();
-  static PColorSpace yv24();
-  static PColorSpace yv45();
-
-  //throw exception::cspace::Unknown if none can be found
-  static PColorSpace FromName(std::string const& name);
-  static PColorSpace FromFourCC(unsigned long fourCC);
+  bool IsRGB() const { return HasProperty("RGB"); }
+  bool IsYUV() const { return HasProperty("YUV"); }
+  bool IsPlanar() const { return HasProperty("PLANAR"); }
+  bool IsInterleaved() const { return HasProperty("INTERLEAVED"); }
 
 };
 
 
 
- } //namespace avs::cspace
+} //namespace avs
 
 #endif //__AVS_COLORSPACE_H__

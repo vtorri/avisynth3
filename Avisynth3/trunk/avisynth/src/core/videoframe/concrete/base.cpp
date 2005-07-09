@@ -30,7 +30,7 @@
 #include <boost/bind.hpp>
 
 
-namespace avs { namespace vframe { namespace concrete {
+namespace avs { namespace videoframe { namespace concrete {
 
 
 Base::Base(PColorSpace const& space, Dimension const& dim, FrameType type)
@@ -91,5 +91,5 @@ void Base::RemoveFlowProperties(PKey const& key)
 
 
 
-} } } //namespace avs::vframe::concrete
+} } } //namespace avs::videoframe::concrete
 

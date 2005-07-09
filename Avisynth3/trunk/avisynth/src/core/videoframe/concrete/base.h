@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@
 #include <hash_map>  //for hash_map
 
 
-namespace avs { namespace vframe { namespace concrete {
+namespace avs { namespace videoframe { namespace concrete {
 
 
 
@@ -104,6 +104,6 @@ protected:  //helper method
 
 
 
-} } } //namespace avs::vframe::concrete
+} } } //namespace avs::videoframe::concrete
 
 #endif //__AVS_VIDEOFRAME_CONCRETE_BASE_H__

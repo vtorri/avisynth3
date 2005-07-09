@@ -22,32 +22,30 @@
 
 
 //avisynth includes
-#include "map.h"
-#include "../../colorspace.h"
+#include "get.h"
+#include "concrete/map.h"
 
 
-namespace avs {
+namespace avs { namespace colorspace {
+
 
 
 namespace {
 
-cspace::concrete::Map map;
+concrete::Map map;
 
 } //namespace anonymous
 
 
-
-PColorSpace ColorSpace::rgb24() { return map.rgb24(); }
-PColorSpace ColorSpace::rgb32() { return map.rgb32(); }
-PColorSpace ColorSpace::rgb45() { return map.rgb45(); }
-PColorSpace ColorSpace::yuy2() { return map.yuy2(); }
-PColorSpace ColorSpace::yv12() { return map.yv12(); }
-PColorSpace ColorSpace::yv24() { return map.yv24(); }
-PColorSpace ColorSpace::yv45() { return map.yv45(); }
+PColorSpace Get::RGB24() { return map.rgb24(); }
+PColorSpace Get::RGB32() { return map.rgb32(); }
+PColorSpace Get::YUY2() { return map.yuy2(); }
+PColorSpace Get::YV12() { return map.yv12(); }
+PColorSpace Get::YV24() { return map.yv24(); }
 
 
-PColorSpace ColorSpace::FromName(std::string const& name) { return map[name]; }
-PColorSpace ColorSpace::FromFourCC(unsigned long fourCC) { return map[fourCC]; }
+PColorSpace Get::FromName(std::string const& name) { return map[name]; }
 
 
-} //namespace avs
+
+} } //namespace avs::colorspace

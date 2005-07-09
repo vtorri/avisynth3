@@ -34,7 +34,7 @@ namespace avs {
 class ByteMap;
 class ByteCounter;
   
-namespace vframe { namespace yuv {
+namespace videoframe { namespace yuv {
 
 
 
@@ -74,6 +74,6 @@ public:  //yuv::Depth8 interface
 
 
 
-} } } //namespace avs::vframe::yuv
+} } } //namespace avs::videoframe::yuv
 
 #endif //__AVS_VIDEOFRAME_YUV_DEPTH8_H__

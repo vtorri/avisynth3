@@ -34,7 +34,7 @@ namespace avs {
 class ByteMap;
 class ByteCounter;
   
-namespace vframe { namespace rgb {
+namespace videoframe { namespace rgb {
 
 
 
@@ -59,6 +59,6 @@ public:  //rgb::Depth8 interface
 
 
 
-} } } //namespace avs::vframe::rgb
+} } } //namespace avs::videoframe::rgb
 
 #endif //__AVS_VIDEOFRAME_RGB_DEPTH8_H__

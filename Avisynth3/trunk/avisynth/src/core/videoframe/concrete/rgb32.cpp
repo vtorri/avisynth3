@@ -23,21 +23,21 @@
 
 //avisynth includes
 #include "rgb32.h"
-#include "../../colorspace.h"
+#include "../../colorspace/get.h"
 #include "../../../utility/bytemap.h"
 #include "../../../utility/bytecounter.h"
 
 
-namespace avs { namespace vframe { namespace concrete {
+namespace avs { namespace videoframe { namespace concrete {
 
 
 
 RGB32::RGB32(Dimension const& dim, FrameType type, PEnvironment const& env)
-  : Interleaved( ColorSpace::rgb32(), dim, type, env ) { }
+: Interleaved( colorspace::Get::RGB32(), dim, type, env ) { }
 
 
 RGB32::RGB32(Dimension const& dim, FrameType type, BufferWindow const& main)
-  : Interleaved( ColorSpace::rgb32(), dim, type, main ) { }
+  : Interleaved( colorspace::Get::RGB32(), dim, type, main ) { }
 
 
 
@@ -47,7 +47,7 @@ CPVideoFrame RGB32::clone() const
 }
 
 
-PColorSpace RGB32::GetColorSpace() const { return ColorSpace::rgb32(); }
+PColorSpace RGB32::GetColorSpace() const { return colorspace::Get::RGB32(); }
 
 
 void RGB32::ApplyToR(ByteMap const& r) { r.ApplyTo<4>( WriteTo(NOT_PLANAR) ); }

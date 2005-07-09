@@ -39,13 +39,13 @@ void SizeChanger::operator ()(BufferWindow& window, Vecteur const& topLeft, Vect
   
   //updating parameters
   dim += bottomRight - topLeft;           //exception if illegal
-  int offset = window.offset_ + topLeft % window.pitch();
+  int offset = window.offset_ + topLeft % window.Pitch();
  
   //conditions where needed to reallocate the Buffer
   if ( ! block::IsAligned(offset)         //alignment requirement no longer met
-    || dim.GetWidth() > window.pitch()    //width got bigger than pitch
+    || dim.GetWidth() > window.Pitch()    //width got bigger than pitch
     || offset < block::Align              //not enough head room
-    || offset + dim.GetHeight() * window.pitch() + block::Align > window.buffer_.size() )  //not enough toe room
+    || offset + dim.GetHeight() * window.Pitch() + block::Align > window.buffer_.Size() )  //not enough toe room
   {
     BufferWindow temp(dim, window.GetEnvironment());
 

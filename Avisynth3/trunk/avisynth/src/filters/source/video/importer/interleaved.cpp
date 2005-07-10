@@ -25,6 +25,7 @@
 #include "interleaved.h"
 #include "../../../../core/ownedblock.h"
 #include "../../../../core/bufferwindow.h"
+#include "../../../../core/colorspace/get.h"
 
 
 namespace avs { namespace filters { namespace source { namespace video { namespace importer {
@@ -32,14 +33,14 @@ namespace avs { namespace filters { namespace source { namespace video { namespa
 
 
 Interleaved::Interleaved(PColorSpace const& space)
-  : space_( boost::dynamic_pointer_cast<cspace::Interleaved const>(space) ) { }
+  : space_( boost::dynamic_pointer_cast<colorspace::Interleaved const>(space) ) { }
 
 
 CPVideoFrame Interleaved::CreateFrame(Dimension const& dim, owned_block<1> const& block) const
 {
   //create a 4-bytes aligned frame buffer of the expected size by promoting the block
   //should not blit, since block is supposed to be 4-aligned
-  buffer_window<4> main( space_->ToPlaneDim(dim, NOT_PLANAR), block, 0 );
+  buffer_window<4> main( space_->ToPlaneDim(dim, '\0'), block, 0 );
 
   //use space_ to transform the frame buffer into a frame
   //if the size was favorable the conversion from buffer_window<4>
@@ -51,16 +52,16 @@ CPVideoFrame Interleaved::CreateFrame(Dimension const& dim, owned_block<1> const
 
 namespace {
 
-Importer const * CreateRGB24Importer() { return new importer::Interleaved( ColorSpace::rgb24() ); }
-Importer const * CreateRGB32Importer() { return new importer::Interleaved( ColorSpace::rgb32() ); } 
-Importer const * CreateYUY2Importer()  { return new importer::Interleaved( ColorSpace::yuy2() ); }
+  Importer const * CreateRGB24Importer() { return new importer::Interleaved( colorspace::Get::RGB24() ); }
+Importer const * CreateRGB32Importer() { return new importer::Interleaved( colorspace::Get::RGB32() ); } 
+Importer const * CreateYUY2Importer()  { return new importer::Interleaved( colorspace::Get::YUY2() ); }
 
 }
 
 
-Interleaved::ValueCache const Interleaved::rgb24(&CreateRGB24Importer);
-Interleaved::ValueCache const Interleaved::rgb32(&CreateRGB32Importer);
-Interleaved::ValueCache const Interleaved::yuy2(&CreateYUY2Importer);
+Interleaved::ValueCache const Interleaved::RGB24(&CreateRGB24Importer);
+Interleaved::ValueCache const Interleaved::RGB32(&CreateRGB32Importer);
+Interleaved::ValueCache const Interleaved::YUY2(&CreateYUY2Importer);
 
 
 

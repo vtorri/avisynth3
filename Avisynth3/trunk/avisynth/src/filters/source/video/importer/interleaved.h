@@ -43,7 +43,7 @@ namespace avs { namespace filters { namespace source { namespace video { namespa
 class Interleaved : public Importer
 {
 
-  boost::shared_ptr<cspace::Interleaved const> space_;
+  boost::shared_ptr<colorspace::Interleaved const> space_;
 
 
 public:  //structors
@@ -64,9 +64,9 @@ public:
 
   typedef utility::value_cache<Importer const, utility::synchronizer::lock<Importer> > ValueCache;
 
-  static ValueCache const rgb24;
-  static ValueCache const rgb32;
-  static ValueCache const yuy2;
+  static ValueCache const RGB24;
+  static ValueCache const RGB32;
+  static ValueCache const YUY2;
 
 };
 

@@ -31,13 +31,17 @@ namespace boost { template <typename T> class shared_ptr; }
 namespace avs { namespace vfw {
 
 
+
 //declarations
+class Exporter;
 class WaveFormatEx;
 class BitmapInfoHeader;
 
 //typedefs
+typedef boost::shared_ptr<Exporter const> PExporter;
 typedef boost::shared_ptr<WaveFormatEx> PWaveFormatEx;
 typedef boost::shared_ptr<BitmapInfoHeader> PBitmapInfoHeader;
+
 
 
 } } //namespace avs::vfw

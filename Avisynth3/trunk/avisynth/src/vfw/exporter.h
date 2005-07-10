@@ -24,7 +24,8 @@
 #ifndef __AVS_VFW_EXPORTER_H__
 #define __AVS_VFW_EXPORTER_H__
 
-//avisynth include
+//avisynth includes
+#include "../define.h"                 //for AVS_NOVTABLE
 #include "../core/forward.h"           //for Dimension typedef
 
 

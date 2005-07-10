@@ -22,6 +22,7 @@
 
 
 //avisynth includes
+#include "exporter.h"
 #include "bitmapinfoheader.h"
 #include "../core/videoinfo.h"
 #include "../core/colorspace.h"

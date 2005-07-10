@@ -25,8 +25,13 @@
 #define __AVS_VFW_BITMAPINFOHEADER_H__
 
 //avisynth includes
-#include "../core/forward.h"
-#include "../core/geometry/dimension.h"
+#include "forward.h"                           //for PExporter typedef
+#include "../core/forward.h"                   //for VideoInfo, Dimension
+#include "../core/geometry/dimension.h"        //so Dimension is defined
+#include "../filters/source/video/forward.h"   //for PImporter
+
+//boost include
+#include <boost/shared_ptr.hpp>                //so Pimporter is defined
 
 //windows includes
 #ifndef NOMINMAX
@@ -50,7 +55,7 @@ class BitmapInfoHeader : public BITMAPINFOHEADER
 
 public:  //structors
 
-  BitmapInfoHeader(Dimension const& dim);
+  BitmapInfoHeader(Dimension const& dim) { Init(dim); }
   BitmapInfoHeader(VideoInfo const& vi);
 
   //generated copy constructor and destructor are fine
@@ -58,26 +63,28 @@ public:  //structors
 
 public:  //read access
 
-  //throws cspace::Unknown if matchs none
-  PColorSpace GetColorSpace() const;
   Dimension GetDimension() const { return Dimension(biWidth, biHeight); }
+  
+  //returns empty if cannot be done
+  filters::source::video::PImporter GetImporter() const;
 
 
 public:  //write access
 
-  void SetColorSpace(PColorSpace const& space);
+  void SetExporter(PExporter const& exporter);
 
 
-private:
+/*public:  //comparison operator
 
-  void SetDimension(Dimension const& dim);
+  bool operator==(BitmapInfoHeader const& other) const;*/
 
 
-public:  //comparison operator
+private:  //implementation helper
 
-  bool operator==(BitmapInfoHeader const& other) const;
+  void Init(Dimension const& dim);
 
 };
+
 
 
 } } //namespace avs::vfw

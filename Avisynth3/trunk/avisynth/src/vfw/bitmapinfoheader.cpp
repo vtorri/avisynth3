@@ -25,63 +25,65 @@
 #include "bitmapinfoheader.h"
 #include "../core/videoinfo.h"
 #include "../core/colorspace.h"
+#include "../filters/source/video/importer/vfwyv12.h"
+#include "../filters/source/video/importer/interleaved.h"
 
 
 namespace avs { namespace vfw {
 
 
-BitmapInfoHeader::BitmapInfoHeader(Dimension const& dim)
-{
-  memset( static_cast<BITMAPINFOHEADER *>(this), 0, sizeof(BITMAPINFOHEADER) );
-
-  biSize        = sizeof(BITMAPINFOHEADER);
-  biPlanes      = 1;
-
-  SetDimension(dim);
-}
-
 
 BitmapInfoHeader::BitmapInfoHeader(VideoInfo const& vi)
 {
+  Init(vi.GetDimension());
+
+  SetExporter( boost::static_pointer_cast<Exporter const>(vi.GetColorSpace()->GetExporter("VFW")) );
+}
+
+
+filters::source::video::PImporter BitmapInfoHeader::GetImporter() const
+{
+  using namespace filters::source::video::importer;
+
+  switch( biCompression )
+  {
+  case '21VY': return VFWYV12::yv12.Get();
+  case '2YUY': return Interleaved::YUY2.Get();
+  case BI_RGB:
+    switch( biBitCount )
+    {
+    case 24: return Interleaved::RGB24.Get();
+    case 32: return Interleaved::RGB32.Get();    
+    default: break;
+    }
+  default:break;
+  }
+
+  return filters::source::video::PImporter();   //reports no import possible
+}
+
+
+void BitmapInfoHeader::SetExporter(PExporter const& exporter)
+{
+  biBitCount    = exporter->GetBitsPerPixel();
+  biCompression = exporter->GetFourCCHandler();
+  biSizeImage   = exporter->GetBitmapSize(GetDimension());
+}
+
+
+void BitmapInfoHeader::Init(Dimension const& dim)
+{
   memset( static_cast<BITMAPINFOHEADER *>(this), 0, sizeof(BITMAPINFOHEADER) );
 
   biSize        = sizeof(BITMAPINFOHEADER);
   biPlanes      = 1;
 
-  SetDimension(vi.GetDimension());
-  SetColorSpace(vi.GetColorSpace());
-}
-
-
-PColorSpace BitmapInfoHeader::GetColorSpace() const
-{
-  if ( biCompression == BI_RGB )
-    switch( biBitCount )
-    {
-    case 24: return ColorSpace::rgb24();
-    case 32: return ColorSpace::rgb32();
-    
-    default: break;
-    }
-
-  //handles the default above by throwing
-  return ColorSpace::FromFourCC(biCompression);
-}
-
-
-void BitmapInfoHeader::SetColorSpace(PColorSpace const& space)
-{
-  biBitCount    = static_cast<WORD>(space->GetBitsPerPixel());
-  biCompression = space->GetFourCC();
-  biSizeImage   = space->GetBitmapSize(GetDimension());
-}
-
-
-void BitmapInfoHeader::SetDimension(Dimension const& dim)
-{
   biWidth       = dim.GetWidth();
   biHeight      = dim.GetHeight();
 }
+
+
+
 
 
 } } //namespace avs::vfw

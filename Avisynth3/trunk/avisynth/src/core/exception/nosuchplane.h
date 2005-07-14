@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,6 @@
 #define __AVS_EXCEPTION_NOSUCHPLANE_H__
 
 //avisynth includes
-#include "../plane.h"
 #include "../exception.h"
 #include "../colorspace.h"
 
@@ -45,13 +44,13 @@ namespace avs { namespace exception {
 class NoSuchPlane : public Exception
 {
 
-  Plane plane_;
+  char plane_;
   PColorSpace space_;
 
 
 public:  //structors
 
-  NoSuchPlane(PColorSpace const& space, Plane plane)
+  NoSuchPlane(PColorSpace const& space, char plane)
     : plane_( plane )
     , space_( space ) { }
 
@@ -62,10 +61,11 @@ public:  //diagnotic message
 
   virtual std::string msg() const
   {
-    return str( boost::format("%s doesn't have plane %s") % space_->GetName() % NameOf(plane_) );
+    return str( boost::format("%s doesn't have plane %c") % space_->GetName() % plane_ );
   }
 
 };
+
 
 
 } } //namespace avs::exception

@@ -30,6 +30,9 @@
 #include "sampletype.h"
 #include "cow_shared_ptr.h"       //so PVideoInfo and CPVideoInfo are defined
 
+//boost includes
+#include <boost/rational.hpp>     //so Fraction typedef is defined
+
 
 namespace avs {
 
@@ -109,11 +112,9 @@ public:  //video methods
   
   virtual bool IsRGB24() const;
   virtual bool IsRGB32() const;
-  virtual bool IsRGB45() const;
   virtual bool IsYUY2() const;
   virtual bool IsYV12() const;
   virtual bool IsYV24() const;
-  virtual bool IsYV45() const;
 
 
   //virtual void AddVideo();

@@ -29,20 +29,16 @@
 #include "../../exception/colorspace/invalidheight.h"
 
 
-namespace avs { namespace cspace { namespace concrete {
+namespace avs { namespace colorspace { namespace concrete {
 
 
-
+/*
 long YV12::GetBitmapSize(Dimension const& dim) const
 {
   return 3 * utility::RoundUp<4>(dim.GetWidth()) * dim.GetHeight() / 2;
 }
+*/
 
-
-bool YV12::HasProperty(Property prop) const
-{
-  return prop == P_PLANAR || prop == P_YUV || prop == P_DEPTH8;
-}
  
 
 void YV12::Check(long x, long y, bool interlaced) const
@@ -60,13 +56,13 @@ void YV12::Check(long x, long y, bool interlaced) const
   }
 
 
-void YV12::ToPlane(long& x, long& y, Plane plane) const
+void YV12::ToPlane(long& x, long& y, char plane) const
 {
   switch ( plane )
   {  
-  case PLANAR_Y: break;   
-  case PLANAR_U:
-  case PLANAR_V: x >>= 1; y >>= 1; break;
+  case 'Y': break;   
+  case 'U':
+  case 'V': x >>= 1; y >>= 1; break;
 
   default: throw exception::NoSuchPlane(shared_from_this(), plane);    
   }  
@@ -76,15 +72,15 @@ void YV12::ToPlane(long& x, long& y, Plane plane) const
 
 PVideoFrame YV12::CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
 {
-  return CPVideoFrame( static_cast<VideoFrame *>(new vframe::concrete::YV12(dim, type, env)) );
+  return CPVideoFrame( static_cast<VideoFrame *>(new videoframe::concrete::YV12(dim, type, env)) );
 }
 
 
 PVideoFrame YV12::CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& y , BufferWindow const& u, BufferWindow const& v) const
 {
-  return CPVideoFrame( static_cast<VideoFrame *>(new vframe::concrete::YV12(dim, type, y, u, v)) );
+  return CPVideoFrame( static_cast<VideoFrame *>(new videoframe::concrete::YV12(dim, type, y, u, v)) );
 }
 
 
 
-} } } //namespace avs::cspace::concrete
+} } } //namespace avs::colorspace::concrete

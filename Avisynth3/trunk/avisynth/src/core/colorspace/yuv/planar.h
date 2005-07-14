@@ -42,6 +42,8 @@ class AVS_NOVTABLE Planar : public virtual ColorSpace
 
 public:  //ColorSpace interface
 
+  virtual char const * GetPlaneList() const { return "YUV"; }
+
   virtual bool HasPlane(char plane) const 
   { 
     switch ( plane )
@@ -52,6 +54,11 @@ public:  //ColorSpace interface
     
     default: return false;
     }
+  }
+
+  bool HasProperty(std::string const& prop) const
+  {
+    return prop == "YUV" || prop == "PLANAR";
   }
 
 

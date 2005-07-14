@@ -29,7 +29,7 @@
 #include "../yuv/planar.h"
 
 
-namespace avs { namespace cspace { namespace concrete {
+namespace avs { namespace colorspace { namespace concrete {
 
 
 
@@ -42,25 +42,18 @@ class YV12 : public yuv::Planar
            , public yuv::Depth8
 {
 
-public:
+/*public:
 
   enum { fourCC = '21VY' };
-
+*/
 
 public:  //ColorSpace interface
 
   virtual ID id() const { return I_YV12; }
   virtual char const * GetName() const { return "YV12"; }
-  virtual unsigned long GetFourCC() const { return fourCC; }
-  virtual long GetBitsPerPixel() const { return 12; }
-
-  virtual long GetBitmapSize(Dimension const& dim) const;
-
-  virtual bool HasProperty(Property prop) const;
 
   virtual void Check(long x, long y, bool interlaced = false) const;
-
-  virtual void ToPlane(long& x, long& y, Plane plane) const;
+  virtual void ToPlane(long& x, long& y, char plane) const;
 
 
 public:  //blank frame creation method
@@ -76,6 +69,6 @@ public:  //yuv::Planar interface
 
 
 
-} } } //namespace avs::cspace::concrete
+} } } //namespace avs::colorspace::concrete
 
 #endif //__AVS_COLORSPACE_CONCRETE_YV12_H__

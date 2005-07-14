@@ -42,7 +42,14 @@ class AVS_NOVTABLE Interleaved : public virtual ColorSpace
 
 public:  //ColorSpace interface
 
+  virtual char const * GetPlaneList() const { return "~"; }
+
   virtual bool HasPlane(char plane) const { return plane == '~'; }
+
+  bool HasProperty(std::string const& prop) const
+  {
+    return prop == "INTERLEAVED";
+  }
 
 
 public:  //Interleaved interface

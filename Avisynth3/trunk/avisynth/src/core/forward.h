@@ -27,17 +27,13 @@
 //avisynth include
 #include "block/align.h"           //for block::Align
 
-//boost include
-#include <boost/rational.hpp>      //for rational
-
-
 
 namespace boost {
 
-
+//boost forward declarations
+template <typename T> class rational;
 template <typename T> class weak_ptr;
 template <typename T> class shared_ptr;
-
 
 }
 
@@ -56,6 +52,8 @@ class FrameMaker;
 class ColorSpace;
 class VideoFrame;
 class RuntimeEnvironment;
+namespace colorspace { class Exporter; }
+
 template <int align> class block_;
 template <int align> class owned_block;
 template <typename T> class box;
@@ -85,6 +83,7 @@ typedef buffer_window<block::Align> BufferWindow;
 //ptr typedefs
 typedef boost::shared_ptr<Key const> PKey;
 typedef boost::shared_ptr<Clip const> PClip;
+typedef boost::shared_ptr<Exporter const> PExporter;
 typedef boost::shared_ptr<Property const> CPProperty;
 typedef boost::shared_ptr<VideoInfo const> CPVideoInfo;
 typedef boost::shared_ptr<ColorSpace const> PColorSpace;
@@ -100,13 +99,6 @@ typedef cow_shared_ptr<VideoFrame> PVideoFrame;
 typedef boost::weak_ptr<Clip const> WeakPClip;
 typedef boost::weak_ptr<RuntimeEnvironment> WeakPEnvironment;
 
-
-#ifdef _WIN32
-
-namespace vfw { class Exporter; }
-typedef boost::shared_ptr<vfw::Exporter const> PExporter;
-
-#endif //_WIN32
 
 
 } //namespace avs

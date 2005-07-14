@@ -40,20 +40,20 @@ ColorYUV::ColorYUV(PClip const& child)
 {
   PColorSpace space = child->GetVideoInfo()->GetColorSpace();
 
-  if ( ! boost::dynamic_pointer_cast<cspace::yuv::Depth8 const>(space) )
-    throw exception::cspace::Unsupported(space);
+  if ( ! boost::dynamic_pointer_cast<colorspace::yuv::Depth8 const>(space) )
+    throw exception::colorspace::Unsupported(space);
 }
 
 
 void ColorYUV::Count(VideoFrame const& frame, ByteCounter& y, ByteCounter& u, ByteCounter& v) const
 {
-  dynamic_cast<vframe::yuv::Depth8 const&>(frame).Count(y, u, v);
+  dynamic_cast<videoframe::yuv::Depth8 const&>(frame).Count(y, u, v);
 }
 
 
 void ColorYUV::Apply(VideoFrame& frame, coloryuv::LumaMap const& y, coloryuv::ChromaMap const& u, coloryuv::ChromaMap const& v) const
 {
-  dynamic_cast<vframe::yuv::Depth8&>(frame).Apply(y, u, v);
+  dynamic_cast<videoframe::yuv::Depth8&>(frame).Apply(y, u, v);
 }
 
 

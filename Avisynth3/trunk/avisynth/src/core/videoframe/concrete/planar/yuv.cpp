@@ -36,9 +36,9 @@ namespace avs { namespace videoframe { namespace concrete { namespace planar {
 
 YUV::YUV(PColorSpace const& space, Dimension const& dim, FrameType type, PEnvironment const& env)
   : Base( space, dim, type )
-  , y_( space->ToPlaneDim(dim, PLANAR_Y), env )
-  , u_( space->ToPlaneDim(dim, PLANAR_U), env )
-  , v_( space->ToPlaneDim(dim, PLANAR_V), env ) { }
+  , y_( space->ToPlaneDim(dim, 'Y'), env )
+  , u_( space->ToPlaneDim(dim, 'U'), env )
+  , v_( space->ToPlaneDim(dim, 'V'), env ) { }
 
 
 YUV::YUV(PColorSpace const& space, Dimension const& dim, FrameType type, BufferWindow const& y, BufferWindow const& u, BufferWindow const& v)
@@ -47,9 +47,9 @@ YUV::YUV(PColorSpace const& space, Dimension const& dim, FrameType type, BufferW
   , u_( u )
   , v_( v )
 {
-  assert( y.GetDimension() == space->ToPlaneDim(dim, PLANAR_Y) );
-  assert( u.GetDimension() == space->ToPlaneDim(dim, PLANAR_U) );
-  assert( v.GetDimension() == space->ToPlaneDim(dim, PLANAR_V) );
+  assert( y.GetDimension() == space->ToPlaneDim(dim, 'Y') );
+  assert( u.GetDimension() == space->ToPlaneDim(dim, 'U') );
+  assert( v.GetDimension() == space->ToPlaneDim(dim, 'V') );
   assert( y.GetEnvironment() == u.GetEnvironment() && y.GetEnvironment() == v.GetEnvironment() );
 }
 

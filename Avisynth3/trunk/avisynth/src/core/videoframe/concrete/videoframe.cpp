@@ -31,8 +31,8 @@ namespace avs {
 
 
 
-WindowPtr VideoFrame::WriteTo(Plane plane) { return operator[](plane).Write(); }
-CWindowPtr VideoFrame::ReadFrom(Plane plane) const { return operator[](plane).Read(); }
+WindowPtr VideoFrame::WriteTo(char plane) { return operator[](plane).Write(); }
+CWindowPtr VideoFrame::ReadFrom(char plane) const { return operator[](plane).Read(); }
 
 
 

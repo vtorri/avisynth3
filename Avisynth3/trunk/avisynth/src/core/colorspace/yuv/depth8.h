@@ -28,7 +28,7 @@
 #include "../../colorspace.h"
 
 
-namespace avs { namespace cspace { namespace yuv {
+namespace avs { namespace colorspace { namespace yuv {
 
 
 
@@ -45,6 +45,6 @@ class AVS_NOVTABLE Depth8 : public virtual ColorSpace
 
 
 
-} } } //namespace avs::cspace::yuv
+} } } //namespace avs::colorspace::yuv
 
 #endif //__AVS_COLORSPACE_YUV_DEPTH8_H__

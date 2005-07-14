@@ -24,72 +24,40 @@
 #ifndef __AVS_COLORSPACE_CONCRETE_INTERLEAVED_H__
 #define __AVS_COLORSPACE_CONCRETE_INTERLEAVED_H__
 
-//avisynth includes
+//avisynth include
 #include "../interleaved.h"
-#include "../../exception/nosuchplane.h"
-#include "../../exception/colorspace/invalidheight.h"
 
 
-namespace avs { namespace cspace { namespace concrete {
+namespace avs { namespace colorspace { namespace concrete {
 
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
-//  interleaved<bpp, bps, VFrame>
+//  concrete::Interleaved
 //
 //
 //
-template <long bpp_, long bps_, typename VFrame> 
-class AVS_NOVTABLE interleaved : public Interleaved
+class AVS_NOVTABLE Interleaved : public colorspace::Interleaved
 {
 
-public:  //declarations and typedefs
+  long bpp_;           //bytes per pixel
 
-  enum { bpp = bpp_, bps = bps_ };
 
-  typedef interleaved<bpp, bps, VFrame> InterleavedType;
+public:  //structors
+
+  Interleaved(long bpp) : bpp_( bpp ) { }
+  //generated destructor is fine
 
 
 public:  //ColorSpace interface
 
-  virtual long GetBitsPerPixel() const { return 8 * bpp; }
-
-  virtual long GetBitmapSize(Dimension const& dim) const
-  {
-    return utility::RoundUp<4>( dim.GetWidth() * bpp ) * dim.GetHeight();
-  }
-
-  virtual void Check(long /*x*/, long y, bool interlaced) const
-  {
-    if ( interlaced && (y & 1) )
-      throw exception::cspace::InvalidHeight(shared_from_this(), y, 2, true);
-  }
-
-  virtual void ToPlane(long& x, long& /*y*/, Plane plane) const
-  {
-    if ( plane != NOT_PLANAR )
-      throw exception::NoSuchPlane(shared_from_this(), plane);
-    x *= bpp;
-  }
-
-  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
-  {
-    return CPVideoFrame( static_cast<VideoFrame *>(new VFrame(dim, type, env)) );
-  }
-
-
-public:  //Interleaved interface
-
-  virtual PVideoFrame CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& main) const
-  {
-    return CPVideoFrame( static_cast<VideoFrame *>(new VFrame(dim, type, main)) );
-  }
+  virtual void Check(long /*x*/, long y, bool interlaced) const;
+  virtual void ToPlane(long& x, long& /*y*/, char plane) const;
 
 };
 
 
 
-
-} } } //namespace avs::cspace::concrete
+} } } //namespace avs::colorspace::concrete
 
 #endif //__AVS_COLORSPACE_CONCRETE_INTERLEAVED_H__

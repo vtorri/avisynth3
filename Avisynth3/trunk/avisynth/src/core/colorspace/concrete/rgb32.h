@@ -21,44 +21,40 @@
 // General Public License cover the whole combination.
 
 
-//avisynth includes
-#include "yv24.h"
-#include "../../exception/nosuchplane.h"
-#include "../../videoframe/concrete/yv24.h"
-#include "../../exception/colorspace/unsupported.h"
-#include "../../exception/colorspace/invalidheight.h"
+#ifndef __AVS_COLORSPACE_CONCRETE_RGB32_H__
+#define __AVS_COLORSPACE_CONCRETE_RGB32_H__
+
+//avisynth include
+#include "rgb8.h"
 
 
 namespace avs { namespace colorspace { namespace concrete {
 
 
 
-void YV24::Check(long x, long y, bool interlaced) const
+/////////////////////////////////////////////////////////////////////////////////////////
+//  RGB24
+//
+//  RGB24 ColorSpace subclass
+//
+class RGB32 : public RGB8
 {
-  if ( interlaced && (y & 1) )                  //if interlaced y must be even
-    throw exception::colorspace::InvalidHeight(shared_from_this(), y, 2, true);
-}
+
+public:  //structors
+
+  RGB32() : RGB8( 4 ) { }
+  //generated destructor is fine
 
 
-void YV24::ToPlane(long& x, long& y, char plane) const
-{
-  if ( ! HasPlane(plane) )
-    throw exception::NoSuchPlane(shared_from_this(), plane);    
-}
+public:  //ColorSpace interface
 
+  virtual ID id() const { return I_RGB24; }
+  virtual char const * GetName() const { return "RGB24"; }
 
-
-PVideoFrame YV24::CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
-{
-  return CPVideoFrame( static_cast<VideoFrame *>(new videoframe::concrete::YV24(dim, type, env)) );
-}
-
-
-PVideoFrame YV24::CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& y , BufferWindow const& u, BufferWindow const& v) const
-{
-  return CPVideoFrame( static_cast<VideoFrame *>(new videoframe::concrete::YV24(dim, type, y, u, v)) );
-}
+};
 
 
 
 } } } //namespace avs::colorspace::concrete
+
+#endif //__AVS_COLORSPACE_CONCRETE_RGB32_H__

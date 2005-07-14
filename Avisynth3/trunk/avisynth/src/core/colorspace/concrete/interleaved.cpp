@@ -21,11 +21,8 @@
 // General Public License cover the whole combination.
 
 
-//avisynth includes
-#include "yv24.h"
+#include "interleaved.h"
 #include "../../exception/nosuchplane.h"
-#include "../../videoframe/concrete/yv24.h"
-#include "../../exception/colorspace/unsupported.h"
 #include "../../exception/colorspace/invalidheight.h"
 
 
@@ -33,30 +30,17 @@ namespace avs { namespace colorspace { namespace concrete {
 
 
 
-void YV24::Check(long x, long y, bool interlaced) const
+void Interleaved::Check(long /*x*/, long y, bool interlaced) const
 {
-  if ( interlaced && (y & 1) )                  //if interlaced y must be even
+  if ( interlaced && (y & 1) )
     throw exception::colorspace::InvalidHeight(shared_from_this(), y, 2, true);
 }
 
-
-void YV24::ToPlane(long& x, long& y, char plane) const
+void Interleaved::ToPlane(long& x, long& /*y*/, char plane) const
 {
-  if ( ! HasPlane(plane) )
-    throw exception::NoSuchPlane(shared_from_this(), plane);    
-}
-
-
-
-PVideoFrame YV24::CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
-{
-  return CPVideoFrame( static_cast<VideoFrame *>(new videoframe::concrete::YV24(dim, type, env)) );
-}
-
-
-PVideoFrame YV24::CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& y , BufferWindow const& u, BufferWindow const& v) const
-{
-  return CPVideoFrame( static_cast<VideoFrame *>(new videoframe::concrete::YV24(dim, type, y, u, v)) );
+  if ( plane != '~' )
+    throw exception::NoSuchPlane(shared_from_this(), plane);
+  x *= bpp_;
 }
 
 

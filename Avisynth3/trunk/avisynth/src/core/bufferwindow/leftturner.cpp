@@ -31,7 +31,7 @@ namespace avs { namespace bw {
 
 BufferWindow LeftTurner<1>::operator()(BufferWindow const& source) const
 {
-  BufferWindow result( source.GetDimension().template Turn<1>(), source.GetEnvironment() );
+  BufferWindow result( source.GetDimension().Turn<1>(), source.GetEnvironment() );
 
   CWindowPtr src = source.Read();
   WindowPtr dst = result.Write();

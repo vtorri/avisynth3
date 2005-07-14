@@ -42,7 +42,7 @@ class AVS_NOVTABLE Interleaved : public virtual ColorSpace
 
 public:  //ColorSpace interface
 
-  virtual bool HasPlane(char plane) const { return plane == '\0'; }
+  virtual bool HasPlane(char plane) const { return plane == '~'; }
 
 
 public:  //Interleaved interface

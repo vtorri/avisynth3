@@ -29,7 +29,8 @@
 #include "../../../clip/nochild.h"
 #include "../../../core/framemaker.h"
 
-//boost include
+//boost includes
+#include <boost/optional.hpp>
 #include <boost/scoped_ptr.hpp>
 
 
@@ -61,9 +62,8 @@ public:  //RawVideo interface
   //returns index of previous keyframe
   virtual long PreviousKeyFrame(long n) const = 0;
 
-  //reads video data for frame n into passed buffer and returns read data size
-  //can be passed a NULL buffer to get the necessary buffer size
-  virtual long ReadVideo(long n, BYTE * buffer, long bufferSize) const = 0;
+  //returns video data for frame n, empty if there is none
+  virtual boost::optional<OwnedBlock> (long n) const = 0;
 
 
 protected:  //write access

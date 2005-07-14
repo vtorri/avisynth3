@@ -29,7 +29,7 @@
 #include "../yuv/planar.h"
 
 
-namespace avs { namespace cspace { namespace concrete {
+namespace avs { namespace colorspace { namespace concrete {
 
 
 
@@ -45,21 +45,19 @@ public:  //ColorSpace interface
 
   virtual ID id() const { return I_YV24; }
   virtual char const * GetName() const { return "YV24"; }
-  virtual unsigned long GetFourCC() const;
-  virtual long GetBitsPerPixel() const { return 24; }
-
-  virtual long GetBitmapSize(Dimension const& dim) const;
-
-  virtual bool HasProperty(Property prop) const;
 
   virtual void Check(long x, long y, bool interlaced = false) const;
-
-  virtual void ToPlane(long& x, long& y, Plane plane) const;
+  virtual void ToPlane(long& x, long& y, char plane) const;
 
 
 public:  //blank frame creation method
 
   virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const;
+
+
+public:  //fetch exporter(s)
+
+  virtual PExporter GetExporter(std::string const& type) const;
 
 
 public:  //yuv::Planar interface
@@ -70,6 +68,6 @@ public:  //yuv::Planar interface
 
 
 
-} } } //namespace avs::cspace::concrete
+} } } //namespace avs::colorspace::concrete
 
 #endif //__AVS_COLORSPACE_CONCRETE_YV24_H__

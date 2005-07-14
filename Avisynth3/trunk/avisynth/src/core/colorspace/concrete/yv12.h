@@ -42,11 +42,6 @@ class YV12 : public yuv::Planar
            , public yuv::Depth8
 {
 
-/*public:
-
-  enum { fourCC = '21VY' };
-*/
-
 public:  //ColorSpace interface
 
   virtual ID id() const { return I_YV12; }
@@ -59,6 +54,11 @@ public:  //ColorSpace interface
 public:  //blank frame creation method
 
   virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const;
+
+
+public:  //fetch exporter(s)
+
+  virtual PExporter GetExporter(std::string const& type) const;
 
 
 public:  //yuv::Planar interface

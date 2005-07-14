@@ -51,6 +51,16 @@ public:  //ColorSpace interface
   virtual ID id() const { return I_RGB24; }
   virtual char const * GetName() const { return "RGB24"; }
 
+
+public:  //blank frame creation method
+
+  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const;
+
+
+public:  //Interleaved interface
+
+  virtual PVideoFrame CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& main) const;
+
 };
 
 

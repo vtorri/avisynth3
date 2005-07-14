@@ -27,10 +27,9 @@
 //avisynth includes
 #include "interleaved.h"
 #include "../yuv/depth8.h"
-#include "../../videoframe/concrete/yuy2.h"
 
 
-namespace avs { namespace cspace { namespace concrete {
+namespace avs { namespace colorspace { namespace concrete {
 
 
 
@@ -39,28 +38,41 @@ namespace avs { namespace cspace { namespace concrete {
 //
 //  YUY2 ColorSpace subclass
 //
-class YUY2 : public interleaved<2, 1, vframe::concrete::YUY2>
+class YUY2 : public Interleaved
            , public yuv::Depth8
 {
 
-public:
+public:  //structors
 
-  enum { fourCC = '2YUY' };
+  YUY2() : Interleaved( 2 ) { }
+  //generated destructor is fine
 
 
 public:  //ColorSpace interface
 
   virtual ID id() const { return I_YUY2; }
   virtual char const * GetName() const { return "YUY2"; }
-  virtual unsigned long GetFourCC() const { return fourCC; }
 
-  virtual bool HasProperty(Property prop) const;
+  virtual bool HasProperty(std::string const& prop) const
+  {
+    return colorspace::Interleaved::HasProperty(prop) || prop == "YUV";
+  }
 
   virtual void Check(int x, int y, bool interlaced = false) const;
+
+
+public:  //blank frame creation method
+
+  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const;
+
+
+public:  //Interleaved interface
+
+  virtual PVideoFrame CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& main) const;
 
 };
 
 
-} } } //namespace avs::cspace:::concrete
+} } } //namespace avs::colorspace:::concrete
 
 #endif //__AVS_COLORSPACE_CONCRETE_YUY2_H__

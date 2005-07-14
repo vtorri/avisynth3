@@ -26,23 +26,17 @@
 #include "../../exception/colorspace/invalidwidth.h"
 
 
-namespace avs { namespace cspace { namespace concrete {
+namespace avs { namespace colorspace { namespace concrete {
 
-
-
-bool YUY2::HasProperty(Property prop) const
-{ 
-  return prop == P_YUV || prop == P_INTERLEAVED || prop == P_DEPTH8;
-}
 
 
 void YUY2::Check(int x, int y, bool interlaced) const 
 {
-  InterleavedType::Check(x, y, interlaced);
+  Interleaved::Check(x, y, interlaced);
   if ( x & 1 )                                                        //if x is not even
     throw exception::cspace::InvalidWidth(shared_from_this(), x, 2);  //exception
 }
 
 
 
-} } } //namespace avs::cspace::concrete
+} } } //namespace avs::colorspace::concrete

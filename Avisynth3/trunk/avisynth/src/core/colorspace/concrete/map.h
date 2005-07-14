@@ -36,7 +36,7 @@
 #include <boost/thread/mutex.hpp>
 
 
-namespace avs { namespace cspace { namespace concrete {
+namespace avs { namespace colorspace { namespace concrete {
 
 
 
@@ -55,7 +55,7 @@ class Map
 
   mutable Mutex mutex_;
   
-  ColorSpaceCache rgb24_, rgb32_, rgb45_, yuy2_, yv12_, yv24_, yv45_;
+  ColorSpaceCache rgb24_, rgb32_, yuy2_, yv12_, yv24_;
 
   NameToColorSpaceMap nameMap_;
 
@@ -71,20 +71,17 @@ public:  //Map interface
   
   //map like read access
   PColorSpace operator[](std::string const& name) const;
-  PColorSpace operator[](unsigned long fourcc) const;
 
   PColorSpace rgb24() const { Lock lock(mutex_); return rgb24_.Get(); }
   PColorSpace rgb32() const { Lock lock(mutex_); return rgb32_.Get(); }
-  PColorSpace rgb45() const { Lock lock(mutex_); return rgb45_.Get(); }
   PColorSpace yuy2() const { Lock lock(mutex_); return yuy2_.Get(); }
   PColorSpace yv12() const { Lock lock(mutex_); return yv12_.Get(); }
   PColorSpace yv24() const { Lock lock(mutex_); return yv24_.Get(); }
-  PColorSpace yv45() const { Lock lock(mutex_); return yv45_.Get(); }
 
 };
 
 
 
-} } } //namespace avs::cspace::concrete
+} } } //namespace avs::colorspace::concrete
 
 #endif //__AVS_COLORSPACE_CONCRETE_MAP_H__

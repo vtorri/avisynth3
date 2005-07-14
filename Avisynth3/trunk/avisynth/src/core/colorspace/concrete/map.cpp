@@ -23,15 +23,15 @@
 
 //avisynth includes
 #include "map.h"
-#include "rgb.h"
 #include "yuy2.h"
 #include "yv12.h"
 #include "yv24.h"
-#include "yv45.h"
+#include "rgb24.h"
+#include "rgb32.h"
 #include "../../exception/colorspace/unknown.h"
 
 
-namespace avs { namespace cspace { namespace concrete {
+namespace avs { namespace colorspace { namespace concrete {
 
 
 
@@ -46,19 +46,15 @@ ColorSpace const * Create() { return new CS(); }
 Map::Map()
   : rgb24_( &Create<RGB24> )
   , rgb32_( &Create<RGB32> )
-  , rgb45_( &Create<RGB45> )
   , yuy2_( &Create<YUY2> )
   , yv12_( &Create<YV12> )
   , yv24_( &Create<YV24> )
-  , yv45_( &Create<YV45> )
 {
   nameMap_["RGB24"] = &rgb24_;
   nameMap_["RGB32"] = &rgb32_;
-  nameMap_["RGB45"] = &rgb45_;
   nameMap_["YUY2"] = &yuy2_;
   nameMap_["YV12"] = &yv12_;
   nameMap_["YV24"] = &yv24_;
-  nameMap_["YV45"] = &yv45_;
 }
 
 
@@ -75,19 +71,5 @@ PColorSpace Map::operator[](std::string const& name) const
 }
 
 
-PColorSpace Map::operator[](unsigned long fourcc) const
-{
-  Lock lock(mutex_);
 
-  switch ( fourcc )
-  {
-  case YV12::fourCC: return yv12_.Get();
-  case YUY2::fourCC: return yuy2_.Get();
-
-  default: throw exception::cspace::Unknown();
-  }
-}
-
-
-
-} } } //namespace avs::cspace::concrete
+} } } //namespace avs::colorspace::concrete

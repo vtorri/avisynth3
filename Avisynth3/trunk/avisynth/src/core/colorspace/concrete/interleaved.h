@@ -54,6 +54,11 @@ public:  //ColorSpace interface
   virtual void Check(long /*x*/, long y, bool interlaced) const;
   virtual void ToPlane(long& x, long& /*y*/, char plane) const;
 
+
+public:  //fetch exporter(s)
+
+  virtual PExporter GetExporter(std::string const& type) const;
+
 };
 
 

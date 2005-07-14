@@ -70,7 +70,7 @@ PClip Tweak::clone(PClip const& child) const
   case ColorSpace::I_YUY2: return tweak::YUY2::Create(child, *this);
   case ColorSpace::I_YV12: return tweak::YV12::Create(child, *this);
 
-  default: throw exception::cspace::Unsupported(space);
+  default: throw exception::colorspace::Unsupported(space);
   } 
 }
 
@@ -84,7 +84,7 @@ PClip Tweak::Create(PClip const& child, double hue, double sat, double bright, d
   case ColorSpace::I_YUY2: return tweak::YUY2::Create(child, hue, sat, bright, cont);
   case ColorSpace::I_YV12: return tweak::YV12::Create(child, hue, sat, bright, cont);
 
-  default: throw exception::cspace::Unsupported(space);
+  default: throw exception::colorspace::Unsupported(space);
   } 
 }
 

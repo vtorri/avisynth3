@@ -90,7 +90,7 @@ void Rasterizer::ApplyTo(CWindowPtr const& masks, int textColor, int haloColor, 
   case ColorSpace::I_YUY2: ApplyYUY2(masks, textColor, haloColor, frame); break;
   case ColorSpace::I_YV12: ApplyYV12(masks, textColor, haloColor, frame); break;
   
-  default: throw exception::cspace::Unsupported(space);
+  default: throw exception::colorspace::Unsupported(space);
   }
 }
 
@@ -101,7 +101,7 @@ void Rasterizer::ApplyRGB24(CWindowPtr masks, int textColor, int haloColor, Vide
   int Rtext = ((textColor>>16)&255), Gtext = ((textColor>>8)&255), Btext = (textColor&255);
   int Rhalo = ((haloColor>>16)&255), Ghalo = ((haloColor>>8)&255), Bhalo = (haloColor&255);
   
-  WindowPtr dst = frame.WriteTo(NOT_PLANAR);
+  WindowPtr dst = frame.WriteTo('~');
 
   for ( int y = masks.height; y-- > 0; dst.pad(), masks.pad() ) 
     for ( int x = masks.width >> 1; x-- > 0; dst.to(3, 0), masks.to(2, 0) ) 
@@ -124,7 +124,7 @@ void Rasterizer::ApplyRGB32(CWindowPtr masks, int textColor, int haloColor, Vide
   int Rtext = ((textColor>>16)&255), Gtext = ((textColor>>8)&255), Btext = (textColor&255);
   int Rhalo = ((haloColor>>16)&255), Ghalo = ((haloColor>>8)&255), Bhalo = (haloColor&255);
 
-  WindowPtr dst = frame.WriteTo(NOT_PLANAR);
+  WindowPtr dst = frame.WriteTo('~');
 
   for ( int y = masks.height; y-- > 0; dst.pad(), masks.pad() ) 
     for ( int x = masks.width >> 1; x-- > 0; dst.to(4, 0), masks.to(2, 0) ) 
@@ -148,7 +148,7 @@ void Rasterizer::ApplyYUY2(CWindowPtr masks, int textColor, int haloColor, Video
   int Ytext = ((textColor>>16)&255), Utext = ((textColor>>8)&255), Vtext = (textColor&255);
   int Yhalo = ((haloColor>>16)&255), Uhalo = ((haloColor>>8)&255), Vhalo = (haloColor&255);
 
-  WindowPtr dst = frame.WriteTo(NOT_PLANAR);
+  WindowPtr dst = frame.WriteTo('~');
 
   for ( int y = masks.height; y-- > 0; dst.pad(), masks.pad() ) 
     for ( int x = masks.width >> 2; x-- > 0; dst.to(4, 0), masks.to(4, 0) ) 
@@ -171,9 +171,9 @@ void Rasterizer::ApplyYV12(CWindowPtr masks, int textColor, int haloColor, Video
   int Ytext = ((textColor>>16)&255), Utext = ((textColor>>8)&255), Vtext = (textColor&255);
   int Yhalo = ((haloColor>>16)&255), Uhalo = ((haloColor>>8)&255), Vhalo = (haloColor&255);
 
-  WindowPtr Y = frame.WriteTo(PLANAR_Y);
-  WindowPtr U = frame.WriteTo(PLANAR_U);
-  WindowPtr V = frame.WriteTo(PLANAR_V);
+  WindowPtr Y = frame.WriteTo('Y');
+  WindowPtr U = frame.WriteTo('U');
+  WindowPtr V = frame.WriteTo('V');
 
   for ( int y = V.height; y-- > 0; Y.skipPad(), U.pad(), V.pad(), masks.skipPad() ) 
     for ( int x = V.width; x--> 0; Y.to(2, 0), U.to(1, 0), V.to(1, 0), masks.to(4, 0) ) 

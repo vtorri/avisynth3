@@ -37,6 +37,11 @@ namespace avs { namespace colorspace {
 class Exporter
 {
 
+public:  //structors
+
+  Exporter() { }
+  virtual ~Exporter() { }
+
 };
 
 

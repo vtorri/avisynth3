@@ -27,13 +27,13 @@
 //avisynth includes
 #include "forward.h"
 #include "frametype.h"
-#include "../define.h"             //for AVS_NOVTABLE
-#include "cow_shared_ptr.h"        //so PVideoFrame is defined
-#include "geometry/vecteur.h"
-#include "geometry/dimension.h"
+#include "../define.h"                        //for AVS_NOVTABLE
+#include "cow_shared_ptr.h"                   //so PVideoFrame is defined
+#include "geometry/vecteur.h"                 //Vecteur is defined
+#include "geometry/dimension.h"               //Dimension is defined
 
 //boost includes
-#include <boost/shared_ptr.hpp>
+#include <boost/shared_ptr.hpp>               //so PExporter is defined
 #include <boost/enable_shared_from_this.hpp>
 
 //stl include
@@ -86,10 +86,15 @@ public:  //ColorSpace interface
   //unlike the above, it does not check validity, but just perform the operation   
   virtual void ToPlane(long& x, long& y, char plane) const = 0;
 
-  //blank frame creation method
+
+public:  //blank frame creation method
+
   virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const = 0;
 
-  virtual boost::shared_ptr<void> GetExporter(char const * type) const = 0;
+
+public:  //fetch exporter(s)
+
+  virtual PExporter GetExporter(std::string const& type) const = 0;
 
 
 public:  //comparison operators
@@ -106,6 +111,7 @@ public:  //convenience versions of Check and ToPlane
   Dimension ToPlaneDim(Dimension const& dim, char plane) const
   {
     long x = dim.GetWidth(), y = dim.GetHeight();
+
     ToPlane(x, y, plane);
     return Dimension(x, y);
   }

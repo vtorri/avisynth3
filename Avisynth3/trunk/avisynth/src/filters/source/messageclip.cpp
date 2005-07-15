@@ -27,6 +27,7 @@
 #include "../../core/videoinfo.h"
 #include "../../core/videoframe.h"
 #include "../../core/colorspace.h"
+#include "../../core/colorspace/get.h"
 #include "../../core/ownedblock.h"
 #include "../../core/bufferwindow.h"
 #include "../../core/geometry/vecteur.h"
@@ -71,7 +72,7 @@ CPVideoFrame MessageClip::CreateFrame(std::string const& msg, PEnvironment const
   DimensionFP6 dimFP6 = font.GetTextBoundingBox(msg).GetDimension();
   Dimension dim( dimFP6.GetWidth().GetRoundedUp(), dimFP6.GetHeight().GetRoundedUp() );
 
-  return CreateFrame(msg, font, dim, ColorSpace::rgb32(), env);
+  return CreateFrame(msg, font, dim, colorspace::Get::RGB32(), env);
 }
 
 

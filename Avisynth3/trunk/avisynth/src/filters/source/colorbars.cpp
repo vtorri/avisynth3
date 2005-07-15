@@ -24,6 +24,7 @@
 //avisynth include
 #include "colorbars.h"
 #include "../../core/colorspace.h"
+#include "../../core/colorspace/get.h"
 #include "../../core/videoframe.h"
 #include "../../core/cow_shared_ptr.h"
 #include "../../core/runtime_environment.h"
@@ -36,9 +37,9 @@ namespace avs { namespace filters {
 CPVideoFrame ColorBars::CreateFrame(Dimension const& dim, PEnvironment const& env)
 {
 
-  PVideoFrame result = env->CreateFrame(ColorSpace::rgb32(), dim, PROGRESSIVE);
+  PVideoFrame result = env->CreateFrame(colorspace::Get::RGB32(), dim, PROGRESSIVE);
 
-  window_ptr<int> dst = result->WriteTo(NOT_PLANAR);
+  window_ptr<int> dst = result->WriteTo('~');
 
 
   int y = 0;

@@ -33,7 +33,7 @@ namespace avs { namespace filters { namespace tweak {
 
 CPVideoFrame YUY2::MakeFrame(PVideoFrame const& source) const
 {
-  WindowPtr wp = source->WriteTo(NOT_PLANAR);
+  WindowPtr wp = source->WriteTo('~');
     
   for ( int y = wp.height; y-- > 0; wp.pad() )		
     for ( int x = wp.width >> 2; x-- > 0; wp.to(4, 0) )			

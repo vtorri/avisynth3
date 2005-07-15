@@ -34,9 +34,9 @@ namespace avs { namespace filters { namespace tweak {
 CPVideoFrame YV12::MakeFrame(PVideoFrame const& source) const
 {
 
-  WindowPtr Y = source->WriteTo(PLANAR_Y);
-  WindowPtr U = source->WriteTo(PLANAR_U);
-  WindowPtr V = source->WriteTo(PLANAR_V);
+  WindowPtr Y = source->WriteTo('Y');
+  WindowPtr U = source->WriteTo('U');
+  WindowPtr V = source->WriteTo('V');
 
 
   for( int y = Y.height; y-- > 0; Y.pad() )

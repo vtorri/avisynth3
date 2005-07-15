@@ -33,8 +33,8 @@ namespace avs { namespace filters { namespace convert { namespace torgb24 {
 void FromRGB32::ConvertFrame(VideoFrame const& source, VideoFrame& target) const
 {
 
-  CWindowPtr src = source.ReadFrom(NOT_PLANAR);
-  WindowPtr dst = target.WriteTo(NOT_PLANAR);
+  CWindowPtr src = source.ReadFrom('~');
+  WindowPtr dst = target.WriteTo('~');
 
   for ( int y = dst.height; y-- > 0; src.pad(), dst.pad() ) 
   {

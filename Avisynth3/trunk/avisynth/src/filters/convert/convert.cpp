@@ -56,8 +56,8 @@ CPVideoFrame Convert::MakeFrame(PVideoFrame const& source) const
 
 PClip Convert::FromExternal(PClip const& clip, PColorSpace const& target)
 {
-  boost::shared_ptr<cspace::External const> space 
-      = boost::dynamic_pointer_cast<cspace::External const>(clip->GetVideoInfo()->GetColorSpace());
+  boost::shared_ptr<colorspace::External const> space 
+      = boost::dynamic_pointer_cast<colorspace::External const>(clip->GetVideoInfo()->GetColorSpace());
 
   return space->ConvertFrom(clip, target);
 }

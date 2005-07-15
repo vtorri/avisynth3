@@ -26,6 +26,7 @@
 #include "torgb24/fromrgb32.h"
 #include "../../core/videoinfo.h"
 #include "../../core/colorspace.h"
+#include "../../core/colorspace/get.h"
 #include "../../core/exception/colorspace/unsupported.h"
 
 
@@ -34,7 +35,7 @@ namespace avs { namespace filters { namespace convert {
 
 
 ToRGB24::ToRGB24(PClip const& child)
-  : Convert( child, ColorSpace::rgb24() ) { }
+  : Convert( child, colorspace::Get::RGB24() ) { }
 
   
 PClip ToRGB24::Create(PClip const& child)
@@ -43,14 +44,13 @@ PClip ToRGB24::Create(PClip const& child)
 
   switch( space->id() )
   {
-  case ColorSpace::I_EXTERNAL: return FromExternal(child, ColorSpace::rgb24());
+  case ColorSpace::I_EXTERNAL: return FromExternal( child, colorspace::Get::RGB24() );
+  case ColorSpace::I_RGB32:    return torgb24::FromRGB32::Create(child);
 
-  case ColorSpace::I_RGB32: return torgb24::FromRGB32::Create(child);
-
-
-  default: throw exception::cspace::Unsupported(space);
+  default: throw exception::colorspace::Unsupported(space);
   }
 }
+
 
 
 } } } //namespace avs::filters::convert

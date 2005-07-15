@@ -43,8 +43,8 @@ extern "C" void emms_();
 void YUY2::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
 {
 
-  CWindowPtr src = source.ReadFrom(NOT_PLANAR);
-  WindowPtr dst = target.WriteTo(NOT_PLANAR);
+  CWindowPtr src = source.ReadFrom('~');
+  WindowPtr dst = target.WriteTo('~');
 
   src.width = (src.width + 4) / 8;        //we work on 4 pixels at a time (8bytes)
   dst.width = (dst.width + 4) / 8;        //idem

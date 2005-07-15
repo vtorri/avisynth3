@@ -40,8 +40,8 @@ extern "C" void resize_horizontal_rgb32_mmx_nasm
 void RGB32::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
 {
 
-  CWindowPtr src = source.ReadFrom(NOT_PLANAR);
-  WindowPtr dst = target.WriteTo(NOT_PLANAR);  
+  CWindowPtr src = source.ReadFrom('~');
+  WindowPtr dst = target.WriteTo('~');  
   
   int count = GetPattern().Count();       //coeff count
   int const * pptr = GetPattern().Get();  //pattern ptr

@@ -50,9 +50,9 @@ CPVideoFrame RGB24::clone() const
 PColorSpace RGB24::GetColorSpace() const { return colorspace::Get::RGB24(); }
 
 
-void RGB24::ApplyToR(ByteMap const& r) { r.ApplyTo<3>( WriteTo('\0') ); }
-void RGB24::ApplyToG(ByteMap const& g) { g.ApplyTo<3>( WriteTo('\0') += 1 ); }
-void RGB24::ApplyToB(ByteMap const& b) { b.ApplyTo<3>( WriteTo('\0') += 2 ); }
+void RGB24::ApplyToR(ByteMap const& r) { r.ApplyTo<3>( WriteTo('~') ); }
+void RGB24::ApplyToG(ByteMap const& g) { g.ApplyTo<3>( WriteTo('~') += 1 ); }
+void RGB24::ApplyToB(ByteMap const& b) { b.ApplyTo<3>( WriteTo('~') += 2 ); }
 
 
 

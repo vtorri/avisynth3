@@ -32,7 +32,7 @@
 #include <boost/format.hpp>
 
 
-namespace avs { namespace exception { namespace cspace {
+namespace avs { namespace exception { namespace colorspace {
 
 
 
@@ -67,6 +67,6 @@ public:  //diagnotic message
 };
 
 
-} } } //namespace avs::exception::cspace
+} } } //namespace avs::exception::colorspace
 
 #endif //__AVS_EXCEPTION_COLORSPACE_INVALIDWIDTH_H__

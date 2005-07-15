@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -56,11 +56,9 @@ bool VideoInfo::IsColorSpace(PColorSpace const& space) { return *GetColorSpace()
   
 bool VideoInfo::IsRGB24() const { return GetColorSpace()->IsRGB24(); }
 bool VideoInfo::IsRGB32() const { return GetColorSpace()->IsRGB32(); }
-bool VideoInfo::IsRGB45() const { return GetColorSpace()->IsRGB45(); }
 bool VideoInfo::IsYUY2() const { return GetColorSpace()->IsYUY2(); }
 bool VideoInfo::IsYV12() const { return GetColorSpace()->IsYV12(); }
 bool VideoInfo::IsYV24() const { return GetColorSpace()->IsYV24(); }
-bool VideoInfo::IsYV45() const { return GetColorSpace()->IsYV45(); }
 
 
 

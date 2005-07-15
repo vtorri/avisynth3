@@ -51,13 +51,13 @@ PColorSpace YUY2::GetColorSpace() const { return colorspace::Get::YUY2(); }
 
 
 
-void YUY2::CountY(ByteCounter& y) const { y.Count<2>( ReadFrom('\0') ); }
-void YUY2::CountU(ByteCounter& u) const { u.Count<4>( ReadFrom('\0') += 1 ); }
-void YUY2::CountV(ByteCounter& v) const { v.Count<4>( ReadFrom('\0') += 3 ); }
+void YUY2::CountY(ByteCounter& y) const { y.Count<2>( ReadFrom('~') ); }
+void YUY2::CountU(ByteCounter& u) const { u.Count<4>( ReadFrom('~') += 1 ); }
+void YUY2::CountV(ByteCounter& v) const { v.Count<4>( ReadFrom('~') += 3 ); }
 
-void YUY2::ApplyToY(ByteMap const& y) { y.ApplyTo<2>( ReadFrom('\0') ); }
-void YUY2::ApplyToU(ByteMap const& u) { u.ApplyTo<4>( ReadFrom('\0') += 1 ); }
-void YUY2::ApplyToV(ByteMap const& v) { v.ApplyTo<4>( ReadFrom('\0') += 3 ); }
+void YUY2::ApplyToY(ByteMap const& y) { y.ApplyTo<2>( ReadFrom('~') ); }
+void YUY2::ApplyToU(ByteMap const& u) { u.ApplyTo<4>( ReadFrom('~') += 1 ); }
+void YUY2::ApplyToV(ByteMap const& v) { v.ApplyTo<4>( ReadFrom('~') += 3 ); }
 
 
 

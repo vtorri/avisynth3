@@ -50,7 +50,7 @@ Interleaved::Interleaved(PColorSpace const& space, Dimension const& dim, FrameTy
 
 BufferWindow& Interleaved::operator[](char plane)
 {
-  if ( plane != '\0' )
+  if ( plane != '~' )
     throw exception::NoSuchPlane(GetColorSpace(), plane);
   return GetMain();
 }
@@ -58,7 +58,7 @@ BufferWindow& Interleaved::operator[](char plane)
 
 BufferWindow const& Interleaved::operator[](char plane) const
 {
-  if ( plane != '\0' )
+  if ( plane != '~' )
     throw exception::NoSuchPlane(GetColorSpace(), plane);
   return GetConstMain();
 }

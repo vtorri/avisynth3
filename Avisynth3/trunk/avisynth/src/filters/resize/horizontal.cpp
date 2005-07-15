@@ -63,7 +63,7 @@ PClip Horizontal::Create(PClip const& child, PFilter const& filter, int width, S
   case ColorSpace::I_RGB32: return horizontal::RGB32::Create(child, filter, width, subrange);
   case ColorSpace::I_YUY2:  return horizontal::YUY2::Create(child, filter, width, subrange);
 
-  default: throw exception::cspace::Unsupported( space );
+  default: throw exception::colorspace::Unsupported( space );
   }
 }
 

@@ -27,7 +27,6 @@
 //avisynth includes
 #include "../../../define.h"              //for AVS_NOVTABLE
 #include "../../../core/ownedblock.h"
-#include "../../../core/bufferwindow.h"
 
 
 namespace avs { namespace filters { namespace source {
@@ -60,8 +59,6 @@ public:  //structors
 public:  //FrameDecompressor public interface
 
   CPVideoFrame operator()(long n, bool preroll) const;
-
-  enum { Guard = BufferWindow::Guard };
 
 
 private:  //FrameDecompressor private interface

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -36,17 +36,13 @@ namespace avs { namespace filters { namespace source {
 
 CPVideoFrame FrameDecompressor::operator()(long n, bool preroll) const
 {
-  long size = src_.ReadVideo(n, NULL, 0);   //fetch needed size for frame n
-  if ( size == 0 )                          //size 0 means dropped frame
-    return CPVideoFrame();
+  boost::optional<OwnedBlock> buffer = src_.ReadVideo(n);  //reads data for frame n
 
-  //creates a buffer to host the (raw) data
-  OwnedBlock buffer(src_.GetEnvironment(), size + Guard * 2, true);
-  //reads the video data
-  src_.ReadVideo(n, buffer.get() + Guard, size);
+  if ( ! buffer )                        //if empty
+    return CPVideoFrame();               //report dropped frame
 
   //and pass it to operator() for decompression
-  OwnedBlock block = operator()(src_.PreviousKeyFrame(n) == n, preroll, buffer, size);
+  OwnedBlock block = operator()(src_.PreviousKeyFrame(n) == n, preroll, *buffer, size);
 
   CPVideoInfo vi = src_.GetVideoInfo();
   PColorSpace space = vi->GetColorSpace();
@@ -60,7 +56,7 @@ CPVideoFrame FrameDecompressor::operator()(long n, bool preroll) const
     {
       //create a 4-bytes aligned frame buffer of the expected size by promoting the block
       //since we respected guards into the block it shouldn't blit
-      buffer_window<4> main( space->ToPlaneDim(dim, NOT_PLANAR), block, Guard );
+      buffer_window<4, Guard> main( space->ToPlaneDim(dim, NOT_PLANAR), block, Guard );
     
       //uses space (casted to Interleaved) to create a frame from it
       //if the size was favorable the conversion from buffer_window<4>
@@ -74,9 +70,9 @@ CPVideoFrame FrameDecompressor::operator()(long n, bool preroll) const
       //they are overlapping, thus breaking the guard requirement
       //but it's not a problem because since they are sharing the same memory block
       //they will blit on write, restoring the guards at this time (supposing align stuff didn't already blit)
-      buffer_window<4> y( space->ToPlaneDim(dim, PLANAR_Y), block, Guard );
-      buffer_window<2> u( space->ToPlaneDim(dim, PLANAR_U), block, Guard + y.size() );
-      buffer_window<2> v( space->ToPlaneDim(dim, PLANAR_V), block, Guard + y.size() + u.size() );
+      buffer_window<4, Guard> y( space->ToPlaneDim(dim, PLANAR_Y), block, Guard );
+      buffer_window<2, Guard> u( space->ToPlaneDim(dim, PLANAR_U), block, Guard + y.Size() );
+      buffer_window<2, Guard> v( space->ToPlaneDim(dim, PLANAR_V), block, Guard + y.Size() + u.Size() );
 
       return dynamic_cast<cspace::planar::YUV const&>(*space).CreateFrame(dim, UNKNOWN, y, u, v);
     }

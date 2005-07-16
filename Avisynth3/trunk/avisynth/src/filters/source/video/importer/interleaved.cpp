@@ -40,7 +40,7 @@ CPVideoFrame Interleaved::CreateFrame(Dimension const& dim, owned_block<1> const
 {
   //create a 4-bytes aligned frame buffer of the expected size by promoting the block
   //should not blit, since block is supposed to be 4-aligned
-  buffer_window<4> main( space_->ToPlaneDim(dim, '\0'), block, 0 );
+  buffer_window<4> main( space_->ToPlaneDim(dim, '~'), block, 0 );
 
   //use space_ to transform the frame buffer into a frame
   //if the size was favorable the conversion from buffer_window<4>
@@ -52,7 +52,7 @@ CPVideoFrame Interleaved::CreateFrame(Dimension const& dim, owned_block<1> const
 
 namespace {
 
-  Importer const * CreateRGB24Importer() { return new importer::Interleaved( colorspace::Get::RGB24() ); }
+Importer const * CreateRGB24Importer() { return new importer::Interleaved( colorspace::Get::RGB24() ); }
 Importer const * CreateRGB32Importer() { return new importer::Interleaved( colorspace::Get::RGB32() ); } 
 Importer const * CreateYUY2Importer()  { return new importer::Interleaved( colorspace::Get::YUY2() ); }
 

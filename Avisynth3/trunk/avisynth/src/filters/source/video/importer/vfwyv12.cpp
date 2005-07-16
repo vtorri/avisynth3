@@ -25,9 +25,9 @@
 
 //avisynth includes
 #include "vfwyv12.h"
-#include "../../../../core/colorspace.h"
 #include "../../../../core/ownedblock.h"
 #include "../../../../core/bufferwindow.h"
+#include "../../../../core/colorspace/get.h"
 #include "../../../../core/videoframe/concrete/yv12.h"
 
 
@@ -37,11 +37,11 @@ namespace avs { namespace filters { namespace source { namespace video { namespa
 
 PColorSpace VFWYV12::GetColorSpace() const
 {
-  return ColorSpace::yv12();
+  return colorspace::Get::yv12();
 }
 
 
-CPVideoFrame YV12::CreateFrame(Dimension const& dim, owned_block<1> const& block) const
+CPVideoFrame VFWYV12::CreateFrame(Dimension const& dim, owned_block<1> const& block) const
 {
   Dimension dimUV = dim.Divide<2, 2>();
 
@@ -55,13 +55,13 @@ CPVideoFrame YV12::CreateFrame(Dimension const& dim, owned_block<1> const& block
   buffer_window<2> u( dimUV, blockU, 0 );
   buffer_window<2> v( dimUV, blockV, 0 );
 
-  return CPVideoFrame( static_cast<VideoFrame *>(new vframe::concrete::YV12(dim, UNKNOWN, y, u, v)) );
+  return CPVideoFrame( static_cast<VideoFrame *>(new videoframe::concrete::YV12(dim, UNKNOWN, y, u, v)) );
 }
 
 
 namespace {
 
-Importer const * CreateYV12Importer() { return new VFWYV12Importer(); }
+Importer const * CreateYV12Importer() { return new VFWYV12(); }
 
 }
 

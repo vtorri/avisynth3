@@ -71,14 +71,14 @@ CPVideoFrame Stack::MakeFrame(long n) const
   PVideoFrame result = env->CreateFrame(*vi_, left->GetType());
   Vecteur shift = GetShiftVecteur();
 
-  for ( Plane p = Plane(0); p < int(PlaneCount); p = Plane(p + 1) )
-    if ( space->HasPlane(p) )
-    {
-      WindowPtr dst = result->WriteTo(p);
+  std::string planeList = vi_->GetColorSpace()->GetPlaneList();
+  for ( std::string::iterator it = planeList.begin(); it != planeList.end(); ++it )
+  {
+    WindowPtr dst = result->WriteTo(*it);
 
-      blit( left->ReadFrom(p), dst.ptr, dst.pitch );
-      blit( right->ReadFrom(p), dst.at(space->ToPlaneVect(shift, p)), dst.pitch );
-    }
+    blit( left->ReadFrom(*it), dst.ptr, dst.pitch );
+    blit( right->ReadFrom(*it), dst.at(space->ToPlaneVect(shift, *it)), dst.pitch );
+  }
 
   return result;
 }

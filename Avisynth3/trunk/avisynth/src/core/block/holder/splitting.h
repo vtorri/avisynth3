@@ -50,9 +50,6 @@ class Splitting : public Base
 
 public:  //structors
 
-  struct LeftTag { };
-  struct RightTag { };
-
   Splitting(boost::shared_ptr<Holder> const& holder, int splitSize, split::Left);
   Splitting(boost::shared_ptr<Holder> const& holder, int splitSize, split::Right);
 

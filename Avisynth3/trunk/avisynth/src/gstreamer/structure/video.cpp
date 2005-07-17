@@ -65,8 +65,8 @@ Video::PImporter Video::GetImporter() const
   if ( name == "video/x-raw-rgb" )
     switch ( GetIntField("bpp") )
     {
-    case 24: return Interleaved::rgb24.Get();
-    case 32: return Interleaved::rgb32.Get();
+    case 24: return Interleaved::RGB24.Get();
+    case 32: return Interleaved::RGB32.Get();
     default: break;
     }   
     
@@ -75,7 +75,7 @@ Video::PImporter Video::GetImporter() const
 	  {
 	  case '21VY': return GstYV12AndI420::yv12.Get();
     case '024I': return GstYV12AndI420::i420.Get();
-	  case '2YUY': return Interleaved::yuy2.Get();
+	  case '2YUY': return Interleaved::YUY2.Get();
 	  default: break;
 	  }
   throw exception::cspace::Unknown();

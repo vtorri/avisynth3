@@ -27,6 +27,9 @@
 //avisynth include
 #include "../forward.h"           //for PColorSpace typedef
 
+//stlport include
+#include <string>
+
 //boost include
 #include <boost/shared_ptr.hpp>   //so PColorSpace is defined
 

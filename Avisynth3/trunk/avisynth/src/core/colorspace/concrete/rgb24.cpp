@@ -22,31 +22,22 @@
 
 
 //avisynth includes
-#include "yuy2.h"
-#include "../../videoframe/concrete/yuy2.h"
-#include "../../exception/colorspace/invalidwidth.h"
+#include "rgb24.h"
+#include "../../videoframe/concrete/rgb24.h"
 
 
 namespace avs { namespace colorspace { namespace concrete {
 
 
 
-void YUY2::Check(int x, int y, bool interlaced) const 
+PVideoFrame RGB24::CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
 {
-  Interleaved::Check(x, y, interlaced);
-  if ( x & 1 )                                                        //if x is not even
-    throw exception::cspace::InvalidWidth(shared_from_this(), x, 2);  //exception
+  return CPVideoFrame( static_cast<VideoFrame *>(new videoframe::concrete::RGB24(dim, type, env)) );
 }
 
-PVideoFrame YUY2::CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
+PVideoFrame RGB24::CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& main) const
 {
-  return CPVideoFrame( static_cast<VideoFrame *>(new videoframe::concrete::YUY2(dim, type, env)) );
-}
-
-
-PVideoFrame YUY2::CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& main) const
-{
-  return CPVideoFrame( static_cast<VideoFrame *>(new videoframe::concrete::YUY2(dim, type, main)) );
+  return CPVideoFrame( static_cast<VideoFrame *>(new videoframe::concrete::RGB24(dim, type, main)) );
 }
 
 

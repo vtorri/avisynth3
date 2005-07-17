@@ -37,7 +37,7 @@ namespace avs { namespace filters { namespace source { namespace video { namespa
 
 PColorSpace VFWYV12::GetColorSpace() const
 {
-  return colorspace::Get::yv12();
+  return colorspace::Get::YV12();
 }
 
 

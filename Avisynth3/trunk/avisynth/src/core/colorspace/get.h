@@ -33,6 +33,9 @@
 //boost include
 #include <boost/shared_ptr.hpp>   //so PColorSpace is defined
 
+//boost include
+#include <string>
+
 
 namespace avs { namespace colorspace {
 

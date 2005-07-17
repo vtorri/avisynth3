@@ -30,24 +30,24 @@ namespace avs { namespace block { namespace holder {
 
 
 Splitting::Splitting(boost::shared_ptr<Holder> const& holder, int splitSize, LeftTag tag)
-  : offset_( 0 )
-  , size_( splitSize )
+  : Base( splitSize )
+  , offset_( 0 )
   , holder_( holder ) { }
 
 Splitting::Splitting(boost::shared_ptr<Holder> const& holder, int splitSize, RightTag tag)
-  : offset_( splitSize )
-  , size_( holder->Size() - splitSize )
+  : Base( holder->Size() - splitSize )
+  , offset_( splitSize )
   , holder_( holder ) { }
 
 
 Splitting::Splitting(Splitting const& other, int splitSize, LeftTag tag)
-  : offset_( other.offset_ )
-  , size_( splitSize )
+  : Base( splitSize )
+  , offset_( other.offset_ )
   , holder_( other.holder_ ) { }
 
 Splitting::Splitting(Splitting const& other, int splitSize, RightTag tag)
-  : offset_( other.offset_ + splitSize )
-  , size_( other.size_ - splitSize )
+  : Base( other.size_ - splitSize )
+  , offset_( other.offset_ + splitSize )
   , holder_( other.holder_ ) { }
 
 

@@ -25,7 +25,7 @@
 #define __AVS_BLOCK_HOLDER_SPLITTING_H__
 
 //avisynth include
-#include "../holder.h"
+#include "base.h"
 
 //boost include
 #include <boost/shared_ptr.hpp>
@@ -40,11 +40,10 @@ namespace avs { namespace block { namespace holder {
 //
 //  holder implementation to handle splits
 //
-class Splitting : public Holder
+class Splitting : public Base
 {
 
   int offset_;                        //offset of mem piece
-  int size_;                          //size of mem piece
   boost::shared_ptr<Holder> holder_;  //underlying mem holder
 
 
@@ -64,9 +63,7 @@ public:  //structors
 
 public:  //Holder interface
 
-  virtual int Size() const { return size_; }
   virtual BYTE * Get() const { return holder_->Get() + offset_; }
-
   virtual bool Unique() const { return holder_->Unique(); }
 
   virtual boost::shared_ptr<Holder> Split(int splitSize, boost::shared_ptr<Holder>& self) const;

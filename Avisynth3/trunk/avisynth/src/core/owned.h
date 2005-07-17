@@ -24,8 +24,9 @@
 #ifndef __AVS_OWNED_H__
 #define __AVS_OWNED_H__
 
-//avisynth include
-#include "forward.h"      //for PEnvironment
+//avisynth includes
+#include "forward.h"       //for PEnvironment
+#include "../define.h"     //for AVS_NOVTABLE
 
 
 namespace avs {
@@ -35,9 +36,10 @@ namespace avs {
 /////////////////////////////////////////////////////////////////////////////////////
 //  Owned
 //
+//  interface was introduced to avoid having GetEnvironment defined twice
+//  when a Clip is himself his Cache FrameMaker
 //
-//
-class Owned
+class AVS_NOVTABLE Owned
 {
 
 public:  //structors
@@ -55,6 +57,6 @@ public:  //Owned interface
 
 
 
-} //namespace 
+} } //namespace avs::owned
 
 #endif //__AVS_OWNED_H__

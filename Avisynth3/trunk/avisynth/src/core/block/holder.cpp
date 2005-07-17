@@ -23,6 +23,7 @@
 
 //avisynth includes
 #include "holder.h"
+#include "holder/splittag.h"
 #include "holder/splitting.h"
 
 
@@ -33,13 +34,13 @@ namespace avs { namespace block {
 boost::shared_ptr<Holder> Holder::Split(int splitSize, boost::shared_ptr<Holder>& self) const
 {
   using holder::Splitting;
-  using holder::Splitting::LeftTag;
-  using holder::Splitting::RightTag;
+  using holder::split::Left;
+  using holder::split::Right;
 
-  boost::shared_ptr<Holder> result( static_cast<Holder *>(new Splitting(self, splitSize, RightTag())) );
+  boost::shared_ptr<Holder> result( static_cast<Holder *>(new Splitting(self, splitSize, Right())) );
 
   //NB: this line normally happens to destroy this, therefore order matters
-  self.reset( static_cast<Holder *>(new Splitting(self, splitSize, LeftTag())) );
+  self.reset( static_cast<Holder *>(new Splitting(self, splitSize, Left())) );
 
   return result;
 }

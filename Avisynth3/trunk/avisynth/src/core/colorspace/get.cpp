@@ -24,7 +24,7 @@
 //avisynth includes
 #include "get.h"
 #include "concrete/map.h"
-#include "../../colorspace.h"
+#include "../colorspace.h"
 
 
 namespace avs { namespace colorspace {

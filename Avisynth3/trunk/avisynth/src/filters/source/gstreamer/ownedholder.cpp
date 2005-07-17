@@ -35,8 +35,8 @@ namespace avs { namespace filters { namespace gstreamer {
 
 
 OwnedHolder::OwnedHolder(PEnvironment const& env, GstBuffer& buffer)
-  : buffer_(buffer)
-  , block::holder::OwnedBase( env, buffer.size )
+  : block::holder::OwnedBase( env, buffer.size )
+  , buffer_(buffer)
 {
   //increase buffer ref count
   gst_buffer_ref(&buffer_);
@@ -56,7 +56,7 @@ BYTE * OwnedHolder::Get() const
 
 bool OwnedHolder::Unique() const 
 { 
-  gst_buffer_is_writable(&buffer_) != 0; 
+  return gst_buffer_is_writable(&buffer_) != 0; 
 }
 
 

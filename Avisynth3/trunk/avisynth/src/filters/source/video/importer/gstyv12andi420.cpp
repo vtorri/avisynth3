@@ -26,6 +26,7 @@
 //avisynth includes
 #include "gstyv12andi420.h"
 #include "../../../../core/colorspace.h"
+#include "../../../../core/colorspace/get.h"
 #include "../../../../core/ownedblock.h"
 #include "../../../../core/bufferwindow.h"
 #include "../../../../core/videoframe/concrete/yv12.h"
@@ -38,7 +39,7 @@ namespace avs { namespace filters { namespace source { namespace video { namespa
 
 PColorSpace GstYV12AndI420::GetColorSpace() const
 {
-  return ColorSpace::yv12();
+  return colorspace::Get::YV12();
 }
 
 
@@ -61,7 +62,7 @@ CPVideoFrame GstYV12AndI420::CreateFrame(Dimension const& dim, owned_block<1> co
 
   //implicitly convert buffer_window<4> into BufferWindow
   //may not blit if frame size is favorable
-  return CPVideoFrame( static_cast<VideoFrame *>(new vframe::concrete::YV12(dim, UNKNOWN, y, u, v)) );
+  return CPVideoFrame( static_cast<VideoFrame *>(new videoframe::concrete::YV12(dim, UNKNOWN, y, u, v)) );
 }
 
 

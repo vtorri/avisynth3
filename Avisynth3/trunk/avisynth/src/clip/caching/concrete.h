@@ -41,10 +41,15 @@ namespace avs { namespace clip { namespace caching {
 //
 //  implementation of the Caching interface
 //
-class Concrete : public virtual Caching
+class AVS_NOVTABLE Concrete : public virtual Caching
 {
 
   boost::scoped_ptr<Cache> cache_;
+
+
+private:  //Caching interface
+
+  virtual Cache& GetCache() const { return *cache_; }
 
 
 protected:  //SetFrameMaker method
@@ -53,11 +58,6 @@ protected:  //SetFrameMaker method
   { 
     cache_.reset( env->CreateCache(maker) );
   }
-
-
-private:  //Caching requirement
-
-  virtual Cache& GetCache() const { return *cache_; }
 
 };
 

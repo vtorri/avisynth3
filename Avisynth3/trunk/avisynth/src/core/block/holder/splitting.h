@@ -24,8 +24,9 @@
 #ifndef __AVS_BLOCK_HOLDER_SPLITTING_H__
 #define __AVS_BLOCK_HOLDER_SPLITTING_H__
 
-//avisynth include
+//avisynth includes
 #include "base.h"
+#include "splittag.h"
 
 //boost include
 #include <boost/shared_ptr.hpp>
@@ -52,11 +53,11 @@ public:  //structors
   struct LeftTag { };
   struct RightTag { };
 
-  Splitting(boost::shared_ptr<Holder> const& holder, int splitSize, LeftTag tag);
-  Splitting(boost::shared_ptr<Holder> const& holder, int splitSize, RightTag tag);
+  Splitting(boost::shared_ptr<Holder> const& holder, int splitSize, split::Left);
+  Splitting(boost::shared_ptr<Holder> const& holder, int splitSize, split::Right);
 
-  Splitting(Splitting const& other, int splitSize, LeftTag tag);
-  Splitting(Splitting const& other, int splitSize, RightTag tag);
+  Splitting(Splitting const& other, int splitSize, split::Left);
+  Splitting(Splitting const& other, int splitSize, split::Right);
 
   //generated destructor is fine
 

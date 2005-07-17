@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -38,17 +38,20 @@ namespace avs { namespace clip {
 //
 //  interface for clips who cache (frames)
 //
-class Caching : public virtual Clip
+class AVS_NOVTABLE Caching : public virtual Clip
 {
 
-public:  //clip general interface
+public:  //Owned interface
 
   virtual PEnvironment const& GetEnvironment() const { return GetCache().GetEnvironment(); }
+
+
+public:  //Clip general interface
 
   virtual CPVideoFrame GetFrame(long n) const { return GetCache().GetFrame(n); }
 
 
-private:  //CachingClip requirement: have a cache
+private:  //Caching interface
 
   virtual Cache& GetCache() const = 0;
 

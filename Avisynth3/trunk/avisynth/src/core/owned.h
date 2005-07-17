@@ -57,6 +57,6 @@ public:  //Owned interface
 
 
 
-} } //namespace avs::owned
+} //namespace avs
 
 #endif //__AVS_OWNED_H__

@@ -27,13 +27,10 @@
 //avisynth include
 #include "../forward.h"           //for PColorSpace typedef
 
-//stlport include
-#include <string>
-
 //boost include
 #include <boost/shared_ptr.hpp>   //so PColorSpace is defined
 
-//boost include
+//stl include
 #include <string>
 
 
@@ -55,7 +52,7 @@ struct Get
   static PColorSpace YV12();
   static PColorSpace YV24();
 
-  //throw exception::cspace::Unknown if none can be found
+  //throw exception::colorspace::Unknown if none can be found
   static PColorSpace FromName(std::string const& name);
 
 };

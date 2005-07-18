@@ -26,8 +26,8 @@
 
 //avisynth includes
 #include "gstreamer/forward.h"                //for PPipeline
+#include "video/forward.h"                    //for PImporter
 #include "../../clip/nochild.h"
-#include "../../gstreamer/importer.h"         //for PImporter
 #include "../../clip/framemaker/concrete.h"
 
 //stl include
@@ -48,7 +48,7 @@ class GstreamerSource : public clip::NoChild
 {
 
   CPVideoInfo vi_;
-  gstreamer::PImporter importer_;
+  source::video::PImporter importer_;
   source::gstreamer::PPipeline pipeline_;
 
 

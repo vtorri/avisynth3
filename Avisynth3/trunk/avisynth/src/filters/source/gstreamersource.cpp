@@ -25,7 +25,15 @@
 
 //avisynth includes
 #include "gstreamersource.h"
+#include "video/importer.h"
 #include "gstreamer/factory.h"
+#include "gstreamer/pipeline.h"
+#include "gstreamer/ownedholder.h"
+#include "../../core/clip.h"
+#include "../../core/forward.h"
+#include "../../core/videoinfo.h"
+#include "../../core/block/base.h"
+
 
 
 namespace avs { namespace filters {
@@ -38,6 +46,23 @@ GstreamerSource::GstreamerSource(source::gstreamer::Factory const& factory, PEnv
   , importer_( factory.importer() )
   , pipeline_( factory.pipeline() ) { }
 
+
+CPVideoFrame GstreamerSource::MakeFrame(int n) const
+{
+  PVideoFrame frame;
+  FrameType ft;
+  Fraction fps = vi_->GetFPS();
+  GstBuffer *buffer = NULL;
+
+  //seeking to the nth frame
+  pipeline_->GoToFrame (n, fps);
+  
+  //get the frame
+  g_object_get (G_OBJECT (pipeline_.get()), "frame", &buffer, NULL);
+
+  return importer_->CreateFrame(vi_->GetDimension(),
+				owned_block<1>( new gstreamer::OwnedHolder(GetEnvironment(), *buffer) ));
+}
 
 } } //namespace avs::filters
 

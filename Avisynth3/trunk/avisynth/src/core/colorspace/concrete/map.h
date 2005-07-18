@@ -41,9 +41,9 @@ namespace avs { namespace colorspace { namespace concrete {
 
 
 //////////////////////////////////////////////////////////////////////////////////
-//  cspace::Map
+//  colorspace::concrete::Map
 //
-//  map used by the ColorSpace::FromString method to get ColorSpaces from names
+//  map used by the ColorSpace::FromName method to get ColorSpaces from names
 //
 class Map
 {

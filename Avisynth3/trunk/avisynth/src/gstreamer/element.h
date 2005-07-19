@@ -64,7 +64,7 @@ public:  //state stuff
 
 public:
 
-  void Seek(GstSeekType type, long long time) { gst_element_seek(this, type, time); }
+  bool Seek(GstSeekType type, long long time) { return gst_element_seek(this, type, time) != 0; }
 
   bool QueryTotal(GstFormat fmt, long long& result)
   {

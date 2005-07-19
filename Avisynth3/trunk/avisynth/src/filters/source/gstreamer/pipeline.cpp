@@ -69,6 +69,8 @@ PPipeline Pipeline::Create(std::string const& name)
   binPipeline.AddNewElement("fakesink", "vsink");
   binPipeline.AddNewElement("fakesink", "asink");
 
+  g_object_set (G_OBJECT ( &pipeline->GetVideoSink() ), "signal-handoffs", TRUE, NULL);
+
   binPipeline.SyncChildrenState();
 
   return pipeline;
@@ -82,13 +84,24 @@ avs::gstreamer::Element& Pipeline::GetAudioSink() { return *operator avs::gstrea
 
 void Pipeline::GoToFrame (int frame_number, Fraction& fps)
 {
-  GstSeekType type = (GstSeekType)(GST_FORMAT_TIME     |
+  GstSeekType type = (GstSeekType)(GST_FORMAT_DEFAULT  |
 				   GST_SEEK_METHOD_SET |
 				   GST_SEEK_FLAG_FLUSH);
-  long long int time = 1000000000*frame_number*fps.numerator() / fps.denominator();
 
   //TODO: handle cases where there is no video or no audio
-  GetVideoSink().Seek(type, time);
+  if (!GetVideoSink().Seek(type, frame_number))
+    {
+      long long int time = 1000000000*frame_number*fps.numerator() / fps.denominator();
+      type = (GstSeekType)(GST_FORMAT_TIME     |
+			   GST_SEEK_METHOD_SET |
+			   GST_SEEK_FLAG_FLUSH);
+      if (!GetVideoSink().Seek(type, time))
+    }
+
+  long long int time = 1000000000*frame_number*fps.numerator() / fps.denominator();
+  type = (GstSeekType)(GST_FORMAT_TIME     |
+		       GST_SEEK_METHOD_SET |
+		       GST_SEEK_FLAG_FLUSH);
   GetAudioSink().Seek(type, time);
 }
 

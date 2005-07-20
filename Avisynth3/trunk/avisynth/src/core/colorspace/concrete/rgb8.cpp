@@ -21,49 +21,24 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_COLORSPACE_CONCRETE_RGB8_H__
-#define __AVS_COLORSPACE_CONCRETE_RGB8_H__
-
-//avisynth includes
-#include "interleaved.h"
-#include "../rgb/depth8.h"
+//avisynth include
+#include "rgb8.h"
+#include "../../../vfw/exporter/interleaved.h"
+#include "../../exception/colorspace/unsupported.h"
 
 
 namespace avs { namespace colorspace { namespace concrete {
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//  RGB8
-//
-//
-//
-class AVS_NOVTABLE RGB8 : public Interleaved
-                        , public rgb::Depth8
+PExporter RGB8::GetExporter(std::string const& type) const
 {
+  if ( type == "VFW" )
+    return PExporter( static_cast<Exporter *>(new vfw::exporter::Interleaved(GetBytesPerPixel(), 0)) );
 
-public:  //structors
-
-  RGB8(unsigned short bytesPerPixel) : Interleaved( bytesPerPixel ) { }
-  //generated destructor is fine
-
-
-public:  //ColorSpace interface
-
-  virtual bool HasProperty(std::string const& prop) const
-  {
-    return colorspace::Interleaved::HasProperty(prop) || prop == "RGB";
-  }
-
-
-public:  //fetch exporter(s)
-
-  virtual PExporter GetExporter(std::string const& type) const;
-
-};
+  throw exception::colorspace::Unsupported(shared_from_this());
+}
 
 
 
 } } } //namespace avs::colorspace::concrete
-
-#endif //__AVS_COLORSPACE_CONCRETE_RGB8_H__

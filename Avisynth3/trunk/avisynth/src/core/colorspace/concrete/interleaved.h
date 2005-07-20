@@ -40,12 +40,12 @@ namespace avs { namespace colorspace { namespace concrete {
 class AVS_NOVTABLE Interleaved : public colorspace::Interleaved
 {
 
-  long bpp_;           //bytes per pixel
+  unsigned short bytesPerPixel_;
 
 
 public:  //structors
 
-  Interleaved(long bpp) : bpp_( bpp ) { }
+  Interleaved(unsigned short bytesPerPixel) : bytesPerPixel_( bytesPerPixel ) { }
   //generated destructor is fine
 
 
@@ -55,9 +55,9 @@ public:  //ColorSpace interface
   virtual void ToPlane(long& x, long& /*y*/, char plane) const;
 
 
-public:  //fetch exporter(s)
+protected:  //read access
 
-  virtual PExporter GetExporter(std::string const& type) const;
+  unsigned short GetBytesPerPixel() const { return bytesPerPixel_; }
 
 };
 

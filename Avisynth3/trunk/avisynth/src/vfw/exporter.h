@@ -25,8 +25,9 @@
 #define __AVS_VFW_EXPORTER_H__
 
 //avisynth includes
-#include "../define.h"                 //for AVS_NOVTABLE
-#include "../core/forward.h"           //for Dimension typedef
+#include "../define.h"                    //for AVS_NOVTABLE
+#include "../core/forward.h"              //for Dimension typedef
+#include "../core/colorspace/exporter.h"
 
 
 namespace avs { namespace vfw {
@@ -38,20 +39,21 @@ namespace avs { namespace vfw {
 //
 //
 //
-class AVS_NOVTABLE Exporter
+class AVS_NOVTABLE Exporter : public colorspace::Exporter
 {
 
-public:  //structors
-
-  Exporter() { }
-  virtual ~Exporter() { }
-
-
-public:  //Exporter interface
+public:  //vfw::Exporter interface
 
   virtual unsigned short GetBitsPerPixel() const = 0;
   virtual unsigned long GetFourCCHandler() const = 0;
   virtual long GetBitmapSize(Dimension const& dim) const = 0;
+
+
+  virtual long GetPreviousKeyFrame(long n) const = 0;
+  virtual long GetNextKeyFrame(long n) const = 0;
+
+  virtual long GetFrameSize(long n) const = 0;
+  virtual void ExportFrame(long n, BYTE * ptr) const = 0;
 
 };
 

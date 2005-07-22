@@ -34,6 +34,7 @@ namespace avs { namespace vfw {
 
 //declarations
 class Exporter;
+class AviStream;
 class WaveFormatEx;
 class BitmapInfoHeader;
 

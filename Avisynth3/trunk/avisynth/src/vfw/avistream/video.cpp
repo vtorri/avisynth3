@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -23,12 +23,10 @@
 
 //avisynth includes
 #include "video.h"
-#include "../../core/clip.h"
-#include "../avistreaminfo.h"
+#include "../exporter.h"
 #include "../bitmapinfoheader.h"
 #include "../../core/exception.h"
-#include "../../core/videoinfo.h"
-#include "../../core/colorspace.h"
+#include "../avistreaminfo/video.h"
 
 
 namespace avs { namespace vfw { namespace avistream {
@@ -48,7 +46,7 @@ STDMETHODIMP Video::ReadFormat(LONG /*lPos*/, LPVOID lpFormat, LONG *lpcbFormat)
 
   //creates a BitmapInfoHeader in the passed buffer
   BitmapInfoHeader * bi = static_cast<BitmapInfoHeader *>(lpFormat);
-  new (bi) BitmapInfoHeader(*GetVideoInfo());
+  new (bi) BitmapInfoHeader(GetVideoInfo());
 
   return S_OK;
 }
@@ -58,35 +56,28 @@ STDMETHODIMP Video::ReadFormat(LONG /*lPos*/, LPVOID lpFormat, LONG *lpcbFormat)
 
 STDMETHODIMP Video::Read(LONG lStart, LONG lSamples, LPVOID lpBuffer, LONG cbBuffer, LONG *plBytes, LONG *plSamples)
 {
-  CPVideoInfo vi = GetVideoInfo();
-
-  int bmpSize = vi->GetColorSpace()->GetBitmapSize(vi->GetDimension());
+  long frameSize = GetExporter().GetFrameSize(lStart);
     
   if ( plSamples != NULL )
     *plSamples = 1;
   if ( plBytes != NULL ) 
-    *plBytes = bmpSize;
+    *plBytes = frameSize;
 
   if ( lpBuffer == NULL )
     return S_OK;
 
-  if ( cbBuffer < bmpSize )
+  if ( cbBuffer < frameSize )
     return AVIERR_BUFFERTOOSMALL;
 
 
   try 
   {
-    try { Read(lpBuffer, lStart, lSamples); }
-    catch (avs::Exception& ex)
-    {
-      MakeErrorStream(ex.msg());
-      Read(lpBuffer, lStart, lSamples);
-    }
-    catch (std::exception& ex) 
-    {
-      MakeErrorStream(ex.what());
-      Read(lpBuffer, lStart, lSamples);
-    }
+    try { GetExporter().ExportFrame( lStart, static_cast<BYTE *>(lpBuffer) );  }
+    catch (avs::Exception& ex) { MakeErrorStream(ex.msg()); }
+    catch (std::exception& ex) { MakeErrorStream(ex.what()); }
+
+    //NB: MakeErrorStream changed exporter
+    GetExporter().ExportFrame( lStart, static_cast<BYTE *>(lpBuffer) );
   }
   catch (std::exception&) { return E_FAIL; }
 
@@ -95,10 +86,15 @@ STDMETHODIMP Video::Read(LONG lStart, LONG lSamples, LPVOID lpBuffer, LONG cbBuf
 
 
 
-void Video::Read(void* lpBuffer, int lStart, int /*lSamples*/)
+void Video::FillAviStreamInfo(AVISTREAMINFOW * psi)
 {
-  CPVideoFrame frame = GetClip()->GetFrame(lStart);
-  ReadFrame(*frame, static_cast<BYTE *>(lpBuffer));
+  new (static_cast<avistreaminfo::Video *>(psi)) avistreaminfo::Video(GetVideoInfo(), GetExporter());
+}
+
+long Video::FindKeySample(long n, bool previous)
+{
+  return previous ? GetExporter().GetPreviousKeyFrame(n)
+                  : GetExporter().GetNextKeyFrame(n);
 }
 
 

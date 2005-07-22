@@ -55,15 +55,10 @@ public:  //IAVIStream
 	STDMETHODIMP Read(LONG lStart, LONG lSamples, LPVOID lpBuffer, LONG cbBuffer, LONG *plBytes, LONG *plSamples);
 
 
-protected:  //AviStream implementation
+private:  //AviStream interface
 
-  virtual bool IsVideo() { return true; }
-  virtual void Read(void* lpBuffer, int lStart, int lSamples);
-
-
-private:  //Video implementation
-
-  virtual void ReadFrame(VideoFrame const& frame, BYTE * ptr) = 0; 
+  virtual void FillAviStreamInfo(AVISTREAMINFOW * psi);
+  virtual long FindKeySample(long n, bool previous);
 
 };
 

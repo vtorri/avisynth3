@@ -24,14 +24,10 @@
 //avisynth includes
 #include "audio.h"
 #include "../waveformatex.h"
-#include "../avistreaminfo.h"
 #include "../../core/clip.h"
 #include "../../core/exception.h"
 #include "../../core/videoinfo.h"
-
-#ifndef AVISTREAMREAD_CONVENIENT
-#define AVISTREAMREAD_CONVENIENT -1L
-#endif
+#include "../avistreaminfo/audio.h"
 
 
 namespace avs { namespace vfw { namespace avistream {
@@ -51,7 +47,7 @@ STDMETHODIMP Audio::ReadFormat(LONG /*lPos*/, LPVOID lpFormat, LONG *lpcbFormat)
 
   //creates a WaveFormatEx in the passed buffer
   WaveFormatEx * wfe = static_cast<WaveFormatEx *>(lpFormat);
-  new (wfe) WaveFormatEx(*GetVideoInfo());
+  new (wfe) WaveFormatEx(GetVideoInfo());
 
   return S_OK;
 }
@@ -59,13 +55,13 @@ STDMETHODIMP Audio::ReadFormat(LONG /*lPos*/, LPVOID lpFormat, LONG *lpcbFormat)
 
 STDMETHODIMP Audio::Read(LONG lStart, LONG lSamples, LPVOID lpBuffer, LONG cbBuffer, LONG *plBytes, LONG *plSamples)
 {
-  CPVideoInfo vi = GetVideoInfo();
+  VideoInfo const& vi = GetVideoInfo();
 
   if ( lSamples == AVISTREAMREAD_CONVENIENT )
-    lSamples = static_cast<long>(vi->AudioSamplesFromFrames(1));
+    lSamples = static_cast<long>(vi.AudioSamplesFromFrames(1));
     
   if ( plBytes != NULL ) 
-    *plBytes = vi->BytesPerAudioSample() * lSamples;
+    *plBytes = vi.BytesPerAudioSample() * lSamples;
     
   if ( plSamples != NULL ) 
     *plSamples = lSamples;
@@ -79,17 +75,11 @@ STDMETHODIMP Audio::Read(LONG lStart, LONG lSamples, LPVOID lpBuffer, LONG cbBuf
   
   try 
   {
-    try { Read(lpBuffer, lStart, lSamples); }
-    catch (avs::Exception& ex)
-    {
-      MakeErrorStream(ex.msg());
-      Read(lpBuffer, lStart, lSamples);
-    }
-    catch (std::exception& ex) 
-    {
-      MakeErrorStream(ex.what());
-      Read(lpBuffer, lStart, lSamples);
-    }
+    try { GetClip().GetAudio(static_cast<BYTE *>(lpBuffer), lStart, lSamples); }
+    catch (avs::Exception& ex) { MakeErrorStream(ex.msg()); }
+    catch (std::exception& ex) { MakeErrorStream(ex.what()); }
+
+    GetClip().GetAudio(static_cast<BYTE *>(lpBuffer), lStart, lSamples);
   }
   catch (std::exception&) { return E_FAIL; }
 
@@ -97,11 +87,11 @@ STDMETHODIMP Audio::Read(LONG lStart, LONG lSamples, LPVOID lpBuffer, LONG cbBuf
 }
 
 
-
-void Audio::Read(void* lpBuffer, int lStart, int lSamples)
+void Audio::FillAviStreamInfo(AVISTREAMINFOW * psi)
 {
-  GetClip()->GetAudio(static_cast<BYTE *>(lpBuffer), lStart, lSamples);
+  new (static_cast<avistreaminfo::Audio *>(psi)) avistreaminfo::Audio(GetVideoInfo());
 }
+
 
 
 } } } //namespace avs::vfw::avistream

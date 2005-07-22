@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -21,8 +21,8 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_FILTERS_CONVERT_TOGB24_H__
-#define __AVS_FILTERS_CONVERT_TOGB24_H__
+#ifndef __AVS_FILTERS_CONVERT_TORGB24_H__
+#define __AVS_FILTERS_CONVERT_TORGB24_H__
 
 //avisynth include
 #include "convert.h"
@@ -33,7 +33,7 @@ namespace avs { namespace filters { namespace convert {
 
 
 /////////////////////////////////////////////////////////////////////////////
-//  convert::ToRGB42
+//  convert::ToRGB24
 //
 //  converts a clip to RGB24
 //
@@ -61,4 +61,4 @@ public:  //factory method
 
 } } } //namespace avs::filters::convert
 
-#endif //__AVS_FILTERS_CONVERT_TOGB24_H__
+#endif //__AVS_FILTERS_CONVERT_TORGB24_H__

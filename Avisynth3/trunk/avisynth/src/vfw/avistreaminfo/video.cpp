@@ -21,45 +21,52 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_VFW_AVISTREAMINFO_H__
-#define __AVS_VFW_AVISTREAMINFO_H__
+//avisynth includes
+#include "video.h"
+#include "../exporter.h"
+#include "../../core/videoinfo.h"
 
-//windows includes
-#ifndef NOMINMAX
-#define NOMINMAX          //prevents generation of min and max macros
-#endif //NOMINMAX
-#include <windows.h>
-#include <vfw.h>
+//assert include
+#include <assert.h>
 
 
-namespace avs { namespace vfw {
+namespace avs { namespace vfw { namespace avistreaminfo {
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////
-//  AviStreamInfo
-//
-//
-//
-class AviStreamInfo : public AVISTREAMINFOW
+Video::Video(IAVIStream& stream)
+  : AviStreamInfo( stream )
 {
-
-public:  //structors
-
-  AviStreamInfo();
-  AviStreamInfo(IAVIStream& stream);
-  //generated copy constructor and destructor are fine
+  assert( fccType == streamtypeVIDEO );
+}
 
 
-public:  //type test
+Video::Video(VideoInfo const& vi, Exporter const& exporter)
+{
+  long bmpSize = exporter.GetBitmapSize(vi.GetDimension());
 
-  bool IsVideo() const { return fccType == streamtypeVIDEO; }
-  bool IsAudio() const { return fccType == streamtypeAUDIO; }
+  fccType        = streamtypeVIDEO;
+  dwQuality      = DWORD(-1);     
+  fccHandler     = exporter.GetFourCCHandler();
+  dwScale        = vi.GetFPSDenominator();    
+  dwRate         = vi.GetFPSNumerator();
+  dwLength       = vi.GetFrameCount();
+  rcFrame.right  = vi.GetWidth();
+  rcFrame.bottom = vi.GetHeight();      
+  dwSampleSize   = bmpSize;
+  dwSuggestedBufferSize = bmpSize; 
 
-};
+  wcscpy(szName, L"Avisynth video #1");  
+}
 
 
 
-} } //namespace avs::vfw
+void Video::Set(VideoInfo& vi) const
+{
+  vi.SetFrameCount(dwLength);
+  vi.SetFPS(dwRate, dwScale);
+}
 
-#endif //__AVS_VFW_AVISTREAMINFO_H__
+
+
+} } } //namespace avs::vfw::avistreaminfo

@@ -23,8 +23,6 @@
 
 //avisynth includes
 #include "avistreaminfo.h"
-#include "../core/videoinfo.h"
-#include "../core/colorspace.h"
 
 //assert include
 #include <assert.h>
@@ -34,66 +32,17 @@ namespace avs { namespace vfw {
 
 
 
+AviStreamInfo::AviStreamInfo()
+{
+  memset( static_cast<AVISTREAMINFOW *>(this), 0, sizeof(AVISTREAMINFOW) );
+}
+
 AviStreamInfo::AviStreamInfo(IAVIStream& stream)
 {
   HRESULT hResult = stream.Info(this, sizeof(AVISTREAMINFOW));
   assert( hResult == S_OK );
 }
 
-
-AviStreamInfo::AviStreamInfo(VideoInfo const& vi, bool video)
-{
-  memset( static_cast<AVISTREAMINFOW *>(this), 0, sizeof(AVISTREAMINFOW) );
-
-  if ( video )
-  {
-    int bmpSize = vi.GetColorSpace()->GetBitmapSize(vi.GetDimension());
-
-    fccType        = streamtypeVIDEO;
-    dwQuality      = DWORD(-1);     
-    fccHandler     = vi.GetColorSpace()->GetFourCC();
-    dwScale        = vi.GetFPSDenominator();    
-    dwRate         = vi.GetFPSNumerator();
-    dwLength       = vi.GetFrameCount();
-    rcFrame.right  = vi.GetWidth();
-    rcFrame.bottom = vi.GetHeight();      
-    dwSampleSize   = bmpSize;
-    dwSuggestedBufferSize = bmpSize; 
-
-    wcscpy(szName, L"Avisynth video #1");  
-  }
-  else     //ie audio
-  {
-    int bps = vi.BytesPerAudioSample();
-
-    fccType       = streamtypeAUDIO;
-    dwQuality     = DWORD(-1);     
-    fccHandler    = 0;
-    dwScale       = bps;
-    dwRate        = vi.GetSampleRate() * bps;
-    dwLength      = static_cast<DWORD>(vi.GetSampleCount());
-    dwSampleSize  = bps;
-      
-    wcscpy(szName, L"Avisynth audio #1");  
-  }
-
-}
-
-
-void AviStreamInfo::SetLengthsTo(VideoInfo& vi) const
-{
-  if ( fccType == streamtypeVIDEO )
-  {
-    vi.SetFrameCount(dwLength);
-    vi.SetFPS(dwRate, dwScale);
-  }
-  else
-  {
-    assert( fccType == streamtypeAUDIO );          //defend against weirdness
-
-    vi.SetSampleCount( dwLength * (vi.GetSampleRate() * dwScale / dwRate) );
-  }
-}
 
 
 } } //namespace avs::vfw

@@ -21,45 +21,37 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_VFW_AVISTREAMINFO_H__
-#define __AVS_VFW_AVISTREAMINFO_H__
-
-//windows includes
-#ifndef NOMINMAX
-#define NOMINMAX          //prevents generation of min and max macros
-#endif //NOMINMAX
-#include <windows.h>
-#include <vfw.h>
+//avisynth includes
+#include "audio.h"
+#include "../../core/videoinfo.h"
 
 
-namespace avs { namespace vfw {
+namespace avs { namespace vfw { namespace avistreaminfo {
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////
-//  AviStreamInfo
-//
-//
-//
-class AviStreamInfo : public AVISTREAMINFOW
+Audio::Audio(VideoInfo const& vi)
 {
+  int bps = vi.BytesPerAudioSample();
 
-public:  //structors
-
-  AviStreamInfo();
-  AviStreamInfo(IAVIStream& stream);
-  //generated copy constructor and destructor are fine
-
-
-public:  //type test
-
-  bool IsVideo() const { return fccType == streamtypeVIDEO; }
-  bool IsAudio() const { return fccType == streamtypeAUDIO; }
-
-};
-
+  fccType       = streamtypeAUDIO;
+  dwQuality     = DWORD(-1);     
+  fccHandler    = 0;
+  dwScale       = bps;
+  dwRate        = vi.GetSampleRate() * bps;
+  dwLength      = static_cast<DWORD>(vi.GetSampleCount());
+  dwSampleSize  = bps;
+      
+  wcscpy(szName, L"Avisynth audio #1");  
+}
+ 
 
 
-} } //namespace avs::vfw
+void Audio::Set(VideoInfo& vi) const
+{
+  vi.SetSampleCount( dwLength * (vi.GetSampleRate() * dwScale / dwRate) );
+}
 
-#endif //__AVS_VFW_AVISTREAMINFO_H__
+
+
+} } } //namespace avs::vfw::avistreaminfo

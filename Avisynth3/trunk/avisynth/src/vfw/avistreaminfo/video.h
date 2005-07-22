@@ -21,45 +21,41 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_VFW_AVISTREAMINFO_H__
-#define __AVS_VFW_AVISTREAMINFO_H__
+#ifndef __AVS_VFW_AVISTREAMINFO_VIDEO_H__
+#define __AVS_VFW_AVISTREAMINFO_VIDEO_H__
 
-//windows includes
-#ifndef NOMINMAX
-#define NOMINMAX          //prevents generation of min and max macros
-#endif //NOMINMAX
-#include <windows.h>
-#include <vfw.h>
+//avisynth includes
+#include "../forward.h"            //for Exporter
+#include "../avistreaminfo.h"
+#include "../../core/forward.h"    //for VideoInfo
 
 
-namespace avs { namespace vfw {
+namespace avs { namespace vfw { namespace avistreaminfo {
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////
-//  AviStreamInfo
+/////////////////////////////////////////////////////////////////////////////////////////////
+//  avistreaminfo::Video
 //
 //
 //
-class AviStreamInfo : public AVISTREAMINFOW
+class Video : public AviStreamInfo
 {
 
 public:  //structors
 
-  AviStreamInfo();
-  AviStreamInfo(IAVIStream& stream);
-  //generated copy constructor and destructor are fine
+  Video(VideoInfo const& vi, Exporter const& exporter);
+  //generated destructor is fine
 
 
-public:  //type test
+public:  //interface
 
-  bool IsVideo() const { return fccType == streamtypeVIDEO; }
-  bool IsAudio() const { return fccType == streamtypeAUDIO; }
+  void Set(VideoInfo& vi) const;
 
 };
 
 
 
-} } //namespace avs::vfw
+} } } //namespace avs::vfw::avistreaminfo
 
-#endif //__AVS_VFW_AVISTREAMINFO_H__
+#endif //__AVS_VFW_AVISTREAMINFO_VIDEO_H__

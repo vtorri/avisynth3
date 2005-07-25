@@ -30,10 +30,7 @@ namespace avs { namespace colorspace { namespace concrete {
 
 
 
-PVideoFrame RGB24::CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
-{
-  return CPVideoFrame( static_cast<VideoFrame *>(new videoframe::concrete::RGB24(dim, type, env)) );
-}
+
 
 PVideoFrame RGB24::CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& main) const
 {

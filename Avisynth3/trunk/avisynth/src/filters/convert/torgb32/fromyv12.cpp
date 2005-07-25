@@ -47,11 +47,11 @@ void FromYV12::ConvertFrame(VideoFrame const& source, VideoFrame& target) const
   // [G] =  --- * [ 298.082   -100.291   -208.120 ] * ([ Cb ] - [ 128 ])
   // [B]    256   [ 298.082    516.411       0    ]   ([ Cr ]   [ 128 ])
 
-  long coef_y   = long (298.082 * 256 + 0.5);
-  long coef_r_v = long (408.583 * 256 + 0.5);
-  long coef_g_v = long (208.120 * 256 + 0.5);
-  long coef_g_u = long (100.291 * 256 + 0.5);
-  long coef_b_u = long (516.411 * 256 + 0.5);
+  long YCoeff    = long (298.082 * 256 + 0.5);
+  long VtoRCoeff = long (408.583 * 256 + 0.5);
+  long VtoGCoeff = long (208.120 * 256 + 0.5);
+  long UtoGCoeff = long (100.291 * 256 + 0.5);
+  long UtoBCoeff = long (516.411 * 256 + 0.5);
 
   for ( int y = U.height; y-- > 0; Y.skipPad(), U.pad(), V.pad(), dst.skipPad() )
     for ( int x = U.width; x-- > 0; Y.to(2, 0), U.to(1, 0), V.to(1, 0), dst.to(8, 0) )

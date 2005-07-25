@@ -94,7 +94,8 @@ public:  //blank frame creation method
 
 public:  //fetch exporter(s)
 
-  virtual PExporter GetExporter(std::string const& type) const = 0;
+  //clip must have video of same colorspace as this
+  virtual PExporter GetExporter(PClip const& clip, std::string const& type) const = 0;
 
 
 public:  //comparison operators

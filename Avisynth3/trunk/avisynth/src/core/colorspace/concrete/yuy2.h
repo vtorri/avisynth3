@@ -61,9 +61,9 @@ public:  //ColorSpace interface
   virtual void Check(int x, int y, bool interlaced = false) const;
 
 
-public:  //blank frame creation method
+public:  //fetch exporter(s)
 
-  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const;
+  virtual PExporter GetExporter(PClip const& clip, std::string const& type) const;
 
 
 public:  //Interleaved interface

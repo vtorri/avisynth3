@@ -54,6 +54,17 @@ PVideoFrame YV24::CreateFrame(PEnvironment const& env, Dimension const& dim, Fra
 }
 
 
+PExporter YV24::GetExporter(PClip const& clip, std::string const& type) const
+{
+#ifdef _WIN32
+  if ( type == "VFW" )
+    return PExporter( static_cast<Exporter *>(new vfw::exporter::YV24(clip)) );
+#endif //_WIN32
+
+  throw exception::colorspace::Unsupported(shared_from_this());
+}
+
+
 PVideoFrame YV24::CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& y , BufferWindow const& u, BufferWindow const& v) const
 {
   return CPVideoFrame( static_cast<VideoFrame *>(new videoframe::concrete::YV24(dim, type, y, u, v)) );

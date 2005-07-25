@@ -26,6 +26,7 @@
 #include "../exporter.h"
 #include "../bitmapinfoheader.h"
 #include "../../core/exception.h"
+#include "../../core/videoinfo.h"
 #include "../avistreaminfo/video.h"
 
 
@@ -46,7 +47,7 @@ STDMETHODIMP Video::ReadFormat(LONG /*lPos*/, LPVOID lpFormat, LONG *lpcbFormat)
 
   //creates a BitmapInfoHeader in the passed buffer
   BitmapInfoHeader * bi = static_cast<BitmapInfoHeader *>(lpFormat);
-  new (bi) BitmapInfoHeader(GetVideoInfo());
+  new (bi) BitmapInfoHeader(GetVideoInfo().GetDimension(), GetExporter());
 
   return S_OK;
 }

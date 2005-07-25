@@ -44,6 +44,7 @@ class Video : public AviStreamInfo
 
 public:  //structors
 
+  Video(IAVIStream& stream);
   Video(VideoInfo const& vi, Exporter const& exporter);
   //generated destructor is fine
 

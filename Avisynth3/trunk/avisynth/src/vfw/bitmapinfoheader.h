@@ -56,7 +56,7 @@ class BitmapInfoHeader : public BITMAPINFOHEADER
 public:  //structors
 
   BitmapInfoHeader(Dimension const& dim) { Init(dim); }
-  BitmapInfoHeader(VideoInfo const& vi);
+  BitmapInfoHeader(Dimension const& dim, Exporter const& exporter) { Init(dim); SetExporter(exporter); }
 
   //generated copy constructor and destructor are fine
 
@@ -71,7 +71,7 @@ public:  //read access
 
 public:  //write access
 
-  void SetExporter(PExporter const& exporter);
+  void SetExporter(Exporter const& exporter);
 
 
 /*public:  //comparison operator

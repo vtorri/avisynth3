@@ -34,14 +34,6 @@ namespace avs { namespace vfw {
 
 
 
-BitmapInfoHeader::BitmapInfoHeader(VideoInfo const& vi)
-{
-  Init(vi.GetDimension());
-
-  SetExporter( boost::static_pointer_cast<Exporter const>(vi.GetColorSpace()->GetExporter("VFW")) );
-}
-
-
 filters::source::video::PImporter BitmapInfoHeader::GetImporter() const
 {
   using namespace filters::source::video::importer;
@@ -64,11 +56,11 @@ filters::source::video::PImporter BitmapInfoHeader::GetImporter() const
 }
 
 
-void BitmapInfoHeader::SetExporter(PExporter const& exporter)
+void BitmapInfoHeader::SetExporter(Exporter const& exporter)
 {
-  biBitCount    = exporter->GetBitsPerPixel();
-  biCompression = exporter->GetFourCCHandler();
-  biSizeImage   = exporter->GetBitmapSize(GetDimension());
+  biBitCount    = exporter.GetBitsPerPixel();
+  biCompression = exporter.GetFourCCHandler();
+  biSizeImage   = exporter.GetBitmapSize(GetDimension());
 }
 
 

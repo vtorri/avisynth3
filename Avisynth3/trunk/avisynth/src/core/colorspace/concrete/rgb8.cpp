@@ -33,8 +33,10 @@ namespace avs { namespace colorspace { namespace concrete {
 
 PExporter RGB8::GetExporter(PClip const& clip, std::string const& type) const
 {
+#ifdef _WIN32
   if ( type == "VFW" )
-    return PExporter( static_cast<Exporter *>(new vfw::exporter::Interleaved(clip, GetBytesPerPixel(), 0)) );
+    return PExporter( static_cast<Exporter *>(new vfw::exporter::Interleaved(clip, 0, GetBytesPerPixel())) );
+#endif //_WIN32
 
   throw exception::colorspace::Unsupported(shared_from_this());
 }

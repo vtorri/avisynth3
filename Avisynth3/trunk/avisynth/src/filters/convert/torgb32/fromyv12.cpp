@@ -64,32 +64,32 @@ void FromYV12::ConvertFrame(VideoFrame const& source, VideoFrame& target) const
       
       //top-left pixel
       long scaledY = (Y[0] - 16) * YCoeff;
-      ptr[0] = ( scaledY + scaledChromaToR ) >> 16;
-      ptr[1] = ( scaledY + scaledChromaToG ) >> 16;
-      ptr[2] = ( scaledY + scaledChromaToB ) >> 16;
+      ptr[0] = static_cast<BYTE>(( scaledY + scaledChromaToR ) >> 16);
+      ptr[1] = static_cast<BYTE>(( scaledY + scaledChromaToG ) >> 16);
+      ptr[2] = static_cast<BYTE>(( scaledY + scaledChromaToB ) >> 16);
       ptr[3] = 255;             
 
       //top-right pixel
       scaledY = (Y[1] - 16) * YCoeff;
-      ptr[4] = ( scaledY + scaledChromaToR ) >> 16;
-      ptr[5] = ( scaledY + scaledChromaToG ) >> 16;
-      ptr[6] = ( scaledY + scaledChromaToB ) >> 16;
+      ptr[4] = static_cast<BYTE>(( scaledY + scaledChromaToR ) >> 16);
+      ptr[5] = static_cast<BYTE>(( scaledY + scaledChromaToG ) >> 16);
+      ptr[6] = static_cast<BYTE>(( scaledY + scaledChromaToB ) >> 16);
       ptr[7] = 255;             
 
       ptr = dst.at(0, 1);
 
       //bottom-left pixel
       scaledY = (Y(0, 1) - 16) * YCoeff;      
-      ptr[0] = ( scaledY + scaledChromaToR ) >> 16;
-      ptr[1] = ( scaledY + scaledChromaToG ) >> 16;
-      ptr[2] = ( scaledY + scaledChromaToB ) >> 16;
+      ptr[0] = static_cast<BYTE>(( scaledY + scaledChromaToR ) >> 16);
+      ptr[1] = static_cast<BYTE>(( scaledY + scaledChromaToG ) >> 16);
+      ptr[2] = static_cast<BYTE>(( scaledY + scaledChromaToB ) >> 16);
       ptr[3] = 255;             
 
       //bottom-right pixel
       scaledY = (Y(1, 1) - 16) * YCoeff;
-      ptr[4] = ( scaledY + scaledChromaToR ) >> 16;
-      ptr[5] = ( scaledY + scaledChromaToG ) >> 16;
-      ptr[6] = ( scaledY + scaledChromaToB ) >> 16;
+      ptr[4] = static_cast<BYTE>(( scaledY + scaledChromaToR ) >> 16);
+      ptr[5] = static_cast<BYTE>(( scaledY + scaledChromaToG ) >> 16);
+      ptr[6] = static_cast<BYTE>(( scaledY + scaledChromaToB ) >> 16);
       ptr[7] = 255;             
     }
 }

@@ -21,46 +21,39 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_VFW_EXPORTER_INTERLEAVED_H__
-#define __AVS_VFW_EXPORTER_INTERLEAVED_H__
-
-//avisynth include
-#include "base.h"
+//avisynth includes
+#include "yv12.h"
+#include "../../core/blitter.h"
+#include "../../core/videoframe.h"
+#include "../../core/utility/round.h"
 
 
 namespace avs { namespace vfw { namespace exporter {
 
 
 
-class Interleaved : public Base
+long YV12::GetBitmapSize(Dimension const& dim) const
 {
-
-  unsigned short bytesPerPixel_;
-
-
-public:  //structors
-
-  Interleaved(PClip const& clip, unsigned long fourCCHandler, unsigned short bytesPerPixel)
-    : Base( clip, fourCCHandler )
-    , bytesPerPixel_( bytesPerPixel ) { }
-
-  //generated destructor is fine
+  return 3 * dim.GetHeight() * utility::RoundUp<4>(dim.GetWidth()) / 2;
+}
 
 
-public:  //vfw::Exporter interface
+void YV12::ExportFrame(VideoFrame const& frame, BYTE * ptr) const
+{
+  CWindowPtr Y = frame.ReadFrom('Y');   
+  CWindowPtr U = frame.ReadFrom('U'); 
+  CWindowPtr V = frame.ReadFrom('V'); 
 
-  virtual unsigned short GetBitsPerPixel() const { return bytesPerPixel_ << 3; }
-  virtual long GetBitmapSize(Dimension const& dim) const;
+  Blitter const& blit = Blitter::Get();
 
+  long dstPitch = utility::RoundUp<4>(Y.width);
 
-private:  //Base interface
-
-  virtual void ExportFrame(VideoFrame const& frame, BYTE * ptr) const;
-
-};
+  ptr = blit(Y, ptr, dstPitch);
+  ptr = blit(U, ptr, dstPitch >> 1);
+        blit(V, ptr, dstPitch >> 1);
+}
 
 
 
 } } } //namespace avs::vfw::exporter
 
-#endif //__AVS_VFW_EXPORTER_INTERLEAVED_H__

@@ -21,8 +21,8 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_VFW_EXPORTER_INTERLEAVED_H__
-#define __AVS_VFW_EXPORTER_INTERLEAVED_H__
+#ifndef __AVS_VFW_EXPORTER_YV12_H__
+#define __AVS_VFW_EXPORTER_YV12_H__
 
 //avisynth include
 #include "base.h"
@@ -32,24 +32,18 @@ namespace avs { namespace vfw { namespace exporter {
 
 
 
-class Interleaved : public Base
+class YV12 : public Base
 {
-
-  unsigned short bytesPerPixel_;
-
 
 public:  //structors
 
-  Interleaved(PClip const& clip, unsigned long fourCCHandler, unsigned short bytesPerPixel)
-    : Base( clip, fourCCHandler )
-    , bytesPerPixel_( bytesPerPixel ) { }
-
+  YV12(PClip const& clip) : Base( clip, '21VY' ) { }
   //generated destructor is fine
 
 
 public:  //vfw::Exporter interface
 
-  virtual unsigned short GetBitsPerPixel() const { return bytesPerPixel_ << 3; }
+  virtual unsigned short GetBitsPerPixel() const { return 12; }
   virtual long GetBitmapSize(Dimension const& dim) const;
 
 
@@ -63,4 +57,4 @@ private:  //Base interface
 
 } } } //namespace avs::vfw::exporter
 
-#endif //__AVS_VFW_EXPORTER_INTERLEAVED_H__
+#endif //__AVS_VFW_EXPORTER_YV12_H__

@@ -25,8 +25,8 @@
 #define __AVS_FRAMEMAKER_H__
 
 //avisynth includes
+#include "owned.h"
 #include "forward.h"             //for CPVideoFrame
-#include "../define.h"           //for AVS_NOVTABLE
 
 //boost include
 #include <boost/shared_ptr.hpp>  //so CPVideoFrame is defined
@@ -41,20 +41,12 @@ namespace avs {
 //
 //
 //
-class AVS_NOVTABLE FrameMaker
+class AVS_NOVTABLE FrameMaker : public virtual Owned
 {
 
-public:  //structors
-
-  FrameMaker() { }
-  virtual ~FrameMaker() { }
-
-
-private:  //FrameMaker interface
+public:  //FrameMaker interface
 
   virtual CPVideoFrame MakeFrame(long n) const = 0;
-
-  friend class Cache;   //only the Cache can ask for frames to be made
 
 };
 

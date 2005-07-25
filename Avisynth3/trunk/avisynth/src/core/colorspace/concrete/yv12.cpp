@@ -23,8 +23,10 @@
 
 //avisynt includes
 #include "yv12.h"
+#include "../../colorspace/get.h"
 #include "../../exception/nosuchplane.h"
 #include "../../videoframe/concrete/yv12.h"
+#include "../../exception/colorspace/unsupported.h"
 #include "../../exception/colorspace/invalidwidth.h"
 #include "../../exception/colorspace/invalidheight.h"
 
@@ -75,6 +77,10 @@ PVideoFrame YV12::CreateFrame(PEnvironment const& env, Dimension const& dim, Fra
   return CPVideoFrame( static_cast<VideoFrame *>(new videoframe::concrete::YV12(dim, type, env)) );
 }
 
+PExporter YV12::GetExporter(PClip const& clip, std::string const& type) const
+{
+  throw exception::colorspace::Unsupported(Get::YV12());
+}
 
 PVideoFrame YV12::CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& y , BufferWindow const& u, BufferWindow const& v) const
 {

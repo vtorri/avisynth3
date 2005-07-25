@@ -50,10 +50,10 @@ CPVideoFrame RGB32::clone() const
 PColorSpace RGB32::GetColorSpace() const { return colorspace::Get::RGB32(); }
 
 
-void RGB32::ApplyToR(ByteMap const& r) { r.ApplyTo<4>( WriteTo(NOT_PLANAR) ); }
-void RGB32::ApplyToG(ByteMap const& g) { g.ApplyTo<4>( WriteTo(NOT_PLANAR) += 1 ); }
-void RGB32::ApplyToB(ByteMap const& b) { b.ApplyTo<4>( WriteTo(NOT_PLANAR) += 2 ); }
-void RGB32::ApplyToA(ByteMap const& a) { a.ApplyTo<4>( WriteTo(NOT_PLANAR) += 3 ); }
+void RGB32::ApplyToR(ByteMap const& r) { r.ApplyTo<4>( WriteTo('~') ); }
+void RGB32::ApplyToG(ByteMap const& g) { g.ApplyTo<4>( WriteTo('~') += 1 ); }
+void RGB32::ApplyToB(ByteMap const& b) { b.ApplyTo<4>( WriteTo('~') += 2 ); }
+void RGB32::ApplyToA(ByteMap const& a) { a.ApplyTo<4>( WriteTo('~') += 3 ); }
 
 
 

@@ -56,48 +56,41 @@ void FromYV12::ConvertFrame(VideoFrame const& source, VideoFrame& target) const
   for ( int y = U.height; y-- > 0; Y.skipPad(), U.pad(), V.pad(), dst.skipPad() )
     for ( int x = U.width; x-- > 0; Y.to(2, 0), U.to(1, 0), V.to(1, 0), dst.to(8, 0) )
     {
-      unsigned char *ptr;
+      long scaledChromaToR = 32768 + VtoRCoeff * (V[0] - 128);
+      long scaledChromaToG = 32768 - VtoGCoeff * (V[0] - 128) - UtoGCoeff *(U[0] - 128);
+      long scaledChromaToB = 32768 + UtoBCoeff * (U[0] - 128);
 
-      long scaled_r_v = coef_r_v * (V[0] - 128);
-      long scaled_g_v = coef_g_v * (V[0] - 128);
-      long scaled_g_u = coef_g_u * (U[0] - 128);
-      long scaled_b_u = coef_b_u * (U[0] - 128);
+      BYTE * ptr = dst.at(0, 0);
+      
+      //top-left pixel
+      long scaledY = (Y[0] - 16) * YCoeff;
+      ptr[0] = ( scaledY + scaledChromaToR ) >> 16;
+      ptr[1] = ( scaledY + scaledChromaToG ) >> 16;
+      ptr[2] = ( scaledY + scaledChromaToB ) >> 16;
+      ptr[3] = 255;             
 
-      // top-left pixel
-      long scaled_y = (Y[0] - 16) * coef_y;
-
-      ptr = dst.at(0, 0);
-      ptr[0] = (scaled_y + scaled_r_v + 32768) >> 16;              //R
-      ptr[1] = (scaled_y - scaled_g_u - scaled_g_v + 32768) >> 16; //G
-      ptr[2] = (scaled_y + scaled_b_u + 32768) >> 16;              //B
-      ptr[3] = 255;                                                //A
-
-      // top-right pixel
-      scaled_y = (Y(0, 1) - 16) * coef_y;
+      //top-right pixel
+      scaledY = (Y[1] - 16) * YCoeff;
+      ptr[4] = ( scaledY + scaledChromaToR ) >> 16;
+      ptr[5] = ( scaledY + scaledChromaToG ) >> 16;
+      ptr[6] = ( scaledY + scaledChromaToB ) >> 16;
+      ptr[7] = 255;             
 
       ptr = dst.at(0, 1);
-      ptr[0] = (scaled_y + scaled_r_v + 32768) >> 16;              //R
-      ptr[1] = (scaled_y - scaled_g_u - scaled_g_v + 32768) >> 16; //G
-      ptr[2] = (scaled_y + scaled_b_u + 32768) >> 16;              //B
-      ptr[3] = 255;                                                //A
 
-      // bottom-left pixel
-      scaled_y = (Y(1, 0) - 16) * coef_y;
+      //bottom-left pixel
+      scaledY = (Y(0, 1) - 16) * TCoeff;      
+      ptr[0] = ( scaledY + scaledChromaToR ) >> 16;
+      ptr[1] = ( scaledY + scaledChromaToG ) >> 16;
+      ptr[2] = ( scaledY + scaledChromaToB ) >> 16;
+      ptr[3] = 255;             
 
-      ptr = dst.at(4, 0);
-      ptr[0] = (scaled_y + scaled_r_v + 32768) >> 16;              //R
-      ptr[1] = (scaled_y - scaled_g_u - scaled_g_v + 32768) >> 16; //G
-      ptr[2] = (scaled_y + scaled_b_u + 32768) >> 16;              //B
-      ptr[3] = 255;                                                //A
-
-      // bottom-right pixel
-      scaled_y = (Y(1, 1) - 16) * coef_y;
-
-      ptr = dst.at(4, 1);
-      ptr[0] = (scaled_y + scaled_r_v + 32768) >> 16;              //R
-      ptr[1] = (scaled_y - scaled_g_u - scaled_g_v + 32768) >> 16; //G
-      ptr[2] = (scaled_y + scaled_b_u + 32768) >> 16;              //B
-      ptr[3] = 255;                                                //A
+      //bottom-right pixel
+      scaledY = (Y(1, 1) - 16) * YCoeff;
+      ptr[4] = ( scaledY + scaledChromaToR ) >> 16;
+      ptr[5] = ( scaledY + scaledChromaToG ) >> 16;
+      ptr[6] = ( scaledY + scaledChromaToB ) >> 16;
+      ptr[7] = 255;             
     }
 }
 

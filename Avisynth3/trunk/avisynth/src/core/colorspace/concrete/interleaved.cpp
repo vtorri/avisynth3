@@ -22,6 +22,8 @@
 
 
 #include "interleaved.h"
+#include "../../ownedblock.h"
+#include "../../bufferwindow.h"
 #include "../../exception/nosuchplane.h"
 #include "../../exception/colorspace/invalidheight.h"
 
@@ -40,7 +42,13 @@ void Interleaved::ToPlane(long& x, long& /*y*/, char plane) const
 {
   if ( plane != '~' )
     throw exception::NoSuchPlane(shared_from_this(), plane);
-  x *= bpp_;
+  x *= bytesPerPixel_;
+}
+
+
+PVideoFrame Interleaved::CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
+{
+  return CreateFrame(dim, type, BufferWindow(ToPlaneDim(dim, '~'), env));
 }
 
 

@@ -36,14 +36,14 @@ namespace avs { namespace videoframe { namespace concrete {
 
 Interleaved::Interleaved(PColorSpace const& space, Dimension const& dim, FrameType type, PEnvironment const& env)
   : Base( space, dim, type )
-  , main_( space->ToPlaneDim(dim, NOT_PLANAR), env ) { }
+  , main_( space->ToPlaneDim(dim, '~'), env ) { }
 
 
 Interleaved::Interleaved(PColorSpace const& space, Dimension const& dim, FrameType type, BufferWindow const& main)
   : Base( space, dim, type )
   , main_( main )
 {
-  assert( main.GetDimension() == space->ToPlaneDim(dim, NOT_PLANAR) );   //check the given buffer fits
+  assert( main.GetDimension() == space->ToPlaneDim(dim, '~') );   //check the given buffer fits
 }
 
 

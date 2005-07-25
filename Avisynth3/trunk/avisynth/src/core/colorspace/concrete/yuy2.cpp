@@ -24,6 +24,8 @@
 //avisynth includes
 #include "yuy2.h"
 #include "../../videoframe/concrete/yuy2.h"
+#include "../../../vfw/exporter/interleaved.h"
+#include "../../exception/colorspace/unsupported.h"
 #include "../../exception/colorspace/invalidwidth.h"
 
 
@@ -41,8 +43,10 @@ void YUY2::Check(int x, int y, bool interlaced) const
 
 PExporter YUY2::GetExporter(PClip const& clip, std::string const& type) const
 {
+#ifdef _WIN32
   if ( type == "VFW" )
-    return PExporter( static_cast<Exporter *>(new vfw::exporter::Interleaved(clip, GetBytesPerPixel(), '2YUY')) );
+    return PExporter( static_cast<Exporter *>(new vfw::exporter::Interleaved(clip, '2YUY', GetBytesPerPixel())) );
+#endif //_WIN32
 
   throw exception::colorspace::Unsupported(shared_from_this());
 }

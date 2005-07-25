@@ -57,7 +57,7 @@ public:  //blank frame creation method
 
 public:  //fetch exporter(s)
 
-  virtual PExporter GetExporter(std::string const& type) const;
+  virtual PExporter GetExporter(PClip const& clip, std::string const& type) const;
 
 
 public:  //yuv::Planar interface

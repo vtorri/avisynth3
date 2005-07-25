@@ -55,6 +55,13 @@ public:  //ColorSpace interface
   virtual void ToPlane(long& x, long& /*y*/, char plane) const;
 
 
+public:  //blank frame creation method
+
+  virtual PVideoFrame CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const;
+
+  using colorspace::Interleaved::CreateFrame;
+
+
 protected:  //read access
 
   unsigned short GetBytesPerPixel() const { return bytesPerPixel_; }

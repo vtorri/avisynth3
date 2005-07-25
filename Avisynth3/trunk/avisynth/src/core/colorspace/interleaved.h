@@ -33,7 +33,7 @@ namespace avs { namespace colorspace {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-//  cspace::Interleaved
+//  colorspace::Interleaved
 //
 //  ColorSpace sub interface for interleaved color spaces
 //
@@ -56,6 +56,8 @@ public:  //Interleaved interface
 
   //create a frame using a given buffer
   virtual PVideoFrame CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& main) const = 0;
+
+  using ColorSpace::CreateFrame;
 
 };
 

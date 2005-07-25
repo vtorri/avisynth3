@@ -23,7 +23,7 @@
 
 //avisynt includes
 #include "yv12.h"
-#include "../../colorspace/get.h"
+#include "../../../vfw/exporter/yv12.h"
 #include "../../exception/nosuchplane.h"
 #include "../../videoframe/concrete/yv12.h"
 #include "../../exception/colorspace/unsupported.h"
@@ -34,14 +34,6 @@
 namespace avs { namespace colorspace { namespace concrete {
 
 
-/*
-long YV12::GetBitmapSize(Dimension const& dim) const
-{
-  return 3 * utility::RoundUp<4>(dim.GetWidth()) * dim.GetHeight() / 2;
-}
-*/
-
- 
 
 void YV12::Check(long x, long y, bool interlaced) const
 {
@@ -55,7 +47,7 @@ void YV12::Check(long x, long y, bool interlaced) const
 
   if ( x & 1 )                                  //x must be mod 2
     throw exception::colorspace::InvalidWidth(shared_from_this(), x, 2);                                  
-  }
+}
 
 
 void YV12::ToPlane(long& x, long& y, char plane) const
@@ -77,10 +69,17 @@ PVideoFrame YV12::CreateFrame(PEnvironment const& env, Dimension const& dim, Fra
   return CPVideoFrame( static_cast<VideoFrame *>(new videoframe::concrete::YV12(dim, type, env)) );
 }
 
+
 PExporter YV12::GetExporter(PClip const& clip, std::string const& type) const
 {
-  throw exception::colorspace::Unsupported(Get::YV12());
+#ifdef _WIN32
+  if ( type == "VFW" )
+    return PExporter( static_cast<Exporter *>(new vfw::exporter::YV12(clip)) );
+#endif //_WIN32
+
+  throw exception::colorspace::Unsupported(shared_from_this());
 }
+
 
 PVideoFrame YV12::CreateFrame(Dimension const& dim, FrameType type, BufferWindow const& y , BufferWindow const& u, BufferWindow const& v) const
 {

@@ -79,7 +79,7 @@ void FromYV12::ConvertFrame(VideoFrame const& source, VideoFrame& target) const
       ptr = dst.at(0, 1);
 
       //bottom-left pixel
-      scaledY = (Y(0, 1) - 16) * TCoeff;      
+      scaledY = (Y(0, 1) - 16) * YCoeff;      
       ptr[0] = ( scaledY + scaledChromaToR ) >> 16;
       ptr[1] = ( scaledY + scaledChromaToG ) >> 16;
       ptr[2] = ( scaledY + scaledChromaToB ) >> 16;

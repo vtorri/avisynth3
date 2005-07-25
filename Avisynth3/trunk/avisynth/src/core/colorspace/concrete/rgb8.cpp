@@ -31,10 +31,10 @@ namespace avs { namespace colorspace { namespace concrete {
 
 
 
-PExporter RGB8::GetExporter(std::string const& type) const
+PExporter RGB8::GetExporter(PClip const& clip, std::string const& type) const
 {
   if ( type == "VFW" )
-    return PExporter( static_cast<Exporter *>(new vfw::exporter::Interleaved(GetBytesPerPixel(), 0)) );
+    return PExporter( static_cast<Exporter *>(new vfw::exporter::Interleaved(clip, GetBytesPerPixel(), 0)) );
 
   throw exception::colorspace::Unsupported(shared_from_this());
 }

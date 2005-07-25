@@ -34,13 +34,17 @@ namespace avs { namespace colorspace { namespace concrete {
 void YUY2::Check(int x, int y, bool interlaced) const 
 {
   Interleaved::Check(x, y, interlaced);
-  if ( x & 1 )                                                        //if x is not even
-    throw exception::cspace::InvalidWidth(shared_from_this(), x, 2);  //exception
+  if ( x & 1 )                                                            //if x is not even
+    throw exception::colorspace::InvalidWidth(shared_from_this(), x, 2);  //exception
 }
 
-PVideoFrame YUY2::CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
+
+PExporter YUY2::GetExporter(PClip const& clip, std::string const& type) const
 {
-  return CPVideoFrame( static_cast<VideoFrame *>(new videoframe::concrete::YUY2(dim, type, env)) );
+  if ( type == "VFW" )
+    return PExporter( static_cast<Exporter *>(new vfw::exporter::Interleaved(clip, GetBytesPerPixel(), '2YUY')) );
+
+  throw exception::colorspace::Unsupported(shared_from_this());
 }
 
 

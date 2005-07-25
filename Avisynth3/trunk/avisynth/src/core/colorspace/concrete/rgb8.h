@@ -58,7 +58,7 @@ public:  //ColorSpace interface
 
 public:  //fetch exporter(s)
 
-  virtual PExporter GetExporter(std::string const& type) const;
+  virtual PExporter GetExporter(PClip const& clip, std::string const& type) const;
 
 };
 

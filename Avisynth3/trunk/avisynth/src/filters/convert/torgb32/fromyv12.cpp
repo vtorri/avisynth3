@@ -32,11 +32,12 @@ namespace avs { namespace filters { namespace convert { namespace torgb32 {
 
 void FromYV12::ConvertFrame(VideoFrame const& source, VideoFrame& target) const
 {
-  CWindowPtr Y = source.ReadFrom('Y');
-  CWindowPtr U = source.ReadFrom('U');
-  CWindowPtr V = source.ReadFrom('V');
-  WindowPtr dst = target.WriteTo('~');
+  ConvertFrame( source.ReadFrom('Y'), source.ReadFrom('U'), source.ReadFrom('V'), target.WriteTo('~') );
+}
 
+
+void FromYV12::ConvertFrame(CWindowPtr Y, CWindowPtr U, CWindowPtr V, WindowPtr dst)
+{
   // Colour conversion from
   // http://www.poynton.com/notes/colour_and_gamma/ColorFAQ.html#RTFToC30
   //

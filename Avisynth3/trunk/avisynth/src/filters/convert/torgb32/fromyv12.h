@@ -53,6 +53,11 @@ private:  //Convert method
   virtual void ConvertFrame(VideoFrame const& source, VideoFrame& target) const;
 
 
+public:  //free function version
+
+  static void ConvertFrame(CWindowPtr Y, CWindowPtr U, CWindowPtr V, WindowPtr dst);
+
+
 public:  //factory method
 
   static PClip Create(PClip const& child) { return PClip( static_cast<Clip *>(new FromYV12(child)) ); }

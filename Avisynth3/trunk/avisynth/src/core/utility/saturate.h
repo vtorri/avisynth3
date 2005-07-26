@@ -21,11 +21,11 @@
 // General Public License cover the whole combination.
   
 
-#ifndef __AVS_SATURATE_H__
-#define __AVS_SATURATE_H__
+#ifndef __AVS_UTILITY_SATURATE_H__
+#define __AVS_UTILITY_SATURATE_H__
 
 
-namespace avs {
+namespace avs { namespace utility {
 
 
 
@@ -44,6 +44,6 @@ static inline T saturate(S value)
 
 
 
-} //namespace avs
+} } //namespace avs::utility
 
-#endif //__AVS_SATURATE_H__
+#endif //__AVS_UTILITY_SATURATE_H__

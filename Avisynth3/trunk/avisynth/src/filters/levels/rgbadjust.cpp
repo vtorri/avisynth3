@@ -43,8 +43,8 @@ RGBAdjust::RGBAdjust(PClip const& child, double r, double g, double b, double a)
 { 
   PColorSpace space = child->GetVideoInfo()->GetColorSpace();
 
-  if ( ! boost::dynamic_pointer_cast<cspace::rgb::Depth8 const>(space) )
-    throw exception::cspace::Unsupported(space);
+  if ( ! boost::dynamic_pointer_cast<colorspace::rgb::Depth8 const>(space) )
+    throw exception::colorspace::Unsupported(space);
 }
 
 
@@ -58,8 +58,8 @@ RGBAdjust::RGBAdjust(PClip const& child, RGBAdjust const& other)
 { 
   PColorSpace space = child->GetVideoInfo()->GetColorSpace();
 
-  if ( ! boost::dynamic_pointer_cast<cspace::rgb::Depth8 const>(space) )
-    throw exception::cspace::Unsupported(space);
+  if ( ! boost::dynamic_pointer_cast<colorspace::rgb::Depth8 const>(space) )
+    throw exception::colorspace::Unsupported(space);
 }
 
 
@@ -72,7 +72,7 @@ PClip RGBAdjust::clone(PClip const& child) const
 
 CPVideoFrame RGBAdjust::MakeFrame(PVideoFrame const& source) const
 {
-  vframe::rgb::Depth8& frame = dynamic_cast<vframe::rgb::Depth8&>(*source);
+  videoframe::rgb::Depth8& frame = dynamic_cast<videoframe::rgb::Depth8&>(*source);
 
   frame.ApplyToR(r_);
   frame.ApplyToG(g_);

@@ -24,6 +24,7 @@
 //avisynth includes
 #include "fromyv12.h"
 #include "../../../core/videoframe.h"
+#include "../../../core/utility/saturate.h"
 
 
 namespace avs { namespace filters { namespace convert { namespace torgb32 {
@@ -38,6 +39,8 @@ void FromYV12::ConvertFrame(VideoFrame const& source, VideoFrame& target) const
 
 void FromYV12::ConvertFrame(CWindowPtr Y, CWindowPtr U, CWindowPtr V, WindowPtr dst)
 {
+  using namespace utility;
+
   // Colour conversion from
   // http://www.poynton.com/notes/colour_and_gamma/ColorFAQ.html#RTFToC30
   //
@@ -65,32 +68,32 @@ void FromYV12::ConvertFrame(CWindowPtr Y, CWindowPtr U, CWindowPtr V, WindowPtr 
       
       //top-left pixel
       long scaledY = (Y[0] - 16) * YCoeff;
-      ptr[0] = static_cast<BYTE>(( scaledY + scaledChromaToR ) >> 16);
-      ptr[1] = static_cast<BYTE>(( scaledY + scaledChromaToG ) >> 16);
-      ptr[2] = static_cast<BYTE>(( scaledY + scaledChromaToB ) >> 16);
+      ptr[0] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToR ) >> 16);
+      ptr[1] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToG ) >> 16);
+      ptr[2] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToB ) >> 16);
       ptr[3] = 255;             
 
       //top-right pixel
       scaledY = (Y[1] - 16) * YCoeff;
-      ptr[4] = static_cast<BYTE>(( scaledY + scaledChromaToR ) >> 16);
-      ptr[5] = static_cast<BYTE>(( scaledY + scaledChromaToG ) >> 16);
-      ptr[6] = static_cast<BYTE>(( scaledY + scaledChromaToB ) >> 16);
+      ptr[4] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToR ) >> 16);
+      ptr[5] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToG ) >> 16);
+      ptr[6] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToB ) >> 16);
       ptr[7] = 255;             
 
       ptr = dst.at(0, 1);
 
       //bottom-left pixel
       scaledY = (Y(0, 1) - 16) * YCoeff;      
-      ptr[0] = static_cast<BYTE>(( scaledY + scaledChromaToR ) >> 16);
-      ptr[1] = static_cast<BYTE>(( scaledY + scaledChromaToG ) >> 16);
-      ptr[2] = static_cast<BYTE>(( scaledY + scaledChromaToB ) >> 16);
+      ptr[0] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToR ) >> 16);
+      ptr[1] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToG ) >> 16);
+      ptr[2] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToB ) >> 16);
       ptr[3] = 255;             
 
       //bottom-right pixel
       scaledY = (Y(1, 1) - 16) * YCoeff;
-      ptr[4] = static_cast<BYTE>(( scaledY + scaledChromaToR ) >> 16);
-      ptr[5] = static_cast<BYTE>(( scaledY + scaledChromaToG ) >> 16);
-      ptr[6] = static_cast<BYTE>(( scaledY + scaledChromaToB ) >> 16);
+      ptr[4] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToR ) >> 16);
+      ptr[5] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToG ) >> 16);
+      ptr[6] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToB ) >> 16);
       ptr[7] = 255;             
     }
 }

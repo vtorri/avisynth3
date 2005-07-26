@@ -45,8 +45,8 @@ CPVideoFrame YUY2::MakeFrame(PVideoFrame const& source) const
       y1 = (Cont * y1) >> 9;
   		y2 = (Cont * y2) >> 9;
 			
-      wp[0] = saturate<BYTE, 0, 255>(y1 + Bright_p16);
-		  wp[2] = saturate<BYTE, 0, 255>(y2 + Bright_p16);
+      wp[0] = utility::saturate<BYTE, 0, 255>(y1 + Bright_p16);
+      wp[2] = utility::saturate<BYTE, 0, 255>(y2 + Bright_p16);
 
 
  			// hue and saturation 
@@ -59,8 +59,8 @@ CPVideoFrame YUY2::MakeFrame(PVideoFrame const& source) const
       u = ((ux * Sat) >> 9) + 128;
  			v = ((vx * Sat) >> 9) + 128;
 	  	
-      wp[1] = saturate<BYTE, 0, 255>(u);
-	  	wp[3] = saturate<BYTE, 0, 255>(v);
+      wp[1] = utility::saturate<BYTE, 0, 255>(u);
+      wp[3] = utility::saturate<BYTE, 0, 255>(v);
     }		
 
   return source;

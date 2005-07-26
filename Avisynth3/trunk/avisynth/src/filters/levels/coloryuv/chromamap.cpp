@@ -42,8 +42,8 @@ ChromaMap::ChromaMap(Levels const& levels, int (* adjust)(int), bool coring)
 
     int val = static_cast<int>( value + 0.5f );
 
-    *ptr = coring ? saturate<BYTE, 16, 240>(val)
-                  : saturate<BYTE, 0, 255>(val);    
+    *ptr = coring ? utility::saturate<BYTE, 16, 240>(val)
+                  : utility::saturate<BYTE, 0, 255>(val);    
   }
 
 }

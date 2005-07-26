@@ -46,7 +46,7 @@ CPVideoFrame YV12::MakeFrame(PVideoFrame const& source) const
       int yy = *Y.ptr - 16;
       yy = (Cont * yy) >> 9;
       yy += Bright_p16;
-      *Y.ptr = saturate<BYTE, 15, 235>(yy);
+      *Y.ptr = utility::saturate<BYTE, 15, 235>(yy);
     }
 
 
@@ -63,8 +63,8 @@ CPVideoFrame YV12::MakeFrame(PVideoFrame const& source) const
 			u = ((ux * Sat) >> 9) + 128;
 			v = ((vx * Sat) >> 9) + 128;
 			
-      *U.ptr = saturate<BYTE, 16, 240>(u);
-      *V.ptr = saturate<BYTE, 16, 240>(v);				      
+      *U.ptr = utility::saturate<BYTE, 16, 240>(u);
+      *V.ptr = utility::saturate<BYTE, 16, 240>(v);				      
     }
 
   return source;

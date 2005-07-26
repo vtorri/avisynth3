@@ -50,8 +50,8 @@ LumaMap::LumaMap(Levels const& levels, float gamma, int (* adjust)(int), bool co
     
     int val = static_cast<int>( value + 0.5f );
 
-    *ptr = coring ? saturate<BYTE, 16, 235>(val)
-                  : saturate<BYTE, 0, 255>(val);
+    *ptr = coring ? utility::saturate<BYTE, 16, 235>(val)
+                  : utility::saturate<BYTE, 0, 255>(val);
   }
 
 }

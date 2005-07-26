@@ -36,7 +36,7 @@ Scale::Scale(double s)
   BYTE * ptr = data();
 
   for( int i = 256; i-- > 0; ++ptr, x += s )
-    *ptr = saturate<BYTE, 0, 255>( static_cast<int>(x) );
+    *ptr = utility::saturate<BYTE, 0, 255>( static_cast<int>(x) );
 }
 
 

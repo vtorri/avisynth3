@@ -68,8 +68,8 @@ CPVideoFrame GstYV12AndI420::CreateFrame(Dimension const& dim, owned_block<1> co
 
 namespace {
 
-Importer const * CreateYV12Importer() { return new GstYV12AndI420(false); }
-Importer const * CreateI420Importer() { return new GstYV12AndI420(true); }
+Importer const * CreateYV12Importer() { return new GstYV12AndI420(true); }
+Importer const * CreateI420Importer() { return new GstYV12AndI420(false); }
 
 }
 

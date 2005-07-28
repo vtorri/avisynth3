@@ -52,7 +52,7 @@ class FrameMaker;
 class ColorSpace;
 class VideoFrame;
 class RuntimeEnvironment;
-namespace colorspace { class Exporter; }
+namespace colorspace { class Exporter; class Importer; }
 
 template <int align> class block_;
 template <int align> class owned_block;
@@ -89,6 +89,7 @@ typedef boost::shared_ptr<ColorSpace const> PColorSpace;
 typedef boost::shared_ptr<VideoFrame const> CPVideoFrame;
 typedef boost::shared_ptr<RuntimeEnvironment> PEnvironment;
 typedef boost::shared_ptr<colorspace::Exporter const> PExporter;
+typedef boost::shared_ptr<colorspace::Importer const> PImporter;
 
 //cow ptr typedefs
 typedef cow_shared_ptr<Property> PProperty;

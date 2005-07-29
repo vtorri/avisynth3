@@ -25,10 +25,9 @@
 #define __AVS_VFW_BITMAPINFOHEADER_H__
 
 //avisynth includes
-#include "forward.h"                           //for PExporter typedef
-#include "../core/forward.h"                   //for VideoInfo, Dimension
+#include "forward.h"                           //for PExporter, PImporter typedefs
+#include "../core/forward.h"                   //for VideoInfo, Dimension, PImporter
 #include "../core/geometry/dimension.h"        //so Dimension is defined
-#include "../filters/source/video/forward.h"   //for PImporter
 
 //boost include
 #include <boost/shared_ptr.hpp>                //so Pimporter is defined
@@ -66,7 +65,7 @@ public:  //read access
   Dimension GetDimension() const { return Dimension(biWidth, biHeight); }
   
   //returns empty if cannot be done
-  filters::source::video::PImporter GetImporter() const;
+  PImporter GetImporter() const;
 
 
 public:  //write access

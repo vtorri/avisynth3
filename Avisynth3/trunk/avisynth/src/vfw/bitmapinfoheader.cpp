@@ -25,34 +25,58 @@
 #include "exporter.h"
 #include "bitmapinfoheader.h"
 #include "../core/videoinfo.h"
-#include "../core/colorspace.h"
-#include "../filters/source/video/importer/vfwyv12.h"
-#include "../filters/source/video/importer/interleaved.h"
+#include "../core/colorspace/get.h"
+#include "../core/utility/valuecache.h"
+#include "../core/utility/synchronizer/lock.h"
+#include "../core/colorspace/importer/planar_yuv.h"
+#include "../core/colorspace/importer/interleaved.h"
 
 
 namespace avs { namespace vfw {
 
 
 
-filters::source::video::PImporter BitmapInfoHeader::GetImporter() const
+namespace {
+
+
+using namespace colorspace;
+
+Importer const * CreateRGB24Importer() { return new importer::interleaved<4>(Get::RGB24()); }
+Importer const * CreateRGB32Importer() { return new importer::interleaved<4>(Get::RGB32()); }
+Importer const * CreateYUY2Importer() { return new importer::interleaved<4>(Get::YUY2()); }
+Importer const * CreateYV12Importer() { return new importer::planar_yuv<4, 2>(Get::YV12()); }
+
+
+typedef utility::value_cache<Importer const, utility::synchronizer::lock<Importer> > ImporterCache;
+
+ImporterCache const rgb24(&CreateRGB24Importer);
+ImporterCache const rgb32(&CreateRGB32Importer);
+ImporterCache const yuy2(&CreateYUY2Importer);
+ImporterCache const yv12(&CreateYV12Importer);
+
+
+} //namespace anonymous
+
+
+
+PImporter BitmapInfoHeader::GetImporter() const
 {
-  using namespace filters::source::video::importer;
 
   switch( biCompression )
   {
-  case '21VY': return VFWYV12::yv12.Get();
-  case '2YUY': return Interleaved::YUY2.Get();
+  case '21VY': return yv12.Get();
+  case '2YUY': return yuy2.Get();
   case BI_RGB:
     switch( biBitCount )
     {
-    case 24: return Interleaved::RGB24.Get();
-    case 32: return Interleaved::RGB32.Get();    
+    case 24: return rgb24.Get();
+    case 32: return rgb32.Get();    
     default: break;
     }
   default:break;
   }
 
-  return filters::source::video::PImporter();   //reports no import possible
+  return PImporter();   //reports no import possible
 }
 
 

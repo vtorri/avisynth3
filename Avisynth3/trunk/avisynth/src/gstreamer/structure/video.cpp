@@ -40,9 +40,11 @@ namespace avs { namespace gstreamer { namespace structure {
 
 
 
-Video::PImporter Video::SetVideoInfo(VideoInfo& vi) const
+PImporter Video::SetVideoInfo(VideoInfo& vi) const
 {
   PImporter importer = GetImporter();
+
+  g_print ("set videoinfo\n");
 
   vi.AddVideo( importer->GetColorSpace()
              , Dimension(GetIntField("width"), GetIntField("height"))
@@ -56,7 +58,7 @@ Video::PImporter Video::SetVideoInfo(VideoInfo& vi) const
 
 
 
-Video::PImporter Video::GetImporter() const
+PImporter Video::GetImporter() const
 {
   using namespace avs::filters::source::video::importer;
 
@@ -74,7 +76,7 @@ Video::PImporter Video::GetImporter() const
     switch ( GetFourCCField("format") )
 	  {
 	  case '21VY': return GstYV12AndI420::yv12.Get();
-    case '024I': return GstYV12AndI420::i420.Get();
+	  case '024I': return GstYV12AndI420::i420.Get();
 	  case '2YUY': return Interleaved::YUY2.Get();
 	  default: break;
 	  }

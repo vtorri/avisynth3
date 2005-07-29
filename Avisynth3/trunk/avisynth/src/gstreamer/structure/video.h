@@ -26,8 +26,7 @@
 
 //avisynth includes
 #include "../structure.h"
-#include "../../core/forward.h"                   //for VideoInfo, PColorSpace
-#include "../../filters/source/video/forward.h"   //for Pimporter
+#include "../../core/forward.h"                   //for VideoInfo, PColorSpace, Pimporter
 
 //boost include
 #include <boost/shared_ptr.hpp>                   //so PImporter, PColorSpace are defined
@@ -47,12 +46,10 @@ class Video : public Structure
   
 public:  //typedef of the lazy guy
 
-  typedef filters::source::video::PImporter PImporter;
-
 
 public:  //structure::Video interface
 
-  filters::source::video::PImporter SetVideoInfo(VideoInfo& vi) const;
+  PImporter SetVideoInfo(VideoInfo& vi) const;
 
 
 private:  //helper method

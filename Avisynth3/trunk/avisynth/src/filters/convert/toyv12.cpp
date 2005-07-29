@@ -23,6 +23,7 @@
 
 //avisynth includes
 #include "toyv12.h"
+#include "toyv12/fromyuy2.h"
 #include "toyv12/fromrgb32.h"
 #include "../../core/videoinfo.h"
 #include "../../core/colorspace.h"
@@ -45,6 +46,7 @@ PClip ToYV12::Create(PClip const& child)
   switch( space->id() )
   {
   case ColorSpace::I_EXTERNAL: return FromExternal( child, colorspace::Get::YV12() );
+  case ColorSpace::I_YUY2:     return toyv12::FromYUY2::Create(child);
   case ColorSpace::I_RGB32:    return toyv12::FromRGB32::Create(child);
 
   default: throw exception::colorspace::Unsupported(space);

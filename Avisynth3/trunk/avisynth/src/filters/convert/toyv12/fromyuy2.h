@@ -37,7 +37,7 @@ namespace avs { namespace filters { namespace convert { namespace toyv12 {
 //
 //  YUYU2 to YV12 code path
 //
-class FromYUYU2 : public ToYV12
+class FromYUY2 : public ToYV12
 {
 
 public: //structors
@@ -51,6 +51,7 @@ public: //structors
 private:  //Convert method
 
   virtual void ConvertFrame(VideoFrame const& source, VideoFrame& target) const;
+  virtual void ConvertFrame(CWindowPtr src, WindowPtr Y, WindowPtr U, WindowPtr V) const;
 
 
 public:  //factory method

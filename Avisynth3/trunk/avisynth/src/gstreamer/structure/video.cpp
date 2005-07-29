@@ -27,10 +27,13 @@
 #include "video.h"
 #include "../../core/videoinfo.h"
 #include "../../core/colorspace.h"
+#include "../../core/colorspace/get.h"
+#include "../../core/utility/valuecache.h"
 #include "../../core/geometry/dimension.h"            //so Dimension is defined
+#include "../../core/utility/synchronizer/lock.h"
 #include "../../core/exception/colorspace/unknown.h"
-#include "../../filters/source/video/importer/interleaved.h"
-#include "../../filters/source/video/importer/gstyv12andi420.h"
+#include "../../core/colorspace/importer/planar_yuv.h"
+#include "../../core/colorspace/importer/interleaved.h"
 
 //stl include
 #include <string>
@@ -38,6 +41,33 @@
 
 namespace avs { namespace gstreamer { namespace structure {
 
+
+
+namespace {
+
+
+using namespace colorspace;
+
+Importer const * CreateRGB24Importer() { return new importer::interleaved<4>(Get::RGB24()); }
+Importer const * CreateRGB32Importer() { return new importer::interleaved<4>(Get::RGB32()); }
+Importer const * CreateYUY2Importer() { return new importer::interleaved<4>(Get::YUY2()); }
+Importer const * CreateI420Importer() { return new importer::planar_yuv<4, 2>(Get::YV12()); }
+Importer const * CreateYV12Importer() { return new importer::planar_yuv<4, 2>::SwapUV(Get::YV12()); }
+
+
+typedef utility::value_cache<Importer const, utility::synchronizer::lock<Importer> > ImporterCache;
+
+ImporterCache const rgb24(&CreateRGB24Importer);
+ImporterCache const rgb32(&CreateRGB32Importer);
+ImporterCache const yuy2(&CreateYUY2Importer);
+ImporterCache const i420(&CreateI420Importer);
+ImporterCache const yv12(&CreateYV12Importer);
+
+
+} //namespace anonymous
+
+
+using namespace colorspace;
 
 
 PImporter Video::SetVideoInfo(VideoInfo& vi) const
@@ -60,24 +90,22 @@ PImporter Video::SetVideoInfo(VideoInfo& vi) const
 
 PImporter Video::GetImporter() const
 {
-  using namespace avs::filters::source::video::importer;
-
   std::string name = GetName();
   
   if ( name == "video/x-raw-rgb" )
     switch ( GetIntField("bpp") )
     {
-    case 24: return Interleaved::RGB24.Get();
-    case 32: return Interleaved::RGB32.Get();
+    case 24: return rgb24.Get();
+    case 32: return rgb32.Get();
     default: break;
     }   
     
   if ( name == "video/x-raw-yuv" )
     switch ( GetFourCCField("format") )
 	  {
-	  case '21VY': return GstYV12AndI420::yv12.Get();
-	  case '024I': return GstYV12AndI420::i420.Get();
-	  case '2YUY': return Interleaved::YUY2.Get();
+	  case '21VY': return yv12.Get();
+	  case '024I': return i420.Get();
+	  case '2YUY': return yuy2.Get();
 	  default: break;
 	  }
   throw exception::cspace::Unknown();

@@ -49,12 +49,12 @@ void FromYUY2::ConvertFrame(VideoFrame const& source, VideoFrame& target) const
   src.to(0, -src.height); //we return to the beginning of the plane.
 
   //U and V plane
-  for ( int y = U.height; y-- > 0; U.pad(), V.pad(), src.pad() )
+  for ( int y = U.height; y-- > 0; U.pad(), V.pad(), src.skipPad() )
     for ( int x = U.width; x-- > 0; U.to(1, 0), V.to(1, 0), src.to(4, 0) )
     {
       // copy in a macropixel
-      U[0] = src[1];
-      V[0] = src[3];
+      U[0] = (src(1, 0) + src(1,1)) >> 1;
+      V[0] = (src(3, 0) + src(3,1)) >> 1;
     }
 }
 

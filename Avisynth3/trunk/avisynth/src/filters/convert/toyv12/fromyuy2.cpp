@@ -32,12 +32,11 @@ namespace avs { namespace filters { namespace convert { namespace toyv12 {
 
 void FromYUY2::ConvertFrame(VideoFrame const& source, VideoFrame& target) const
 {
+  ConvertFrame( source.ReadFrom('~'), target.WriteTo('Y'), target.WriteTo('U'), target.WriteTo('V') );
+}
 
-  WindowPtr src = source.WriteTo('~');
-  CWindowPtr Y = target.ReadFrom('Y');
-  CWindowPtr U = target.ReadFrom('U');
-  CWindowPtr V = target.ReadFrom('V');
-
+void FromYUY2::ConvertFrame(CWindowPtr src, WindowPtr Y, WindowPtr U, WindowPtr V) const
+{
   //Y plane
   for ( int y = src.height; y-- > 0; Y.pad(), src.pad() ) 
     for ( int x = src.width / 4; x-- > 0; src.to(4, 0), Y.to(2, 0) )

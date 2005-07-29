@@ -27,8 +27,10 @@
 //avisynth includes
 #include "../importer.h"
 #include "../yuv/planar.h"
-#include "../../core/ownedblock.h"
-#include "../../core/bufferwindow.h"
+#include "../../videoframe.h"
+#include "../../ownedblock.h"
+#include "../../bufferwindow.h"
+#include "../../cow_shared_ptr.h"   //so PVideoFrame is defined
 
 
 namespace avs { namespace colorspace { namespace importer {
@@ -75,6 +77,31 @@ public:  //Importer interface
     
     return space_->CreateFrame(dim, type, y, u, v);
   }
+
+
+public:  //SwapUV inner class
+
+  class SwapUV : public planar_yuv<alignY, alignUV>
+  {
+
+  public:  //structors
+
+    SwapUV(PColorSpace const& space) : planar_yuv<alignY, alignUV>( space ) { }
+    //generated destructor is fine
+
+
+  public:  //Importer interface
+
+    virtual CPVideoFrame CreateFrame(owned_block<1> const& block, Dimension const& dim, FrameType type) const
+    {
+      PVideoFrame result = planar_yuv<alignY, alignUV>::CreateFrame(block, dim, type);
+
+      swap((*result)['U'], (*result)['V']);
+
+      return result;
+    }
+
+  };
 
 };
 

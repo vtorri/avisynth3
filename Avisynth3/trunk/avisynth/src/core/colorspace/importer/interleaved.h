@@ -27,8 +27,8 @@
 //avisynth includes
 #include "../importer.h"
 #include "../interleaved.h"
-#include "../../core/ownedblock.h"
-#include "../../core/bufferwindow.h"
+#include "../../ownedblock.h"
+#include "../../bufferwindow.h"
 
 
 namespace avs { namespace colorspace { namespace importer {
@@ -48,7 +48,7 @@ template <int align> class interleaved : public Importer
 
 public:  //structors
 
-  Interleaved(PColorSpace const& space)
+  interleaved(PColorSpace const& space)
     : space_( boost::dynamic_pointer_cast<colorspace::Interleaved const>(space) ) { }
 
   //generated destructor is fine

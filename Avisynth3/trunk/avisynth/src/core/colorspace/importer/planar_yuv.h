@@ -50,7 +50,7 @@ template <long alignY, long alignUV> class planar_yuv : public Importer
 
 public:  //structors
 
-  Interleaved(PColorSpace const& space)
+  planar_yuv(PColorSpace const& space)
     : space_( boost::dynamic_pointer_cast<colorspace::yuv::Planar const>(space) ) { }
 
   //generated destructor is fine
@@ -62,8 +62,8 @@ public:  //Importer interface
 
   virtual CPVideoFrame CreateFrame(owned_block<1> const& block, Dimension const& dim, FrameType type) const
   {
-    Dimension dimY  = space_.ToPlaneDim(dim, 'Y');
-    Dimension dimUV = space_.ToPlaneDim(dim, 'U');
+    Dimension dimY  = space_->ToPlaneDim(dim, 'Y');
+    Dimension dimUV = space_->ToPlaneDim(dim, 'U');
 
     //split into independant blocks each containing a plane
     owned_block<1> blockY = block;

@@ -21,6 +21,9 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
+
 //avisynth includes
 #include "font.h"
 #include "../core/exception/generic.h"
@@ -80,3 +83,6 @@ void Font::HFONTDeleter::operator()(void * ptr) const { DeleteObject( *(HFONT *)
 
 
 } } //namespace avs::text
+
+
+#endif  //_WIN32

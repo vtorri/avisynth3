@@ -21,6 +21,9 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
+
 //avisynth includes
 #include "antialiaser.h"
 #include "../core/colorspace.h"
@@ -260,3 +263,6 @@ void Antialiaser::UpdateAlpha()
 
 
 } } //namespace avs::text
+
+
+#endif  //_WIN32

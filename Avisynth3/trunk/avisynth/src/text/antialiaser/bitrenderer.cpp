@@ -21,6 +21,9 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
+
 //avisynth include
 #include "bitrenderer.h"
 #include "../gethfont.h"
@@ -109,3 +112,6 @@ int BitRenderer::ToWinAlign(Align align)
 
 
 } } } //namespace avs::text::aliaser
+
+
+#endif  //_WIN32

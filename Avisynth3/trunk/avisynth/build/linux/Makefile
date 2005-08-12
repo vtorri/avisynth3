@@ -100,7 +100,7 @@ $(BUILD_DIR):
 #-----------------------------------------------------------------------------
 test: $(OBJECTS)
 	@echo "  Test"
-	@$(CXX) $(STLPORT_CFLAGS) $(BOOST_CFLAGS) $(FREETYPE_CFLAGS) $(FFMPEG_CFLAGS) $(GST_CFLAGS) $(CXXFLAGS) -L$(BUILD_DIR) -lavisynth $(STLPORT_LIBS) $(BOOST_LIBS) $(FFMPEG_LIBS) $(GST_LIBS) $(FREETYPE_LIBS) -o $(BUILD_DIR)/test ../../test/test.cpp
+	@$(CXX) $(AVS3_CPPFLAGS) $(CXXFLAGS) -L$(BUILD_DIR) -lavisynth $(AVS3_LIBS) -o $(BUILD_DIR)/test ../../test/test.cpp
 	@cd $(BUILD_DIR) && chmod u+x test
 
 #-----------------------------------------------------------------------------
@@ -110,7 +110,7 @@ test: $(OBJECTS)
 .cpp.$(OBJECT_EXTENSION):
 	@echo "  C: $(@D)/$(<F)"
 	@$(INSTALL) -d $(BUILD_DIR)/$(@D)
-	@$(CXX) -c $(ARCHITECTURE) $(BUS) $(ENDIANNESS) $(FEATURES) $(CORE_DEBUG_MODE_CFLAGS) $(FFMPEG_DEBUG_MODE_CFLAGS) $(SPECIFIC_CFLAGS) $(STLPORT_CFLAGS) $(BOOST_CFLAGS) $(FFMPEG_CFLAGS) $(GST_CFLAGS) $(FREETYPE_CFLAGS) $(CXXFLAGS) $< -o $(BUILD_DIR)/$@
+	@$(CXX) -c $(ARCHITECTURE) $(BUS) $(ENDIANNESS) $(FEATURES) $(AVS3_DEBUG_CFLAGS) $(AVS3_CPPFLAGS) $(AVS3_CXXFLAGS) $< -o $(BUILD_DIR)/$@
 
 
 #-----------------------------------------------------------------------------
@@ -139,7 +139,7 @@ $(STATIC_LIB): $(BUILD_DIR) $(OBJECTS)
 $(SHARED_LIB): $(BUILD_DIR) $(OBJECTS)
 	@echo "  L: $(@F)"
 	@$(INSTALL) -m 644 libavisynth.def $(BUILD_DIR)/libavisynth.def
-	@cd $(BUILD_DIR) && $(CXX) $(LDFLAGS) $(OBJECTS) -o $(PRE_SHARED_LIB) $(SPECIFIC_LDFLAGS) $(STLPORT_LIBS) $(BOOST_LIBS) $(FFMPEG_LIBS) $(GST_LIBS) $(FREETYPE_LIBS)
+	@cd $(BUILD_DIR) && $(CXX) $(LDFLAGS) $(OBJECTS) -o $(PRE_SHARED_LIB) $(SPECIFIC_LDFLAGS) $(AVS3_LIBS)
 
 #-----------------------------------------------------------------------------
 # Installation

@@ -72,7 +72,7 @@ void Action::CleanOldLast(CodeCouple& code, LocalContext& localCtxt, ExpressionV
 
   if ( !! localCtxt.template get<2>() )    //if there is an old last
   {
-    localCtxt.template get<2>() = boost::detail::none_t();  //no last now
+    localCtxt.template get<2>() = boost::none_t();  //no last now
 
     if ( expr.template get<1>() != 'v' )   //if expr actually stacked something
       code += functor::Swapper();          //make old last top of stack

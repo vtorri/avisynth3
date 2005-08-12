@@ -140,7 +140,7 @@ Statement::definition<Scanner>::definition(Statement const & self)
   subContextBlock
       =   spirit::eps_p
           [    //get rid of last inherited from upper context
-            third(subContextBlock.localCtxt) = val( boost::detail::none_t() )
+            third(subContextBlock.localCtxt) = val( boost::none_t() )
           ]
       >>  *   spirit::eol_p   //skip newlines
       >>  (   '{'     

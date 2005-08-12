@@ -33,7 +33,7 @@ namespace avs { namespace text { namespace rasterizer {
 void LineSpan::Realize(BYTE * ptr, int step) const
 {
   ptr += step * (begin >> 3);              //move ptr to where the span starts
-  long round = RoundUp<8>(begin);
+  long round = utility::RoundUp<8>(begin);
 
   if ( begin != round )                    //ie if begin is not a multiple of 8
   {

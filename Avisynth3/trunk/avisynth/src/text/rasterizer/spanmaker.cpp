@@ -44,8 +44,8 @@ void SpanMaker::StartPolygon(VecteurFP3 const& pt, bool clockWiseFill)
 
 void SpanMaker::LineTo(VecteurFP3 const& pt)
 {
-  long startY = RoundingShift<3>(lastPt_.y.get());
-  long endY   = RoundingShift<3>(pt.y.get());
+  long startY = utility::RoundingShift<3>(lastPt_.y.get());
+  long endY   = utility::RoundingShift<3>(pt.y.get());
 
   if ( startY != endY )         //horizontal edges doesn't yield spans, so no work then
   {
@@ -60,9 +60,9 @@ void SpanMaker::LineTo(VecteurFP3 const& pt)
 
     for ( long y = startY; y < endY; ++y, x += invSlope )
       if ( dy > 0 && clockWiseFill_ )        //if going up and clockwise fill
-        flipMap_[ y ].enter.push_back( static_cast<long>(RoundingShift<16>(x)) );   //enter transition
+        flipMap_[ y ].enter.push_back( static_cast<long>(utility::RoundingShift<16>(x)) );   //enter transition
       else
-        flipMap_[ y ].exit.push_back( static_cast<long>(RoundingShift<16>(x)) );    //else exit transition
+        flipMap_[ y ].exit.push_back( static_cast<long>(utility::RoundingShift<16>(x)) );    //else exit transition
   }
 
   lastPt_ = pt;          //update last point

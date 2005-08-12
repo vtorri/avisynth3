@@ -27,6 +27,7 @@
 //avisynth includes
 #include "../vmstate.h"
 #include "../../core/colorspace.h"
+#include "../../core/colorspace/get.h"
 #include "../../core/geometry/dimension.h"
 
 //boost includes

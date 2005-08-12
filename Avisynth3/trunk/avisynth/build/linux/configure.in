@@ -46,12 +46,12 @@ nasm_prog="nasm"
 
 dnl BOOST version requirement
 BOOST_VERSION_MAJOR="1"
-BOOST_VERSION_MINOR="32"
+BOOST_VERSION_MINOR="33"
 BOOST_VERSION="${BOOST_VERSION_MAJOR}_${BOOST_VERSION_MINOR}"
 
 dnl Gstreamer version requirement
-GST_REQS=0.8.7.1
-GSTPLUG_REQS=0.8.6.1
+GST_REQS=0.8.10.1
+GSTPLUG_REQS=0.8.10.1
 
 dnl Default CFLAGS -- Big impact on overall speed
 our_cxxflags_defaults="-O2 -Wall -fexceptions"
@@ -148,6 +148,7 @@ fi
 
 dnl Now we can safely check for the C++ compiler
 AC_LANG([C++])
+AC_PROG_CXX([${gpp}])
 AC_PROG_CXXCPP([${gpp}])
 
 dnl ==========================================================================
@@ -164,6 +165,7 @@ AC_TRY_LINK(
    [HAVE_GCC_VISIBILITY_FEATURE="-DHAVE_GCC_VISIBILITY_FEATURE"
     visibility="yes"],
    [visibility="no"])
+AC_MSG_RESULT(${visibility})
 CXXFLAGS=${save_CXXFLAGS}
 
 dnl ==========================================================================
@@ -570,7 +572,6 @@ dnl ==========================================================================
 GST_MAJORMINOR=0.8
 PKG_CHECK_MODULES(GST, \
    gstreamer-$GST_MAJORMINOR >= $GST_REQS \
-   gstreamer-gconf-$GST_MAJORMINOR >= $GSTPLUG_REQS \
    gstreamer-interfaces-$GST_MAJORMINOR >= $GSTPLUG_REQS,
    HAVE_GSTREAMER="yes", HAVE_GSTREAMER="no")
 

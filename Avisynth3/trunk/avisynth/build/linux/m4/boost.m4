@@ -49,15 +49,15 @@ AC_DEFUN([AM_CHECK_BOOST],
        boost_path="/usr/local"
     fi
     dnl We check the headers, then the library.
-    saved_CXXFLAGS="${CXXFLAGS}"
+    saved_CPPFLAGS="${CPPFLAGS}"
     saved_LDFLAGS="${LDFLAGS}"
-    CXXFLAGS="${CXXFLAGS} -I${boost_path}/include/boost-$1"
+    CPPFLAGS="${CPPFLAGS} -I${boost_path}/include/boost-$1"
     AC_CHECK_HEADER(
        [boost/config.hpp],
        [
         case "$2" in
            *bsd* | linux* | irix* | solaris* )
-              BOOST_LIB_NAME="boost_thread-gcc-mt-s-$1"
+              BOOST_LIB_NAME="boost_thread-gcc-mt-$1"
               LDFLAGS="${LDFLAGS} -L${boost_path}/lib/ -l${BOOST_LIB_NAME}"
               AC_CHECK_LIB(
                  [${BOOST_LIB_NAME}],
@@ -90,7 +90,7 @@ AC_DEFUN([AM_CHECK_BOOST],
         m4_if([$3], [], [:], [$3])],
        [AC_MSG_WARN(Boost headers not in ${boost_path}/include/boost-$1)
         m4_if([$4], [], [:], [$4])])
-    CXXFLAGS="${saved_CXXFLAGS}"
+    CPPFLAGS="${saved_CPPFLAGS}"
     LDFLAGS="${saved_LDFLAGS}"
     dnl
     dnl Substitution

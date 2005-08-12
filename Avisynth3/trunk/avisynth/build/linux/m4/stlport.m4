@@ -74,11 +74,11 @@ AC_DEFUN([AM_CHECK_STLPORT],
        stl_path="/usr/local"
     fi
     dnl We check the headers, then the library.
-    saved_CXXFLAGS="${CXXFLAGS}"
+    saved_CPPFLAGS="${CPPFLAGS}"
     saved_LDFLAGS="${LDFLAGS}"
-    CXXFLAGS="${CXXFLAGS} -I${stl_path}/include/stlport"
+    CPPFLAGS="${CPPFLAGS} -I${stl_path}/include/stlport"
     LDFLAGS="${LDFLAGS} -L${stl_path}/lib"
-    AC_CHECK_HEADER(
+    AC_CHECK_HEADERS(
        [stl_user_config.h],
        [AC_CHECK_LIB(
           [${STLPORT_LIB_NAME}],
@@ -91,7 +91,7 @@ AC_DEFUN([AM_CHECK_STLPORT],
         m4_if([$2], [], [:], [$2])],
        [AC_MSG_WARN(STLport headers not in ${stl_path}/include/stlport)
         m4_if([$3], [], [:], [$3])])
-    CXXFLAGS="${saved_CXXFLAGS}"
+    CPPFLAGS="${saved_CPPFLAGS}"
     LDFLAGS="${saved_LDFLAGS}"
     dnl
     dnl Substitution

@@ -77,7 +77,7 @@ AC_DEFUN([AM_CHECK_STLPORT],
     saved_CPPFLAGS="${CPPFLAGS}"
     saved_LDFLAGS="${LDFLAGS}"
     CPPFLAGS="${CPPFLAGS} -I${stl_path}/include/stlport"
-    LDFLAGS="${LDFLAGS} -L${stl_path}/lib"
+    LDFLAGS="${LDFLAGS} -L${stl_path}/lib -l${STLPORT_LIB_NAME}"
     AC_CHECK_HEADERS(
        [stl/_config.h],
        [AC_CHECK_LIB(

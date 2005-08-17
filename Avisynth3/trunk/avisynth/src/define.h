@@ -27,8 +27,8 @@
 
 # ifdef _MSC_VER
 
-#   define AVS_NORETURN  __declspec(noreturn)
 #   define AVS_NOVTABLE  __declspec(novtable)
+#   define AVS_NORETURN  __declspec(noreturn)
 #   define AVS_DLLEXPORT __declspec(dllexport)
 #   define AVS_DLLIMPORT __declspec(dllimport)
 #   define AVS_STDCALL   __stdcall

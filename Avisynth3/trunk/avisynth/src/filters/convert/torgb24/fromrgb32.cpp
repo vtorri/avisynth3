@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -30,11 +30,17 @@ namespace avs { namespace filters { namespace convert { namespace torgb24 {
 
 
 
+//equivalent nasm code
+extern "C" void convert_rgb32_to_rgb24_mmx_nasm
+    (BYTE const* src_ptr, BYTE * dst_ptr, int dst_width, int width, int dst_pitch, int src_pitch);
+
+
 void FromRGB32::ConvertFrame(VideoFrame const& source, VideoFrame& target) const
 {
-
   CWindowPtr src = source.ReadFrom('~');
   WindowPtr dst = target.WriteTo('~');
+
+#if ! defined(AVS_ALWAYS_USE_NASM)
 
   for ( int y = dst.height; y-- > 0; src.pad(), dst.pad() ) 
   {
@@ -44,8 +50,17 @@ void FromRGB32::ConvertFrame(VideoFrame const& source, VideoFrame& target) const
       dst[1] = src[1];
       dst[2] = src[2];
     }
-  } 
+  }
 
+#else
+
+  convert_rgb32_to_rgb24_mmx_nasm(source.ReadFrom('~'),
+				  target.WriteTo('~'),
+				  dst.height,
+				  dst.width,
+				  dst.pitch,
+				  src.pitch);
+#endif
 
 }
 

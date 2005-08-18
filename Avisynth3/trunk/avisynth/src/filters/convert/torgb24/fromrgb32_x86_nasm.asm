@@ -34,13 +34,19 @@ BITS 32
  %endif
 %endmacro
 
+;=============================================================================
+; Data
+;=============================================================================
+SECTION .rodata
+	oxooooooooooffffff:	DD 0x00FFFFFF, 0x0 
+	oxooffffffoooooooo:	DD 0x0,        0x00FFFFFF
 
 ;=============================================================================
 ; Symbols
 ;=============================================================================
 SECTION .text
 cglobal convert_rgb32_to_rgb24_mmx_nasm
-cglobal emms_
+; cglobal emms_
 
 ;=============================================================================
 ; Code
@@ -48,9 +54,9 @@ cglobal emms_
 SECTION .code
 
 ; void emms(void)
-emms_:
-    emms
-    ret
+;emms_:
+;emms
+;ret
 
 
 ;-----------------------------------------------------------------------------
@@ -74,9 +80,11 @@ convert_rgb32_to_rgb24_mmx_nasm:
 	mov	eax, [esp+20+12]	; dst_height
 	mov	ebp, [esp+20+16]	; width
 	mov	edx, ebp
-	and	edx, 3			; width % 4
-	movq	mm6, 0x0000000000ffffff	;
-	movq	mm7, 0x00ffffff00000000	;
+	and	edx, 3			; width [4]
+	and	ebp, -4			; width - width [4]
+	sal	ebp, 2			; (width - (width [4])) * 4
+	movq	mm6, [oxooooooooooffffff]
+	movq	mm7, [oxooffffffoooooooo]
 
 ALIGN 16
 .yloop:

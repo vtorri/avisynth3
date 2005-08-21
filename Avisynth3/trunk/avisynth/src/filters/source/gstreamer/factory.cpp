@@ -53,7 +53,7 @@ static void DetectPadsCallback(GObject * obj, GstPad * pad, gboolean last, void 
   
 static void NoMorePadsCallBack(GObject * obj, void * data)
 {
-  static_cast<avs::gstreamer::Element *>(data)->SetStatePaused();
+//   static_cast<avs::gstreamer::Element *>(data)->SetStatePaused();
 }
 
 

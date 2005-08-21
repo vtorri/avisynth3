@@ -28,6 +28,8 @@
 #include "../filters/source/colorbars.h"
 #ifdef _WIN32
 #include "../filters/source/avifilesource.h"
+#else
+#include "../filters/source/gstreamersource.h"
 #endif //_WIN32
 
 namespace avs { namespace functions {
@@ -39,14 +41,17 @@ using linker::core::Function;
 
 #ifdef _WIN32
 Function Source::aviFileSource( 'c', "AviFileSource", "s", adapt( filters::AviFileSource::Creator() ) );
+#else
+Function Source::gstreamerSource( 'c', "GstreamerSource", "sii", adapt( filters::GstreamerSource::Creator() ) );
 #endif //_WIN32
 Function Source::colorBars( 'c', "ColorBars", "ii", adapt( &filters::ColorBars::Create ) );
-
 
 void Source::RegisterAll(linker::core::Plugin& core)
 {
 #ifdef _WIN32
   core.Register(&aviFileSource);
+#else
+  core.Register(&gstreamerSource);
 #endif //_WIN32
   core.Register(&colorBars);
 }

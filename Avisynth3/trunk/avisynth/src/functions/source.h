@@ -42,9 +42,10 @@ struct Source
 
 #ifdef _WIN32
   static linker::core::Function aviFileSource;
+#else
+  static linker::core::Function gstreamerSource;
 #endif //_WIN32
   static linker::core::Function colorBars;
-
 
 private:  //functions register method
 

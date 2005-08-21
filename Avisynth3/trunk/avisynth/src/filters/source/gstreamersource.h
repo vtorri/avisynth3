@@ -26,12 +26,16 @@
 
 //avisynth includes
 #include "gstreamer/forward.h"                //for PPipeline
-#include "video/forward.h"                    //for PImporter
+#include "../../core/forward.h"               //for PImporter
 #include "../../clip/nochild.h"
 #include "../../clip/framemaker/concrete.h"
+#include "../../gstreamer/signalhandler.h"
 
 //stl include
 #include <string>
+
+
+typedef struct _GstBuffer GstBuffer;
 
 
 namespace avs { namespace filters {
@@ -48,11 +52,13 @@ class GstreamerSource : public clip::NoChild
 {
 
   CPVideoInfo vi_;
-  source::video::PImporter importer_;
+  PImporter importer_;
   source::gstreamer::PPipeline pipeline_;
+  avs::gstreamer::SignalHandler fillData_;
 
+  GstBuffer *buffer_;
 
-private:  //structors
+public:  //structors
 
   GstreamerSource(source::gstreamer::Factory const& factory, PEnvironment const& env);
 
@@ -66,14 +72,19 @@ public:  //Clip general interface
 
 public:  //FrameMaker interface
 
-  CPVideoFrame MakeFrame(int n) const;
+  CPVideoFrame MakeFrame(long int n) const;
 
+  BYTE * GetAudio(BYTE * buffer, long long start, long count) const;
+
+  void FillData(GstBuffer *buffer);
 
 public:  //factory functor
 
+  static PClip Create(std::string const& fileName, int videoIndex, int audioIndex, PEnvironment const& env);
+
   struct Creator
   {
-    PClip operator()(std::string const& fileName, PEnvironment const& env) const; 
+    PClip operator()(std::string const& fileName, int videoIndex, int audioIndex, PEnvironment const& env) const { return Create(fileName, videoIndex, audioIndex, env); }
   };
 
 };

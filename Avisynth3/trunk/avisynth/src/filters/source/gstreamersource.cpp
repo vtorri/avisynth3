@@ -25,7 +25,6 @@
 
 //avisynth includes
 #include "gstreamersource.h"
-#include "video/importer.h"
 #include "gstreamer/factory.h"
 #include "gstreamer/pipeline.h"
 #include "gstreamer/ownedholder.h"
@@ -33,36 +32,91 @@
 #include "../../core/forward.h"
 #include "../../core/videoinfo.h"
 #include "../../core/block/base.h"
-
+#include "../../gstreamer/bin.h"
+#include "../../gstreamer/object.h"
+#include "../../gstreamer/element.h"
+#include "../../core/colorspace/importer.h"
 
 
 namespace avs { namespace filters {
 
 
 
+namespace {
+
+
+
+static void FillDataCallback(GObject * obj, GstBuffer *buffer, GstPad * pad, void * data)
+{
+  static_cast<GstreamerSource *>(data)->FillData( buffer );
+}
+  
+
+} // anonymous namespace
+
+
 GstreamerSource::GstreamerSource(source::gstreamer::Factory const& factory, PEnvironment const& env)
   : clip::framemaker::Concrete( env )
   , vi_( factory.vi() )
   , importer_( factory.importer() )
-  , pipeline_( factory.pipeline() ) { }
+  , pipeline_( factory.pipeline() )
+  , fillData_( pipeline_->GetVideoSink(), "handoff", &FillDataCallback, this ) { }
 
 
-CPVideoFrame GstreamerSource::MakeFrame(int n) const
+CPVideoFrame GstreamerSource::MakeFrame(long int n) const
 {
-  PVideoFrame frame;
-  FrameType ft;
   Fraction fps = vi_->GetFPS();
-  GstBuffer *buffer = NULL;
+  avs::gstreamer::Element& elementPipeline = *pipeline_;
+  avs::gstreamer::Bin& binPipeline = *pipeline_;
 
   //seeking to the nth frame
-  pipeline_->GoToFrame (n, fps);
+  g_print ("we seek...\n");;
+  elementPipeline.SetStatePaused();
+  pipeline_->GoToFrame (n, fps);;
+  elementPipeline.SetStatePlaying();
   
-  //get the frame
-  g_object_get (G_OBJECT (pipeline_.get()), "frame", &buffer, NULL);
+  while ( binPipeline.Iterate() ) { }
 
-  return importer_->CreateFrame(vi_->GetDimension(),
-				owned_block<1>( new gstreamer::OwnedHolder(GetEnvironment(), *buffer) ));
+  g_print ("seek done\n");
+
+  return importer_->CreateFrame(owned_block<1>( new gstreamer::OwnedHolder(GetEnvironment(), *buffer_)),
+				vi_->GetDimension(),
+				PROGRESSIVE );
 }
+
+BYTE * GstreamerSource::GetAudio(BYTE * buffer, long long start, long count) const
+{
+  return NULL;
+}
+
+void GstreamerSource::FillData(GstBuffer *buffer)
+{
+  avs::gstreamer::Element& elementPipeline = *pipeline_;
+  float fps = vi_->GetFloatFPS();
+  long int frameNbr = pipeline_->GetFrameNbr();
+  
+  g_print ("on associe le buffer %d %d\n", GST_BUFFER_SIZE(buffer), 704*400+704*200);
+  g_print ("Timestamp :  %.3fs\n", (gdouble) GST_BUFFER_TIMESTAMP (buffer) / GST_SECOND);
+
+  if (GST_BUFFER_TIMESTAMP (buffer) < GST_SECOND * (((double)frameNbr - 0.5) / fps))
+  {
+    g_print ("skipping frame with timestamp %.5fs < %.5fs\n",
+	     (gdouble) GST_BUFFER_TIMESTAMP (buffer), GST_SECOND * (double)frameNbr / fps);
+    return;
+  }
+  elementPipeline.SetStatePaused();
+  buffer_ = buffer;
+}
+
+
+PClip GstreamerSource::Create(std::string const& fileName, int videoIndex, int audioIndex, PEnvironment const& env) 
+{ 
+  source::gstreamer::Factory factory(fileName, videoIndex, audioIndex);
+  
+  return PClip( static_cast<Clip *>(new GstreamerSource(factory, env)) ); 
+}
+
+
 
 } } //namespace avs::filters
 

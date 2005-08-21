@@ -48,12 +48,15 @@ namespace avs { namespace filters { namespace source { namespace gstreamer {
 class Pipeline : public avs::gstreamer::Pipeline
 {
 
+  long int frameNbr_;  // used in FillData
+
 public:  //access to elements
 
   avs::gstreamer::Element& GetDecoder();
   avs::gstreamer::Element& GetVideoSink();
   avs::gstreamer::Element& GetAudioSink();
   
+  long int GetFrameNbr() const { return frameNbr_; }
 
 public:  //factory method
 

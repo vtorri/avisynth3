@@ -82,24 +82,13 @@ avs::gstreamer::Element& Pipeline::GetVideoSink() { return *operator avs::gstrea
 avs::gstreamer::Element& Pipeline::GetAudioSink() { return *operator avs::gstreamer::Bin&().GetByName("asink"); }
 
 
-// void Pipeline::GoToFrame (int frame_number, Fraction& fps)
-// {
-//   GstSeekType   type = (GstSeekType)(GST_FORMAT_TIME   |
-// 				   GST_SEEK_METHOD_SET |
-// 				   GST_SEEK_FLAG_FLUSH);
-//   long long int time = 1000000000*frame_number*fps.numerator() / fps.denominator();
-//   if (!GetVideoSink().Seek(type, time)) { }
-
-//   type = (GstSeekType)(GST_FORMAT_TIME     |
-// 		       GST_SEEK_METHOD_SET |
-// 		       GST_SEEK_FLAG_FLUSH);
-//   GetAudioSink().Seek(type, time);
-// }
 void Pipeline::GoToFrame (int frame_number, Fraction& fps)
 {
   GstSeekType type = (GstSeekType)(GST_FORMAT_DEFAULT  |
 				   GST_SEEK_METHOD_SET |
 				   GST_SEEK_FLAG_FLUSH);
+
+  frameNbr_ = frame_number;
 
   //TODO: handle cases where there is no video or no audio
   if (!GetVideoSink().Seek(type, frame_number))

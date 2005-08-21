@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,16 @@
 
 
 
-//#define AVS_HAS_FFMPEGSOURCE 
+///////////////////////////////////////////////////////////////////////////////////
+//  GstreamerSource
+//
+//  so far only available on linux
+//
+#ifndef _WIN32
+#define AVS_HAS_GSTREAMER_SOURCE
+#endif
+
+#define AVS_PARSER_DEBUG
 
 
 #endif //__AVS_CONFIG_H__

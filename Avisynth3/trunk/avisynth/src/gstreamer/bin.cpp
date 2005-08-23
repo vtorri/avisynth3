@@ -21,7 +21,7 @@
 // General Public License cover the whole combination.
 
 
-#ifndef _WIN32
+#ifdef AVS_HAS_GSTREAMER_SOURCE
 
 //avisynth includes
 #include "bin.h"
@@ -52,4 +52,4 @@ Element * Bin::GetByName(char const * name)
 
 } } //namespace avs::gstreamer
 
-#endif //_WIN32
+#endif //AVS_HAS_GSTREAMER_SOURCE

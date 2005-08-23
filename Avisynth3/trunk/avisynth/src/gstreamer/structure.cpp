@@ -21,7 +21,7 @@
 // General Public License cover the whole combination.
 
 
-#ifndef _WIN32
+#ifdef AVS_HAS_GSTREAMER_SOURCE
 
 //avisynth includes
 #include "structure.h"
@@ -81,4 +81,4 @@ unsigned long Structure::GetFourCCField(char const * name) const
 
 } } //namespace avs::gstreamer
 
-#endif //_WIN32
+#endif //AVS_HAS_GSTREAMER_SOURCE

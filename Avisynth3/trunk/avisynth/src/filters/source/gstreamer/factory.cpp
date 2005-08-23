@@ -22,7 +22,7 @@
 // General Public License cover the whole combination.
 
 
-#ifndef _WIN32
+#ifdef AVS_HAS_GSTREAMER_SOURCE
 
 //avisynth includes
 #include "factory.h"
@@ -59,6 +59,7 @@ static void NoMorePadsCallBack(GObject * obj, void * data)
 
 void NotifyVideoCapsCallBack(GObject * o, GParamSpec * pspec, void * data)
 {
+  g_print ("notify video\n");
   avs::gstreamer::PStructure structure = static_cast<avs::gstreamer::Object *>(o)->AsPad().GetNegotiatedStructure();
 
   static_cast<Factory *>(data)->Set(static_cast<avs::gstreamer::structure::Video const&>(*structure));
@@ -107,7 +108,7 @@ Factory::Factory(std::string const& name, int videoIndex, int audioIndex)
 void Factory::PadDetected(avs::gstreamer::Pad& pad)
 {
   char const * mimeType = pad.GetStructure()->GetName();
-    
+  
   if ( g_str_has_prefix(mimeType, "video/") )
     videoChooser_.PadDetected(pad);
   else 
@@ -129,4 +130,4 @@ void Factory::Set(avs::gstreamer::structure::Audio const& audio)
 
 } } } } // namespace avs::filters::source::gstreamer
 
-#endif //_WIN32
+#endif //AVS_HAS_GSTREAMER_SOURCE

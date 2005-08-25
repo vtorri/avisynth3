@@ -21,6 +21,9 @@
 // General Public License cover the whole combination.
 
 
+//macro include
+#include "../config.h"
+
 #ifdef AVS_HAS_GSTREAMER_SOURCE
 
 //avisynth include

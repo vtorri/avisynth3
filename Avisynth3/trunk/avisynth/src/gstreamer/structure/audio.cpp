@@ -22,7 +22,7 @@
 
 
 //macro include
-#include "../config.h"
+#include "../../config.h"
 
 #ifdef AVS_HAS_GSTREAMER_SOURCE
 

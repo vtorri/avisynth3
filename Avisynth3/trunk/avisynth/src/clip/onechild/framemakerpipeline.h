@@ -43,12 +43,9 @@ class AVS_NOVTABLE FrameMakerPipeline : public virtual Pipeline
                                       , public virtual FrameMaker
 {
 
-  using Pipeline::MakeFrame;
-
-
 private:  //FrameMaker interface
 
-  virtual CPVideoFrame MakeFrame(long n) const
+  virtual CPVideoFrame operator()(long n) const
   {
     return MakeFrame(GetChild()->GetFrame(n));
   }

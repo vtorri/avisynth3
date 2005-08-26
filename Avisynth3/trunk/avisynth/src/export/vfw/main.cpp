@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -21,27 +21,46 @@
 // General Public License cover the whole combination.
 
 
-//avisynth include
-#include "base.h"
+#ifdef _WIN32
+
+//avisynth includes
+#include "base.h"                //for InstanceCounter
+#include "main.h"
+#include "avifilefactory.h"
 
 
-namespace avs { namespace com {
 
+//methods required of a COM dll
 
-
-ULONG Base::AddRef_()
-{ 
-  return ++refCount_;
-}
-
-ULONG Base::Release_()
+BOOL APIENTRY DllMain(HANDLE /*hModule*/, ULONG ulReason, LPVOID /*lpReserved*/) 
 {
-  ULONG ref = --refCount_;
-  if ( ref == 0 )
-    delete this;
-  return ref;
+	switch(ulReason) 
+  {
+	case DLL_PROCESS_ATTACH:
+		CoInitialize(NULL);
+		break;
+
+	case DLL_PROCESS_DETACH:
+		CoUninitialize();
+		break;
+	}
+
+  return TRUE;
+}
+
+
+STDAPI DllGetClassObject(CLSID const& rclsid, IID const& riid, void ** ppv)
+{
+  return rclsid == CLSID_CAVIFileSynth ? AviFileFactory::Create(riid, ppv)
+                                       : CLASS_E_CLASSNOTAVAILABLE;
+}
+
+
+STDAPI DllCanUnloadNow() 
+{
+  return InstanceCounter::Count() == 0 ? S_OK : S_FALSE;
 }
 
 
 
-} } //namespace avs::com
+#endif //_WIN32

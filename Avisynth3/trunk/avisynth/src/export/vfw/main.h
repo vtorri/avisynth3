@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -21,61 +21,18 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_COM_BASE_H__
-#define __AVS_COM_BASE_H__
-
-//avisynth include
-#include "../utility/instancecounted.h"
+#ifndef __AVS_EXPORT_VFW_MAIN_H__
+#define __AVS_EXPORT_VFW_MAIN_H__
 
 //windows includes
-#ifndef NOMINMAX
 #define NOMINMAX          //prevents generation of min and max macros
-#endif //NOMINMAX
 #include <initguid.h>
 #include <objbase.h>
 
-//boost include
-#include <boost/utility.hpp>
 
 
-namespace avs { namespace com {
-
-
-//declaration and typedef
-struct Tag { };
-typedef instance_counted<Tag> InstanceCounted;
+extern "C" GUID const CLSID_CAVIFileSynth;   // {E6D6B700-124D-11D4-86F3-DB80AFD98778}
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//  com::Base
-//
-//  a base class for implementations of COM interfaces
-//
-class Base : public boost::noncopyable
-{
-
-  ULONG refCount_;
-  InstanceCounted instCounted_;
-
-
-public:  //structors
-
-  Base()
-    : refCount_( 1 ) { }
-
-  virtual ~Base() { }
-
-
-protected:  //IUnknown like
-
-  ULONG AddRef_();
-	ULONG Release_();
-
-};
-
-
-
-} } //namespace avs::com
-
-#endif //__AVS_COM_BASE_H__
+#endif //__AVS_EXPORT_VFW_MAIN_H__

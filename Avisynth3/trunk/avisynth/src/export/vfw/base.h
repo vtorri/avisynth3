@@ -24,12 +24,13 @@
 #ifndef __AVS_EXPORT_VFW_BASE_H__
 #define __AVS_EXPORT_VFW_BASE_H__
 
-//avisynth include
+//avisynth includes
+#include "../../define.h"                           //for AVS_NOVTABLE
 #include "../../core/utility/instancecounter.h"
 
 //windows includes
 #ifndef NOMINMAX
-#define NOMINMAX          //prevents generation of min and max macros
+#define NOMINMAX                                    //prevents generation of min and max macros
 #endif //NOMINMAX
 #include <initguid.h>
 #include <objbase.h>
@@ -40,16 +41,16 @@ namespace avs { namespace export { namespace vfw {
 
 //declaration and typedef
 struct Avs3Tag { };
-typedef instance_counted<Avs3Tag> InstanceCounter;
+typedef instance_counter<Avs3Tag> InstanceCounter;
 
 
 
 //////////////////////////////////////////////////////////////////////////////
 //  Base
 //
-//  a base class for implementations of COM interfaces
+//  a base class for implementations of VFW COM interfaces
 //
-class Base
+class AVS_NOVTABLE Base
 {
 
   unsigned long refCount_;

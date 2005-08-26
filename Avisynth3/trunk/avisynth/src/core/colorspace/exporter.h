@@ -24,6 +24,9 @@
 #ifndef __AVS_COLORSPACE_EXPORTER_H__
 #define __AVS_COLORSPACE_EXPORTER_H__
 
+//avisynth include
+#include "../../define.h"                    //for AVS_NOVTABLE
+
 
 namespace avs { namespace colorspace {
 
@@ -34,7 +37,7 @@ namespace avs { namespace colorspace {
 //
 //
 //
-class Exporter
+class AVS_NOVTABLE Exporter
 {
 
 public:  //structors

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -251,7 +251,7 @@ private:  //implementation details
   void SelfBlit()
   {
     BufferWindowType temp( dim_, BufferCreator(buffer_) );  //make a new buffer
-    Blitter::Get()(Read(), temp.Write(), dim_);             //blit the data into it
+    Blitter::Get().Blit(Read(), temp.Write(), dim_);        //blit the data into it
     swap(temp);                                             //and replace self
   }
 

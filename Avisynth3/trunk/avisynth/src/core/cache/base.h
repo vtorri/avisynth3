@@ -82,7 +82,7 @@ private:  //reserved to the env
 
 protected:  //implementation helpers
 
-  CPVideoFrame MakeFrame(long n) const { return maker_(n); }
+  CPVideoFrame MakeFrame(long n) const { return make_(n); }
 
 };
 

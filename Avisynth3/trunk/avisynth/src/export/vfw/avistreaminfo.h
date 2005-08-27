@@ -21,68 +21,59 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_EXPORT_VFW_BASE_H__
-#define __AVS_EXPORT_VFW_BASE_H__
+#ifndef __AVS_EXPORT_VFW_AVISTREAMINFO_H__
+#define __AVS_EXPORT_VFW_AVISTREAMINFO_H__
 
-//avisynth includes
-#include "../../define.h"                           //for AVS_NOVTABLE
-#include "../../core/utility/instancecounter.h"
+//avs includes
+#include "forward.h"                          //for Exporter
+#include "../../import/avi/streamheader.h"
 
-//windows includes
-#ifndef NOMINMAX
-#define NOMINMAX                                    //prevents generation of min and max macros
-#endif //NOMINMAX
-#include <initguid.h>
-#include <objbase.h>
+struct IAVIStream;
 
 
 namespace avs { namespace export { namespace vfw {
 
 
-//declaration and typedef
-struct Avs3Tag { };
-typedef utility::instance_counter<Avs3Tag> InstanceCounter;
 
-
-
-//////////////////////////////////////////////////////////////////////////////
-//  Base
+/////////////////////////////////////////////////////////////////////////////////////
+//  AviStreamInfo
 //
-//  a base class for implementations of VFW COM interfaces
 //
-class AVS_NOVTABLE Base
+//
+struct AviStreamInfo : public import::avi::StreamHeader
 {
 
-  unsigned long refCount_;
-  InstanceCounter counter_;
+  unsigned long editCount;
+  unsigned long formatChangeCount;
+  wchar_t name[64];
 
 
 public:  //structors
 
-  Base() : refCount_( 1 ) { }
-  Base(Base const&) : refCount_( 1 ) { }
-
-  virtual ~Base() { }
+  AviStreamInfo();
+  AviStreamInfo(IAVIStream& stream);
 
 
-protected:  //IUnknown like
+public:  //inner subclasses
 
-  unsigned long AddRef_() 
-  { 
-    return ++refCount_; 
-  }
-	
-  unsigned long Release_()
-  {
-    unsigned long ref = --refCount_;
-    if ( ref == 0 )
-      delete this;
-    return ref;
-  }
+  struct Video;
+  struct Audio;
+
+};
+
+
+struct AviStreamInfo::Video : public AviStreamInfo
+{
+  Video(VideoInfo const& vi, Exporter const& exporter);
+};
+
+struct AviStreamInfo::Audio : public AviStreamInfo
+{
+  Audio(VideoInfo const& vi);
 };
 
 
 
 } } } //namespace avs::export::vfw
 
-#endif //__AVS_EXPORT_VFW_BASE_H__
+#endif //__AVS_EXPORT_VFW_AVISTREAMINFO_H__

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -44,33 +44,42 @@ class Blitter
 
 public:  //Blit methods
 
+  BYTE * Blit(CWindowPtr const& src, BYTE * ptr, int pitch) const
+  {
+    BYTE const * srcp = src.ptr;
+    BYTE * result = ptr;
+
+    Blit(srcp, src.pitch, result, pitch, Dimension(src.width, src.height));
+
+    return result;
+  }
+
+  BYTE const * Blit(BYTE const * src, int pitch, WindowPtr const& dst) const
+  {
+    BYTE const * result = src;
+    BYTE * dstp = dst.ptr;
+
+    Blit(result, pitch, dstp, dst.pitch, Dimension(dst.width, dst.height));
+
+    return result;
+  }
+
+  void Blit(CWindowPtr const& src, WindowPtr const& dst, Dimension const& dim) const
+  {
+    BYTE const * srcp = src.ptr;
+    BYTE * dstp = dst.ptr;
+
+    Blit(srcp, src.pitch, dstp, dst.pitch, dim);
+  }
+
+
   //others are implemented in terms of this version
-  virtual void operator()(BYTE const * srcp, int srcPitch, BYTE * dstp, int dstPitch, Dimension const& dim) const = 0;
-
-  void operator()(BYTE const * srcp, int srcPitch, BYTE * dstp, int dstPitch, int width, int height) const
-  {
-    operator()(srcp, srcPitch, dstp, dstPitch, Dimension(width, height));
-  }
-
-  void operator()(CWindowPtr const& src, BYTE * ptr, int pitch) const
-  {
-    operator()(src.ptr, src.pitch, ptr, pitch, Dimension(src.width, src.height));
-  }
-
-  void operator()(BYTE const * src, int pitch, WindowPtr& dst) const
-  {
-    operator()(src, pitch, dst.ptr, dst.pitch, Dimension(dst.width, dst.height));
-  }
-
-  void operator()(CWindowPtr const& src, WindowPtr const& dst, Dimension const& dim) const
-  {
-    operator()(src.ptr, src.pitch, dst.ptr, dst.pitch, dim);
-  }
+  //normally you never directly use this one
+  virtual void Blit(BYTE const *& srcp, int srcPitch, BYTE *& dstp, int dstPitch, Dimension const& dim) const = 0;
 
 
 public:  //access to instance
 
-  //plugin writers use RuntimeEnvironment::GetBlitter
   static Blitter const& Get();
 
 };

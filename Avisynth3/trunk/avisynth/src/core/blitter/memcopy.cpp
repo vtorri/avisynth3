@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2005 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ namespace avs { namespace blitter {
 
 
 
-void MemCopy::operator ()(BYTE const * srcp, int srcPitch, BYTE * dstp, int dstPitch, Dimension const& dim) const
+void MemCopy::Blit(BYTE const *& srcp, int srcPitch, BYTE *& dstp, int dstPitch, Dimension const& dim) const
 {
   if ( srcp != NULL && dstp != NULL && ! dim.empty() )
   {

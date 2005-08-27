@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 
 //avisynth includes
 #include "../cache.h"
-#include "../../clip/caching.h"
+#include "../framemaker.h"
 #include "../environment/base.h"
 
 
@@ -42,8 +42,7 @@ namespace avs { namespace cache {
 class Base : public Cache
 {
 
-  PEnvironment env_;           //owning environment
-  FrameMaker const& maker_;
+  FrameMaker const& make_;
 
 protected:
   
@@ -52,9 +51,9 @@ protected:
 
 public:  //structors
 
-  Base(boost::shared_ptr<environment::Base> const& env, FrameMaker const& maker)
-    : env_( env )
-    , maker_( maker )
+  Base(boost::shared_ptr<environment::Base> const& env, FrameMaker const& make)
+    : Cache( env )
+    , make_( make )
     , dropPriority_( 0.0 )
   {
     env->RegisterCache( this );
@@ -63,13 +62,8 @@ public:  //structors
 
   virtual ~Base()
   {
-    static_cast<environment::Base&>(*env_).UnregisterCache( this );
+    static_cast<environment::Base&>(*GetEnvironment()).UnregisterCache( this );
   }
-
-
-public:  //Cache interface
-
-  virtual PEnvironment const& GetEnvironment() const { return env_; }
 
 
 public:  //ordering (by drop priority)
@@ -88,7 +82,7 @@ private:  //reserved to the env
 
 protected:  //implementation helpers
 
-  CPVideoFrame MakeFrame(long n) const { return Cache::MakeFrame(maker_, n); }
+  CPVideoFrame MakeFrame(long n) const { return maker_(n); }
 
 };
 

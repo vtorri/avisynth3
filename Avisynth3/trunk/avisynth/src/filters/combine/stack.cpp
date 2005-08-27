@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -59,13 +59,13 @@ BYTE * Stack::GetAudio(BYTE * /*buf*/, long long /*start*/, long /*count*/) cons
 }
 
 
-CPVideoFrame Stack::MakeFrame(long n) const
+CPVideoFrame Stack::operator()(long n) const
 {
   CPVideoFrame left = GetLeftFrame(n);
   CPVideoFrame right = GetRightFrame(n);
 
   PEnvironment const& env = GetEnvironment();
-  Blitter const& blit = env->GetBlitter();
+  Blitter const& blitter = env->GetBlitter();
   PColorSpace space = left->GetColorSpace();
 
   PVideoFrame result = env->CreateFrame(*vi_, left->GetType());
@@ -76,8 +76,8 @@ CPVideoFrame Stack::MakeFrame(long n) const
   {
     WindowPtr dst = result->WriteTo(*it);
 
-    blit( left->ReadFrom(*it), dst.ptr, dst.pitch );
-    blit( right->ReadFrom(*it), dst.at(space->ToPlaneVect(shift, *it)), dst.pitch );
+    blitter.Blit( left->ReadFrom(*it), dst.ptr, dst.pitch );
+    blitter.Blit( right->ReadFrom(*it), dst.at(space->ToPlaneVect(shift, *it)), dst.pitch );
   }
 
   return result;

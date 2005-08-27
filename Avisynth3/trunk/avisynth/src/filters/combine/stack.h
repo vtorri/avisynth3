@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,7 @@
 // Linking Avisynth statically or dynamically with other modules is making a
 // combined work based on Avisynth.  Thus, the terms and conditions of the GNU
 // General Public License cover the whole combination.
+
 
 #ifndef __AVS_FILTERS_STACK_H__
 #define __AVS_FILTERS_STACK_H__
@@ -59,9 +60,9 @@ public:  //clip general interface
   virtual BYTE * GetAudio(BYTE * buffer, long long start, long count) const;
 
 
-private:  //MakeFrame method
+private:  //FrameMaker interface
 
-  virtual CPVideoFrame MakeFrame(long n) const;
+  virtual CPVideoFrame operator()(long n) const;
 
 
 private:  //Stack interface

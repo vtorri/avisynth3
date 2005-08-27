@@ -60,7 +60,7 @@ public:  //Cache interface
 
 protected:  //implementation helper method 
 
-  static CPVideoFrame MakeFrame(FrameMaker const& maker, long n) { return maker.MakeFrame(n); }
+  static CPVideoFrame MakeFrame(FrameMaker const& maker, long n) { return maker(n); }
 
 };
 

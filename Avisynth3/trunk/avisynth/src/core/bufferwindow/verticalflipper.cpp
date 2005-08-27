@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,7 @@ BufferWindow VerticalFlipper::operator ()(BufferWindow const& source) const
   src.to(0, src.height - 1 );   //move to last line
   src.pitch = - src.pitch;      //negate pitch (so it will blit bottom to top)           
 
-  Blitter::Get()( src, dst.ptr, dst.pitch );
+  Blitter::Get().Blit( src, dst.ptr, dst.pitch );
 
   return result;
 }

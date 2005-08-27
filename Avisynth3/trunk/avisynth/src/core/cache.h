@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,9 @@
 //avisynth includes
 #include "forward.h"              //for PEnvironment, CPVideoFrame
 #include "../define.h"            //for AVS_NOVTABLE
-#include "framemaker.h"
+
+//boost include
+#include <boost/shared_ptr.hpp>   //so PEnvironment, CPVideoFrame are defined
 
 
 namespace avs { 
@@ -42,25 +44,22 @@ namespace avs {
 class AVS_NOVTABLE Cache
 {
 
+  PEnvironment env_;
+
+
 public:  //structors
 
-  Cache() { }
+  Cache(PEnvironment const& env) : env_( env ) { }
   virtual ~Cache() { }
 
 
 public:  //Cache interface 
 
-  //fetch owning environment method
-  virtual PEnvironment const& GetEnvironment() const = 0;
+  PEnvironment const& GetEnvironment() const { return env_; }
 
   //search the frame in the cache
   //if not found, it should use a FrameMaker to make it
   virtual CPVideoFrame GetFrame(long n) = 0;
-
-
-protected:  //implementation helper method 
-
-  static CPVideoFrame MakeFrame(FrameMaker const& maker, long n) { return maker(n); }
 
 };
 

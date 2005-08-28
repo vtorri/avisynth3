@@ -95,7 +95,7 @@ private:  //implementation
 
 
 template <typename Tag> boost::mutex instance_counter<Tag>::mutex_;
-template <typename Tag> int instance_counter<Tag>::count_ = 0;
+template <typename Tag> unsigned long instance_counter<Tag>::count_ = 0;
 
 
 

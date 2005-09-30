@@ -134,10 +134,6 @@ AUTOMAKE=""
 AM_MAJOR=1
 AM_MINOR=7
 
-LIBTOOLIZE=""
-LT_MAJOR=1
-LT_MINOR=4
-
 case $OS in
     FreeBSD)
 	set_package_freebsd "autoconf" "$AC_MAJOR" "$AC_MINOR" "50 51 52 53 54 55 56 57 58 59"
@@ -146,8 +142,6 @@ case $OS in
 	ACLOCAL=$PACKAGE
 	set_package_freebsd "automake" "$AM_MAJOR" "$AM_MINOR" "7 8 9"
 	AUTOMAKE=$PACKAGE
-	set_package_freebsd "libtoolize" "$LT_MAJOR" "$LT_MINOR" "4 5"
-	LIBTOOLIZE=$PACKAGE
 	;;
     OpenBSD)
 	set_package_openbsd "autoconf" "$AC_MAJOR" "$AC_MINOR" "50 51 52 53 54 55 56 57 58 59"
@@ -156,8 +150,6 @@ case $OS in
 	ACLOCAL=$PACKAGE
 	set_package_openbsd "automake" "$AM_MAJOR" "$AM_MINOR" "7 8 9"
 	AUTOMAKE=$PACKAGE
-	set_package_openbsd "libtoolize" "$LT_MAJOR" "$LT_MINOR" "4 5"
-	LIBTOOLIZE=$PACKAGE
 	;;
     Linux|Darwin)
 	set_package_linux "autoconf" "$AC_MAJOR" "$AC_MINOR"
@@ -166,8 +158,6 @@ case $OS in
 	ACLOCAL="aclocal"
 	set_package_linux "automake" "$AM_MAJOR" "$AM_MINOR"
 	AUTOMAKE="automake"
-	set_package_linux "libtoolize" "$LT_MAJOR" "$LT_MINOR"
-	LIBTOOLIZE="libtoolize"
 	;;
     *)
 	echo "Operating system not supported."
@@ -186,9 +176,6 @@ $AUTOCONF
 echo " + Copying files provided by automake"
 $AUTOMAKE -c -a
 
-echo " + Copying files provided by libtool"
-$LIBTOOLIZE -f -c
-
 echo " + Removing files that are not needed"
 rm -rf autom4* 1>/dev/null 2>&1
-rm -rf ltmain.sh 1>/dev/null 2>&1
+

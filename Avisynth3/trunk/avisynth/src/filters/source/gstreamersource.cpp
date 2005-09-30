@@ -45,19 +45,6 @@ namespace avs { namespace filters {
 
 
 
-namespace {
-
-
-
-static void FillDataCallback(GObject * obj, GstBuffer *buffer, GstPad * pad, void * data)
-{
-  static_cast<GstreamerSource *>(data)->FillData( buffer );
-}
-  
-
-} // anonymous namespace
-
-
 GstreamerSource::GstreamerSource(source::gstreamer::Factory const& factory, PEnvironment const& env)
   : clip::framemaker::Concrete( env )
   , vi_( factory.vi() )
@@ -66,7 +53,7 @@ GstreamerSource::GstreamerSource(source::gstreamer::Factory const& factory, PEnv
   , fillData_( pipeline_->GetVideoSink(), "handoff", &FillDataCallback, this ) { }
 
 
-CPVideoFrame GstreamerSource::MakeFrame(long int n) const
+CPVideoFrame GstreamerSource::operator()(long int n) const
 {
   Fraction fps = vi_->GetFPS();
   avs::gstreamer::Element& elementPipeline = *pipeline_;
@@ -92,11 +79,12 @@ BYTE * GstreamerSource::GetAudio(BYTE * buffer, long long start, long count) con
   return NULL;
 }
 
-void GstreamerSource::FillData(GstBuffer *buffer)
+void GstreamerSource::FillDataCallback(GObject * obj, GstBuffer *buffer, GstPad * pad, void * data)
 {
-  avs::gstreamer::Element& elementPipeline = *pipeline_;
-  float fps = vi_->GetFloatFPS();
-  long int frameNbr = pipeline_->GetFrameNbr();
+  GstreamerSource const * this_ = static_cast<GstreamerSource *>(data);
+  avs::gstreamer::Element& elementPipeline = *this_->pipeline_;
+  float fps = this_->vi_->GetFloatFPS();
+  long int frameNbr = this_->pipeline_->GetFrameNbr();
   
   g_print ("on associe le buffer %d %d\n", GST_BUFFER_SIZE(buffer), 704*400+704*200);
   g_print ("Timestamp :  %.3fs\n", (gdouble) GST_BUFFER_TIMESTAMP (buffer) / GST_SECOND);
@@ -108,7 +96,7 @@ void GstreamerSource::FillData(GstBuffer *buffer)
     return;
   }
   elementPipeline.SetStatePaused();
-  buffer_ = buffer;
+  this_->buffer_ = buffer;
 }
 
 

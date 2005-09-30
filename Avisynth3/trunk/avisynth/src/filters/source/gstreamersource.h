@@ -36,6 +36,8 @@
 
 
 typedef struct _GstBuffer GstBuffer;
+typedef struct _GObject GObject;
+typedef struct _GstPad GstPad;
 
 
 namespace avs { namespace filters {
@@ -69,14 +71,18 @@ public:  //Clip general interface
 
   virtual CPVideoInfo GetVideoInfo() const { return vi_; }
 
+  virtual BYTE * GetAudio(BYTE * buffer, long long start, long count) const;
+
 
 public:  //FrameMaker interface
 
-  CPVideoFrame MakeFrame(long int n) const;
+  virtual CPVideoFrame operator()(long int n) const;
 
-  BYTE * GetAudio(BYTE * buffer, long long start, long count) const;
 
-  void FillData(GstBuffer *buffer);
+private:  //Gstreamer callback
+
+  static void FillDataCallback(GObject * obj, GstBuffer *buffer, GstPad * pad, void * data);
+
 
 public:  //factory functor
 

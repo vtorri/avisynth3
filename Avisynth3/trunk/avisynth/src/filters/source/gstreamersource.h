@@ -58,7 +58,7 @@ class GstreamerSource : public clip::NoChild
   source::gstreamer::PPipeline pipeline_;
   avs::gstreamer::SignalHandler fillData_;
 
-  GstBuffer *buffer_;
+  mutable GstBuffer *buffer_;
 
 public:  //structors
 

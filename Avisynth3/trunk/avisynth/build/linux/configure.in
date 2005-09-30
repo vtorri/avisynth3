@@ -32,7 +32,7 @@ AC_CANONICAL_TARGET
 
 AM_INIT_AUTOMAKE
 
-AC_CONFIG_SRCDIR([../../src/main.cpp])
+AC_CONFIG_SRCDIR([../../src/core.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 dnl Do not forget to increase that when needed.
@@ -54,7 +54,7 @@ GST_REQS=0.8.10.1
 GSTPLUG_REQS=0.8.10.1
 
 dnl Default CFLAGS -- Big impact on overall speed
-our_cxxflags_defaults="-O2 -Wall -Winline -fexceptions"
+our_cxxflags_defaults="-O2 -Wall -fexceptions"
 our_cxxflags_defaults="$our_cxxflags_defaults -fstrength-reduce"
 our_cxxflags_defaults="$our_cxxflags_defaults -finline-functions"
 our_cxxflags_defaults="$our_cxxflags_defaults -ffast-math"
@@ -582,11 +582,6 @@ case "$target_os" in
       fi
    ;;
 esac
-
-dnl We set AVS_HAS_GSTREAMER_SOURCE
-if test test "${HAVE_GSTREAMER}" = "yes" ; then
-   GST_CFLAGS="$GST_CFLAGS -DAVS_HAS_GSTREAMER_SOURCE"
-fi
 
 dnl ==========================================================================
 dnl FREETYPE header and library files

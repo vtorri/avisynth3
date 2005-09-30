@@ -58,7 +58,7 @@ AC_DEFUN([AM_CHECK_BOOST],
         case "$2" in
            *bsd* | linux* | irix* | solaris* )
               BOOST_LIB_NAME="boost_thread-gcc-mt-$1"
-              LDFLAGS="${LDFLAGS} -L${boost_path}/lib/ -l${BOOST_LIB_NAME}"
+              LDFLAGS="${LDFLAGS} -L${boost_path}/lib/}"
               AC_CHECK_LIB(
                  [${BOOST_LIB_NAME}],
                  [main],

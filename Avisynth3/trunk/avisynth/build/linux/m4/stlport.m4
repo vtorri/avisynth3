@@ -77,13 +77,13 @@ AC_DEFUN([AM_CHECK_STLPORT],
     saved_CPPFLAGS="${CPPFLAGS}"
     saved_LDFLAGS="${LDFLAGS}"
     CPPFLAGS="${CPPFLAGS} -I${stl_path}/include/stlport"
-    LDFLAGS="${LDFLAGS} -L${stl_path}/lib ${STLPORT_LIB_NAME}"
+    LDFLAGS="${LDFLAGS} -L${stl_path}/lib"
     AC_CHECK_HEADERS(
        [stl/_config.h],
        [AC_CHECK_LIB(
           [${STLPORT_LIB_NAME}],
           [main],
-          [STLPORT_LIBS="-L${stl_path}/lib ${STLPORT_LIB_NAME}"],
+          [STLPORT_LIBS="-L${stl_path}/lib -l${STLPORT_LIB_NAME}"],
           [AC_MSG_WARN(STLport library not in ${stl_path}/lib)
            m4_if([$3], [], [:], [$3])])
         STLPORT_CFLAGS="-I${stl_path}/include/stlport"

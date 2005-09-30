@@ -30,14 +30,14 @@ namespace avs { namespace parser {
 
 
 
-void VMCode<ElementalOperation>::operator()(VMState& state) const
+template <> void VMCode<ElementalOperation>::operator()(VMState& state) const
 {
   for( OperationVector::const_iterator it = code_.begin(); it != code_.end(); ++it )
     (*it)(state);
 }
 
 
-OpType VMCode<StatementOperation>::operator()(VMState& state) const
+template <> OpType VMCode<StatementOperation>::operator()(VMState& state) const
 {
   OpType result = NORMAL;
   OperationVector::const_iterator it = code_.begin();

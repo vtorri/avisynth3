@@ -495,22 +495,29 @@ version. First we have to download the cvs code of STLPort:
 @code
 cd
 cd avs_main_dir
-cvs -d :pserver:cvs@cvs.stlport.com:/stlport login
+ cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/stlport login
 @endcode
 A password will be required. Just strike the \em Enter key. Then,
 download the code with that command:
 @code
-cvs -d :pserver:cvs@cvs.stlport.com:/stlport co -rSTLPORT_5_0 STLport
+cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/stlport co -r STLPORT_5_0 STLport/
+
 @endcode
-Then, go to the directory where \em gcc.mak is located. When this
-document has been written, it was in the \em src/explore directory:
+Then, go to the directory STLport/build/lib:
 @code
-cd STLport/src/explore
+cd STLport/build/lib
 @endcode
 To compile the code, execute the following commands:
 @code
 make -f gcc.mak depend
+make -f gcc.mak
+make -f gcc.mak release-static
+make -f gcc.mak dbg-static
+make -f gcc.mak stldbg-static
 make -f gcc.mak install
+make -f gcc.mak install-release-static
+make -f gcc.mak install-dbg-static
+make -f gcc.mak install-stldbg-static
 @endcode
 The libraries are located in \em STLport/lib and the headers in \em
 STLport/stlport.\n

@@ -83,7 +83,7 @@ public:  //FinalSimplify method
     this->FinalSimplifyChild();
 
     boost::shared_ptr<FinalRefactorable<SubClip> const> isRef
-      = boost::dynamic_pointer_cast<FinalRefactorable<SubClip> const>( GetChild() );
+      = boost::dynamic_pointer_cast<FinalRefactorable<SubClip> const>( this->GetChild() );
 
     return (! isRef ) ? this->shared_from_this()
                       : isRef->FinalRefactor( dynamic_cast<SubClip const&>(*this) );

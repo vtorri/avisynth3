@@ -51,7 +51,7 @@ StatementCode Parser::operator()(std::string const& src)
   LocalContext localCtxt;
   GlobalContext globalCtxt;
 
-  globalCtxt.template get<1>().AddPlugin(linker::core::Plugin::Get());
+  globalCtxt.get<1>().AddPlugin(linker::core::Plugin::Get());
 
   Script script;
   //Statement statement;

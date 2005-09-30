@@ -29,6 +29,9 @@
 #include "../../../gstreamer/forward.h"         //for Pad, Element declarations
 #include "../../../gstreamer/signalhandler.h"
 
+//stlport includes
+#include <cstddef>
+
 //some gstreamer forward declarations
 typedef struct _GObject GObject;
 typedef struct _GParamSpec GParamSpec;

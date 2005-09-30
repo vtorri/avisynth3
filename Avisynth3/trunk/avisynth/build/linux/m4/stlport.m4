@@ -40,14 +40,22 @@ AC_DEFUN([AM_CHECK_STLPORT],
     case "$1" in
        *bsd* | linux* | irix* | solaris* )
           if test "x${use_stlport5}" = "xyes" ; then
-             STLPORT_LIB_NAME="stlportg"
+             if test x"${core_debug_mode}" = x"yes" ; then
+                STLPORT_LIB_NAME="stlportg"
+             else
+                STLPORT_LIB_NAME="stlport"
+             fi
           else
              STLPORT_LIB_NAME="stlport_gcc"
           fi
        ;;
        [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
           if test "x${use_stlport5}" = "xyes" ; then
-             STLPORT_LIB_NAME="stlportg"
+             if test x"${core_debug_mode}" = x"yes" ; then
+                STLPORT_LIB_NAME="stlportg"
+             else
+                STLPORT_LIB_NAME="stlport"
+             fi
           else
              STLPORT_LIB_NAME="stlport_mingw32_static"
           fi

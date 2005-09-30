@@ -22,7 +22,12 @@ AC_DEFUN([AM_CHECK_BOOST],
     dnl
     case "$2" in
        *bsd* | linux* | irix* | solaris* )
-          BOOST_LIB_NAME="boost_thread-gcc-mt-s-$1"
+          if test x"${core_debug_mode}" = x"yes" ; then
+             BOOST_LIB_NAME="boost_thread-gcc-mt-d-$1"
+          else
+             BOOST_LIB_NAME="boost_thread-gcc-mt-$1"
+          fi
+          
        ;;
        [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
           BOOST_LIB_NAME="boost_thread-mgw-mt-$1.dll"
@@ -57,7 +62,6 @@ AC_DEFUN([AM_CHECK_BOOST],
        [
         case "$2" in
            *bsd* | linux* | irix* | solaris* )
-              BOOST_LIB_NAME="boost_thread-gcc-mt-$1"
               LDFLAGS="${LDFLAGS} -L${boost_path}/lib/}"
               AC_CHECK_LIB(
                  [${BOOST_LIB_NAME}],

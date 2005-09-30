@@ -47,7 +47,8 @@ template <typename Functor, typename FunctorMethodPtr>
 typename adaptor::adaptor<typename adaptor::caller<Functor, typename adaptor::decayer<FunctorMethodPtr>::type> >
 adapt(Functor const& functor, FunctorMethodPtr)
 {
-  return typename adaptor::adaptor<typename adaptor::caller<Functor, typename adaptor::decayer<FunctorMethodPtr>::type> >(functor);
+  typedef typename adaptor::adaptor<typename adaptor::caller<Functor, typename adaptor::decayer<FunctorMethodPtr>::type> > my_type;
+  return my_type(functor);
 }
 
 

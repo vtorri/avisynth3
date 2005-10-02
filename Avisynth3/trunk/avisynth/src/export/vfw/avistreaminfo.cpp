@@ -36,7 +36,7 @@
 #include <assert.h>
 
 
-namespace avs { namespace export { namespace vfw {
+namespace avs { namespace export_ { namespace vfw {
 
 
 
@@ -88,4 +88,4 @@ AviStreamInfo::Audio::Audio(VideoInfo const& vi)
 
 
 
-} } } //namespace avs::export::vfw
+} } } //namespace avs::export_::vfw

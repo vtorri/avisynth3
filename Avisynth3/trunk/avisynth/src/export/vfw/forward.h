@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -21,59 +21,30 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_EXPORT_VFW_AVISTREAMINFO_H__
-#define __AVS_EXPORT_VFW_AVISTREAMINFO_H__
+#ifndef __AVS_EXPORT_VFW_FORWARD_H__
+#define __AVS_VFW_FORWARD_H__
 
-//avs includes
-#include "forward.h"                          //for Exporter
-#include "../../import/avi/streamheader.h"
 
-struct IAVIStream;
+namespace boost { template <typename T> class shared_ptr; }
 
 
 namespace avs { namespace export_ { namespace vfw {
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////
-//  AviStreamInfo
-//
-//
-//
-struct AviStreamInfo : public import::avi::StreamHeader
-{
+//declarations
+class Exporter;
+class AviStream;
+class WaveFormatEx;
+class BitmapInfoHeader;
 
-  unsigned long editCount;
-  unsigned long formatChangeCount;
-  wchar_t name[64];
-
-
-public:  //structors
-
-  AviStreamInfo();
-  AviStreamInfo(IAVIStream& stream);
-
-
-public:  //inner subclasses
-
-  struct Video;
-  struct Audio;
-
-};
-
-
-struct AviStreamInfo::Video : public AviStreamInfo
-{
-  Video(VideoInfo const& vi, Exporter const& exporter);
-};
-
-struct AviStreamInfo::Audio : public AviStreamInfo
-{
-  Audio(VideoInfo const& vi);
-};
+//typedefs
+typedef boost::shared_ptr<Exporter const> PExporter;
+typedef boost::shared_ptr<WaveFormatEx> PWaveFormatEx;
+typedef boost::shared_ptr<BitmapInfoHeader> PBitmapInfoHeader;
 
 
 
 } } } //namespace avs::export_::vfw
 
-#endif //__AVS_EXPORT_VFW_AVISTREAMINFO_H__
+#endif //__AVS_EXPORT_VFW_FORWARD_H__

@@ -23,9 +23,9 @@
 
 //avisynth includes
 #include "interleaved.h"
-#include "../../core/blitter.h"
-#include "../../core/videoframe.h"
-#include "../../core/utility/round.h"
+#include "../../../core/blitter.h"
+#include "../../../core/videoframe.h"
+#include "../../../core/utility/round.h"
 
 
 namespace avs { namespace export_ { namespace vfw { namespace exporter {

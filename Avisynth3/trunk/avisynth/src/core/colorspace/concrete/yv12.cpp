@@ -23,9 +23,9 @@
 
 //avisynt includes
 #include "yv12.h"
-#include "../../../vfw/exporter/yv12.h"
 #include "../../exception/nosuchplane.h"
 #include "../../videoframe/concrete/yv12.h"
+#include "../../../export/vfw/exporter/yv12.h"
 #include "../../exception/colorspace/unsupported.h"
 #include "../../exception/colorspace/invalidwidth.h"
 #include "../../exception/colorspace/invalidheight.h"

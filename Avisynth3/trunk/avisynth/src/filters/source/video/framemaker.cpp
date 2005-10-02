@@ -21,6 +21,8 @@
 // General Public License cover the whole combination.
 
 
+#if 0
+
 //avisynth includes
 #include "importer.h"
 #include "framemaker.h"
@@ -38,3 +40,5 @@ CPVideoFrame FrameMaker::MakeFrame(long n) const
 
 
 } } } } //namespace avs::filters::source::video
+
+#endif

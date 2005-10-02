@@ -28,7 +28,7 @@
 #include "base.h"
 
 
-namespace avs { namespace export { namespace vfw { namespace exporter {
+namespace avs { namespace export_ { namespace vfw { namespace exporter {
 
 
 
@@ -55,6 +55,6 @@ private:  //Base interface
 
 
 
-} } } } //namespace avs::export::vfw::exporter
+} } } } //namespace avs::export_::vfw::exporter
 
 #endif //__AVS_EXPORT_VFW_EXPORTER_YV12_H__

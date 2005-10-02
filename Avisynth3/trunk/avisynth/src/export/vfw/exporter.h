@@ -29,7 +29,7 @@
 #include "../../core/colorspace/exporter.h"
 
 
-namespace avs { namespace export { namespace vfw {
+namespace avs { namespace export_ { namespace vfw {
 
 
 
@@ -58,6 +58,6 @@ public:  //vfw::Exporter interface
 
 
 
-} } } //namespace avs::export::vfw
+} } } //namespace avs::export_::vfw
 
 #endif //__AVS_EXPORT_VFW_EXPORTER_H__

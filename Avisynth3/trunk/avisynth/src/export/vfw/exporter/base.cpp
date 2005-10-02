@@ -27,7 +27,7 @@
 #include "../../../core/videoinfo.h"
 
 
-namespace avs { namespace export { namespace vfw { namespace exporter {
+namespace avs { namespace export_ { namespace vfw { namespace exporter {
 
 
 
@@ -43,4 +43,4 @@ void Base::ExportFrame(long n, BYTE * ptr) const
 
 
 
-} } } } //namespace avs::export::vfw::exporter
+} } } } //namespace avs::export_::vfw::exporter

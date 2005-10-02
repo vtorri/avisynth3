@@ -28,7 +28,7 @@
 #include "../../core/utility/round.h"
 
 
-namespace avs { namespace export { namespace vfw { namespace exporter {
+namespace avs { namespace export_ { namespace vfw { namespace exporter {
 
 
 
@@ -47,5 +47,5 @@ void Interleaved::ExportFrame(VideoFrame const& frame, BYTE * ptr) const
 
 
 
-} } } } //namespace avs::export::vfw::exporter
+} } } } //namespace avs::export_::vfw::exporter
 

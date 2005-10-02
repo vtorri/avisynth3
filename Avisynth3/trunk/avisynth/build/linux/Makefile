@@ -52,22 +52,22 @@ RM = rm -rf
 ##############################################################################
 
 # Their Objects
-OBJECTS  = $(GENERIC_OBJECTS)
-OBJECTS += $(ASSEMBLY_OBJECTS)
-OBJECTS += $(DCT_IA64_OBJECTS)
+BIN_OBJECTS  = $(GENERIC_BIN_OBJECTS)
+LIB_OBJECTS  = $(GENERIC_LIB_OBJECTS)
+ASM_OBJECTS  = $(ASSEMBLY_OBJECTS)
 
 # The VPATH mechanism could use a "per target" build directory
 # To keep it simple at the moment, the directory is fixed to "build"
-BUILD_DIR = bin
+BUILD_DIR = build
 VPATH     = $(SRC_DIR):$(BUILD_DIR)
 
 #-----------------------------------------------------------------------------
 # The default rule
 #-----------------------------------------------------------------------------
 
-.SUFFIXES: .$(OBJECT_EXTENSION) .$(ASSEMBLY_EXTENSION) .c
+.SUFFIXES: .$(OBJECT_EXTENSION) .$(ASSEMBLY_EXTENSION) .cpp
 
-all: $(STATIC_LIB) $(SHARED_LIB)
+all: $(STATIC_LIB) $(SHARED_LIB) $(PROG)
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo " Avisynth has been successfully built."
@@ -77,6 +77,7 @@ all: $(STATIC_LIB) $(SHARED_LIB)
 	@echo "   as root."
 	@echo "---------------------------------------------------------------"
 	@echo
+	@echo " * Installation......: make install"
 	@echo " * Install path......: $(prefix)"
 	@echo
 
@@ -96,15 +97,7 @@ $(BUILD_DIR):
 	@$(AS) $(AFLAGS) $< -o $(BUILD_DIR)/$@
 
 #-----------------------------------------------------------------------------
-# Test
-#-----------------------------------------------------------------------------
-test: $(OBJECTS)
-	@echo "  Test"
-	@$(CXX) $(AVS3_CPPFLAGS) $(CXXFLAGS) -L$(BUILD_DIR) -lavisynth $(AVS3_LIBS) -o $(BUILD_DIR)/test ../../test/test.cpp
-	@cd $(BUILD_DIR) && chmod u+x test
-
-#-----------------------------------------------------------------------------
-# Generic C rule
+# Generic C++ rule
 #-----------------------------------------------------------------------------
 
 .cpp.$(OBJECT_EXTENSION):
@@ -117,7 +110,7 @@ test: $(OBJECTS)
 # Static Library
 #-----------------------------------------------------------------------------
 
-$(STATIC_LIB): $(BUILD_DIR) $(OBJECTS)
+$(STATIC_LIB): $(BUILD_DIR) $(LIB_OBJECTS) $(ASM_OBJECTS)
 	@echo "  L: $(@F)"
 	@cd $(BUILD_DIR) && ar rc $(@F) $(OBJECTS) && $(RANLIB) $(@F)
 
@@ -136,16 +129,28 @@ $(STATIC_LIB): $(BUILD_DIR) $(OBJECTS)
 #      platforms
 #-----------------------------------------------------------------------------
 
-$(SHARED_LIB): $(BUILD_DIR) $(OBJECTS)
+$(SHARED_LIB): $(BUILD_DIR) $(LIB_OBJECTS) $(ASM_OBJECTS)
 	@echo "  L: $(@F)"
 	@$(INSTALL) -m 644 libavisynth.def $(BUILD_DIR)/libavisynth.def
 	@cd $(BUILD_DIR) && $(CXX) $(LDFLAGS) $(OBJECTS) -o $(PRE_SHARED_LIB) $(SPECIFIC_LDFLAGS) $(AVS3_LIBS)
 
 #-----------------------------------------------------------------------------
+# Test program
+#-----------------------------------------------------------------------------
+$(PROG): $(BUILD_DIR)  $(LIB_OBJECTS) $(ASM_OBJECTS) $(BIN_OBJECTS)
+	@echo "  P: $(@F)"
+	@$(CXX) $(AVS3_CPPFLAGS) $(CXXFLAGS) -L$(BUILD_DIR) -lavisynth $(AVS3_LIBS) -o $(BUILD_DIR)/$(PROG) $(PROG).cpp
+	@cd $(BUILD_DIR) && chmod u+x $(PROG)
+
+#-----------------------------------------------------------------------------
 # Installation
 #-----------------------------------------------------------------------------
 
-install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB)
+install: $(BUILD_DIR)/$(PROG) $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB)
+	@echo "  D: $(bindir)"
+	@$(INSTALL) -d $(bindir)
+	@echo "  I: $(bindir)/$(BIN_OBJECT)"
+	@$(INSTALL) -m 755 $(BUILD_DIR)/$(BIN_OBJECT) $(bindir)/$(BIN_OBJECT)
 	@echo "  D: $(libdir)"
 	@$(INSTALL) -d $(libdir)
 	@echo "  I: $(libdir)/$(SHARED_LIB)"
@@ -175,7 +180,7 @@ configure:
 #-----------------------------------------------------------------------------
 
 .PHONY: mrproper distclean clean info \
-	list-objects list-targets list-install-path list-cflags
+	list-objects list-targets list-install-path list-flags
 
 clean:
 	@echo "  Cl: Build directory"
@@ -225,17 +230,26 @@ list-install-path:
 	@echo "Install Paths"
 	@echo "---------------------------------------------------------------"
 	@echo
+	@echo Binary  Directory: $(bindir)
 	@echo Include Directory: $(includedir)
 	@echo Library Directory: $(libdir)
 	@echo
 
-list-cflags:
+list-flags:
 	@echo
 	@echo "---------------------------------------------------------------"
-	@echo "Using CFLAGS"
+	@echo "Using FLAGS"
 	@echo "---------------------------------------------------------------"
 	@echo
-	@echo CFLAGS=$(CFLAGS)
+	@echo CXXFLAGS=$(CXXFLAGS) $(SPECIFIC_CFLAGS)
+	@echo
+	@echo STLPORT_CFLAGS=$(STLPORT_CFLAGS)
+	@echo
+	@echo BOOST_CFLAGS=$(BOOST_CFLAGS)
+	@echo
+	@echo GST_CFLAGS=$(GST_CFLAGS)
+	@echo
+	@echo FREETYPE_CFLAGS=$(FREETYPE_CFLAGS)
 	@echo
 
-info: list-objects list-cflags list-targets list-install-path
+info: list-objects list-flags list-targets list-install-path

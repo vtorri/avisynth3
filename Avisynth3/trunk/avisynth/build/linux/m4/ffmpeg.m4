@@ -124,7 +124,7 @@ AC_DEFUN([AM_CHECK_FFMPEG],
     dnl
     FFMPEG_SOURCE_FILE_ADD=
     if test "x${ffmpeg_enable}" = "xyes" ; then
-       FFMPEG_SOURCE_FILE_ADD="echo   filters/source/ffmpegsource.cpp >> sources.inc"
+       FFMPEG_SOURCE_FILE_ADD="echo filters/source/ffmpegsource.cpp >> sources.inc"
     fi
     dnl
     dnl Substitution

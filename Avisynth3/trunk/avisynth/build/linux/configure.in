@@ -299,6 +299,7 @@ case "$target_os" in
 	STATIC_LIB="libavisynth.\$(STATIC_EXTENSION)"
 	SHARED_LIB="libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR).\$(API_MINOR)"
 	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR) -shared -lc -lm -lrt -ldl"
+	PROG="avisynth_test"
 	SPECIFIC_CFLAGS="-pthread -fPIC"
 	GEN_SOURCES="/com\\\\/d;/vfw\\\\/d;"
 	;;
@@ -354,7 +355,6 @@ dnl ==========================================================================
 AS=""
 AFLAGS=""
 ASSEMBLY_EXTENSION=""
-GENERIC_SOURCES="SRC_GENERIC"
 ASSEMBLY_SOURCES=""
 
 dnl
@@ -660,6 +660,15 @@ fi
 
 dnl ==========================================================================
 dnl
+dnl SOURCES
+dnl
+dnl ==========================================================================
+
+GENERIC_BIN_SOURCES="SRC_BIN_GENERIC"
+GENERIC_LIB_SOURCES="SRC_LIB_GENERIC"
+
+dnl ==========================================================================
+dnl
 dnl Substitions
 dnl
 dnl ==========================================================================
@@ -695,7 +704,8 @@ AC_SUBST(VERSION)
 AC_SUBST(STATIC_LIB)
 AC_SUBST(PRE_SHARED_LIB)
 AC_SUBST(SHARED_LIB)
-AC_SUBST(GEN_SOURCES)
+AC_SUBST(GENERIC_BIN_SOURCES)
+AC_SUBST(GENERIC_LIB_SOURCES)
 
 dnl ==========================================================================
 dnl

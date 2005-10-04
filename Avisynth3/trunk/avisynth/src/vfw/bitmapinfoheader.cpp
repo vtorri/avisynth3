@@ -21,6 +21,8 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
 //avisynth includes
 #include "exporter.h"
 #include "bitmapinfoheader.h"
@@ -104,3 +106,7 @@ void BitmapInfoHeader::Init(Dimension const& dim)
 
 
 } } //namespace avs::vfw
+
+
+
+#endif //_WIN32

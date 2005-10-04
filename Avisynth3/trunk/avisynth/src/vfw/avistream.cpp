@@ -21,6 +21,8 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
 //avisynth includes
 #include "avifile.h"
 #include "avistream.h"
@@ -118,3 +120,7 @@ void AviStream::MakeErrorStream(std::string const& msg)
 
 
 } } //namespace avs::vfw
+
+
+
+#endif //_WIN32

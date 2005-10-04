@@ -21,6 +21,8 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
 //avisynth includes
 #include "waveformatex.h"
 #include "../core/videoinfo.h"
@@ -57,3 +59,7 @@ bool WaveFormatEx::IsVBR() const
 
 
 } } //namespace avs::vfw
+
+
+
+#endif //_WIN32

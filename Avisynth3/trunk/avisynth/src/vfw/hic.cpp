@@ -21,6 +21,8 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
 //avisynth include
 #include "hic.h"
 
@@ -90,3 +92,7 @@ void Hic::Decompress(BitmapInfoHeader const& input, BitmapInfoHeader const& outp
 
 
 } } //namespace avs::vfw
+
+
+
+#endif //_WIN32

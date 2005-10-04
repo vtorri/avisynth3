@@ -21,6 +21,8 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
 //avisynth includes
 #include "avistreaminfo.h"
 
@@ -46,3 +48,7 @@ AviStreamInfo::AviStreamInfo(IAVIStream& stream)
 
 
 } } //namespace avs::vfw
+
+
+
+#endif //_WIN32

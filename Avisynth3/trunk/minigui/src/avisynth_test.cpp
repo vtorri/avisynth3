@@ -10,10 +10,10 @@
 #include <string>
 
 //avisynth include
-#include "../src/core.h"
-#include "../src/core/colorspace/get.h"
-#include "../src/filters/convert/torgb32/fromyv12.h"
-#include "../src/filters/source/gstreamersource.h"
+#include "../core.h"
+#include "../core/colorspace/get.h"
+#include "../filters/convert/torgb32/fromyv12.h"
+#include "../filters/source/gstreamersource.h"
 
 #define __UNUSED__ __attribute__((unused))
 
@@ -554,7 +554,7 @@ static void cb_fd_response (GtkWidget *widget,
 	gtk_statusbar_pop (GTK_STATUSBAR (status), id);
 	gtk_statusbar_push (GTK_STATUSBAR (status), id, "File loaded...");
 
-	draw_frame (1000);
+	draw_frame (120);
 
 	break;
       }
@@ -572,12 +572,14 @@ cb_goto_draw (GtkWidget *widget,
   const gchar *str;
   gint frame;
 
+  g_print ("cb_goto_frame\n");
   str = gtk_entry_get_text (GTK_ENTRY (entry));
   frame = (gint)g_ascii_strtod (str, NULL);
 
   gtk_widget_destroy (widget);
 
   draw_frame (frame);
+  g_print ("cb_goto_frame fin\n");
 }
 
 //Interface
@@ -597,9 +599,8 @@ static void draw_frame (long int frame_nbr)
 				     GDK_COLORSPACE_RGB, TRUE,
 				     8, width, height, 4 * width,
 				     (GdkPixbufDestroyNotify) g_free,
-				     (guint8 *)rgb);
+				     NULL);
   gtk_image_set_from_pixbuf (GTK_IMAGE (image), pixbuf);
-  g_object_unref (G_OBJECT (pixbuf));
 }
 
 static void create_main_window ()

@@ -56,6 +56,10 @@ BIN_OBJECTS  = $(GENERIC_BIN_OBJECTS)
 LIB_OBJECTS  = $(GENERIC_LIB_OBJECTS)
 ASM_OBJECTS  = $(ASSEMBLY_OBJECTS)
 
+OBJECTS  = $(BIN_OBJECTS)
+OBJECTS += $(LIB_OBJECTS)
+OBJECTS += $(ASM_OBJECTS)
+
 # The VPATH mechanism could use a "per target" build directory
 # To keep it simple at the moment, the directory is fixed to "build"
 BUILD_DIR = build
@@ -103,7 +107,7 @@ $(BUILD_DIR):
 .cpp.$(OBJECT_EXTENSION):
 	@echo "  C: $(@D)/$(<F)"
 	@$(INSTALL) -d $(BUILD_DIR)/$(@D)
-	@$(CXX) -c $(ARCHITECTURE) $(BUS) $(ENDIANNESS) $(FEATURES) $(AVS3_DEBUG_CFLAGS) $(AVS3_CPPFLAGS) $(AVS3_CXXFLAGS) $< -o $(BUILD_DIR)/$@
+	@$(CXX) -c $(ARCHITECTURE) $(BUS) $(ENDIANNESS) $(FEATURES) $(AVS3_DEBUG_CFLAGS) $(AVS3_CPPFLAGS) $(AVS3_CXXFLAGS) $(GTK_CFLAGS) $< -o $(BUILD_DIR)/$@
 
 
 #-----------------------------------------------------------------------------
@@ -112,7 +116,7 @@ $(BUILD_DIR):
 
 $(STATIC_LIB): $(BUILD_DIR) $(LIB_OBJECTS) $(ASM_OBJECTS)
 	@echo "  L: $(@F)"
-	@cd $(BUILD_DIR) && ar rc $(@F) $(OBJECTS) && $(RANLIB) $(@F)
+	@cd $(BUILD_DIR) && ar rc $(@F) $(LIB_OBJECTS) $(ASM_OBJECTS) && $(RANLIB) $(@F)
 
 #-----------------------------------------------------------------------------
 # Shared Library
@@ -132,15 +136,14 @@ $(STATIC_LIB): $(BUILD_DIR) $(LIB_OBJECTS) $(ASM_OBJECTS)
 $(SHARED_LIB): $(BUILD_DIR) $(LIB_OBJECTS) $(ASM_OBJECTS)
 	@echo "  L: $(@F)"
 	@$(INSTALL) -m 644 libavisynth.def $(BUILD_DIR)/libavisynth.def
-	@cd $(BUILD_DIR) && $(CXX) $(LDFLAGS) $(OBJECTS) -o $(PRE_SHARED_LIB) $(SPECIFIC_LDFLAGS) $(AVS3_LIBS)
+	@cd $(BUILD_DIR) && $(CXX) $(LDFLAGS) $(LIB_OBJECTS) $(ASM_OBJECTS) -o $(PRE_SHARED_LIB) $(SPECIFIC_LDFLAGS) $(AVS3_LIBS)
 
 #-----------------------------------------------------------------------------
 # Test program
 #-----------------------------------------------------------------------------
-$(PROG): $(BUILD_DIR)  $(LIB_OBJECTS) $(ASM_OBJECTS) $(BIN_OBJECTS)
+$(PROG): $(BUILD_DIR) $(SHARED_LIB) $(BIN_OBJECTS)
 	@echo "  P: $(@F)"
-	@$(CXX) $(AVS3_CPPFLAGS) $(CXXFLAGS) -L$(BUILD_DIR) -lavisynth $(AVS3_LIBS) -o $(BUILD_DIR)/$(PROG) $(PROG).cpp
-	@cd $(BUILD_DIR) && chmod u+x $(PROG)
+	@cd $(BUILD_DIR) && $(CXX) $(GTK_LIBS) $(BIN_OBJECTS) $(SHARED_LIB) -o $(PROG) && chmod u+x $(PROG)
 
 #-----------------------------------------------------------------------------
 # Installation
@@ -211,7 +214,11 @@ list-objects:
 	@echo "Object files used for this build"
 	@echo "---------------------------------------------------------------"
 	@echo
-	@echo $(OBJECTS)
+	@echo $(LIB_OBJECTS)
+	@echo
+	@echo $(ASM_OBJECTS)
+	@echo
+	@echo $(BIN_OBJECTS)
 	@echo
 
 list-targets:

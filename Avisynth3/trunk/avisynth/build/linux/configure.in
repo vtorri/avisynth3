@@ -50,11 +50,14 @@ BOOST_VERSION_MINOR="33"
 BOOST_VERSION="${BOOST_VERSION_MAJOR}_${BOOST_VERSION_MINOR}"
 
 dnl Gstreamer version requirement
-GST_REQS=0.8.10.1
-GSTPLUG_REQS=0.8.10.1
+GST_REQS=0.8.10
+GSTPLUG_REQS=0.8.11
+
+dnl Gtk+ version requirement
+GTK_REQS=2.4
 
 dnl Default CFLAGS -- Big impact on overall speed
-our_cxxflags_defaults="-O2 -Wall -fexceptions"
+our_cxxflags_defaults="-O2 -Wall -Wno-non-virtual-dtor -fexceptions"
 our_cxxflags_defaults="$our_cxxflags_defaults -fstrength-reduce"
 our_cxxflags_defaults="$our_cxxflags_defaults -finline-functions"
 our_cxxflags_defaults="$our_cxxflags_defaults -ffast-math"
@@ -299,7 +302,6 @@ case "$target_os" in
 	STATIC_LIB="libavisynth.\$(STATIC_EXTENSION)"
 	SHARED_LIB="libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR).\$(API_MINOR)"
 	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR) -shared -lc -lm -lrt -ldl"
-	PROG="avisynth_test"
 	SPECIFIC_CFLAGS="-pthread -fPIC"
 	GEN_SOURCES="/com\\\\/d;/vfw\\\\/d;"
 	;;
@@ -471,6 +473,7 @@ dnl ==========================================================================
 dnl Check debug mode
 if test "$core_debug_mode" = "yes" ; then
    CORE_DEBUG_MODE_CFLAGS="-g"
+   our_cxxflags_defaults="-Wall -Wno-non-virtual-dtor -fexceptions"
 else
    CORE_DEBUG_MODE_CFLAGS="-DNDEBUG"
    SPECIFIC_LDFLAGS="-s ${SPECIFIC_LDFLAGS}"
@@ -570,15 +573,39 @@ dnl Gstreamer header and library files
 dnl ==========================================================================
 
 GST_MAJORMINOR=0.8
-PKG_CHECK_MODULES(GST, \
-   gstreamer-$GST_MAJORMINOR >= $GST_REQS \
-   gstreamer-interfaces-$GST_MAJORMINOR >= $GSTPLUG_REQS,
-   HAVE_GSTREAMER="yes", HAVE_GSTREAMER="no")
+PKG_CHECK_MODULES(
+   [GST],
+   [gstreamer-$GST_MAJORMINOR >= $GST_REQS],
+   [HAVE_GSTREAMER="yes"],
+   [HAVE_GSTREAMER="no"])
 
 case "$target_os" in
    *bsd*|linux*|beos|irix*|solaris*)
       if test "${ffmpeg_enable}" = "no" && test "${HAVE_GSTREAMER}" = "no" ; then
          AC_MSG_ERROR([FFMPEG or Gstreamer support are needed when building Avisynth 3.0 on linux])
+      fi
+   ;;
+esac
+
+dnl ==========================================================================
+dnl Gtk+ header and library files
+dnl ==========================================================================
+
+PROG=""
+HAVE_GTK="no"
+GTK_MAJORMINOR=2.0
+PKG_CHECK_MODULES(
+   [GTK],
+   [gtk+-$GTK_MAJORMINOR >= $GTK_REQS],
+   [HAVE_GTK="yes"],
+   [HAVE_GTK="no"])
+
+case "$target_os" in
+   *bsd*|linux*|beos|irix*|solaris*)
+      if test "${HAVE_GTK}" = "no" ; then
+         AC_MSG_WARN([Test application not built])
+      else
+         PROG="avisynth_test"
       fi
    ;;
 esac
@@ -706,6 +733,8 @@ AC_SUBST(PRE_SHARED_LIB)
 AC_SUBST(SHARED_LIB)
 AC_SUBST(GENERIC_BIN_SOURCES)
 AC_SUBST(GENERIC_LIB_SOURCES)
+AC_SUBST(PROG)
+
 
 dnl ==========================================================================
 dnl
@@ -736,6 +765,7 @@ echo " FFMPEG debug mode...: $ffmpeg_debug_mode"
 echo " ASM support.........: $assembly"
 echo " FFMPEG support......: $ffmpeg_enable"
 echo " Gstreamer support...: $HAVE_GSTREAMER"
+echo " Gtk+................: $HAVE_GSTREAMER"
 echo
 echo " Install path........: $prefix"
 echo

@@ -69,9 +69,11 @@ CPVideoFrame GstreamerSource::operator()(long int n) const
 
   g_print ("seek done\n");
 
-  return importer_->CreateFrame(owned_block<1>( new gstreamer::OwnedHolder(GetEnvironment(), *buffer_)),
-				vi_->GetDimension(),
-				PROGRESSIVE );
+  return importer_->CreateFrame(vi_->GetDimension(),
+				PROGRESSIVE,
+                                owned_block<1>( new
+                                                gstreamer::OwnedHolder(GetEnvironment(), *buffer_)),
+                                0 );
 }
 
 BYTE * GstreamerSource::GetAudio(BYTE * buffer, long long start, long count) const

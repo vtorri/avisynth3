@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -45,7 +45,7 @@ Resize::Resize(PClip const& child, resize::PFilter const& filter, Dimension cons
 }
 
 
-CPVideoFrame Resize::MakeFrame(CPVideoFrame const& source) const
+CPVideoFrame Resize::MakeFrame(PVideoFrame const& source) const
 {
   PVideoFrame target = GetEnvironment()->CreateFrame(*GetVideoInfo(), source->GetType());
 
@@ -53,5 +53,7 @@ CPVideoFrame Resize::MakeFrame(CPVideoFrame const& source) const
 
   return target;
 }
+
+
 
 } } //namespace avs::filters

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -65,7 +65,7 @@ public:  //clip general interface
 
 protected:  //Pipeline interface
 
-  virtual CPVideoFrame MakeFrame(CPVideoFrame const& source) const;
+  virtual CPVideoFrame MakeFrame(PVideoFrame const& source) const;
 
 
 private:  //Resize method

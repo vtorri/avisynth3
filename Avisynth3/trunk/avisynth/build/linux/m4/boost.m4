@@ -62,7 +62,7 @@ AC_DEFUN([AM_CHECK_BOOST],
        [
         case "$2" in
            *bsd* | linux* | irix* | solaris* )
-              LDFLAGS="${LDFLAGS} -L${boost_path}/lib/}"
+              LDFLAGS="${LDFLAGS} -L${boost_path}/lib/"
               AC_CHECK_LIB(
                  [${BOOST_LIB_NAME}],
                  [main],

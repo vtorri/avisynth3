@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -57,7 +57,7 @@ public:  //Importer interface
   virtual PColorSpace GetColorSpace() const = 0;
 
   //creates a frame of given dimension using data from block
-  virtual CPVideoFrame CreateFrame(owned_block<1> const& block, Dimension const& dim, FrameType type) const = 0;
+  virtual CPVideoFrame CreateFrame(Dimension const& dim, FrameType type, owned_block<1> const& block, long offset) const = 0;
 
 };
 

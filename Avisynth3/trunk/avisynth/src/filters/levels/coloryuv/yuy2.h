@@ -42,12 +42,12 @@ class YUY2 : public ColorYUV
 
 public:  //structors
 
-  YUY2(PClip const& child, Levels const& Y, Levels const& U, Levels const& V, float gamma, Mode mode, bool coring, bool autoWhite, bool autoGain)
-    : ColorYUV( child, Y, U, V, gamma, mode, coring, autoWhite, autoGain ) { }
+/*   YUY2(PClip const& child, Levels const& Y, Levels const& U, Levels const& V, float gamma, Mode mode, bool coring, bool autoWhite, bool autoGain) */
+/*     : ColorYUV( child, Y, U, V, gamma, mode, coring, autoWhite, autoGain ) { } */
 
   //cloning constructor
-  YUY2(PClip const& child, ColorYUV const& other)
-    : ColorYUV( child, other ) { }
+/*   YUY2(PClip const& child, ColorYUV const& other) */
+/*     : ColorYUV( child, other ) { } */
 
   //analyze constructor
   YUY2(PClip const& child)

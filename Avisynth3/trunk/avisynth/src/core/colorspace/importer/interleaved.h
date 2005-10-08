@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -38,9 +38,11 @@ namespace avs { namespace colorspace { namespace importer {
 ////////////////////////////////////////////////////////////////////////////////////
 //  importer::interleaved<align>
 //
+//  Importer subclass for interleaved colorspaces
 //
+//  the align template parameter is the alignment of the raw data passed
 //
-template <int align> class interleaved : public Importer
+template <long align> class interleaved : public Importer
 {
 
   boost::shared_ptr<colorspace::Interleaved const> space_;
@@ -58,11 +60,11 @@ public:  //Importer interface
 
   virtual PColorSpace GetColorSpace() const { return space_; }
 
-  virtual CPVideoFrame CreateFrame(owned_block<1> const& block, Dimension const& dim, FrameType type) const
+  virtual CPVideoFrame CreateFrame(Dimension const& dim, FrameType type, owned_block<1> const& block, long offset) const
   {
     //create an align aligned frame buffer of the expected size by promoting the block
     //should not blit since the block is supposed to have the correct alignment
-    buffer_window<align> main( space_->ToPlaneDim(dim, '~'), block, 0 );
+    buffer_window<align> main( space_->ToPlaneDim(dim, '~'), block, offset );
 
     //use space_ to transform the frame buffer into a frame
     //if the size was favorable the conversion from buffer_window<align>

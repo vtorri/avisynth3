@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -60,18 +60,18 @@ public:  //Importer interface
 
   virtual PColorSpace GetColorSpace() const { return space_; }
 
-  virtual CPVideoFrame CreateFrame(owned_block<1> const& block, Dimension const& dim, FrameType type) const
+  virtual CPVideoFrame CreateFrame(Dimension const& dim, FrameType type, owned_block<1> const& block, long offset) const
   {
     Dimension dimY  = space_->ToPlaneDim(dim, 'Y');
     Dimension dimUV = space_->ToPlaneDim(dim, 'U');
 
     //split into independant blocks each containing a plane
     owned_block<1> blockY = block;
-    owned_block<1> blockU = blockY.Split( dimY.BMPSize<alignY>() );
+    owned_block<1> blockU = blockY.Split( dimY.BMPSize<alignY>() + offset );
     owned_block<1> blockV = blockU.Split( dimUV.BMPSize<alignUV>() );
 
     //promote the blocks into frame buffers with the proper alignment
-    buffer_window<alignY>  y( dimY, blockY, 0 );
+    buffer_window<alignY>  y( dimY, blockY, offset );
     buffer_window<alignUV> u( dimUV, blockU, 0 );
     buffer_window<alignUV> v( dimUV, blockV, 0 );
     
@@ -92,9 +92,9 @@ public:  //SwapUV inner class
 
   public:  //Importer interface
 
-    virtual CPVideoFrame CreateFrame(owned_block<1> const& block, Dimension const& dim, FrameType type) const
+    virtual CPVideoFrame CreateFrame(Dimension const& dim, FrameType type, owned_block<1> const& block, long offset) const
     {
-      PVideoFrame result = planar_yuv<alignY, alignUV>::CreateFrame(block, dim, type);
+      PVideoFrame result = planar_yuv<alignY, alignUV>::CreateFrame(dim, type, block, offset);
 
       swap((*result)['U'], (*result)['V']);
 

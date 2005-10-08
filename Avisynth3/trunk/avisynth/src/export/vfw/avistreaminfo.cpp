@@ -21,6 +21,8 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
 //avisynth includes
 #include "exporter.h"
 #include "avistreaminfo.h"
@@ -89,3 +91,5 @@ AviStreamInfo::Audio::Audio(VideoInfo const& vi)
 
 
 } } } //namespace avs::export_::vfw
+
+#endif //_WIN32

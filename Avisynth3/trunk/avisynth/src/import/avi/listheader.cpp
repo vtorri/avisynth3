@@ -40,11 +40,11 @@ ListHeader::ListHeader(std::istream& stream)
 
 
 
-boost::optional<ListHeader> Locate(std::istream& stream, unsigned long fourCC, long& searchLength)
+boost::optional<ListHeader> ListHeader::Locate(std::istream& stream, unsigned long fourCC, long& searchLength)
 {
   while ( searchLength >= sizeof(ListHeader) )
   {
-    ListHeader result(stream);                        //read chunk header from stream
+    ListHeader result(stream);                        //read list header from stream
     searchLength -= sizeof(ListHeader);               //update searchLength
 
     if ( result.fourCC == fourCC )                    //if found

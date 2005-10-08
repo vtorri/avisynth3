@@ -23,13 +23,13 @@
 
 //avisynth includes
 #include "chunkheader.h"
-#include "../../../core/utility/round.h"
+#include "../../core/utility/round.h"
 
 //stl include
 #include <iostream>
 
 
-namespace avs { namespace filters { namespace source { namespace opendml {
+namespace avs { namespace import { namespace avi {
 
 
 
@@ -61,7 +61,7 @@ boost::shared_ptr<void> ChunkHeader::ReadBlockFrom(std::istream& stream)
 }
 
 
-boost::optional<ChunkHeader> Locate(std::istream& stream, unsigned long fourCC, long& searchLength)
+boost::optional<ChunkHeader> ChunkHeader::Locate(std::istream& stream, unsigned long fourCC, long& searchLength)
 {
   while ( searchLength >= sizeof(ChunkHeader) )
   {
@@ -82,4 +82,4 @@ boost::optional<ChunkHeader> Locate(std::istream& stream, unsigned long fourCC, 
 
 
 
-} } } } //namespace avs::filters::source::opendml
+} } } //namespace avs::import::avi

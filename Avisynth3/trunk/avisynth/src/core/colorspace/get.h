@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -30,8 +30,9 @@
 //boost include
 #include <boost/shared_ptr.hpp>   //so PColorSpace is defined
 
-//stl include
+//stl includes
 #include <string>
+#include <vector>
 
 
 namespace avs { namespace colorspace {
@@ -54,6 +55,8 @@ struct Get
 
   //throw exception::colorspace::Unknown if none can be found
   static PColorSpace FromName(std::string const& name);
+
+  static std::vector<PColorSpace> PreferredImportList(std::string const& type);
 
 };
 

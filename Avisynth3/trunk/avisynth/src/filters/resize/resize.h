@@ -51,7 +51,7 @@ class Resize : public clip::onechild::FrameMakerPipeline
   resize::SubRange subrange_;   //range of the source used
 
 
-public:  //structors
+protected:  //structors
 
   Resize(PClip const& child, resize::PFilter const& filter, Dimension const& dim, resize::SubRange const& subrange);
 

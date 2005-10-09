@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -60,7 +60,7 @@ PClip Horizontal::Create(PClip const& child, PFilter const& filter, int width, S
   switch( space->id() )
   {
   case ColorSpace::I_RGB24: return horizontal::RGB24::Create(child, filter, width, subrange);
-  case ColorSpace::I_RGB32: return horizontal::RGB32::Create(child, filter, width, subrange);
+  case ColorSpace::I_RGB32: return PClip( static_cast<Clip *>(new horizontal::RGB32(child, filter, width, subrange)) );
   case ColorSpace::I_YUY2:  return horizontal::YUY2::Create(child, filter, width, subrange);
 
   default: throw exception::colorspace::Unsupported( space );

@@ -114,7 +114,7 @@ $(BUILD_DIR):
 # Static Library
 #-----------------------------------------------------------------------------
 
-$(STATIC_LIB): $(BUILD_DIR) $(LIB_OBJECTS) $(ASM_OBJECTS)
+$(STATIC_LIB): $(BUILD_DIR) $(LIB_OBJECTS) $(ASM_OBJECTS) $(SRC_LIB_GENERIC)
 	@echo "  L: $(@F)"
 	@cd $(BUILD_DIR) && ar rc $(@F) $(LIB_OBJECTS) $(ASM_OBJECTS) && $(RANLIB) $(@F)
 
@@ -151,21 +151,25 @@ $(PROG): $(BUILD_DIR) $(SHARED_LIB) $(BIN_OBJECTS)
 
 install: $(BUILD_DIR)/$(PROG) $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB)
 	@echo "  D: $(bindir)"
-	@$(INSTALL) -d $(bindir)
+	@$(INSTALL) -d $(DEST_DIR)$(bindir)
 	@echo "  I: $(bindir)/$(BIN_OBJECT)"
-	@$(INSTALL) -m 755 $(BUILD_DIR)/$(BIN_OBJECT) $(bindir)/$(BIN_OBJECT)
+	@$(INSTALL) -m 755 $(BUILD_DIR)/$(PROG) $(DEST_DIR)$(bindir)/$(PROG)
 	@echo "  D: $(libdir)"
 	@$(INSTALL) -d $(libdir)
 	@echo "  I: $(libdir)/$(SHARED_LIB)"
-	@$(INSTALL) -m 755 $(BUILD_DIR)/$(SHARED_LIB) $(libdir)/$(SHARED_LIB)
+	@$(INSTALL) -m 755 $(BUILD_DIR)/$(SHARED_LIB) $(DEST_DIR)$(libdir)/$(SHARED_LIB)
+	@echo "  I: $(libdir)/libavisynth.$(SHARED_EXTENSION).$(API_MAJOR)"
+	@$(LN_S) -f $(DEST_DIR)$(libdir)/$(SHARED_LIB) $(DEST_DIR)$(libdir)/libavisynth.$(SHARED_EXTENSION).$(API_MAJOR)
+	@echo "  I: $(libdir)/libavisynth.$(SHARED_EXTENSION)"
+	@$(LN_S) -f $(DEST_DIR)$(libdir)/$(SHARED_LIB) $(DEST_DIR)$(libdir)/libavisynth.$(SHARED_EXTENSION)
 	@echo "  I: $(libdir)/$(STATIC_LIB)"
-	@$(INSTALL) -m 755 $(BUILD_DIR)/$(STATIC_LIB) $(libdir)/$(STATIC_LIB)
+	@$(INSTALL) -m 755 $(BUILD_DIR)/$(STATIC_LIB) $(DEST_DIR)$(libdir)/$(STATIC_LIB)
 	@echo "  D: $(includedir)"
-	@$(INSTALL) -d $(includedir)
+	@$(INSTALL) -d $(DEST_DIR)$(includedir)
 	@echo "  D: $(pkgconfigdir)"
-	@$(INSTALL) -d $(pkgconfigdir)
+	@$(INSTALL) -d $(DEST_DIR)$(pkgconfigdir)
 	@echo "  I: $(pkgconfigdir)/$(AVS_PC)"
-	@$(INSTALL) -m 755 ./$(AVS_PC) $(pkgconfigdir)
+	@$(INSTALL) -m 755 ./$(AVS_PC) $(DEST_DIR)$(pkgconfigdir)
 
 #-----------------------------------------------------------------------------
 # Platorm specific file -- dumb rules for people executing make before
@@ -177,6 +181,15 @@ platform.inc: configure platform.inc.in
 
 configure:
 	./bootstrap.sh
+
+#-----------------------------------------------------------------------------
+# .depend targets
+#-----------------------------------------------------------------------------
+
+.depend:
+	@echo "  H: headers dependances"
+	@cd $(SRC_DIR) && \
+	$(CXX) -MM $(AVS3_CPPFLAGS) $(SRC_LIB_GENERIC) 1> ../build/linux/$(BUILD_DIR)/.depend
 
 #-----------------------------------------------------------------------------
 # .PHONY targets
@@ -260,3 +273,7 @@ list-flags:
 	@echo
 
 info: list-objects list-flags list-targets list-install-path
+
+ifneq ($(wildcard $(BUILD_DIR)/.depend),)
+include $(BUILD_DIR)/.depend
+endif

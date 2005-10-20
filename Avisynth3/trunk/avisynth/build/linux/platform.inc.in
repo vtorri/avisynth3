@@ -68,6 +68,7 @@ INSTALL=@INSTALL@
 LN_S=@LN_S@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
+bindir=@bindir@
 libdir=@libdir@
 includedir=@includedir@/avs
 pkgconfigdir=@libdir@/pkgconfig

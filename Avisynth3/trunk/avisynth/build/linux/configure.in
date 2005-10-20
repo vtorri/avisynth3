@@ -50,7 +50,7 @@ BOOST_VERSION_MINOR="33"
 BOOST_VERSION="${BOOST_VERSION_MAJOR}_${BOOST_VERSION_MINOR}"
 
 dnl Gstreamer version requirement
-GST_REQS=0.8.10
+GST_REQS=0.8.11
 GSTPLUG_REQS=0.8.11
 
 dnl Gtk+ version requirement
@@ -579,6 +579,17 @@ PKG_CHECK_MODULES(
    [HAVE_GSTREAMER="yes"],
    [HAVE_GSTREAMER="no"])
 
+PKG_CHECK_MODULES(
+   [GSTPLUG],
+   [gstreamer-interfaces-$GST_MAJORMINOR >= $GSTPLUG_REQS],
+   [HAVE_GSTPLUG="yes"],
+   [HAVE_GSTPLUG="no"])
+
+AM_GST_ELEMENT_CHECK(
+   [ffmpeg],
+   [HAVE_GSTFFMPEG="yes"],
+   [HAVE_GSTFFMPEG="no"])
+
 case "$target_os" in
    *bsd*|linux*|beos|irix*|solaris*)
       if test "${ffmpeg_enable}" = "no" && test "${HAVE_GSTREAMER}" = "no" ; then
@@ -735,6 +746,11 @@ AC_SUBST(GENERIC_BIN_SOURCES)
 AC_SUBST(GENERIC_LIB_SOURCES)
 AC_SUBST(PROG)
 
+AC_SUBST(exec_prefix)
+AC_SUBST(bindir)
+AC_SUBST(libdir)
+AC_SUBST(includedir)
+
 
 dnl ==========================================================================
 dnl
@@ -761,14 +777,31 @@ echo " OS..................: $target_os"
 echo
 echo " Visibility feature..: $visibility"
 echo " Core debug mode.....: $core_debug_mode"
-echo " FFMPEG debug mode...: $ffmpeg_debug_mode"
 echo " ASM support.........: $assembly"
+echo
 echo " FFMPEG support......: $ffmpeg_enable"
+echo " FFMPEG debug mode...: $ffmpeg_debug_mode"
+echo
 echo " Gstreamer support...: $HAVE_GSTREAMER"
-echo " Gtk+................: $HAVE_GSTREAMER"
+echo "    Gst-Plugin.......: $HAVE_GSTPLUG"
+echo "    Gst-FFmpeg.......: $HAVE_GSTFFMPEG"
+echo
+echo " Gtk+................: $HAVE_GTK"
+echo
 echo
 echo " Install path........: $prefix"
+echo "   binaries..........: $bindir"
+echo "   libraries.........: ${libdir}"
+echo "   headers...........: ${includedir}/avs"
 echo
 echo " Compilation.........: make"
 echo " Installation........: make install"
 echo
+
+if test x"$HAVE_GSTFFMPEG" = x"no" ; then
+  echo " WARNING: Gst-FFmpeg is not installed. This means that most"
+  echo "          of the usual video streams will not be decoded"
+  echo "          (xvid, divx, x264 for example). We recommend that"
+  echo "          you install it."
+  echo
+fi

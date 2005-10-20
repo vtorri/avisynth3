@@ -13,6 +13,9 @@
 #include "../core.h"
 #include "../core/colorspace/get.h"
 #include "../filters/convert/torgb32/fromyv12.h"
+#include "../filters/resize/horizontal.h"
+#include "../filters/resize/subrange.h"
+#include "../filters/resize/filter/lanczos3.h"
 #include "../filters/source/gstreamersource.h"
 
 #define __UNUSED__ __attribute__((unused))
@@ -23,6 +26,8 @@ using namespace avs::colorspace;
 using namespace avs::filters;
 using namespace avs::filters::convert;
 using namespace avs::filters::convert::torgb32;
+using namespace avs::filters::resize;
+using namespace avs::filters::resize::filter;
 using namespace avs::filters::source::gstreamer;
 
 //typedef
@@ -33,6 +38,10 @@ PClip      vclip;
 GtkWidget *image;
 GtkWidget *status;
 GtkWidget *entry;
+GtkWidget *entry_resize_width;
+GtkWidget *entry_resize_height;
+
+gint frame_current = 120;
 
 
 ////////
@@ -64,6 +73,10 @@ static void cb_goto   (GtkWidget *widget,
 		       GdkEvent  *event,
 		       gpointer   data);
 
+static void cb_resize (GtkWidget *widget,
+		       GdkEvent  *event,
+		       gpointer   data);
+
 static void cb_about  (GtkWidget *widget,
 		       GdkEvent  *event,
 		       gpointer   data);
@@ -76,9 +89,15 @@ static void cb_goto_draw (GtkWidget *widget,
 			  GdkEvent  *event,
 			  gpointer   data);
 
+static void cb_resize_draw (GtkWidget *widget,
+                            GdkEvent  *event,
+                            gpointer   data);
+
 
 //Interface
 static void draw_frame (long int frame);
+
+static void resize_frame (gint width, gint height);
 
 static void create_main_window ();
 
@@ -151,7 +170,6 @@ cb_info (GtkWidget *widget __UNUSED__,
   GtkWidget *frame;
   GtkWidget *table;
   GtkWidget *label;
-  CPVideoInfo vi = vclip->GetVideoInfo();
 
   if (win_info)
     {
@@ -172,162 +190,180 @@ cb_info (GtkWidget *widget __UNUSED__,
   g_signal_connect_swapped (G_OBJECT (button), "clicked",
 			    G_CALLBACK (gtk_widget_destroy), win_info);
   
-  frame = gtk_frame_new ("Video stream");
-  gtk_container_set_border_width (GTK_CONTAINER (frame), 6);
-  gtk_box_pack_start_defaults (GTK_BOX (GTK_DIALOG (win_info)->vbox),
-			       frame);
-  gtk_widget_show (frame);
-
-  table = gtk_table_new (3, 2, FALSE);
-  gtk_table_set_homogeneous (GTK_TABLE (table), FALSE);
-  gtk_table_set_row_spacings (GTK_TABLE (table), 6);
-  gtk_table_set_col_spacings (GTK_TABLE (table), 6);
-  gtk_container_set_border_width (GTK_CONTAINER (table), 6);
-  gtk_container_add (GTK_CONTAINER (frame), table);
-  gtk_widget_show (table);
-
-  label = gtk_label_new ("Size: ");
-  gtk_misc_set_alignment (GTK_MISC (label),
-			  0.0, 0.5);
-  gtk_table_attach_defaults (GTK_TABLE (table),
-			     label,
-			     0, 1,
-			     0, 1);
-  gtk_widget_show (label);
-
-  label = gtk_label_new ("Framerate: ");
-  gtk_misc_set_alignment (GTK_MISC (label),
-			  0.0, 0.5);
-  gtk_table_attach_defaults (GTK_TABLE (table),
-			     label,
-			     0, 1,
-			     1, 2);
-  gtk_widget_show (label);
-
-  label = gtk_label_new ("Frame count: ");
-  gtk_misc_set_alignment (GTK_MISC (label),
-			  0.0, 0.5);
-  gtk_table_attach_defaults (GTK_TABLE (table),
-			     label,
-			     0, 1,
-			     2, 3);
-  gtk_widget_show (label);
-  
-  if (vi && (vi->HasVideo()))
+  if (vclip)
     {
-      char str[4096];
-      
-      snprintf (str, 4096, "%dx%d",
-		vi->GetWidth(),
-		vi->GetHeight());
-      label = gtk_label_new (str);
+      CPVideoInfo vi = vclip->GetVideoInfo();
+  
+      frame = gtk_frame_new ("Video stream");
+      gtk_container_set_border_width (GTK_CONTAINER (frame), 6);
+      gtk_box_pack_start_defaults (GTK_BOX (GTK_DIALOG (win_info)->vbox),
+                                   frame);
+      gtk_widget_show (frame);
+
+      table = gtk_table_new (3, 2, FALSE);
+      gtk_table_set_homogeneous (GTK_TABLE (table), FALSE);
+      gtk_table_set_row_spacings (GTK_TABLE (table), 6);
+      gtk_table_set_col_spacings (GTK_TABLE (table), 6);
+      gtk_container_set_border_width (GTK_CONTAINER (table), 6);
+      gtk_container_add (GTK_CONTAINER (frame), table);
+      gtk_widget_show (table);
+
+      label = gtk_label_new ("Size: ");
       gtk_misc_set_alignment (GTK_MISC (label),
-			      0.0, 0.5);
+                              0.0, 0.5);
       gtk_table_attach_defaults (GTK_TABLE (table),
-				 label,
-				 1, 2,
-				 0, 1);
+                                 label,
+                                 0, 1,
+                                 0, 1);
       gtk_widget_show (label);
-      
-      snprintf (str, 4096, "%.3f",
-		vi->GetFloatFPS());
-      label = gtk_label_new (str);
+
+      label = gtk_label_new ("Framerate: ");
       gtk_misc_set_alignment (GTK_MISC (label),
-			      0.0, 0.5);
+                              0.0, 0.5);
       gtk_table_attach_defaults (GTK_TABLE (table),
-				 label,
-				 1, 2,
-				 1, 2);
+                                 label,
+                                 0, 1,
+                                 1, 2);
       gtk_widget_show (label);
-      
-      snprintf (str, 4096, "%d",
-		vi->GetFrameCount());
-      label = gtk_label_new (str);
+
+      label = gtk_label_new ("Frame count: ");
       gtk_misc_set_alignment (GTK_MISC (label),
-			      0.0, 0.5);
+                              0.0, 0.5);
       gtk_table_attach_defaults (GTK_TABLE (table),
-				 label,
-				 1, 2,
-				 2, 3);
+                                 label,
+                                 0, 1,
+                                 2, 3);
       gtk_widget_show (label);
+  
+      if (vi && (vi->HasVideo()))
+        {
+          char str[4096];
+      
+          snprintf (str, 4096, "%dx%d",
+                    vi->GetWidth(),
+                    vi->GetHeight());
+          label = gtk_label_new (str);
+          gtk_misc_set_alignment (GTK_MISC (label),
+                                  0.0, 0.5);
+          gtk_table_attach_defaults (GTK_TABLE (table),
+                                     label,
+                                     1, 2,
+                                     0, 1);
+          gtk_widget_show (label);
+      
+          snprintf (str, 4096, "%.3f",
+                    vi->GetFloatFPS());
+          label = gtk_label_new (str);
+          gtk_misc_set_alignment (GTK_MISC (label),
+                                  0.0, 0.5);
+          gtk_table_attach_defaults (GTK_TABLE (table),
+                                     label,
+                                     1, 2,
+                                     1, 2);
+          gtk_widget_show (label);
+      
+          snprintf (str, 4096, "%d",
+                    vi->GetFrameCount());
+          label = gtk_label_new (str);
+          gtk_misc_set_alignment (GTK_MISC (label),
+                                  0.0, 0.5);
+          gtk_table_attach_defaults (GTK_TABLE (table),
+                                     label,
+                                     1, 2,
+                                     2, 3);
+          gtk_widget_show (label);
+        }
+  
+      frame = gtk_frame_new ("Audio stream");
+      gtk_container_set_border_width (GTK_CONTAINER (frame), 6);
+      gtk_box_pack_start_defaults (GTK_BOX (GTK_DIALOG (win_info)->vbox),
+                                   frame);
+      gtk_widget_show (frame);
+
+      table = gtk_table_new (3, 2, FALSE);
+      gtk_table_set_homogeneous (GTK_TABLE (table), FALSE);
+      gtk_table_set_row_spacings (GTK_TABLE (table), 6);
+      gtk_table_set_col_spacings (GTK_TABLE (table), 6);
+      gtk_container_set_border_width (GTK_CONTAINER (table), 6);
+      gtk_container_add (GTK_CONTAINER (frame), table);
+      gtk_widget_show (table);
+
+      label = gtk_label_new ("Channels: ");
+      gtk_misc_set_alignment (GTK_MISC (label),
+                              0.0, 0.5);
+      gtk_table_attach_defaults (GTK_TABLE (table),
+                                 label,
+                                 0, 1,
+                                 0, 1);
+      gtk_widget_show (label);
+
+      label = gtk_label_new ("Samplerate: ");
+      gtk_misc_set_alignment (GTK_MISC (label),
+                              0.0, 0.5);
+      gtk_table_attach_defaults (GTK_TABLE (table),
+                                 label,
+                                 0, 1,
+                                 1, 2);
+      gtk_widget_show (label);
+
+      label = gtk_label_new ("Sample count: ");
+      gtk_misc_set_alignment (GTK_MISC (label),
+                              0.0, 0.5);
+      gtk_table_attach_defaults (GTK_TABLE (table),
+                                 label,
+                                 0, 1,
+                                 2, 3);
+      gtk_widget_show (label);
+
+      if (vi && (vi->HasAudio()))
+        {
+          char str[4096];
+      
+          snprintf (str, 4096, "%d",
+                    vi->GetChannelCount());
+          label = gtk_label_new (str);
+          gtk_misc_set_alignment (GTK_MISC (label),
+                                  0.0, 0.5);
+          gtk_table_attach_defaults (GTK_TABLE (table),
+                                     label,
+                                     1, 2,
+                                     0, 1);
+          gtk_widget_show (label);
+      
+          snprintf (str, 4096, "%d",
+                    vi->GetSampleRate());
+          label = gtk_label_new (str);
+          gtk_misc_set_alignment (GTK_MISC (label),
+                                  0.0, 0.5);
+          gtk_table_attach_defaults (GTK_TABLE (table),
+                                     label,
+                                     1, 2,
+                                     1, 2);
+          gtk_widget_show (label);
+      
+          snprintf (str, 4096, "%Ld",
+                    vi->GetSampleCount());
+          label = gtk_label_new (str);
+          gtk_misc_set_alignment (GTK_MISC (label),
+                                  0.0, 0.5);
+          gtk_table_attach_defaults (GTK_TABLE (table),
+                                     label,
+                                     1, 2,
+                                     2, 3);
+          gtk_widget_show (label);
+        }
     }
-  
-  frame = gtk_frame_new ("Audio stream");
-  gtk_container_set_border_width (GTK_CONTAINER (frame), 6);
-  gtk_box_pack_start_defaults (GTK_BOX (GTK_DIALOG (win_info)->vbox),
-			       frame);
-  gtk_widget_show (frame);
-
-  table = gtk_table_new (3, 2, FALSE);
-  gtk_table_set_homogeneous (GTK_TABLE (table), FALSE);
-  gtk_table_set_row_spacings (GTK_TABLE (table), 6);
-  gtk_table_set_col_spacings (GTK_TABLE (table), 6);
-  gtk_container_set_border_width (GTK_CONTAINER (table), 6);
-  gtk_container_add (GTK_CONTAINER (frame), table);
-  gtk_widget_show (table);
-
-  label = gtk_label_new ("Channels: ");
-  gtk_misc_set_alignment (GTK_MISC (label),
-			  0.0, 0.5);
-  gtk_table_attach_defaults (GTK_TABLE (table),
-			     label,
-			     0, 1,
-			     0, 1);
-  gtk_widget_show (label);
-
-  label = gtk_label_new ("Samplerate: ");
-  gtk_misc_set_alignment (GTK_MISC (label),
-			  0.0, 0.5);
-  gtk_table_attach_defaults (GTK_TABLE (table),
-			     label,
-			     0, 1,
-			     1, 2);
-  gtk_widget_show (label);
-
-  label = gtk_label_new ("Sample count: ");
-  gtk_misc_set_alignment (GTK_MISC (label),
-			  0.0, 0.5);
-  gtk_table_attach_defaults (GTK_TABLE (table),
-			     label,
-			     0, 1,
-			     2, 3);
-  gtk_widget_show (label);
-
-  if (vi && (vi->HasAudio()))
+  else
     {
-      char str[4096];
-      
-      snprintf (str, 4096, "%d",
-		vi->GetChannelCount());
-      label = gtk_label_new (str);
-      gtk_misc_set_alignment (GTK_MISC (label),
-			      0.0, 0.5);
-      gtk_table_attach_defaults (GTK_TABLE (table),
-				 label,
-				 1, 2,
-				 0, 1);
-      gtk_widget_show (label);
-      
-      snprintf (str, 4096, "%d",
-		vi->GetSampleRate());
-      label = gtk_label_new (str);
-      gtk_misc_set_alignment (GTK_MISC (label),
-			      0.0, 0.5);
-      gtk_table_attach_defaults (GTK_TABLE (table),
-				 label,
-				 1, 2,
-				 1, 2);
-      gtk_widget_show (label);
-      
-      snprintf (str, 4096, "%Ld",
-		vi->GetSampleCount());
-      label = gtk_label_new (str);
-      gtk_misc_set_alignment (GTK_MISC (label),
-			      0.0, 0.5);
-      gtk_table_attach_defaults (GTK_TABLE (table),
-				 label,
-				 1, 2,
-				 2, 3);
+      button = gtk_dialog_add_button (GTK_DIALOG (win_info),
+				      GTK_STOCK_CLOSE,
+				      GTK_RESPONSE_CLOSE);
+      g_signal_connect_swapped (G_OBJECT (button), "clicked",
+				G_CALLBACK (gtk_widget_destroy), win_info);
+
+      label = gtk_label_new ("No clip");
+      gtk_box_pack_start_defaults (GTK_BOX (GTK_DIALOG (win_info)->vbox),
+				   label);
       gtk_widget_show (label);
     }
 
@@ -373,15 +409,14 @@ cb_goto (GtkWidget *widget __UNUSED__,
     }
 
   win_goto = gtk_dialog_new ();
+  gtk_window_set_title (GTK_WINDOW (win_goto), "Go to frame...");
+  g_signal_connect (G_OBJECT (win_goto), "destroy",
+                    G_CALLBACK (gtk_widget_destroyed), &win_goto);
+  g_signal_connect (G_OBJECT (win_goto), "delete_event",
+                    G_CALLBACK (gtk_widget_destroy), NULL);
 
   if (vclip)
     {
-      gtk_window_set_title (GTK_WINDOW (win_goto), "Go to frame...");
-      g_signal_connect (G_OBJECT (win_goto), "destroy",
-			G_CALLBACK (gtk_widget_destroyed), &win_goto);
-      g_signal_connect (G_OBJECT (win_goto), "delete_event",
-			G_CALLBACK (gtk_widget_destroy), NULL);
-      
       hbox = gtk_hbox_new (FALSE, 6);
       gtk_box_pack_start_defaults (GTK_BOX (GTK_DIALOG (win_goto)->vbox),
 				   hbox);
@@ -413,12 +448,6 @@ cb_goto (GtkWidget *widget __UNUSED__,
     }
   else
     {
-      gtk_window_set_title (GTK_WINDOW (win_goto), "Go to frame...");
-      g_signal_connect (G_OBJECT (win_goto), "destroy",
-			G_CALLBACK (gtk_widget_destroyed), &win_goto);
-      g_signal_connect (G_OBJECT (win_goto), "delete_event",
-			G_CALLBACK (gtk_widget_destroy), NULL);
-      
       button = gtk_dialog_add_button (GTK_DIALOG (win_goto),
 				      GTK_STOCK_CLOSE,
 				      GTK_RESPONSE_CLOSE);
@@ -432,6 +461,159 @@ cb_goto (GtkWidget *widget __UNUSED__,
     }
 
   gtk_widget_show (win_goto);
+}
+
+static void
+cb_resize (GtkWidget *widget __UNUSED__,
+           GdkEvent  *event __UNUSED__,
+           gpointer   data __UNUSED__)
+{
+  static GtkWidget *win_resize = NULL;
+  GtkWidget *button;
+  GtkWidget *hbox;
+  GtkWidget *frame;
+  GtkWidget *table;
+  GtkWidget *label;
+  GtkWidget *entry;
+
+  if (win_resize)
+    {
+      gdk_window_raise (win_resize->window);
+      return;
+    }
+
+  win_resize = gtk_dialog_new ();
+  gtk_window_set_title (GTK_WINDOW (win_resize), "Resize");
+  g_signal_connect (G_OBJECT (win_resize), "destroy",
+                    G_CALLBACK (gtk_widget_destroyed), &win_resize);
+  g_signal_connect (G_OBJECT (win_resize), "delete_event",
+                    G_CALLBACK (gtk_widget_destroy), NULL);
+
+  if (vclip)
+    {
+      char buf[1024];
+      
+      hbox = gtk_hbox_new (FALSE, 6);
+      gtk_container_set_border_width (GTK_CONTAINER (hbox), 6);
+      gtk_box_pack_start_defaults (GTK_BOX (GTK_DIALOG (win_resize)->vbox),
+				   hbox);
+      gtk_widget_show (hbox);
+
+      frame = gtk_frame_new ("Old size");
+      gtk_box_pack_start_defaults (GTK_BOX (hbox),
+				   frame);
+      gtk_widget_show (frame);
+
+      table = gtk_table_new (2, 2, FALSE);
+      gtk_container_set_border_width (GTK_CONTAINER (table), 6);
+      gtk_table_set_row_spacings (GTK_TABLE (table), 6);
+      gtk_table_set_col_spacings (GTK_TABLE (table), 6);
+      gtk_container_add (GTK_CONTAINER (frame), table);
+      gtk_widget_show (table);
+      
+      label = gtk_label_new ("Width:");
+      gtk_table_attach_defaults (GTK_TABLE (table), label,
+                                 0, 1,
+                                 0, 1);
+      gtk_widget_show (label);
+
+      g_snprintf (buf, 1024, "%d", vclip->GetVideoInfo ()->GetWidth ());
+      entry = gtk_entry_new ();
+      gtk_entry_set_text (GTK_ENTRY (entry), buf);
+      gtk_editable_set_editable (GTK_EDITABLE (entry), FALSE);
+      gtk_table_attach_defaults (GTK_TABLE (table), entry,
+                                 1, 2,
+                                 0, 1);
+      gtk_widget_show (entry);
+      
+      label = gtk_label_new ("Height:");
+      gtk_table_attach_defaults (GTK_TABLE (table), label,
+                                 0, 1,
+                                 1, 2);
+      gtk_widget_show (label);
+
+      g_snprintf (buf, 1024, "%d", vclip->GetVideoInfo ()->GetHeight ());
+      entry = gtk_entry_new ();
+      gtk_entry_set_text (GTK_ENTRY (entry), buf);
+      gtk_editable_set_editable (GTK_EDITABLE (entry), FALSE);
+      gtk_table_attach_defaults (GTK_TABLE (table), entry,
+                                 1, 2,
+                                 1, 2);
+      gtk_widget_show (entry);
+
+      frame = gtk_frame_new ("New size");
+      gtk_box_pack_start_defaults (GTK_BOX (hbox),
+				   frame);
+      gtk_widget_show (frame);
+
+      table = gtk_table_new (2, 2, FALSE);
+      gtk_container_set_border_width (GTK_CONTAINER (table), 6);
+      gtk_table_set_row_spacings (GTK_TABLE (table), 6);
+      gtk_table_set_col_spacings (GTK_TABLE (table), 6);
+      gtk_container_add (GTK_CONTAINER (frame), table);
+      gtk_widget_show (table);
+      
+      label = gtk_label_new ("Width:");
+      gtk_table_attach_defaults (GTK_TABLE (table), label,
+                                 0, 1,
+                                 0, 1);
+      gtk_widget_show (label);
+
+      g_snprintf (buf, 1024, "%d", vclip->GetVideoInfo ()->GetWidth ());
+      entry_resize_width = gtk_entry_new ();
+      gtk_entry_set_text (GTK_ENTRY (entry_resize_width), buf);
+//       gtk_editable_select_region (GTK_EDITABLE (entry_resize_width),
+//                                   0, -1);
+//       gtk_widget_grab_focus (entry_resize_width);
+      gtk_table_attach_defaults (GTK_TABLE (table), entry_resize_width,
+                                 1, 2,
+                                 0, 1);
+      gtk_widget_show (entry_resize_width);
+      
+      label = gtk_label_new ("Height:");
+      gtk_table_attach_defaults (GTK_TABLE (table), label,
+                                 0, 1,
+                                 1, 2);
+      gtk_widget_show (label);
+
+      g_snprintf (buf, 1024, "%d", vclip->GetVideoInfo ()->GetHeight ());
+      entry_resize_height = gtk_entry_new ();
+      gtk_entry_set_text (GTK_ENTRY (entry_resize_height), buf);
+      gtk_editable_select_region (GTK_EDITABLE (entry_resize_height),
+                                  0, -1);
+      gtk_table_attach_defaults (GTK_TABLE (table), entry_resize_height,
+                                 1, 2,
+                                 1, 2);
+      gtk_widget_show (entry_resize_height);
+      
+      button = gtk_dialog_add_button (GTK_DIALOG (win_resize),
+				      GTK_STOCK_CANCEL,
+				      GTK_RESPONSE_CANCEL);
+      g_signal_connect_swapped (G_OBJECT (button), "clicked",
+				G_CALLBACK (gtk_widget_destroy), win_resize);
+      
+      button = gtk_dialog_add_button (GTK_DIALOG (win_resize),
+				      GTK_STOCK_OK,
+				      GTK_RESPONSE_OK);
+      g_signal_connect_swapped (G_OBJECT (button), "clicked",
+				G_CALLBACK (cb_resize_draw), win_resize);
+      gtk_widget_show (entry);
+    }
+  else
+    {
+      button = gtk_dialog_add_button (GTK_DIALOG (win_resize),
+				      GTK_STOCK_CLOSE,
+				      GTK_RESPONSE_CLOSE);
+      g_signal_connect_swapped (G_OBJECT (button), "clicked",
+				G_CALLBACK (gtk_widget_destroy), win_resize);
+
+      label = gtk_label_new ("No Video");
+      gtk_box_pack_start_defaults (GTK_BOX (GTK_DIALOG (win_resize)->vbox),
+				   label);
+      gtk_widget_show (label);
+    }
+
+  gtk_widget_show (win_resize);
 }
 
 static void
@@ -554,7 +736,7 @@ static void cb_fd_response (GtkWidget *widget,
 	gtk_statusbar_pop (GTK_STATUSBAR (status), id);
 	gtk_statusbar_push (GTK_STATUSBAR (status), id, "File loaded...");
 
-	draw_frame (120);
+	draw_frame (frame_current);
 
 	break;
       }
@@ -570,16 +752,38 @@ cb_goto_draw (GtkWidget *widget,
 	      gpointer   data __UNUSED__)
 {
   const gchar *str;
-  gint frame;
 
-  g_print ("cb_goto_frame\n");
+  g_print ("cb_goto_draw\n");
   str = gtk_entry_get_text (GTK_ENTRY (entry));
-  frame = (gint)g_ascii_strtod (str, NULL);
+  frame_current = (gint)g_ascii_strtod (str, NULL);
 
   gtk_widget_destroy (widget);
 
-  draw_frame (frame);
-  g_print ("cb_goto_frame fin\n");
+  draw_frame (frame_current);
+  g_print ("cb_goto_draw fin\n");
+}
+
+static void
+cb_resize_draw (GtkWidget *widget,
+                GdkEvent  *event __UNUSED__,
+                gpointer   data __UNUSED__)
+{
+  const gchar *str;
+  gint         width;
+  gint         height;
+
+  g_print ("cb_resize_draw\n");
+
+  str = gtk_entry_get_text (GTK_ENTRY (entry_resize_width));
+  width = (gint)g_ascii_strtod (str, NULL);
+
+  str = gtk_entry_get_text (GTK_ENTRY (entry_resize_height));
+  height = (gint)g_ascii_strtod (str, NULL);
+
+  gtk_widget_destroy (widget);
+
+  resize_frame (width, height);
+  g_print ("cb_resize_draw fin\n");
 }
 
 //Interface
@@ -592,6 +796,34 @@ static void draw_frame (long int frame_nbr)
   guint width = frame->GetDimension().GetWidth();
   guint height = frame->GetDimension().GetHeight();
 
+  rgb = frame->ReadFrom('~').ptr;
+  
+  gtk_widget_set_size_request (image, width, height);
+  pixbuf = gdk_pixbuf_new_from_data (rgb,
+				     GDK_COLORSPACE_RGB, TRUE,
+				     8, width, height, 4 * width,
+				     (GdkPixbufDestroyNotify) g_free,
+				     NULL);
+  gtk_image_set_from_pixbuf (GTK_IMAGE (image), pixbuf);
+}
+
+//Interface
+static void resize_frame (gint w, gint h)
+{
+  GdkPixbuf *pixbuf;
+  const BYTE *rgb;
+  PClip vclip_rgb32 = ToRGB32::Create(vclip);
+  g_print ("1\n");
+  PFilter filter = PFilter( new Lanczos3());
+  g_print ("2\n");
+  PClip vclip_resized = Horizontal::Create(vclip_rgb32, filter, w, SubRange(h));
+  g_print ("3\n");
+  CPVideoFrame frame = vclip_resized->GetFrame(frame_current);
+  g_print ("4\n");
+  guint width = frame->GetDimension().GetWidth();
+  guint height = frame->GetDimension().GetHeight();
+
+  g_print ("5\n");
   rgb = frame->ReadFrom('~').ptr;
   
   gtk_widget_set_size_request (image, width, height);
@@ -685,6 +917,12 @@ static void create_main_window ()
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   g_signal_connect (G_OBJECT (item), "activate",
 		    G_CALLBACK (cb_goto), win);
+  gtk_widget_show (item);
+  
+  item = gtk_menu_item_new_with_label ("Resize");
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  g_signal_connect (G_OBJECT (item), "activate",
+		    G_CALLBACK (cb_resize), win);
   gtk_widget_show (item);
 
   item = gtk_menu_item_new_with_label ("Help");

@@ -8,14 +8,25 @@ These routines are used for ...
 /**
 
 @mainpage AviSynth v3 Build Documentation
-@version 0.2.2
+@version 0.2.3
 @author Wilbert Dijkhof <wilbertdijkhof at yahoo.com>
-@author Vincent Torri <torri at math dot iecn dot u-nancy dot fr>
-@date 2004
+@author Vincent Torri <vtorri at maths dot univ-evry dot fr>
+@date 2005
 
 
-The windows version of AviSynth v3 can be built using MinGW (g++) or VC++ .NET 2003 (VC 7.1). The linux version requires MinGW (g++). Section \ref AVS-Win-MinGW describes how to compile it using MinGW, section \ref AVS-Win-net how to compile it using VC++ .NET 2003. Section \ref AVS-Linux describes how to built the linux version of AviSynth v3.
+The windows version of AviSynth v3 can be built using MinGW (g++) or
+VC++ .NET 2003 (VC 7.1). The linux version requires g++. The plan of
+this installation guide is the following.
 
+\ref AVS-Win-MinGW
+
+\ref AVS-Win-net
+
+\ref ffmpeg
+
+\ref AVS-Linux
+
+We begin with the installation of Avisynth 3 for Windows, using MingW (g++)
 
 @section AVS-Win-MinGW 1. Building AviSynth v3 for Windows using MinGW (g++)
 
@@ -495,7 +506,7 @@ version. First we have to download the cvs code of STLPort:
 @code
 cd
 cd avs_main_dir
- cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/stlport login
+cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/stlport login
 @endcode
 A password will be required. Just strike the \em Enter key. Then,
 download the code with that command:
@@ -521,13 +532,13 @@ make -f gcc.mak install-stldbg-static
 @endcode
 The libraries are located in \em STLport/lib and the headers in \em
 STLport/stlport.\n
-\li If one wants to install STLPort in \em /usr, go the the \em STLport
+\li If one wants to install STLPort in \em /usr/local, go the the \em STLport
 directory and copy the files manually (while being root, of course):
 @code
 cd ../..
 su <type the root password>
-cp lib/libstlport* /usr/lib/
-cp -R stlport /usr/include/
+cp lib/libstlport* /usr/local/lib/
+cp -R stlport /usr/local/include/
 <Ctrl-d>
 @endcode
 \li If one wants to install it locally, say for example \em
@@ -538,30 +549,30 @@ cp lib/libstlport* $HOME/local/lib/
 cp -R stlport $HOME/local/include/
 @endcode
 
-@subsection linux-boost 4.2 Installing Boost 1.32
+@subsection linux-boost 4.2 Installing Boost 1.33
 
 First, download <a
-href=http://prdownloads.sourceforge.net/boost/boost_1_32_0.tar.gz?download>Boost
-1.32</a> from SourceForge, put it in \em avs_main_dir and untar it:
+href=http://prdownloads.sourceforge.net/boost/boost_1_33_0.tar.gz?download>Boost
+1.33</a> from SourceForge, put it in \em avs_main_dir and untar it:
 @code
 cd
 cd avs_main_dir
-tar zxvf boost_1_32_0.tar.gz
+tar zxvf boost_1_33_0.tar.gz
 @endcode
 Boost does not use the GNU make utility to compile. Instead it uses
 Boost.Jam (an extension or Perforce Jam. Download the <a href=http://prdownloads.sourceforge.net/boost/boost-jam-3.1.10-1-linuxx86.tgz?download>prebuilt
 executable here</a>. Download it in \em avs_main_dir and untar it:
 @code
-tar zxvf boost-jam-3.1.10-1-linuxx86.tgz
+tar zxvf boost-jam-3.1.11-1-linuxx86.tgz
 @endcode
-Now, go to the Boost 1.32 diretory and compile it with the following
+Now, go to the Boost 1.33 diretory and compile it with the following
 commands:
 @code
-cd boost_1_32_0
-../boost-jam-3.1.10-1-linuxx86/bjam "-sTOOLS=gcc" --prefix=/usr/ install
+cd boost_1_33_0
+../boost-jam-3.1.11-1-linuxx86/bjam "-sTOOLS=gcc" --prefix=/usr/local install
 @endcode
 In this example, the installation directory of Boost will be \em
-/usr/. So you  need to be root to install it. If one wants to install
+/usr/local. So you  need to be root to install it. If one wants to install
 it locally (like in \ref linux-stlport), just replace \em
 --prefix=/usr/ by \em --prefix=\$HOME/local/.
 
@@ -590,11 +601,11 @@ cd
 cd avs_main_dir
 tar zxvf freetype-2.1.9.tar.gz
 cd freetype-2.1.9
-./configure --prefix/usr/
+./configure --prefix/usr/local
 make
 make install
 @endcode
-This installs Freetype in \em /usr/, so you have to be root before
+This installs Freetype in \em /usr/local, so you have to be root before
 doing \em make \em install. If one wants to install it
 elsewhere, change the value given to the \em --prefix parameter.
 
@@ -602,7 +613,10 @@ elsewhere, change the value given to the \em --prefix parameter.
 
 FFMPEG is a set of library the allows to record, convert and stream
 audio and video. For now, only version 0.4.9-pre1 is working with
-Avisynth 3.0. Dowload it at <a
+Avisynth 3.0, and the FFMPEG source is not supported anymore. Use
+Gstreamer instead.
+
+Nevertheless, if you want to dowload it at <a
 href=http://prdownloads.sourceforge.net/ffmpeg/ffmpeg-0.4.9-pre1.tar.gz?download>SourceForge</a>
 in \em avs_main_dir. Untar it, go into its directory, configure it and
 install it:
@@ -611,22 +625,60 @@ cd
 cd avs_main_dir/
 tar zxvf ffmpeg-0.4.9-pre1.tar.gz
 cd ffmpeg-0.4.9-pre1
-./configure --prefix=/usr/
+./configure --prefix=/usr/local
 make
 make install
 make installlib
 @endcode
-This installs FFMPEG in \em /usr/, so you have to be root before
+This installs FFMPEG in \em /usr/local, so you have to be root before
 doing \em make \em installlib. If you want to install it
 elsewhere, change the value given to the \em --prefix parameter.
 
-@subsection linux-asm 4.5 Assembly support with NASM
+@subsection linux-gstreamer 4.5 Installing Gstreamer
+
+Gstreamer is a multimedia framework, similar to DirectShow in the
+Windows(tm) world. For now, only the 0.8 version is supported. The
+current cvs version (0.9) will be supported later. Gstreamer is only
+the core of the framework. To decode the streams, you need to install
+Gst-plugins and Gst-FFmpeg. The packages can be downloaded here:
+<a href=http://gstreamer.freedesktop.org/src/gstreamer/>Gstreamer</a>,
+<a href=http://gstreamer.freedesktop.org/src/gst-plugins/>Gst-plugins</a>,
+<a href=http://gstreamer.freedesktop.org/src/gst-ffmpeg/>Gst-FFmpeg</a>.
+Put the packages in \em avs_main_dir. Untar them, go into their
+directory, configure them, and install them:
+@code
+cd
+cd avs_main_dir/
+tar zxvf gstreamer-0.8.11.tar.gz
+cd gstreamer-0.8.11
+./configure --prefix=/usr/local
+make
+make install
+cd ..
+tar zxvf gst-plugins-0.8.11.tar.gz
+cd gst-plugins-0.8.11
+./configure --prefix=/usr/local
+make
+make install
+cd ..
+tar zxvf gst-ffmpeg-0.8.6.tar.gz
+cd gst-ffmpeg-0.8.6
+./configure --prefix=/usr/local
+make
+make install
+@endcode
+This installs Gtreamer, Gst-plugins and Gst-FFmpeg in \em /usr/local,
+so you have to be root before doing \em make \em install. If you want
+to install it elsewhere, change the value given to the \em --prefix
+parameter. 
+
+@subsection linux-asm 4.6 Assembly support with NASM
 
 If you want to compile Avisynth 3.0 with assembly support, you have to
 install at least Nasm 0.98.36. This installation is not described yet.
 
 
-@subsection linux-avs 4.6 Building Avisynth 3.0
+@subsection linux-avs 4.7 Building Avisynth 3.0
 
 Now, we may build Avisynth 3.0 ! Just after having installed 3 more
 libraries.
@@ -653,12 +705,12 @@ cd circular_buffer
 \li If Boost is installed in \em /usr, you have to be root:
 @code
 su <enter the root password>
-cp -R boost /usr/include/boost-1_32/
+cp -R boost /usr/include/boost-1_33/
 <Ctrl-d>
 @endcode
 \li If Boost is installed in, say \em \$HOME/local:
 @code
-cp -R boost $HOME/local/include/boost-1_32/
+cp -R boost $HOME/local/include/boost-1_33/
 @endcode
 
 And now, we can configure Avixynth 3.0.

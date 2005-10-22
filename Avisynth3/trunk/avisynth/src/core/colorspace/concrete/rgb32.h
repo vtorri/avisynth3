@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -33,9 +33,9 @@ namespace avs { namespace colorspace { namespace concrete {
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
-//  RGB24
+//  RGB32
 //
-//  RGB24 ColorSpace subclass
+//  RGB32 ColorSpace subclass
 //
 class RGB32 : public RGB8
 {
@@ -48,8 +48,8 @@ public:  //structors
 
 public:  //ColorSpace interface
 
-  virtual ID id() const { return I_RGB24; }
-  virtual char const * GetName() const { return "RGB24"; }
+  virtual ID id() const { return I_RGB32; }
+  virtual char const * GetName() const { return "RGB32"; }
 
 
 public:  //Interleaved interface

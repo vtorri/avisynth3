@@ -71,7 +71,7 @@ void FromRGB32::ConvertFrame(CWindowPtr src, WindowPtr Y, WindowPtr U, WindowPtr
       Y[0] = 16 + ((32768 + RtoYCoeff * src[0] + GtoYCoeff * src[1] + BtoYCoeff * src[2]) >> 16);
     }
 
-  src.toTop();
+  src.to(0, -src.height); //we return to the beginning of the plane.
 
   //U and V planes
   for ( int y = U.height; y-- > 0; U.pad(), V.pad(), src.skipPad() )

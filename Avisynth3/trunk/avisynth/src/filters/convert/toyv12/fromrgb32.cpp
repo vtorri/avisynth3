@@ -73,7 +73,7 @@ void FromRGB32::ConvertFrame(CWindowPtr src, WindowPtr Y, WindowPtr U, WindowPtr
 
   src.toTop();
 
-  //U and V planes : to be done
+  //U and V planes
   for ( int y = U.height; y-- > 0; U.pad(), V.pad(), src.skipPad() )
     for ( int x = U.width; x-- > 0; U.to(1, 0), V.to(1, 0), src.to(8, 0) )
     {
@@ -82,13 +82,13 @@ void FromRGB32::ConvertFrame(CWindowPtr src, WindowPtr Y, WindowPtr U, WindowPtr
       U01 = 128 + ((32768 + RtoUCoeff * src[4] + GtoUCoeff * src[5] + BtoUCoeff * src[6]) >> 16);
       U10 = 128 + ((32768 + RtoUCoeff * src(0, 1) + GtoUCoeff * src(1, 1) + BtoUCoeff * src(2, 1)) >> 16);
       U11 = 128 + ((32768 + RtoUCoeff * src(4, 1) + GtoUCoeff * src(5, 1) + BtoUCoeff * src(6, 1)) >> 16);
-      U[0] = 2 + (U00 + U01 + U10 + U11) >> 2;
+      U[0] = 2 + ((U00 + U01 + U10 + U11) >> 2);
 
       V00 = 128 + ((32768 + RtoVCoeff * src[0] + GtoVCoeff * src[1] + BtoVCoeff * src[2]) >> 16);
       V01 = 128 + ((32768 + RtoVCoeff * src[4] + GtoVCoeff * src[5] + BtoVCoeff * src[6]) >> 16);
       V10 = 128 + ((32768 + RtoVCoeff * src(0, 1) + GtoVCoeff * src(1, 1) + BtoVCoeff * src(2, 1)) >> 16);
       V11 = 128 + ((32768 + RtoVCoeff * src(4, 1) + GtoVCoeff * src(5, 1) + BtoVCoeff * src(6, 1)) >> 16);
-      V[0] = 2 + (V00 + V01 + V10 + V11) >> 2;
+      V[0] = 2 + ((V00 + V01 + V10 + V11) >> 2);
     }
 }
 

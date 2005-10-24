@@ -1,0 +1,38 @@
+
+BUGS:
+-----
+
+* The parser is broken with just a source
+* Some videos crashes.
+
+
+FEATURES:
+---------
+
+* new parser
+* Gstreamer 0.9
+* export for Gstreamer
+
+
+TESTS:
+------
+
+* parser
+  [ ] source
+  [ ] if/then/else
+  [ ] for
+  [ ] while
+
+* colorspaces
+  [X] RGB32->YV12
+  [X] YUY2->YV12
+  [ ] RGB32->RGB24
+  [X] YV12->RGB32
+  [X] YV12->YUY2
+
+* colorspaces (asm)
+  [ ] RGB32->RGB24
+
+* resizers
+  [ ] horizontal
+  [ ] vertical

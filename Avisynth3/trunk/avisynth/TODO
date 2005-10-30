@@ -26,6 +26,7 @@ TESTS:
 * colorspaces
   [X] RGB32->YV12
   [X] YUY2->YV12
+  [X] RGB32->YV24
   [ ] RGB32->RGB24
   [X] YV12->RGB32
   [X] YV12->YUY2

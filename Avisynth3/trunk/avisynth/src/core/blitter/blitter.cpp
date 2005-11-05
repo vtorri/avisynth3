@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -21,11 +21,43 @@
 // General Public License cover the whole combination.
 
 
-//avisynth include
+//avisynth includes
 #include "memcopy.h"
+#include "../window_ptr.h"
+#include "../geometry/dimension.h"
+
 
 
 namespace avs {
+
+
+BYTE * Blitter::Blit(CWindowPtr const& src, BYTE * ptr, int pitch) const
+{
+  BYTE const * srcp = src.ptr;
+
+  Blit(srcp, src.pitch, ptr, pitch, Dimension(src.width, src.height));
+
+  return ptr;
+}
+
+  
+BYTE const * Blitter::Blit(BYTE const * src, int pitch, WindowPtr const& dst) const
+{
+  BYTE * dstp = dst.ptr;
+
+  Blit(src, pitch, dstp, dst.pitch, Dimension(dst.width, dst.height));
+
+  return src;
+}
+
+  
+void Blitter::Blit(CWindowPtr const& src, WindowPtr const& dst, Dimension const& dim) const
+{
+  BYTE const * srcp = src.ptr;
+  BYTE * dstp = dst.ptr;
+
+  Blit(srcp, src.pitch, dstp, dst.pitch, dim);
+}
 
 
 
@@ -33,6 +65,7 @@ Blitter const& Blitter::Get()
 {
   return blitter::MemCopy::instance;
 }
+
 
 
 } //namespace avs

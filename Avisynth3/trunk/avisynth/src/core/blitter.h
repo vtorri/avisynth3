@@ -24,10 +24,8 @@
 #ifndef __AVS_BLITTER_H__
 #define __AVS_BLITTER_H__
 
-//avisynth includes
+//avisynth include
 #include "forward.h"
-#include "window_ptr.h"
-#include "geometry/dimension.h"
 
 
 namespace avs {
@@ -44,34 +42,9 @@ class Blitter
 
 public:  //Blit methods
 
-  BYTE * Blit(CWindowPtr const& src, BYTE * ptr, int pitch) const
-  {
-    BYTE const * srcp = src.ptr;
-    BYTE * result = ptr;
-
-    Blit(srcp, src.pitch, result, pitch, Dimension(src.width, src.height));
-
-    return result;
-  }
-
-  BYTE const * Blit(BYTE const * src, int pitch, WindowPtr const& dst) const
-  {
-    BYTE const * result = src;
-    BYTE * dstp = dst.ptr;
-
-    Blit(result, pitch, dstp, dst.pitch, Dimension(dst.width, dst.height));
-
-    return result;
-  }
-
-  void Blit(CWindowPtr const& src, WindowPtr const& dst, Dimension const& dim) const
-  {
-    BYTE const * srcp = src.ptr;
-    BYTE * dstp = dst.ptr;
-
-    Blit(srcp, src.pitch, dstp, dst.pitch, dim);
-  }
-
+  virtual BYTE * Blit(CWindowPtr const& src, BYTE * ptr, int pitch) const;
+  virtual BYTE const * Blit(BYTE const * src, int pitch, WindowPtr const& dst) const;
+  virtual void Blit(CWindowPtr const& src, WindowPtr const& dst, Dimension const& dim) const;
 
   //others are implemented in terms of this version
   //normally you never directly use this one

@@ -24,6 +24,7 @@
 //avisynth include
 #include "parser.h"
 #include "vmstate.h"
+#include "lazy/tuple.h"
 #include "grammar/script.h"
 #include "../linker/core/plugin.h"
 #include "../filters/source/messageclip.h"
@@ -43,7 +44,7 @@ namespace avs { namespace parser {
 StatementCode Parser::operator()(std::string const& src)
 {
 
-  //using namespace lazy;
+  using namespace lazy;
   using namespace phoenix;
   using namespace avs::parser::grammar;
 
@@ -53,16 +54,16 @@ StatementCode Parser::operator()(std::string const& src)
 
   globalCtxt.get<1>().AddPlugin(linker::core::Plugin::Get());
 
-  Script script;
+  //Script script;
   //Statement statement;
-  //Expression expression;
+  Expression expression;
 
   parse(src.c_str(), 
-      script( CodeCouple(), boost::ref(localCtxt), boost::ref(globalCtxt) )
+        //script( CodeCouple(), boost::ref(localCtxt), boost::ref(globalCtxt) )
       //statement( CodeCouple(), boost::ref(localCtxt), boost::ref(globalCtxt), 'c' )
-      //expression( value::Expression(), boost::ref(localCtxt), boost::ref(globalCtxt) )
+      expression( value::Expression(), boost::ref(localCtxt), boost::ref(globalCtxt) )
       [            
-        var(code) += arg1
+       var(code) += first(arg1)
       ]
       , spirit::blank_p);
 

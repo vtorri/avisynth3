@@ -65,6 +65,10 @@ OBJECTS += $(ASM_OBJECTS)
 BUILD_DIR = build
 VPATH     = $(SRC_DIR):$(BUILD_DIR)
 
+# The variables used for the dist rule
+distdir=$(PACKAGE)-$(VERSION)
+distfile=$(distdir).tar
+
 #-----------------------------------------------------------------------------
 # The default rule
 #-----------------------------------------------------------------------------
@@ -114,7 +118,7 @@ $(BUILD_DIR):
 # Static Library
 #-----------------------------------------------------------------------------
 
-$(STATIC_LIB): $(BUILD_DIR) $(LIB_OBJECTS) $(ASM_OBJECTS) $(SRC_LIB_GENERIC)
+$(STATIC_LIB): $(BUILD_DIR) .depend $(LIB_OBJECTS) $(ASM_OBJECTS) $(SRC_LIB_GENERIC)
 	@echo "  L: $(@F)"
 	@cd $(BUILD_DIR) && ar rc $(@F) $(LIB_OBJECTS) $(ASM_OBJECTS) && $(RANLIB) $(@F)
 
@@ -133,7 +137,7 @@ $(STATIC_LIB): $(BUILD_DIR) $(LIB_OBJECTS) $(ASM_OBJECTS) $(SRC_LIB_GENERIC)
 #      platforms
 #-----------------------------------------------------------------------------
 
-$(SHARED_LIB): $(BUILD_DIR) $(LIB_OBJECTS) $(ASM_OBJECTS)
+$(SHARED_LIB): $(BUILD_DIR) .depend $(LIB_OBJECTS) $(ASM_OBJECTS)
 	@echo "  L: $(@F)"
 	@$(INSTALL) -m 644 libavisynth.def $(BUILD_DIR)/libavisynth.def
 	@cd $(BUILD_DIR) && $(CXX) $(LDFLAGS) $(LIB_OBJECTS) $(ASM_OBJECTS) -o $(PRE_SHARED_LIB) $(SPECIFIC_LDFLAGS) $(AVS3_LIBS)
@@ -141,7 +145,7 @@ $(SHARED_LIB): $(BUILD_DIR) $(LIB_OBJECTS) $(ASM_OBJECTS)
 #-----------------------------------------------------------------------------
 # Test program
 #-----------------------------------------------------------------------------
-$(PROG): $(BUILD_DIR) $(SHARED_LIB) $(BIN_OBJECTS)
+$(PROG): $(BUILD_DIR) .depend $(SHARED_LIB) $(BIN_OBJECTS)
 	@echo "  P: $(@F)"
 	@cd $(BUILD_DIR) && $(CXX) $(GTK_LIBS) $(BIN_OBJECTS) $(SHARED_LIB) -o $(PROG) && chmod u+x $(PROG)
 
@@ -157,19 +161,36 @@ install: $(BUILD_DIR)/$(PROG) $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_L
 	@echo "  D: $(libdir)"
 	@$(INSTALL) -d $(libdir)
 	@echo "  I: $(libdir)/$(SHARED_LIB)"
-	@$(INSTALL) -m 755 $(BUILD_DIR)/$(SHARED_LIB) $(DEST_DIR)$(libdir)/$(SHARED_LIB)
+	@$(INSTALL) -m 644 $(BUILD_DIR)/$(SHARED_LIB) $(DEST_DIR)$(libdir)/$(SHARED_LIB)
 	@echo "  I: $(libdir)/libavisynth.$(SHARED_EXTENSION).$(API_MAJOR)"
 	@$(LN_S) -f $(DEST_DIR)$(libdir)/$(SHARED_LIB) $(DEST_DIR)$(libdir)/libavisynth.$(SHARED_EXTENSION).$(API_MAJOR)
 	@echo "  I: $(libdir)/libavisynth.$(SHARED_EXTENSION)"
 	@$(LN_S) -f $(DEST_DIR)$(libdir)/$(SHARED_LIB) $(DEST_DIR)$(libdir)/libavisynth.$(SHARED_EXTENSION)
 	@echo "  I: $(libdir)/$(STATIC_LIB)"
-	@$(INSTALL) -m 755 $(BUILD_DIR)/$(STATIC_LIB) $(DEST_DIR)$(libdir)/$(STATIC_LIB)
+	@$(INSTALL) -m 644 $(BUILD_DIR)/$(STATIC_LIB) $(DEST_DIR)$(libdir)/$(STATIC_LIB)
 	@echo "  D: $(includedir)"
 	@$(INSTALL) -d $(DEST_DIR)$(includedir)
+	@cd ../../src && \
+	find . -name '*.h' | while read i; do \
+	  filename="`echo $$i | sed 's:^\./::'`"; \
+	  dir="`echo $$filename | sed 's:\(.*\)/.*:\1:'`"; \
+	  if test "$$dir" = "$$filename" ; then \
+	    dir=""; \
+	  fi; \
+	  echo "install -d $(includedir)/$$dir"; \
+	  install -d $(includedir)/$$dir; \
+	  echo "  I: $(includedir)/$$filename"; \
+	  echo "install -m 644 $$filename $(includedir)/$$filename;"; \
+	  if test "$$filename" = "core.h" ; then \
+	    install -m 644 $$filename $(includedir)/avisynth.h; \
+	  else \
+	    install -m 644 $$filename $(includedir)/$$filename; \
+	  fi; \
+	done
 	@echo "  D: $(pkgconfigdir)"
 	@$(INSTALL) -d $(DEST_DIR)$(pkgconfigdir)
 	@echo "  I: $(pkgconfigdir)/$(AVS_PC)"
-	@$(INSTALL) -m 755 ./$(AVS_PC) $(DEST_DIR)$(pkgconfigdir)
+	@$(INSTALL) -m 644 ./$(AVS_PC) $(DEST_DIR)$(pkgconfigdir)
 
 #-----------------------------------------------------------------------------
 # Platorm specific file -- dumb rules for people executing make before
@@ -188,14 +209,21 @@ configure:
 
 .depend:
 	@echo "  H: headers dependances"
+	@$(RM) $(BUILD_DIR)/.depend
+	@touch $(BUILD_DIR)/.depend
 	@cd $(SRC_DIR) && \
-	$(CXX) -MM $(AVS3_CPPFLAGS) $(SRC_LIB_GENERIC) 1> ../build/linux/$(BUILD_DIR)/.depend
+	find . -name '*.cpp' | while read i; do \
+	  echo $$filename; \
+	  filename="`echo $$i | sed 's:^\./::'`"; \
+	  dir="`echo $$filename | sed 's:\(.*\)/.*:\1:'`"; \
+	  (echo -n "$$dir/" && $(CXX) -MM -g0 $(AVS3_CPPFLAGS) $(GTK_CFLAGS) $$filename) 1>> ../build/linux/$(BUILD_DIR)/.depend; \
+	done
 
 #-----------------------------------------------------------------------------
 # .PHONY targets
 #-----------------------------------------------------------------------------
 
-.PHONY: mrproper distclean clean info \
+.PHONY: mrproper distclean clean dist info \
 	list-objects list-targets list-install-path list-flags
 
 clean:
@@ -220,6 +248,35 @@ mrproper: distclean
 	@$(RM) config.guess
 	@$(RM) mkinstalldirs
 	@$(RM) config.sub
+
+distdir:
+	@cd ../../ && \
+	test ! -d $(distdir) \
+	|| { find $(distdir) -type d ! -perm -200 -exec chmod u+w {} ';' \
+	&& $RM$ $(distdir); };
+	@mkdir $(distdir)
+	@cp -pR ../win32 \
+	../INSTALL \
+	../linux/Makefile ../linux/avs.pc.in ../linux/bootstrap.sh ../linux/configure.in ../linux/gen_sources.sh.in ../linux/libavisynth.def ../linux/platform.inc.in ../linux/m4 \
+	../../docs/Doxyfile ../../docs/README ../../docs/avisynth.css ../../docs/gendoc ../../docs/installdocs.c.in \
+	../../src/ $(distdir)
+	@find $(distdir) -path '*CVS' | while read i; do \
+	  $(RM) $$i; \
+	done
+
+dist-tar: distdir
+	@tar cf $(distfile) $(distdir)
+
+dist-gzip: dist-tar
+	@echo "  T: $(distfile).gz"
+	@gzip -9 -c $(distfile) > $(distfile).gz
+
+dist-bzip2: dist-tar
+	@echo "  T: $(distfile).bz2"
+	@bzip2 -9 -c $(distfile) > $(distfile).bz2
+
+dist: dist-gzip dist-bzip2
+	@$(RM) $(distdir) $(distfile)
 
 list-objects:
 	@echo

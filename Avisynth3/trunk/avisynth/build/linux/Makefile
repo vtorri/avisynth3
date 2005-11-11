@@ -153,7 +153,7 @@ $(PROG): $(BUILD_DIR) .depend $(SHARED_LIB) $(BIN_OBJECTS)
 # Installation
 #-----------------------------------------------------------------------------
 
-install: $(BUILD_DIR)/$(PROG) $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB)
+install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB) $(BUILD_DIR)/$(PROG)
 	@echo "  D: $(bindir)"
 	@$(INSTALL) -d $(DEST_DIR)$(bindir)
 	@echo "  I: $(bindir)/$(BIN_OBJECT)"
@@ -177,15 +177,17 @@ install: $(BUILD_DIR)/$(PROG) $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_L
 	  if test "$$dir" = "$$filename" ; then \
 	    dir=""; \
 	  fi; \
-	  echo "install -d $(includedir)/$$dir"; \
-	  install -d $(includedir)/$$dir; \
-	  echo "  I: $(includedir)/$$filename"; \
-	  echo "install -m 644 $$filename $(includedir)/$$filename;"; \
-	  if test "$$filename" = "core.h" ; then \
-	    install -m 644 $$filename $(includedir)/avisynth.h; \
-	  else \
-	    install -m 644 $$filename $(includedir)/$$filename; \
-	  fi; \
+	  if test "$$dir" != "avisynth_c/private"; then \
+	    echo "install -d $(includedir)/$$dir"; \
+	    install -d $(includedir)/$$dir; \
+	    echo "  I: $(includedir)/$$filename"; \
+	    echo "install -m 644 $$filename $(includedir)/$$filename;"; \
+	    if test "$$filename" = "core.h" ; then \
+	      install -m 644 $$filename $(includedir)/avisynth.h; \
+	    else \
+	      install -m 644 $$filename $(includedir)/$$filename; \
+	    fi; \
+	  fi \
 	done
 	@echo "  D: $(pkgconfigdir)"
 	@$(INSTALL) -d $(DEST_DIR)$(pkgconfigdir)
@@ -234,7 +236,7 @@ distclean: clean
 	@echo "  Cl: Generated build files"
 	@$(RM) sources.inc
 	@$(RM) platform.inc
-	@$(RM) avs.pc
+	@$(RM) $(AVS_PC)
 	@$(RM) gen_sources.sh
 	@$(RM) config.log
 	@$(RM) config.status
@@ -257,7 +259,7 @@ distdir:
 	@mkdir $(distdir)
 	@cp -pR ../win32 \
 	../INSTALL \
-	../linux/Makefile ../linux/avs.pc.in ../linux/bootstrap.sh ../linux/configure.in ../linux/gen_sources.sh.in ../linux/libavisynth.def ../linux/platform.inc.in ../linux/m4 \
+	../linux/Makefile ../linux/$(AVS_PC).in ../linux/bootstrap.sh ../linux/configure.in ../linux/gen_sources.sh.in ../linux/libavisynth.def ../linux/platform.inc.in ../linux/m4 \
 	../../docs/Doxyfile ../../docs/README ../../docs/avisynth.css ../../docs/gendoc ../../docs/installdocs.c.in \
 	../../src/ $(distdir)
 	@find $(distdir) -path '*CVS' | while read i; do \
@@ -308,7 +310,7 @@ list-install-path:
 	@echo "---------------------------------------------------------------"
 	@echo
 	@echo Binary  Directory: $(bindir)
-	@echo Include Directory: $(includedir)
+	@echo Include Directory: $(includedir)/avisynth-3.0
 	@echo Library Directory: $(libdir)
 	@echo
 

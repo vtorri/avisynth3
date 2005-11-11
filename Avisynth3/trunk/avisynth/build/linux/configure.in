@@ -542,7 +542,7 @@ case "$target_os" in
 esac
 
 dnl ==========================================================================
-dnl STLPORT header files
+dnl STLPORT header and library files
 dnl ==========================================================================
 
 AM_CHECK_STLPORT(
@@ -551,7 +551,7 @@ AM_CHECK_STLPORT(
    [AC_MSG_ERROR("STLport is needed !")])
 
 dnl ==========================================================================
-dnl BOOST header files
+dnl BOOST header and library files
 dnl ==========================================================================
 
 AM_CHECK_BOOST(
@@ -594,29 +594,6 @@ case "$target_os" in
    *bsd*|linux*|beos|irix*|solaris*)
       if test "${ffmpeg_enable}" = "no" && test "${HAVE_GSTREAMER}" = "no" ; then
          AC_MSG_ERROR([FFMPEG or Gstreamer support are needed when building Avisynth 3.0 on linux])
-      fi
-   ;;
-esac
-
-dnl ==========================================================================
-dnl Gtk+ header and library files
-dnl ==========================================================================
-
-PROG=""
-HAVE_GTK="no"
-GTK_MAJORMINOR=2.0
-PKG_CHECK_MODULES(
-   [GTK],
-   [gtk+-$GTK_MAJORMINOR >= $GTK_REQS],
-   [HAVE_GTK="yes"],
-   [HAVE_GTK="no"])
-
-case "$target_os" in
-   *bsd*|linux*|beos|irix*|solaris*)
-      if test "${HAVE_GTK}" = "no" ; then
-         AC_MSG_WARN([Test application not built])
-      else
-         PROG="avisynth_test"
       fi
    ;;
 esac
@@ -670,6 +647,56 @@ AC_ARG_WITH(
     FREETYPE_CFLAGS=`${FREETYPE_CONFIG} --cflags`
     FREETYPE_LIBS=`${FREETYPE_CONFIG} --libs`
    ])
+
+dnl ==========================================================================
+dnl Gtk+ header and library files
+dnl ==========================================================================
+
+PROG=""
+HAVE_GTK="no"
+GTK_MAJORMINOR=2.0
+PKG_CHECK_MODULES(
+   [GTK],
+   [gtk+-$GTK_MAJORMINOR >= $GTK_REQS],
+   [HAVE_GTK="yes"],
+   [HAVE_GTK="no"])
+
+case "$target_os" in
+   *bsd*|linux*|beos|irix*|solaris*)
+      if test "${HAVE_GTK}" = "no" ; then
+         AC_MSG_WARN([Test application not built])
+      else
+         PROG="avisynth_test"
+      fi
+   ;;
+esac
+
+dnl ==========================================================================
+dnl libmatroska header and library files
+dnl ==========================================================================
+
+AM_CHECK_LIBMATROSKA(
+   [],
+   [], 
+   [AC_MSG_WARN("libmatroska not found !")])
+
+dnl ==========================================================================
+dnl gpac header and library files
+dnl ==========================================================================
+
+AM_CHECK_GPAC(
+   [],
+   [], 
+   [AC_MSG_WARN("gpac not found !")])
+
+dnl ==========================================================================
+dnl x264 header and library files
+dnl ==========================================================================
+
+AM_CHECK_X264(
+   [],
+   [], 
+   [AC_MSG_WARN("x264 not found !")])
 
 dnl ==========================================================================
 dnl
@@ -761,7 +788,7 @@ dnl ==========================================================================
 AC_CONFIG_FILES([platform.inc])
 AC_CONFIG_FILES([gen_sources.sh],
                 [chmod +x gen_sources.sh && ./gen_sources.sh])
-AC_CONFIG_FILES([avs.pc])
+AC_CONFIG_FILES([avisynth-3.0.pc])
 
 AC_OUTPUT
 
@@ -792,7 +819,7 @@ echo
 echo " Install path........: $prefix"
 echo "   binaries..........: $bindir"
 echo "   libraries.........: ${libdir}"
-echo "   headers...........: ${includedir}/avs"
+echo "   headers...........: ${includedir}/avisynth-3.0"
 echo
 echo " Compilation.........: make"
 echo " Installation........: make install"

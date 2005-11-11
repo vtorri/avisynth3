@@ -1,0 +1,66 @@
+/* Avisynth 3.0 C Interface 
+ * Copyright 2005 Vincent Torri <vtorri at univ-evry dot fr>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA, or visit
+ * http://www.gnu.org/copyleft/gpl.html .
+ *
+ * As a special exception, I give you permission to link to the
+ * Avisynth C interface with independent modules that communicate with
+ * the Avisynth C interface solely through the interfaces defined in
+ * avisynth_c.h, regardless of the license terms of these independent
+ * modules, and to copy and distribute the resulting combined work
+ * under terms of your choice, provided that every copy of the
+ * combined work is accompanied by a complete copy of the source code
+ * of the Avisynth C interface and Avisynth itself (with the version
+ * used to produce the combined work), being distributed under the
+ * terms of the GNU General Public License plus this exception.  An
+ * independent module is a module which is not derived from or based
+ * on Avisynth C Interface, such as 3rd-party filters, import and
+ * export plugins, or graphical user interfaces.
+ */
+
+/*
+ * clip interface
+ */
+
+#ifndef __CLIP_C_H__
+#define __CLIP_C_H__
+
+
+/* C API include */
+#include "define_c.h"
+#include "videoinfo_c.h"
+#include "videoframe_c.h"
+#include "runtime_environment_c.h"
+
+
+typedef struct AVS_Clip_ AVS_Clip;
+
+
+AVS_C_API AVS_Clip *avs_clip_new_from_script (char *script, AVS_Environment *p_env);
+AVS_C_API AVS_Clip *avs_clip_new_from_file (char *filename, AVS_Environment *p_env);
+AVS_C_API void      avs_clip_delete          (AVS_Clip *p_clip);
+
+/* Result must be freed with avs_videoinfo_delete */
+AVS_C_API AVS_VideoInfo *avs_clip_videoinfo_get (AVS_Clip *p_clip);
+
+/* Result must be freed with avs_videoframe_delete */
+AVS_C_API AVS_VideoFrame *avs_clip_videoframe_get (AVS_Clip *p_clip, long int n);
+
+/* Result must be freed with avs_clip_delete */
+AVS_C_API AVS_Clip *avs_clip_to_yv12 (AVS_Clip *p_clip);
+
+
+#endif /* __CLIP_C_H__ */

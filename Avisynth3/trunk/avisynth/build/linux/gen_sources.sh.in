@@ -3,7 +3,7 @@ rm -f sources.inc
 echo SRC_DIR = ../../src > sources.inc
 echo   >> sources.inc
 echo SRC_BIN_GENERIC = \\ >> sources.inc
-echo   bin/avisynth_test.cpp >> sources.inc
+find ../../src/bin -name '*.cpp' | sed 's/..\/..\/src\//  /;s/.cpp/.cpp \\/' >> sources.inc
 echo   >> sources.inc
 echo SRC_LIB_GENERIC = \\ >> sources.inc
 #sed '@GEN_SOURCES@/cpp/!d;s/^[ \t]*//;s/RelativePath="..\\..\\..\\src\\/  /;s/\\/\//g;s/">/ \\/' ../win32/vc71/avisynth.vcproj >>sources.inc

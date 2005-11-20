@@ -170,7 +170,7 @@ install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB) $(BUILD_DIR)/$(PR
 	@$(INSTALL) -m 644 $(BUILD_DIR)/$(STATIC_LIB) $(DEST_DIR)$(libdir)/$(STATIC_LIB)
 	@echo "  D: $(includedir)"
 	@$(INSTALL) -d $(DEST_DIR)$(includedir)
-	@cd ../../src && \
+	@cd $(SRC_DIR) && \
 	find . -name '*.h' | while read i; do \
 	  filename="`echo $$i | sed 's:^\./::'`"; \
 	  dir="`echo $$filename | sed 's:\(.*\)/.*:\1:'`"; \
@@ -178,10 +178,8 @@ install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB) $(BUILD_DIR)/$(PR
 	    dir=""; \
 	  fi; \
 	  if test "$$dir" != "avisynth_c/private"; then \
-	    echo "install -d $(includedir)/$$dir"; \
 	    install -d $(includedir)/$$dir; \
 	    echo "  I: $(includedir)/$$filename"; \
-	    echo "install -m 644 $$filename $(includedir)/$$filename;"; \
 	    if test "$$filename" = "core.h" ; then \
 	      install -m 644 $$filename $(includedir)/avisynth.h; \
 	    else \
@@ -189,6 +187,10 @@ install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB) $(BUILD_DIR)/$(PR
 	    fi; \
 	  fi \
 	done
+	@echo "  D: $(datadir)"
+	@$(INSTALL) -d $(DEST_DIR)$(datadir)
+	@echo "  I: $(datadir)/x264.png"
+	@$(INSTALL) -m 644 $(SRC_DIR)/bin/x264/x264.png $(DEST_DIR)$(datadir)
 	@echo "  D: $(pkgconfigdir)"
 	@$(INSTALL) -d $(DEST_DIR)$(pkgconfigdir)
 	@echo "  I: $(pkgconfigdir)/$(AVS_PC)"
@@ -261,7 +263,7 @@ distdir:
 	../INSTALL \
 	../linux/Makefile ../linux/$(AVS_PC).in ../linux/bootstrap.sh ../linux/configure.in ../linux/gen_sources.sh.in ../linux/libavisynth.def ../linux/platform.inc.in ../linux/m4 \
 	../../docs/Doxyfile ../../docs/README ../../docs/avisynth.css ../../docs/gendoc ../../docs/installdocs.c.in \
-	../../src/ $(distdir)
+	$(SRC_DIR)/ $(distdir)
 	@find $(distdir) -path '*CVS' | while read i; do \
 	  $(RM) $$i; \
 	done

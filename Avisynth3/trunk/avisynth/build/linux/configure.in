@@ -8,7 +8,7 @@ dnl ==========================================================================
 dnl
 dnl Modified for Avisynth 3.0
 dnl
-dnl Copyright(C) 2004 Vincent TORRI <torri@math.iecn.u-nancy.fr>
+dnl Copyright(C) 2005 Vincent TORRI <vtorri@univ-evry.fr>
 dnl
 dnl ==========================================================================
 
@@ -26,13 +26,13 @@ AC_INIT([Avisynth], [3.0], [http://forum.doom9.org])
 
 AC_PREFIX_DEFAULT("/usr/local")
 
-AC_CANONICAL_BUILD
-AC_CANONICAL_HOST
+AC_CONFIG_AUX_DIR([.])
+
 AC_CANONICAL_TARGET
 
 AM_INIT_AUTOMAKE
 
-AC_CONFIG_SRCDIR([../../src/core.h])
+dnl AC_CONFIG_SRCDIR([../../src/core.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 dnl Do not forget to increase that when needed.
@@ -672,31 +672,13 @@ case "$target_os" in
 esac
 
 dnl ==========================================================================
-dnl libmatroska header and library files
-dnl ==========================================================================
-
-AM_CHECK_LIBMATROSKA(
-   [],
-   [], 
-   [AC_MSG_WARN("libmatroska not found !")])
-
-dnl ==========================================================================
-dnl gpac header and library files
-dnl ==========================================================================
-
-AM_CHECK_GPAC(
-   [],
-   [], 
-   [AC_MSG_WARN("gpac not found !")])
-
-dnl ==========================================================================
 dnl x264 header and library files
 dnl ==========================================================================
 
-AM_CHECK_X264(
-   [],
-   [], 
-   [AC_MSG_WARN("x264 not found !")])
+dnl AM_CHECK_X264(
+dnl    [],
+dnl    [], 
+dnl    [AC_MSG_WARN("x264 not found !")])
 
 dnl ==========================================================================
 dnl
@@ -785,6 +767,7 @@ dnl Output files
 dnl
 dnl ==========================================================================
 
+AC_CONFIG_FILES([config.h])
 AC_CONFIG_FILES([platform.inc])
 AC_CONFIG_FILES([gen_sources.sh],
                 [chmod +x gen_sources.sh && ./gen_sources.sh])
@@ -820,6 +803,7 @@ echo " Install path........: $prefix"
 echo "   binaries..........: $bindir"
 echo "   libraries.........: ${libdir}"
 echo "   headers...........: ${includedir}/avisynth-3.0"
+echo "   data..............: ${datadir}/avisynth-3.0"
 echo
 echo " Compilation.........: make"
 echo " Installation........: make install"

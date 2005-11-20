@@ -261,7 +261,7 @@ distdir:
 	@mkdir $(distdir)
 	@cp -pR ../win32 \
 	../INSTALL \
-	../linux/Makefile ../linux/$(AVS_PC).in ../linux/bootstrap.sh ../linux/configure.in ../linux/gen_sources.sh.in ../linux/libavisynth.def ../linux/platform.inc.in ../linux/m4 \
+	../linux/Makefile ../linux/$(AVS_PC).in ../linux/bootstrap.sh ../linux/configure ../linux/configure.in ../linux/config.h.in ../linux/config.sub ../linux/config.guess ../linux/gen_sources.sh.in ../linux/libavisynth.def ../linux/platform.inc.in ../linux/m4 \
 	../../docs/Doxyfile ../../docs/README ../../docs/avisynth.css ../../docs/gendoc ../../docs/installdocs.c.in \
 	$(SRC_DIR)/ $(distdir)
 	@find $(distdir) -path '*CVS' | while read i; do \

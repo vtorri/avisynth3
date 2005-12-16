@@ -445,12 +445,12 @@ To build Avisynth 3.0 with FFMPEG support, the same steps as above
 could be used. FMPEG is automatically detected.
 
 
-@section AVS-Linux 4. Building AviSynth v3 for GNU/Linux x86 (using g++)
+@section AVS-Linux 4. Building AviSynth 3.0 for GNU/Linux x86 (using g++)
 To install Avisynth 3.0, we will need the following libraries:
 @li STLPort
 @li Boost
 @li Freetype
-@li FFMpeg or Gstreamer
+@li Gstreamer
 
 This section explains how to install these libraries, taking into
 account the system. We will download all the libraries in the same
@@ -462,60 +462,21 @@ mkdir avs_main_dir
 
 \note
 Shell commands are given throughout this section. Commands in each
-subsection are independant and can (have to ?) be used as is to
+subsection are independant and can (have to...) be used as is to
 install the libraries.
 
 @subsection linux-stlport 4.1 Installing STLPort
 
-The current stable version of STLPort is 4.6.2. This version can not
-be built on systems using glibc 2.3 or above. To know which version of
-glibc installed on the computer, just type in a terminal
-@code
-ls /lib/libc-*
-@endcode
-One can see the number of the version of your glibc. If the version
-is 2.3 or above, one must install the CVS version of STLPort,
-otherwise, it is sufficient to install the 4.6.2 version of STLPort.
-
-@subsubsection linux-stlport-stable 4.1.1 Installing STLPort 4.6.2
+The current stable version of STLPort is 5.0. It is hosted on
+<a href=http://sourceforge.net/projects/stlport>SourceForge</a>.
 
 First, download <a
-href=http://www.stlport.org/archive/STLport-4.6.2.tar.gz>STLPort
-4.6.2</a> in the \em avs_main_dir directory. Go into this directory,
-uncompress the file and go to the src directory of STLPort:
+http://prdownloads.sourceforge.net/stlport/STLport-5.0.0.tar.gz?download>STLPort
+5.0</a> in the \em avs_main_dir directory. Go into this directory,
+uncompress the file and go to the build/lib directory of STLPort:
 @code
 cd avs_main_dir
-tar zxvf STLport-4.6.2.tar.gz
-cd STLport-4.6.2/src
-@endcode
-By default, STLPort will be installed in \em /usr/local. If one wants to
-change that, edit the \em common_macros.mak file and change the \em INSTALLDIR
-variable as desired. Then to compile and install STLPort 4.6.2,
-just type the following commands:
-@code
-make -f gcc.mak prepare
-make -f gcc.mak install
-@endcode
-
-@subsubsection linux-stlport-cvs 4.1.2 Installing STLPort 5.0 CVS
-
-Because of some evil includes, if glibc 2.3 or above is installed, one
-has to install the cvs version of STLPort (which will be the future
-5.0 version). The installation is not as simple as in the stable
-version. First we have to download the cvs code of STLPort:
-@code
-cd
-cd avs_main_dir
-cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/stlport login
-@endcode
-A password will be required. Just strike the \em Enter key. Then,
-download the code with that command:
-@code
-cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/stlport co -r STLPORT_5_0 STLport/
-
-@endcode
-Then, go to the directory STLport/build/lib:
-@code
+tar zxvf STLport-5.0.0.tar.gz
 cd STLport/build/lib
 @endcode
 To compile the code, execute the following commands:
@@ -541,6 +502,8 @@ cp lib/libstlport* /usr/local/lib/
 cp -R stlport /usr/local/include/
 <Ctrl-d>
 @endcode
+Remark that STLport will be automatically found if installed in \em /usr/local.
+
 \li If one wants to install it locally, say for example \em
 \$HOME/local, just do that:
 @code
@@ -574,18 +537,20 @@ cd boost_1_33_0
 In this example, the installation directory of Boost will be \em
 /usr/local. So you  need to be root to install it. If one wants to install
 it locally (like in \ref linux-stlport), just replace \em
---prefix=/usr/ by \em --prefix=\$HOME/local/.
+--prefix=/usr/local by \em --prefix=\$HOME/local/.
+
+Remark that Boost will be automatically found if installed in \em /usr/local.
 
 \note
 For more informations about installing Boost, go to the <a href=http://www.boost.org/more/getting_started.html>Installation</a>
 section of Boost.
 
-@subsection linux-freetype 4.3 Installing Freetype 2.1.9
+@subsection linux-freetype 4.3 Installing Freetype 2.1.10
 
 Avisynth 3.0 displays text with a very efficient font engine, named
 Freetype.
 \note
-The current version stable 2.1.9 has a small problem in the
+The current version stable 2.1.10 has a small problem in the
 vertical alignment of the characters. It has been solved in the CVS
 version. But for the sake of simplicity (and as it is difficult
 to see this problem), we will install only the stable version of
@@ -594,13 +559,13 @@ href=http://www.freetype.org/developer.html#anoncvs>CVS Freetype</a>
 section.
 
 First download <a
-href=http://prdownloads.sourceforge.net/freetype/freetype-2.1.9.tar.gz?download>Freetype
-2.1.9</a> in the \em avs_main_dir directory, untar it and compile it:
+href=http://prdownloads.sourceforge.net/freetype/freetype-2.1.10.tar.gz?download>Freetype
+2.1.10</a> in the \em avs_main_dir directory, untar it and compile it:
 @code
 cd
 cd avs_main_dir
-tar zxvf freetype-2.1.9.tar.gz
-cd freetype-2.1.9
+tar zxvf freetype-2.1.10.tar.gz
+cd freetype-2.1.10
 ./configure --prefix/usr/local
 make
 make install
@@ -609,36 +574,12 @@ This installs Freetype in \em /usr/local, so you have to be root before
 doing \em make \em install. If one wants to install it
 elsewhere, change the value given to the \em --prefix parameter.
 
-@subsection linux-ffmpeg 4.4 Installing FFMPEG
-
-FFMPEG is a set of library the allows to record, convert and stream
-audio and video. For now, only version 0.4.9-pre1 is working with
-Avisynth 3.0, and the FFMPEG source is not supported anymore. Use
-Gstreamer instead.
-
-Nevertheless, if you want to dowload it at <a
-href=http://prdownloads.sourceforge.net/ffmpeg/ffmpeg-0.4.9-pre1.tar.gz?download>SourceForge</a>
-in \em avs_main_dir. Untar it, go into its directory, configure it and
-install it:
-@code
-cd
-cd avs_main_dir/
-tar zxvf ffmpeg-0.4.9-pre1.tar.gz
-cd ffmpeg-0.4.9-pre1
-./configure --prefix=/usr/local
-make
-make install
-make installlib
-@endcode
-This installs FFMPEG in \em /usr/local, so you have to be root before
-doing \em make \em installlib. If you want to install it
-elsewhere, change the value given to the \em --prefix parameter.
-
 @subsection linux-gstreamer 4.5 Installing Gstreamer
 
 Gstreamer is a multimedia framework, similar to DirectShow in the
 Windows(tm) world. For now, only the 0.8 version is supported. The
-current cvs version (0.9) will be supported later. Gstreamer is only
+new version (0.10) will be supported later, when there are no more
+problems with seeking. Gstreamer is only
 the core of the framework. To decode the streams, you need to install
 Gst-plugins and Gst-FFmpeg. The packages can be downloaded here:
 <a href=http://gstreamer.freedesktop.org/src/gstreamer/>Gstreamer</a>,
@@ -661,8 +602,8 @@ cd gst-plugins-0.8.11
 make
 make install
 cd ..
-tar zxvf gst-ffmpeg-0.8.6.tar.gz
-cd gst-ffmpeg-0.8.6
+tar zxvf gst-ffmpeg-0.8.7.tar.gz
+cd gst-ffmpeg-0.8.7
 ./configure --prefix=/usr/local
 make
 make install
@@ -699,7 +640,7 @@ directory of avisynth. It suffices to unzip it and copy the files to
 the boost include directory:
 @code
 cd avisynth/build
-unzip circular_buffer_v3.6.zip
+tar jxvf circular_buffer_v3.7.tar.bz2
 cd circular_buffer
 @endcode
 \li If Boost is installed in \em /usr, you have to be root:
@@ -723,16 +664,16 @@ If configure is not able to find automatically one or more library,
 we have to specify its path. Assuming that you have
 installed everything in \em /usr/:
 @code
-./configure --with-stl-path=/usr --with-boost-path=/usr --with-ffmpeg-path=/usr --with-freetype-config=/usr/bin/freetype-config
+./configure --with-stl-path=/usr --with-boost-path=/usr --with-freetype-config=/usr/bin/freetype-config
 @endcode
 If you have installed some of the above libraries elsewhere, just
 replace \em /usr by the correct path. The configure script should be
-able to find automatically FFMPEG and Freetype.
+able to find automatically Freetype.
 
 \note
 If you want to make a debug build of Avisynth 3.0, just pass to the
-\em configure script the options \em ----enable-core-debug (for
-Avisynth itself) and \em --enable-ffmpeg-debug (for FFMPEG).
+\em configure script the options \em --enable-core-debug (for
+Avisynth itself).
 
 To build Avisynth, we use the usual commands:
 @code

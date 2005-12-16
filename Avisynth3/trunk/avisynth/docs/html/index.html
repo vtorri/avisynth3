@@ -7,7 +7,7 @@
 <div class="qindex"><a class="qindexHL" href="index.html">Main&nbsp;Page</a> | <a class="qindex" href="files.html">File&nbsp;List</a> | <a class="qindex" href="pages.html">Related&nbsp;Pages</a></div>
 <h1>AviSynth v3 Build Documentation </h1>
 <p>
-<dl compact><dt><b>Version:</b></dt><dd>0.2.3 </dd></dl>
+<dl compact><dt><b>Version:</b></dt><dd>0.2.4 </dd></dl>
 <dl compact><dt><b>Author:</b></dt><dd>Wilbert Dijkhof &lt;wilbertdijkhof at yahoo.com&gt; <p>
 Vincent Torri &lt;vtorri at maths dot univ-evry dot fr&gt; </dd></dl>
 <dl compact><dt><b>Date:</b></dt><dd>2005</dd></dl>
@@ -15,7 +15,7 @@ The windows version of AviSynth v3 can be built using MinGW (g++) or VC++ .NET 2
 <a class="el" href="index.html#AVS-Win-MinGW">1. Building AviSynth v3 for Windows using MinGW (g++)</a><p>
 <a class="el" href="index.html#AVS-Win-net">2. Building AviSynth v3 for Windows using VC++ .NET 2003 (VC 7.1)</a><p>
 <a class="el" href="index.html#ffmpeg">3. Building FFsource for Windows</a><p>
-<a class="el" href="index.html#AVS-Linux">4. Building AviSynth v3 for GNU/Linux x86 (using g++)</a><p>
+<a class="el" href="index.html#AVS-Linux">4. Building AviSynth 3.0 for GNU/Linux x86 (using g++)</a><p>
 We begin with the installation of Avisynth 3 for Windows, using MingW (g++)<h2><a class="anchor" name="AVS-Win-MinGW">
 1. Building AviSynth v3 for Windows using MinGW (g++)</a></h2>
 <h3><a class="anchor" name="mingw-inst">
@@ -52,9 +52,9 @@ You need to install the <a href="http://sourceforge.net/project/showfiles.php?gr
 <p>
 <ul>
 <li>setting the location of installed programs All the programs that don't rely explicitely on mingw will be installed in /usr/local/ (that is in C:/Msys/1.0/local/). So, to tell mingw that programs are in this directory, you need to edit the file C:/Msys/1.0/etc/profile. Add these lines: <div class="fragment"><pre><span class="preprocessor">#export CFLAGS, LDFLAGS and LD_LIBRARY_PATH</span>
-<span class="preprocessor"></span>export CFLAGS=<span class="stringliteral">"-I/usr/local/include"</span>
-export LDFLAGS=<span class="stringliteral">"-L/usr/local/lib"</span>
-export LD_LIBRARY_PATH=<span class="stringliteral">"/usr/local/lib"</span>
+<span class="preprocessor"></span>export CFLAGS=<span class="stringliteral">&quot;-I/usr/local/include&quot;</span>
+export LDFLAGS=<span class="stringliteral">&quot;-L/usr/local/lib&quot;</span>
+export LD_LIBRARY_PATH=<span class="stringliteral">&quot;/usr/local/lib&quot;</span>
 </pre></div>just before the last line (which should be cd "$HOME")</li></ul>
 <p>
 <ul>
@@ -144,7 +144,7 @@ Boost is a bunch of useful libraries (here it is used for the parser, threads an
 <ul>
 <li>Open a terminal again, go to ../boost_1_32_0 and type<br>
 <br>
- <div class="fragment"><pre>$ bjam <span class="stringliteral">"-sTOOLS=mingw"</span> --prefix=/usr/local install
+ <div class="fragment"><pre>$ bjam <span class="stringliteral">&quot;-sTOOLS=mingw&quot;</span> --prefix=/usr/local install
 </pre></div><br>
 </li></ul>
 <h3><a class="anchor" name="freetype">
@@ -194,7 +194,7 @@ Close the dialog boxes and close VC.net.<h3><a class="anchor" name="net_stl">
 2.3 Obtaining and compiling the STLport library</a></h3>
 Get <a href="http://www.stlport.com/archive/STLport-4.6.2.tar.gz">STLport-4.6.2</a>, and unpack the archive to C:/dev (you can unpack tar.gz files with winzip).<p>
 Open up a command prompt and give the following commands (assuming everything ended up in a folder C:/dev/STLPORT-4.6.2/):<p>
-<div class="fragment"><pre>C:/dev/STLport-4.6.2&gt; <span class="stringliteral">"c:/Program files/Microsoft Visual Studio .NET 2003/Common7/Tools/vsvars32.bat"</span>
+<div class="fragment"><pre>C:/dev/STLport-4.6.2&gt; <span class="stringliteral">&quot;c:/Program files/Microsoft Visual Studio .NET 2003/Common7/Tools/vsvars32.bat&quot;</span>
 C:/dev/STLport-4.6.2&gt; cd src
 C:/dev/STLport-4.6.2&gt; nmake -f vc71.mak clean all
 C:/dev/STLport-4.6.2&gt; cd ../lib
@@ -215,8 +215,8 @@ You also need an add-on to boost: circular_buffer. This is included with the Avi
 To compile boost, you need bjam, a "make" replacement. Get it <a href="http://prdownloads.sourceforge.net/boost/boost-jam-3.1.10-1-ntx86.zip">here</a>:<p>
 In it you will find bjam.exe. Copy bjam.exe to C:/dev/boost_1_31_0/<p>
 Next, compile Boost. Open up a command prompt and give the following commands (assuming everything ended up in a folder C:/dev/boost_1_31_0/):<p>
-<div class="fragment"><pre>C:/dev/BOOST_1_31_0&gt;<span class="stringliteral">"c:/Program files/Microsoft Visual Studio .NET 2003/Common7/Tools/vsvars32.bat"</span> 
-C:/dev/BOOST_1_31_0&gt;bjam <span class="stringliteral">"-sTOOLS=vc7.1-stlport"</span> <span class="stringliteral">"-sSTLPORT_PATH=C:/dev"</span> stage
+<div class="fragment"><pre>C:/dev/BOOST_1_31_0&gt;<span class="stringliteral">&quot;c:/Program files/Microsoft Visual Studio .NET 2003/Common7/Tools/vsvars32.bat&quot;</span> 
+C:/dev/BOOST_1_31_0&gt;bjam <span class="stringliteral">&quot;-sTOOLS=vc7.1-stlport&quot;</span> <span class="stringliteral">&quot;-sSTLPORT_PATH=C:/dev&quot;</span> stage
 </pre></div><p>
 You will see some errors about boost.python and file not found error's. These can safely be ignored. The only important thing is that when bjam is finished, C:/dev/boost_1_31_0/stage/lib/boost_thread-vc71-mt-p-1_31.lib was created. Make sure that you copy this dll to your Windows system folder.<p>
 Next, add a new include path and library path, just as in <a class="el" href="index.html#net_stl">2.3 Obtaining and compiling the STLport library</a>:<p>
@@ -227,8 +227,8 @@ Next, add a new include path and library path, just as in <a class="el" href="in
 (This step may become obsolete shortly.)<p>
 Get <a href="http://prdownloads.sourceforge.net/freetype/ft219.zip">freetype 2.1.9 (ft219.zip)</a> and unpack the zip to C:/dev.<p>
 Edit C:/dev/freetype-2.1.9/include/freetype/config/ftconfig.h, look up line 276 and change<p>
-<div class="fragment"><pre><span class="preprocessor">#define FT_EXPORT( x )  extern "C" x</span>
-</pre></div>into <div class="fragment"><pre><span class="preprocessor">#define FT_EXPORT( x )  extern "C" x __cdecl</span>
+<div class="fragment"><pre><span class="preprocessor">#define FT_EXPORT( x )  extern &quot;C&quot; x</span>
+</pre></div>into <div class="fragment"><pre><span class="preprocessor">#define FT_EXPORT( x )  extern &quot;C&quot; x __cdecl</span>
 </pre></div><p>
 (If you use notepad, which does not have a line count, do a search on "#define FT_EXPORT( x )  extern "C"". It only appears once in this file.)<p>
 <ul>
@@ -277,34 +277,23 @@ and<p>
 </pre></div><p>
 In C:/Msys/1.0/mingw/include/, edit initguid.h: replace <em>const</em> by <em>static const</em>.<p>
 To build Avisynth 3.0 with FFMPEG support, the same steps as above could be used. FMPEG is automatically detected.<h2><a class="anchor" name="AVS-Linux">
-4. Building AviSynth v3 for GNU/Linux x86 (using g++)</a></h2>
+4. Building AviSynth 3.0 for GNU/Linux x86 (using g++)</a></h2>
 To install Avisynth 3.0, we will need the following libraries: <ul>
 <li>STLPort </li>
 <li>Boost </li>
 <li>Freetype </li>
-<li>FFMpeg or Gstreamer</li>
+<li>Gstreamer</li>
 </ul>
 This section explains how to install these libraries, taking into account the system. We will download all the libraries in the same directory, say <em>avs_main_dir</em>, in the home directory. In a terminal, type <div class="fragment"><pre>cd
 mkdir avs_main_dir
 </pre></div><p>
-<dl compact><dt><b>Note:</b></dt><dd>Shell commands are given throughout this section. Commands in each subsection are independant and can (have to ?) be used as is to install the libraries.</dd></dl>
+<dl compact><dt><b>Note:</b></dt><dd>Shell commands are given throughout this section. Commands in each subsection are independant and can (have to...) be used as is to install the libraries.</dd></dl>
 <h3><a class="anchor" name="linux-stlport">
 4.1 Installing STLPort</a></h3>
-The current stable version of STLPort is 4.6.2. This version can not be built on systems using glibc 2.3 or above. To know which version of glibc installed on the computer, just type in a terminal <div class="fragment"><pre>ls /lib/libc-*
-</pre></div>One can see the number of the version of your glibc. If the version is 2.3 or above, one must install the CVS version of STLPort, otherwise, it is sufficient to install the 4.6.2 version of STLPort.<h4><a class="anchor" name="linux-stlport-stable">
-4.1.1 Installing STLPort 4.6.2</a></h4>
-First, download <a href="http://www.stlport.org/archive/STLport-4.6.2.tar.gz">STLPort 4.6.2</a> in the <em>avs_main_dir</em> directory. Go into this directory, uncompress the file and go to the src directory of STLPort: <div class="fragment"><pre>cd avs_main_dir
-tar zxvf STLport-4.6.2.tar.gz
-cd STLport-4.6.2/src
-</pre></div>By default, STLPort will be installed in <em>/usr/local</em>. If one wants to change that, edit the <em>common_macros.mak</em> file and change the <em>INSTALLDIR</em> variable as desired. Then to compile and install STLPort 4.6.2, just type the following commands: <div class="fragment"><pre>make -f gcc.mak prepare
-make -f gcc.mak install
-</pre></div><h4><a class="anchor" name="linux-stlport-cvs">
-4.1.2 Installing STLPort 5.0 CVS</a></h4>
-Because of some evil includes, if glibc 2.3 or above is installed, one has to install the cvs version of STLPort (which will be the future 5.0 version). The installation is not as simple as in the stable version. First we have to download the cvs code of STLPort: <div class="fragment"><pre>cd
-cd avs_main_dir
-cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/stlport login
-</pre></div>A password will be required. Just strike the <em>Enter</em> key. Then, download the code with that command: <div class="fragment"><pre>cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/stlport co -r STLPORT_5_0 STLport/
-</pre></div>Then, go to the directory STLport/build/lib: <div class="fragment"><pre>cd STLport/build/lib
+The current stable version of STLPort is 5.0. It is hosted on <a href="http://sourceforge.net/projects/stlport">SourceForge</a>.<p>
+First, download &lt;a <a href="http://prdownloads.sourceforge.net/stlport/STLport-5.0.0.tar.gz?download">http://prdownloads.sourceforge.net/stlport/STLport-5.0.0.tar.gz?download</a>&gt;STLPort 5.0 in the <em>avs_main_dir</em> directory. Go into this directory, uncompress the file and go to the build/lib directory of STLPort: <div class="fragment"><pre>cd avs_main_dir
+tar zxvf STLport-5.0.0.tar.gz
+cd STLport/build/lib
 </pre></div>To compile the code, execute the following commands: <div class="fragment"><pre>make -f gcc.mak depend
 make -f gcc.mak
 make -f gcc.mak release-<span class="keyword">static</span>
@@ -321,7 +310,9 @@ su &lt;type the root password&gt;
 cp lib/libstlport* /usr/local/lib/
 cp -R stlport /usr/local/include/
 &lt;Ctrl-d&gt;
-</pre></div></li>
+</pre></div>Remark that STLport will be automatically found if installed in <em>/usr/local</em>.</li>
+</ul>
+<ul>
 <li>If one wants to install it locally, say for example <em>$HOME/local</em>, just do that: <div class="fragment"><pre>cd ../..
 cp lib/libstlport* $HOME/local/lib/
 cp -R stlport $HOME/local/include/
@@ -334,33 +325,23 @@ cd avs_main_dir
 tar zxvf boost_1_33_0.tar.gz
 </pre></div>Boost does not use the GNU make utility to compile. Instead it uses Boost.Jam (an extension or Perforce Jam. Download the <a href="http://prdownloads.sourceforge.net/boost/boost-jam-3.1.10-1-linuxx86.tgz?download">prebuilt executable here</a>. Download it in <em>avs_main_dir</em> and untar it: <div class="fragment"><pre>tar zxvf boost-jam-3.1.11-1-linuxx86.tgz
 </pre></div>Now, go to the Boost 1.33 diretory and compile it with the following commands: <div class="fragment"><pre>cd boost_1_33_0
-../boost-jam-3.1.11-1-linuxx86/bjam <span class="stringliteral">"-sTOOLS=gcc"</span> --prefix=/usr/local install
-</pre></div>In this example, the installation directory of Boost will be <em>/usr/local</em>. So you need to be root to install it. If one wants to install it locally (like in <a class="el" href="index.html#linux-stlport">4.1 Installing STLPort</a>), just replace <em>--prefix=/usr/</em> by <em>--prefix=$HOME/local/</em>.<p>
+../boost-jam-3.1.11-1-linuxx86/bjam <span class="stringliteral">&quot;-sTOOLS=gcc&quot;</span> --prefix=/usr/local install
+</pre></div>In this example, the installation directory of Boost will be <em>/usr/local</em>. So you need to be root to install it. If one wants to install it locally (like in <a class="el" href="index.html#linux-stlport">4.1 Installing STLPort</a>), just replace <em>--prefix=/usr/local</em> by <em>--prefix=$HOME/local/</em>.<p>
+Remark that Boost will be automatically found if installed in <em>/usr/local</em>.<p>
 <dl compact><dt><b>Note:</b></dt><dd>For more informations about installing Boost, go to the <a href="http://www.boost.org/more/getting_started.html">Installation</a> section of Boost.</dd></dl>
 <h3><a class="anchor" name="linux-freetype">
-4.3 Installing Freetype 2.1.9</a></h3>
-Avisynth 3.0 displays text with a very efficient font engine, named Freetype. <dl compact><dt><b>Note:</b></dt><dd>The current version stable 2.1.9 has a small problem in the vertical alignment of the characters. It has been solved in the CVS version. But for the sake of simplicity (and as it is difficult to see this problem), we will install only the stable version of Freetype. For those who want to install the CVS version, go to <a href="http://www.freetype.org/developer.html#anoncvs">CVS Freetype</a> section.</dd></dl>
-First download <a href="http://prdownloads.sourceforge.net/freetype/freetype-2.1.9.tar.gz?download">Freetype 2.1.9</a> in the <em>avs_main_dir</em> directory, untar it and compile it: <div class="fragment"><pre>cd
+4.3 Installing Freetype 2.1.10</a></h3>
+Avisynth 3.0 displays text with a very efficient font engine, named Freetype. <dl compact><dt><b>Note:</b></dt><dd>The current version stable 2.1.10 has a small problem in the vertical alignment of the characters. It has been solved in the CVS version. But for the sake of simplicity (and as it is difficult to see this problem), we will install only the stable version of Freetype. For those who want to install the CVS version, go to <a href="http://www.freetype.org/developer.html#anoncvs">CVS Freetype</a> section.</dd></dl>
+First download <a href="http://prdownloads.sourceforge.net/freetype/freetype-2.1.10.tar.gz?download">Freetype 2.1.10</a> in the <em>avs_main_dir</em> directory, untar it and compile it: <div class="fragment"><pre>cd
 cd avs_main_dir
-tar zxvf freetype-2.1.9.tar.gz
-cd freetype-2.1.9
+tar zxvf freetype-2.1.10.tar.gz
+cd freetype-2.1.10
 ./configure --prefix/usr/local
 make
 make install
-</pre></div>This installs Freetype in <em>/usr/local</em>, so you have to be root before doing <em>make</em> <em>install</em>. If one wants to install it elsewhere, change the value given to the <em>--prefix</em> parameter.<h3><a class="anchor" name="linux-ffmpeg">
-4.4 Installing FFMPEG</a></h3>
-FFMPEG is a set of library the allows to record, convert and stream audio and video. For now, only version 0.4.9-pre1 is working with Avisynth 3.0, and the FFMPEG source is not supported anymore. Use Gstreamer instead.<p>
-Nevertheless, if you want to dowload it at <a href="http://prdownloads.sourceforge.net/ffmpeg/ffmpeg-0.4.9-pre1.tar.gz?download">SourceForge</a> in <em>avs_main_dir</em>. Untar it, go into its directory, configure it and install it: <div class="fragment"><pre>cd
-cd avs_main_dir/
-tar zxvf ffmpeg-0.4.9-pre1.tar.gz
-cd ffmpeg-0.4.9-pre1
-./configure --prefix=/usr/local
-make
-make install
-make installlib
-</pre></div>This installs FFMPEG in <em>/usr/local</em>, so you have to be root before doing <em>make</em> <em>installlib</em>. If you want to install it elsewhere, change the value given to the <em>--prefix</em> parameter.<h3><a class="anchor" name="linux-gstreamer">
+</pre></div>This installs Freetype in <em>/usr/local</em>, so you have to be root before doing <em>make</em> <em>install</em>. If one wants to install it elsewhere, change the value given to the <em>--prefix</em> parameter.<h3><a class="anchor" name="linux-gstreamer">
 4.5 Installing Gstreamer</a></h3>
-Gstreamer is a multimedia framework, similar to DirectShow in the Windows(tm) world. For now, only the 0.8 version is supported. The current cvs version (0.9) will be supported later. Gstreamer is only the core of the framework. To decode the streams, you need to install Gst-plugins and Gst-FFmpeg. The packages can be downloaded here: <a href="http://gstreamer.freedesktop.org/src/gstreamer/">Gstreamer</a>, <a href="http://gstreamer.freedesktop.org/src/gst-plugins/">Gst-plugins</a>, <a href="http://gstreamer.freedesktop.org/src/gst-ffmpeg/">Gst-FFmpeg</a>. Put the packages in <em>avs_main_dir</em>. Untar them, go into their directory, configure them, and install them: <div class="fragment"><pre>cd
+Gstreamer is a multimedia framework, similar to DirectShow in the Windows(tm) world. For now, only the 0.8 version is supported. The new version (0.10) will be supported later, when there are no more problems with seeking. Gstreamer is only the core of the framework. To decode the streams, you need to install Gst-plugins and Gst-FFmpeg. The packages can be downloaded here: <a href="http://gstreamer.freedesktop.org/src/gstreamer/">Gstreamer</a>, <a href="http://gstreamer.freedesktop.org/src/gst-plugins/">Gst-plugins</a>, <a href="http://gstreamer.freedesktop.org/src/gst-ffmpeg/">Gst-FFmpeg</a>. Put the packages in <em>avs_main_dir</em>. Untar them, go into their directory, configure them, and install them: <div class="fragment"><pre>cd
 cd avs_main_dir/
 tar zxvf gstreamer-0.8.11.tar.gz
 cd gstreamer-0.8.11
@@ -374,8 +355,8 @@ cd gst-plugins-0.8.11
 make
 make install
 cd ..
-tar zxvf gst-ffmpeg-0.8.6.tar.gz
-cd gst-ffmpeg-0.8.6
+tar zxvf gst-ffmpeg-0.8.7.tar.gz
+cd gst-ffmpeg-0.8.7
 ./configure --prefix=/usr/local
 make
 make install
@@ -391,7 +372,7 @@ cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/avisynth2 login
 cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/avisynth2 co -r avisynth_3_0 avisynth
 </pre></div><p>
 Avisynth 3.0 needs an extension to boost, not yet included in the current version of boost. This extension is provided in the <em>build</em> directory of avisynth. It suffices to unzip it and copy the files to the boost include directory: <div class="fragment"><pre>cd avisynth/build
-unzip circular_buffer_v3.6.zip
+tar jxvf circular_buffer_v3.7.tar.bz2
 cd circular_buffer
 </pre></div><ul>
 <li>If Boost is installed in <em>/usr</em>, you have to be root: <div class="fragment"><pre>su &lt;enter the root password&gt;
@@ -404,9 +385,9 @@ cp -R boost /usr/include/boost-1_33/
 And now, we can configure Avixynth 3.0. <div class="fragment"><pre>cd ../linux
 ./booststrap.sh
 ./configure
-</pre></div>If configure is not able to find automatically one or more library, we have to specify its path. Assuming that you have installed everything in <em>/usr/</em>: <div class="fragment"><pre>./configure --with-stl-path=/usr --with-boost-path=/usr --with-ffmpeg-path=/usr --with-freetype-config=/usr/bin/freetype-config
-</pre></div>If you have installed some of the above libraries elsewhere, just replace <em>/usr</em> by the correct path. The configure script should be able to find automatically FFMPEG and Freetype.<p>
-<dl compact><dt><b>Note:</b></dt><dd>If you want to make a debug build of Avisynth 3.0, just pass to the <em>configure</em> script the options <em>----enable-core-debug</em> (for Avisynth itself) and <em>--enable-ffmpeg-debug</em> (for FFMPEG).</dd></dl>
+</pre></div>If configure is not able to find automatically one or more library, we have to specify its path. Assuming that you have installed everything in <em>/usr/</em>: <div class="fragment"><pre>./configure --with-stl-path=/usr --with-boost-path=/usr --with-freetype-config=/usr/bin/freetype-config
+</pre></div>If you have installed some of the above libraries elsewhere, just replace <em>/usr</em> by the correct path. The configure script should be able to find automatically Freetype.<p>
+<dl compact><dt><b>Note:</b></dt><dd>If you want to make a debug build of Avisynth 3.0, just pass to the <em>configure</em> script the options <em>--enable-core-debug</em> (for Avisynth itself).</dd></dl>
 To build Avisynth, we use the usual commands: <div class="fragment"><pre>make
 make install
 </pre></div><h2><a class="anchor" name="errors">
@@ -417,7 +398,7 @@ If you get the following error <em> AVI Import filter error: (unknown) (80040154
 <li>Installation of nasm on linux. </li>
 </ul>
 </dd></dl>
-<hr size="1"><address style="align: right;"><small>Generated on Sat Oct 22 13:57:23 2005 for Avisynth by
+<hr size="1"><address style="align: right;"><small>Generated on Fri Dec 16 23:03:06 2005 for Avisynth by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 ></a> 1.3.8 </small></address>
 </body>

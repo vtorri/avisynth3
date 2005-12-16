@@ -1,8 +1,8 @@
 dnl Configure path for STLport
-dnl Vincent Torri 2005-01-06
+dnl Vincent Torri 2005-12-16
 dnl
 dnl AM_CHECK_STLPORT(platform [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
-dnl Test for STLport 4.6.2 or 5.0, and define STLPORT_LIBS and STLPORT_CFLAGS.
+dnl Test for STLport 5.0 and define STLPORT_LIBS and STLPORT_CFLAGS.
 dnl
 AC_DEFUN([AM_CHECK_STLPORT],
    [
@@ -17,47 +17,22 @@ AC_DEFUN([AM_CHECK_STLPORT],
        [with_stl_arg="yes"],
        [with_stl_arg="no"])
     dnl
-    dnl Set STLport 5.0 (cvs for now...) instead of STLport 4.6.2.
-    dnl In the future, STLport 5.0 will be required.
-    dnl
-    AC_ARG_ENABLE(
-       [stlport5],
-       AC_HELP_STRING(
-          [--enable-stlport5],
-          [Enable the use of STLport 5.0 (default is 4.6.2)]),
-       [if test "${enable_stlport5}" = "no" ; then
-           use_stlport5="no"
-        else
-           if test "${enable_stlport5}" = "yes" ; then
-              use_stlport5="yes"
-           fi
-        fi],
-       [use_stlport5="no"])
-    dnl
     dnl Get the name of the library with respect
     dnl to the platform and the version of STLport.
     dnl
     case "$1" in
        *bsd* | linux* | irix* | solaris* )
-          if test "x${use_stlport5}" = "xyes" ; then
-             if test x"${core_debug_mode}" = x"yes" ; then
-                STLPORT_LIB_NAME="stlportg"
-             else
-                STLPORT_LIB_NAME="stlport"
-             fi
+          if test x"${core_debug_mode}" = x"yes" ; then
+             STLPORT_LIB_NAME="stlportg"
           else
-             STLPORT_LIB_NAME="stlport_gcc"
+             STLPORT_LIB_NAME="stlport"
           fi
        ;;
        [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
-          if test "x${use_stlport5}" = "xyes" ; then
-             if test x"${core_debug_mode}" = x"yes" ; then
-                STLPORT_LIB_NAME="stlportg"
-             else
-                STLPORT_LIB_NAME="stlport"
-             fi
+          if test x"${core_debug_mode}" = x"yes" ; then
+             STLPORT_LIB_NAME="stlportg"
           else
-             STLPORT_LIB_NAME="stlport_mingw32_static"
+             STLPORT_LIB_NAME="stlport"
           fi
        ;;
        darwin*|raphsody*)

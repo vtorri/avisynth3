@@ -7,14 +7,15 @@
 <div class="qindex"><a class="qindexHL" href="index.html">Main&nbsp;Page</a> | <a class="qindex" href="files.html">File&nbsp;List</a> | <a class="qindex" href="pages.html">Related&nbsp;Pages</a></div>
 <h1>AviSynth v3 Build Documentation </h1>
 <p>
-<dl compact><dt><b>Version:</b></dt><dd>0.2.4 </dd></dl>
-<dl compact><dt><b>Author:</b></dt><dd>Wilbert Dijkhof &lt;wilbertdijkhof at yahoo.com&gt; <p>
+<dl compact><dt><b>Version:</b></dt><dd>0.2.5 </dd></dl>
+<dl compact><dt><b>Author:</b></dt><dd>Wilbert Dijkhof &lt;wilbertdijkhof at
+    yahoo dot com&gt; <p>
 Vincent Torri &lt;vtorri at maths dot univ-evry dot fr&gt; </dd></dl>
 <dl compact><dt><b>Date:</b></dt><dd>2005</dd></dl>
 The windows version of AviSynth v3 can be built using MinGW (g++) or VC++ .NET 2003 (VC 7.1). The linux version requires g++. The plan of this installation guide is the following.<p>
 <a class="el" href="index.html#AVS-Win-MinGW">1. Building AviSynth v3 for Windows using MinGW (g++)</a><p>
 <a class="el" href="index.html#AVS-Win-net">2. Building AviSynth v3 for Windows using VC++ .NET 2003 (VC 7.1)</a><p>
-<a class="el" href="index.html#ffmpeg">3. Building FFsource for Windows</a><p>
+ffmpeg<p>
 <a class="el" href="index.html#AVS-Linux">4. Building AviSynth 3.0 for GNU/Linux x86 (using g++)</a><p>
 We begin with the installation of Avisynth 3 for Windows, using MingW (g++)<h2><a class="anchor" name="AVS-Win-MinGW">
 1. Building AviSynth v3 for Windows using MinGW (g++)</a></h2>
@@ -52,9 +53,7 @@ You need to install the <a href="http://sourceforge.net/project/showfiles.php?gr
 <p>
 <ul>
 <li>setting the location of installed programs All the programs that don't rely explicitely on mingw will be installed in /usr/local/ (that is in C:/Msys/1.0/local/). So, to tell mingw that programs are in this directory, you need to edit the file C:/Msys/1.0/etc/profile. Add these lines: <div class="fragment"><pre><span class="preprocessor">#export CFLAGS, LDFLAGS and LD_LIBRARY_PATH</span>
-<span class="preprocessor"></span>export CFLAGS=<span class="stringliteral">&quot;-I/usr/local/include&quot;</span>
-export LDFLAGS=<span class="stringliteral">&quot;-L/usr/local/lib&quot;</span>
-export LD_LIBRARY_PATH=<span class="stringliteral">&quot;/usr/local/lib&quot;</span>
+<span class="preprocessor">export LD_LIBRARY_PATH=&quot;/usr/local/lib&quot;</span>
 </pre></div>just before the last line (which should be cd "$HOME")</li></ul>
 <p>
 <ul>
@@ -104,45 +103,36 @@ This will get you the AviSynth v3 branch in a folder called "avisynth" (note "co
 1.4 Installing STLport</a></h3>
 STLport is a multiplatform ANSI C++ Standard Library implementation. In order to install it you should<p>
 <ul>
-<li>Get <a href="http://www.stlport.org/download.html">STLPort-4.6.2.tar.gz</a> and unzip it somewhere.</li></ul>
+<li>Get <a href="http://prdownloads.sourceforge.net/stlport/STLport-5.0.0.tar.gz?download">STLPort-5.0.0.tar.gz</a> and unzip it somewhere.</li></ul>
 <p>
 <ul>
-<li>Copy the ../STLport-4.6.2/stlport folder to C:/Msys/1.0/local/include/stlport.</li></ul>
+<li>Copy the ../STLport/stlport folder to C:/Msys/1.0/local/include/stlport.</li></ul>
 <p>
 <ul>
-<li>Compile the make file gcc-mingw32.mak (in ../STLport-4.6.2/src):<br>
-<br>
- Go to the terminal again, and type<br>
-<br>
- <div class="fragment"><pre>$ cd /f/.../STLport-4.6.2/src
-</pre></div><br>
- or wherever you installed it. Now, type<br>
-<br>
- <div class="fragment"><pre>$ make -f gcc-mingw32.mak
-</pre></div><br>
- and<br>
-<br>
- <div class="fragment"><pre>$ make -f gcc-mingw32.mak install
-</pre></div><br>
- Now, it should have created the following libraries in ../STLport-4.6.2/lib :<br>
-<br>
-<ul>
-<li>libstlport_mingw32_static.a (the static-release library, this one will be used when compiling avs3)</li><li>libstlport_mingw32*.a (debug libraries)</li></ul>
-</li></ul>
-<p>
-<ul>
-<li>Copy libstlport_mingw32_static.a (located in ../STLport-4.6.2/lib) to C:/Msys/1.0/usr/local/lib (if it isn't already there).</li></ul>
+<li>Go to the build/lib directory of STLPort: <div class="fragment"><pre>cd STLport/build/lib
+</pre></div>To compile the code, execute the following commands: <div class="fragment"><pre>make -f gcc.mak depend
+make -f gcc.mak
+make -f gcc.mak release-<span class="keyword">static</span>
+make -f gcc.mak dbg-<span class="keyword">static</span>
+make -f gcc.mak stldbg-<span class="keyword">static</span>
+make -f gcc.mak install
+make -f gcc.mak install-release-<span class="keyword">static</span>
+make -f gcc.mak install-dbg-<span class="keyword">static</span>
+make -f gcc.mak install-stldbg-<span class="keyword">static</span>
+</pre></div>Now, it should have created the libraries (release and debug mode) in STLport/lib. Copy the files manually: <div class="fragment"><pre>cd ../..
+cp lib/libstlport* /usr/local/lib/
+</pre></div></li></ul>
 <h3><a class="anchor" name="boost">
 1.5 Installing Boost</a></h3>
 Boost is a bunch of useful libraries (here it is used for the parser, threads and pointers). BJam (or BoostJam) is a make replacement that makes building simple things simple and building complicated things manageable.<p>
 <ul>
-<li>Get <a href="http://prdownloads.sourceforge.net/boost">boost_1_32_0.tar.gz</a> and unzip it somewhere.</li></ul>
+<li>Get <a href="http://prdownloads.sourceforge.net/boost">boost_1_33_0.tar.gz</a> and unzip it somewhere.</li></ul>
 <p>
 <ul>
 <li>Get <a href="http://prdownloads.sourceforge.net/boost">boost-jam-3.1.10-1-ntx86.zip</a> and unzip it to C:/Msys/1.0/local/bin.</li></ul>
 <p>
 <ul>
-<li>Open a terminal again, go to ../boost_1_32_0 and type<br>
+<li>Open a terminal again, go to ../boost_1_33_0 and type<br>
 <br>
  <div class="fragment"><pre>$ bjam <span class="stringliteral">&quot;-sTOOLS=mingw&quot;</span> --prefix=/usr/local install
 </pre></div><br>
@@ -150,14 +140,14 @@ Boost is a bunch of useful libraries (here it is used for the parser, threads an
 <h3><a class="anchor" name="freetype">
 1.6 Installing Freetype</a></h3>
 Freetype is a free, high-quality, and portable font engine.<p>
-Get <a href="http://prdownloads.sourceforge.net/freetype">freetype-2.1.9.tar.gz</a> and unzip it somewhere. Go to the freetype folder and type<p>
+Get <a href="http://prdownloads.sourceforge.net/freetype">freetype-2.1.10.tar.gz</a> and unzip it somewhere. Go to the freetype folder and type<p>
 <div class="fragment"><pre>$ ./configure --prefix=/usr/local
 $ make
 $ make install
 </pre></div><p>
 to compile and install it.<h3><a class="anchor" name="cb">
 1.7 Installing needed circular_buffer source files</a></h3>
-Get <a href="http://cvs.sourceforge.net/viewcvs.py/avisynth2/avisynth/build/?only_with_tag=avisynth_3_0">circular_buffer_v3.6.zip</a> (you can also find it in the avisynth/build folder when downloading the sources of AviSynth) and unzip it in a folder. Copy the boost folder to C:/Msys/1.0/local/include/boost-1_32/<h3><a class="anchor" name="nasm">
+Get <a href="http://cvs.sourceforge.net/viewcvs.py/avisynth2/avisynth/build/?only_with_tag=avisynth_3_0">circular_buffer_v3.6.zip</a> (you can also find it in the avisynth/build folder when downloading the sources of AviSynth) and unzip it in a folder. Copy the boost folder to C:/Msys/1.0/local/include/boost-1_33/<h3><a class="anchor" name="nasm">
 1.8 Installing Nasm</a></h3>
 Nasm or 'the Netwide ASseMbler' is used for optimization of some of the AviSynth code.<p>
 Get <a href="http://sourceforge.net/project/showfiles.php?group_id=6208">nasm-0.98.36-win32.zip</a> and unzip it somewhere. Put nasmw.exe in C:/Msys/1.0/local/bin, and rename it to nasm.exe (see also <a href="http://nasm.sourceforge.net/doc/html/nasmdoc1.html">here</a>).<h3><a class="anchor" name="build">
@@ -192,36 +182,36 @@ Start up VC.net and<p>
 <p>
 Close the dialog boxes and close VC.net.<h3><a class="anchor" name="net_stl">
 2.3 Obtaining and compiling the STLport library</a></h3>
-Get <a href="http://www.stlport.com/archive/STLport-4.6.2.tar.gz">STLport-4.6.2</a>, and unpack the archive to C:/dev (you can unpack tar.gz files with winzip).<p>
-Open up a command prompt and give the following commands (assuming everything ended up in a folder C:/dev/STLPORT-4.6.2/):<p>
-<div class="fragment"><pre>C:/dev/STLport-4.6.2&gt; <span class="stringliteral">&quot;c:/Program files/Microsoft Visual Studio .NET 2003/Common7/Tools/vsvars32.bat&quot;</span>
-C:/dev/STLport-4.6.2&gt; cd src
-C:/dev/STLport-4.6.2&gt; nmake -f vc71.mak clean all
-C:/dev/STLport-4.6.2&gt; cd ../lib
-C:/dev/STLport-4.6.2&gt; copy STLPORT_VC7146.dll %WinDir%/System32/
+Get <a href="http://prdownloads.sourceforge.net/stlport/STLport-5.0.0.tar.gz?download">STLport-5.0.0</a>, and unpack the archive to C:/dev (you can unpack tar.gz files with winzip).<p>
+Open up a command prompt and give the following commands (assuming everything ended up in a folder C:/dev/STLPORT/):<p>
+<div class="fragment"><pre>C:/dev/STLport&gt; <span class="stringliteral">&quot;c:/Program files/Microsoft Visual Studio .NET 2003/Common7/Tools/vsvars32.bat&quot;</span>
+C:/dev/STLport&gt; cd build/lib
+C:/dev/STLport&gt; nmake -f nmake-vc71.mak clean all
+C:/dev/STLport&gt; cd ../../lib
+C:/dev/STLport&gt; copy STLPORT_VC7146.dll %WinDir%/System32/
 </pre></div><p>
 If you installed Visual Studio in a different location, don't forget to adjust the path to vsvars32.bat. Don't forget the double quotes!<p>
 <ul>
-<li>In the top menu, go to Tools, Options.</li><li>In the Options box, select the Projects, VC++ Directories in the tree on the left.</li><li>In the "Show directories for:" pull-down menu, choose "Include files".</li><li>Click the "new Line" button (with the yellow folder on it).</li><li>Browse to C:/dev/STLport-4.6.2/stlport/.</li><li>Click the "open" button.</li><li>If the new line is not at the top of the list, use the arrow buttons on the right of the box to put the STL path there.</li><li>In the "Show directories for:" pull-down menu, choose "Library files".</li><li>Click the "new Line" button (with the yellow folder on it).</li><li>Browse to C:/dev/STLport-4.6.2/lib/.</li><li>Click the "open" button.</li></ul>
+<li>In the top menu, go to Tools, Options.</li><li>In the Options box, select the Projects, VC++ Directories in the tree on the left.</li><li>In the "Show directories for:" pull-down menu, choose "Include files".</li><li>Click the "new Line" button (with the yellow folder on it).</li><li>Browse to C:/dev/STLport/stlport/.</li><li>Click the "open" button.</li><li>If the new line is not at the top of the list, use the arrow buttons on the right of the box to put the STL path there.</li><li>In the "Show directories for:" pull-down menu, choose "Library files".</li><li>Click the "new Line" button (with the yellow folder on it).</li><li>Browse to C:/dev/STLport/lib/.</li><li>Click the "open" button.</li></ul>
 <p>
 Close the dialog boxes and close VC.net.<h3><a class="anchor" name="net_boost">
 2.4 Obtaining and compiling the Boost library</a></h3>
-Get <a href="http://prdownloads.sourceforge.net/boost/boost_1_31_0.zip?download">boost_1_31_0.zip</a> and unzip the archive to c:/dev.<p>
-You now should have a folder C:/dev/boost_1_31_0/<p>
+Get <a href="http://prdownloads.sourceforge.net/boost/boost_1_33_0.zip?download">boost_1_33_0.zip</a> and unzip the archive to c:/dev.<p>
+You now should have a folder C:/dev/boost_1_33_0/<p>
 You also need an add-on to boost: circular_buffer. This is included with the AviSynth source and can be found here: C:/dev/avs_v3/avisynth/build/circular_buffer_v3.6.zip<p>
 <ul>
-<li>Unpack the C:/dev/avs_v3/avisynth/build/circular_buffer_v3.6.zip to C:/dev/.</li><li>Copy the contents of C:/dev/circular_buffer/boost/ to C:/dev/boost_1_31_0/boost/.</li><li>Copy the contents of C:/dev/circular_buffer/libs/ to C:/dev/boost_1_31_0/libs/.</li></ul>
+<li>Unpack the C:/dev/avs_v3/avisynth/build/circular_buffer_v3.6.zip to C:/dev/.</li><li>Copy the contents of C:/dev/circular_buffer/boost/ to C:/dev/boost_1_33_0/boost/.</li><li>Copy the contents of C:/dev/circular_buffer/libs/ to C:/dev/boost_1_33_0/libs/.</li></ul>
 <p>
 To compile boost, you need bjam, a "make" replacement. Get it <a href="http://prdownloads.sourceforge.net/boost/boost-jam-3.1.10-1-ntx86.zip">here</a>:<p>
-In it you will find bjam.exe. Copy bjam.exe to C:/dev/boost_1_31_0/<p>
-Next, compile Boost. Open up a command prompt and give the following commands (assuming everything ended up in a folder C:/dev/boost_1_31_0/):<p>
-<div class="fragment"><pre>C:/dev/BOOST_1_31_0&gt;<span class="stringliteral">&quot;c:/Program files/Microsoft Visual Studio .NET 2003/Common7/Tools/vsvars32.bat&quot;</span> 
-C:/dev/BOOST_1_31_0&gt;bjam <span class="stringliteral">&quot;-sTOOLS=vc7.1-stlport&quot;</span> <span class="stringliteral">&quot;-sSTLPORT_PATH=C:/dev&quot;</span> stage
+In it you will find bjam.exe. Copy bjam.exe to C:/dev/boost_1_33_0/<p>
+Next, compile Boost. Open up a command prompt and give the following commands (assuming everything ended up in a folder C:/dev/boost_1_33_0/):<p>
+<div class="fragment"><pre>C:/dev/BOOST_1_33_0&gt;<span class="stringliteral">&quot;c:/Program files/Microsoft Visual Studio .NET 2003/Common7/Tools/vsvars32.bat&quot;</span> 
+C:/dev/BOOST_1_33_0&gt;bjam <span class="stringliteral">&quot;-sTOOLS=vc7.1-stlport&quot;</span> <span class="stringliteral">&quot;-sSTLPORT_PATH=C:/dev&quot;</span> stage
 </pre></div><p>
-You will see some errors about boost.python and file not found error's. These can safely be ignored. The only important thing is that when bjam is finished, C:/dev/boost_1_31_0/stage/lib/boost_thread-vc71-mt-p-1_31.lib was created. Make sure that you copy this dll to your Windows system folder.<p>
+You will see some errors about boost.python and file not found error's. These can safely be ignored. The only important thing is that when bjam is finished, C:/dev/boost_1_33_0/stage/lib/boost_thread-vc71-mt-p-1_33.lib was created. Make sure that you copy this dll to your Windows system folder.<p>
 Next, add a new include path and library path, just as in <a class="el" href="index.html#net_stl">2.3 Obtaining and compiling the STLport library</a>:<p>
 <ul>
-<li>Add C:/dev/boost_1_31_0/stage/lib/ to the Library paths.</li><li>Add C:/dev/boost_1_31_0/boost/ to the Include path.</li></ul>
+<li>Add C:/dev/boost_1_33_0/stage/lib/ to the Library paths.</li><li>Add C:/dev/boost_1_33_0/boost/ to the Include path.</li></ul>
 <h3><a class="anchor" name="net_free">
 2.5 Obtaining and compiling Freetype</a></h3>
 (This step may become obsolete shortly.)<p>
@@ -255,28 +245,7 @@ There is a way around this: the <a href="http://msdn.microsoft.com/visualc/vctoo
 C:/Program files/Microsoft Visual C++ Toolkit 2003/bin/<p>
 Copy the files c2.dll and cl.exe (do make backups of the originals first!!!) to:<p>
 C:/Program Files/Microsoft Visual Studio .NET 2003/Vc7/bin/<p>
-The optimization options in the gui will still be greyed out. However, optimization switches already in a project file will be passed on to the compiler. And programs compiled on the command prompt will use it directly.<h2><a class="anchor" name="ffmpeg">
-3. Building FFsource for Windows</a></h2>
-<h3><a class="anchor" name="ffmpeg-src">
-3.1 Getting the ffmpeg sources</a></h3>
-ffmpegsource can only be build using MinGW, which will be described here.<p>
-Get the sources from their <a href="http://ffmpeg.sourceforge.net/">website</a>: Open a MinGW terminal, and type:<p>
-<div class="fragment"><pre>$ cvs -d:pserver:anonymous@mplayerhq.hu:/cvsroot/ffmpeg co ffmpeg
-</pre></div><p>
-The ffmpeg folder with its sources will be copied to it (note "co" means "check out").<h3><a class="anchor" name="ffmpeg-comp">
-3.2 Compiling ffmpeg</a></h3>
-Go to the ffmpeg folder and type<p>
-<div class="fragment"><pre>$ ./configure --enable-memalign-hack --enable-gpl --prefix=/usr/local --enable-shared
-</pre></div><p>
-It will produce 2 dlls that are needed, avcodec.dll and avformat.dll.<p>
-Now, to compile it type<p>
-<div class="fragment"><pre>$ make
-</pre></div><p>
-and<p>
-<div class="fragment"><pre>$ make installlibs
-</pre></div><p>
-In C:/Msys/1.0/mingw/include/, edit initguid.h: replace <em>const</em> by <em>static const</em>.<p>
-To build Avisynth 3.0 with FFMPEG support, the same steps as above could be used. FMPEG is automatically detected.<h2><a class="anchor" name="AVS-Linux">
+The optimization options in the gui will still be greyed out. However, optimization switches already in a project file will be passed on to the compiler. And programs compiled on the command prompt will use it directly.<h2><a class="anchor" name="AVS-Linux">
 4. Building AviSynth 3.0 for GNU/Linux x86 (using g++)</a></h2>
 To install Avisynth 3.0, we will need the following libraries: <ul>
 <li>STLPort </li>
@@ -398,7 +367,7 @@ If you get the following error <em> AVI Import filter error: (unknown) (80040154
 <li>Installation of nasm on linux. </li>
 </ul>
 </dd></dl>
-<hr size="1"><address style="align: right;"><small>Generated on Fri Dec 16 23:03:06 2005 for Avisynth by
+<hr size="1"><address style="align: right;"><small>Generated on Sun Dec 18 00:04:30 2005 for Avisynth by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 ></a> 1.3.8 </small></address>
 </body>

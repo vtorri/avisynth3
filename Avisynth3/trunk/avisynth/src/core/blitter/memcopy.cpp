@@ -23,6 +23,10 @@
 
 //avisynth includes
 #include "memcopy.h"
+#include "../geometry/dimension.h"
+
+//stlport include
+#include <string>
 
 
 namespace avs { namespace blitter {

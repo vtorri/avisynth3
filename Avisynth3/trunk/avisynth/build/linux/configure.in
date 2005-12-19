@@ -50,8 +50,8 @@ BOOST_VERSION_MINOR="33"
 BOOST_VERSION="${BOOST_VERSION_MAJOR}_${BOOST_VERSION_MINOR}"
 
 dnl Gstreamer version requirement
-GST_REQS=0.8.11
-GSTPLUG_REQS=0.8.11
+GST_REQS=0.8.10
+GSTPLUG_REQS=0.8.10
 
 dnl Gtk+ version requirement
 GTK_REQS=2.4
@@ -561,14 +561,6 @@ AM_CHECK_BOOST(
    [AC_MSG_ERROR("Boost is needed !")])
 
 dnl ==========================================================================
-dnl FFMPEG header and library files
-dnl ==========================================================================
-
-AM_CHECK_FFMPEG(
-   [],
-   [our_cxxflags_defaults="-ansi ${our_cxxflags_defaults}"])
-
-dnl ==========================================================================
 dnl Gstreamer header and library files
 dnl ==========================================================================
 
@@ -592,8 +584,8 @@ AM_GST_ELEMENT_CHECK(
 
 case "$target_os" in
    *bsd*|linux*|beos|irix*|solaris*)
-      if test "${ffmpeg_enable}" = "no" && test "${HAVE_GSTREAMER}" = "no" ; then
-         AC_MSG_ERROR([FFMPEG or Gstreamer support are needed when building Avisynth 3.0 on linux])
+      if test "${HAVE_GSTREAMER}" = "no" ; then
+         AC_MSG_ERROR([Gstreamer support is needed when building Avisynth 3.0 on linux])
       fi
    ;;
 esac
@@ -788,9 +780,6 @@ echo
 echo " Visibility feature..: $visibility"
 echo " Core debug mode.....: $core_debug_mode"
 echo " ASM support.........: $assembly"
-echo
-echo " FFMPEG support......: $ffmpeg_enable"
-echo " FFMPEG debug mode...: $ffmpeg_debug_mode"
 echo
 echo " Gstreamer support...: $HAVE_GSTREAMER"
 echo "    Gst-Plugin.......: $HAVE_GSTPLUG"

@@ -30,8 +30,6 @@ AC_CONFIG_AUX_DIR([.])
 
 AC_CANONICAL_TARGET
 
-AM_INIT_AUTOMAKE
-
 dnl AC_CONFIG_SRCDIR([../../src/core.h])
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -662,15 +660,6 @@ case "$target_os" in
       fi
    ;;
 esac
-
-dnl ==========================================================================
-dnl x264 header and library files
-dnl ==========================================================================
-
-dnl AM_CHECK_X264(
-dnl    [],
-dnl    [], 
-dnl    [AC_MSG_WARN("x264 not found !")])
 
 dnl ==========================================================================
 dnl

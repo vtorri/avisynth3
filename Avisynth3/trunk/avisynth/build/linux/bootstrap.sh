@@ -130,34 +130,24 @@ ACLOCAL=""
 AL_MAJOR=1
 AL_MINOR=7
 
-AUTOMAKE=""
-AM_MAJOR=1
-AM_MINOR=7
-
 case $OS in
     FreeBSD)
 	set_package_freebsd "autoconf" "$AC_MAJOR" "$AC_MINOR" "50 51 52 53 54 55 56 57 58 59"
 	AUTOCONF=$PACKAGE
 	set_package_freebsd "aclocal" "$AL_MAJOR" "$AL_MINOR" "7 8 9"
 	ACLOCAL=$PACKAGE
-	set_package_freebsd "automake" "$AM_MAJOR" "$AM_MINOR" "7 8 9"
-	AUTOMAKE=$PACKAGE
 	;;
     OpenBSD)
 	set_package_openbsd "autoconf" "$AC_MAJOR" "$AC_MINOR" "50 51 52 53 54 55 56 57 58 59"
 	AUTOCONF=$PACKAGE
 	set_package_openbsd "aclocal" "$AL_MAJOR" "$AL_MINOR" "7 8 9"
 	ACLOCAL=$PACKAGE
-	set_package_openbsd "automake" "$AM_MAJOR" "$AM_MINOR" "7 8 9"
-	AUTOMAKE=$PACKAGE
 	;;
     Linux|Darwin)
 	set_package_linux "autoconf" "$AC_MAJOR" "$AC_MINOR"
 	AUTOCONF="autoconf"
 	set_package_linux "aclocal" "$AL_MAJOR" "$AL_MINOR"
 	ACLOCAL="aclocal"
-	set_package_linux "automake" "$AM_MAJOR" "$AM_MINOR"
-	AUTOMAKE="automake"
 	;;
     *)
 	echo "Operating system not supported."
@@ -172,9 +162,6 @@ esac
 echo " + Creating ./configure"
 $ACLOCAL -I ./m4
 $AUTOCONF
-
-echo " + Copying files provided by automake"
-$AUTOMAKE -c -a
 
 echo " + Removing files that are not needed"
 rm -rf autom4* 1>/dev/null 2>&1

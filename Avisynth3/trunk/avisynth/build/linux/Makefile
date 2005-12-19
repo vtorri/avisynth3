@@ -189,8 +189,6 @@ install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB) $(BUILD_DIR)/$(PR
 	done
 	@echo "  D: $(datadir)"
 	@$(INSTALL) -d $(DEST_DIR)$(datadir)
-	@echo "  I: $(datadir)/x264.png"
-	@$(INSTALL) -m 644 $(SRC_DIR)/bin/x264/x264.png $(DEST_DIR)$(datadir)
 	@echo "  D: $(pkgconfigdir)"
 	@$(INSTALL) -d $(DEST_DIR)$(pkgconfigdir)
 	@echo "  I: $(pkgconfigdir)/$(AVS_PC)"
@@ -247,11 +245,9 @@ distclean: clean
 mrproper: distclean
 	@echo "  Cl: Bootstrapped build files"
 	@$(RM) configure
-	@$(RM) install-sh
 	@$(RM) missing
-	@$(RM) config.guess
 	@$(RM) mkinstalldirs
-	@$(RM) config.sub
+	@$(RM) aclocal.m4
 
 distdir:
 	@cd ../../ && \

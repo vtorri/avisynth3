@@ -99,11 +99,12 @@ get_script (char *filename)
 
   return script;
 }
-static string
-get_script2 (char *filename)
-{
-  ifstream file;//(filename, ios::in);
-  string script = "";
+
+// static string
+// get_script2 (char *filename)
+// {
+//   ifstream file;//(filename, ios::in);
+//   string script = "";
 //   string line;
 
 //   while (getline (file, line))
@@ -112,8 +113,8 @@ get_script2 (char *filename)
 //         script += line + "\n";
 //     }
 
-  return script;
-}
+//   return script;
+// }
 
 // Constructor
 
@@ -141,7 +142,7 @@ EXTERN_C AVS_Clip *avs_clip_new_from_file (char *filename, AVS_Environment *p_en
   if (!p_env || !p_env->p_env_)
     return NULL;
   
-  string script = get_script2 (filename);
+  string script = get_script (filename);
 
   p_clip = new AVS_Clip;
   if (!p_clip)

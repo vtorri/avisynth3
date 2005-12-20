@@ -4,14 +4,18 @@ BUGS:
 
 * The parser is broken with just a source
 * Some videos crashes.
+* src/avisynth_c/clip_c.cpp: using C code to parse a script. When
+                             using ifstream with STLport, I have
+                             linking errors. We must fix that.
 
 
 FEATURES:
 ---------
 
 * new parser
-* Gstreamer 0.9
-* export for Gstreamer
+* new plugin system
+* Gstreamer 0.10
+* export for Gstreamer (Gstreamer source plugin for Avisynth 3.0)
 
 
 TESTS:

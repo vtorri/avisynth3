@@ -34,6 +34,7 @@ dnl AC_CONFIG_SRCDIR([../../src/core.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 dnl Do not forget to increase that when needed.
+PACKAGE="Avisynth"
 API_MAJOR="3"
 API_MINOR="0"
 VERSION="${API_MAJOR}.${API_MINOR}"
@@ -156,18 +157,7 @@ dnl ==========================================================================
 dnl Check for the visibility feature of GCC 4.0
 dnl ==========================================================================
 
-GCC_VISIBILITY_FEATURE=
-AC_MSG_CHECKING([whether ${CXX} supports -fvisibility=hidden])
-save_CXXFLAGS=${CXXFLAGS}
-CXXFLAGS="$CXXFLAGS -fvisibility=hidden"
-AC_TRY_LINK(
-   [],
-   [return 0;],
-   [HAVE_GCC_VISIBILITY_FEATURE="-DHAVE_GCC_VISIBILITY_FEATURE"
-    visibility="yes"],
-   [visibility="no"])
-AC_MSG_RESULT(${visibility})
-CXXFLAGS=${save_CXXFLAGS}
+AC_CHECK_GCC_VISIBILITY([have_visibility="yes"], [have_visibility="no"])
 
 dnl ==========================================================================
 dnl Check for the install program
@@ -714,7 +704,6 @@ AC_SUBST(ASSEMBLY_EXTENSION)
 AC_SUBST(GENERIC_SOURCES)
 AC_SUBST(ASSEMBLY_SOURCES)
 AC_SUBST(CXX)
-AC_SUBST(HAVE_GCC_VISIBILITY_FEATURE)
 AC_SUBST(LDFLAGS)
 AC_SUBST(CXXFLAGS)
 AC_SUBST(SPECIFIC_CFLAGS)
@@ -766,7 +755,7 @@ echo "------------------------------------------------------------------------"
 echo
 echo " OS..................: $target_os"
 echo
-echo " Visibility feature..: $visibility"
+echo " Visibility feature..: $have_visibility"
 echo " Core debug mode.....: $core_debug_mode"
 echo " ASM support.........: $assembly"
 echo

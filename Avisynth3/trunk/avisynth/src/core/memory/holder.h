@@ -48,6 +48,12 @@ namespace avs { namespace memory {
 class AVS_NOVTABLE Holder
 {
 
+public:  //structors
+
+  Holder() { }
+  virtual ~Holder() { }
+
+
 public:  //Holder observers
 
   virtual int32 Size() const = 0;

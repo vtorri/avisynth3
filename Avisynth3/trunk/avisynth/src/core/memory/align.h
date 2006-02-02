@@ -31,14 +31,30 @@
 namespace avs { namespace memory {
 
 
-
-enum { Align = 16 };       //alignment of memory allocated
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//  Align
+//
+//  Alignment guaranteed by avs on EACH video scanline
+//
+enum { Align = 16 };       
 
 
 //alignment helper methods
 template <typename T> inline T AlignValue(T value) { return utility::RoundUp<Align>(value); }
 template <typename T> inline bool IsAligned(T value) { return value % Align == 0; }
 
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+//  align_compatible<source, destination>
+//
+//  helper for block_
+//  used to determine when passing from an align guarantee to another is possible
+//
+template <int source, int destination> struct align_compatible
+{
+  static bool const value = source % destination == 0;
+};
 
 
 } } //namespace avs::memory

@@ -44,7 +44,6 @@ template <int align> class block_;
 typedef block_<Align> Block;
 
 //ptr typedefs
-typedef boost::shared_ptr<Heap> PHeap;
 typedef boost::shared_ptr<Manager> PMemManager;
 typedef boost::shared_ptr<Holder const> PHolder;
 typedef boost::shared_ptr<Blitter const> PBlitter;

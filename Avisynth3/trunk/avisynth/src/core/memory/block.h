@@ -25,8 +25,8 @@
 
 //avisynth includes
 #include "align.h"
-#include "block/holder.h"
-#include "block/forward.h"               //for PHolder typedef
+#include "holder.h"
+#include "forward.h"                     //for PHolder typedef
 
 //boost includes
 #include <boost/shared_ptr.hpp>          //so PHolder is defined

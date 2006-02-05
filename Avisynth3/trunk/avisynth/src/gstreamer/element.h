@@ -26,6 +26,7 @@
 
 //avisynth include
 #include "forward.h"             //for Pad, Object, Pipeline declarations
+#include "../core/integer.h"     //for int64
 
 //gstreamer include
 #include <gst/gstelement.h>
@@ -64,9 +65,9 @@ public:  //state stuff
 
 public:
 
-  bool Seek(GstSeekType type, long long time) { return gst_element_seek(this, type, time) != 0; }
+  bool Seek(GstSeekType type, int64 time) { return gst_element_seek(this, type, time) != 0; }
 
-  bool QueryTotal(GstFormat fmt, long long& result)
+  bool QueryTotal(GstFormat fmt, int64& result)
   {
     return gst_element_query(this, GST_QUERY_TOTAL, &fmt, &result) != 0;
   }

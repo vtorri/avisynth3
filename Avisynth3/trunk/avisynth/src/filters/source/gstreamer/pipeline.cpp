@@ -96,7 +96,7 @@ void Pipeline::GoToFrame (int frame_number, Fraction& fps)
   //TODO: handle cases where there is no video or no audio
   if (!GetVideoSink().Seek(type, frame_number))
     {
-      long long int time = 1000000000*frame_number*fps.denominator() / fps.numerator();
+      int64 time = 1000000000*frame_number*fps.denominator() / fps.numerator();
       type = (GstSeekType)(GST_FORMAT_TIME     |
 			   GST_SEEK_METHOD_SET |
 			   GST_SEEK_FLAG_FLUSH);
@@ -104,7 +104,7 @@ void Pipeline::GoToFrame (int frame_number, Fraction& fps)
 	g_print ("pas bon !\n");
     }
 
-  long long int time = 1000000000*frame_number*fps.denominator() / fps.numerator();
+  int64 time = 1000000000*frame_number*fps.denominator() / fps.numerator();
   type = (GstSeekType)(GST_FORMAT_TIME     |
 		       GST_SEEK_METHOD_SET |
 		       GST_SEEK_FLAG_FLUSH);
@@ -117,7 +117,7 @@ namespace {
 
 bool SetFrameCount(VideoInfo& vi, avs::gstreamer::Element& sink)
 {
-  long long length;
+  int64 length;
 
   g_print ("set frame count \n");
 
@@ -137,7 +137,7 @@ bool SetFrameCount(VideoInfo& vi, avs::gstreamer::Element& sink)
 
 bool SetSampleCount(VideoInfo& vi, avs::gstreamer::Element& sink)
 {
-  long long length;
+  int64 length;
 
   if ( ! sink.QueryTotal(GST_FORMAT_DEFAULT, length) )
     if ( ! sink.QueryTotal(GST_FORMAT_TIME, length) )

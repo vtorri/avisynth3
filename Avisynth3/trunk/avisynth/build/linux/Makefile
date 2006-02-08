@@ -75,7 +75,7 @@ distfile=$(distdir).tar
 
 .SUFFIXES: .$(OBJECT_EXTENSION) .$(ASSEMBLY_EXTENSION) .cpp
 
-all: $(STATIC_LIB) $(SHARED_LIB) $(PROG)
+all: $(PROG)
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo " Avisynth has been successfully built."
@@ -118,7 +118,7 @@ $(BUILD_DIR):
 # Static Library
 #-----------------------------------------------------------------------------
 
-$(STATIC_LIB): $(BUILD_DIR) .depend $(LIB_OBJECTS) $(ASM_OBJECTS) $(SRC_LIB_GENERIC)
+$(STATIC_LIB): $(LIB_OBJECTS) $(ASM_OBJECTS) $(SRC_LIB_GENERIC)
 	@echo "  L: $(@F)"
 	@cd $(BUILD_DIR) && ar rc $(@F) $(LIB_OBJECTS) $(ASM_OBJECTS) && $(RANLIB) $(@F)
 
@@ -137,7 +137,7 @@ $(STATIC_LIB): $(BUILD_DIR) .depend $(LIB_OBJECTS) $(ASM_OBJECTS) $(SRC_LIB_GENE
 #      platforms
 #-----------------------------------------------------------------------------
 
-$(SHARED_LIB): $(BUILD_DIR) .depend $(LIB_OBJECTS) $(ASM_OBJECTS)
+$(SHARED_LIB): $(LIB_OBJECTS) $(ASM_OBJECTS)
 	@echo "  L: $(@F)"
 	@$(INSTALL) -m 644 libavisynth.def $(BUILD_DIR)/libavisynth.def
 	@cd $(BUILD_DIR) && $(CXX) $(LDFLAGS) $(LIB_OBJECTS) $(ASM_OBJECTS) -o $(PRE_SHARED_LIB) $(SPECIFIC_LDFLAGS) $(AVS3_LIBS)
@@ -145,9 +145,9 @@ $(SHARED_LIB): $(BUILD_DIR) .depend $(LIB_OBJECTS) $(ASM_OBJECTS)
 #-----------------------------------------------------------------------------
 # Test program
 #-----------------------------------------------------------------------------
-$(PROG): $(BUILD_DIR) .depend $(SHARED_LIB) $(BIN_OBJECTS)
+$(PROG): .depend $(STATIC_LIB) $(SHARED_LIB) $(BIN_OBJECTS)
 	@echo "  P: $(@F)"
-	@cd $(BUILD_DIR) && $(CXX) $(GTK_LIBS) $(BIN_OBJECTS) $(SHARED_LIB) -o $(PROG) && chmod u+x $(PROG)
+	@cd $(BUILD_DIR) && $(CXX) -o $(PROG) $(GTK_LIBS) $(BIN_OBJECTS) $(STATIC_LIB) $(AVS3_LIBS) && chmod u+x $(PROG)
 
 #-----------------------------------------------------------------------------
 # Installation
@@ -209,7 +209,7 @@ configure:
 # .depend targets
 #-----------------------------------------------------------------------------
 
-.depend:
+.depend: $(BUILD_DIR)
 	@echo "  H: headers dependances"
 	@$(RM) $(BUILD_DIR)/.depend
 	@touch $(BUILD_DIR)/.depend

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2006 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,8 +24,9 @@
 #ifndef __AVS_KEY_H__
 #define __AVS_KEY_H__
 
-//avisynth include
+//avisynth includes
 #include "forward.h"             //for PKey typedef
+#include "integer.h"             //for uint32 typedef
 
 //boost include
 #include <boost/shared_ptr.hpp>  //so its defined 
@@ -52,7 +53,7 @@ public:  //structors
 public:  //Key interface
 
   virtual bool operator==(Key const& other) const { return &other == this; }
-  virtual unsigned hash() const { return reinterpret_cast<unsigned>(this); }
+  virtual uint32 hash() const { return static_cast<uint32>(reinterpret_cast<std::ptrdiff_t>(this)); }
 
 
 public:  //useful functors
@@ -68,6 +69,7 @@ public:  //useful functors
   };
 
 };
+
 
 
 } //namespace avs

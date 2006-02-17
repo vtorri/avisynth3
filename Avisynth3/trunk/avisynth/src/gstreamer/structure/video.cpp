@@ -77,7 +77,7 @@ PImporter Video::SetVideoInfo(VideoInfo& vi) const
 {
   PImporter importer = GetImporter();
 
-  g_print ("set videoinfo\n");
+  g_message ("set videoinfo\n");
 
   vi.AddVideo( importer->GetColorSpace()
              , Dimension(GetIntField("width"), GetIntField("height"))

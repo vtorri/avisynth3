@@ -45,7 +45,7 @@ namespace avs { namespace filters { namespace source { namespace gstreamer {
 // {
 //   void operator()(Pipeline *pipeline) const
 //   {
-//     g_print ("On delete\n");
+//     g_message ("On delete\n");
 //     pipeline->SetStateNull ();
 //     gst_object_unref (GST_OBJECT (pipeline));
 //   }
@@ -101,7 +101,7 @@ void Pipeline::GoToFrame (int frame_number, Fraction& fps)
 			   GST_SEEK_METHOD_SET |
 			   GST_SEEK_FLAG_FLUSH);
       if (!GetVideoSink().Seek(type, time))
-	g_print ("pas bon !\n");
+	g_message ("pas bon !\n");
     }
 
   int64 time = 1000000000*frame_number*fps.denominator() / fps.numerator();
@@ -119,7 +119,7 @@ bool SetFrameCount(VideoInfo& vi, avs::gstreamer::Element& sink)
 {
   int64 length;
 
-  g_print ("set frame count \n");
+  g_message ("set frame count \n");
 
   if ( ! sink.QueryTotal(GST_FORMAT_DEFAULT, length) )
     if ( ! sink.QueryTotal(GST_FORMAT_TIME, length) )

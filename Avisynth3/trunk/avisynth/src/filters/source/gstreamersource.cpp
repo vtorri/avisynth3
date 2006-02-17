@@ -60,14 +60,14 @@ CPVideoFrame GstreamerSource::operator()(long int n) const
   avs::gstreamer::Bin& binPipeline = *pipeline_;
 
   //seeking to the nth frame
-  g_print ("we seek...\n");;
+  g_message ("we seek...\n");;
   elementPipeline.SetStatePaused();
   pipeline_->GoToFrame (n, fps);;
   elementPipeline.SetStatePlaying();
   
   while ( binPipeline.Iterate() ) { }
 
-  g_print ("seek done\n");
+  g_message ("seek done\n");
 
   return importer_->CreateFrame(vi_->GetDimension(),
 				PROGRESSIVE,
@@ -88,12 +88,12 @@ void GstreamerSource::FillDataCallback(GObject * obj, GstBuffer *buffer, GstPad 
   float fps = this_->vi_->GetFloatFPS();
   long int frameNbr = this_->pipeline_->GetFrameNbr();
   
-  g_print ("on associe le buffer %d %d\n", GST_BUFFER_SIZE(buffer), 704*400+704*200);
-  g_print ("Timestamp :  %.3fs\n", (gdouble) GST_BUFFER_TIMESTAMP (buffer) / GST_SECOND);
+  g_message ("on associe le buffer %d %d\n", GST_BUFFER_SIZE(buffer), 704*400+704*200);
+  g_message ("Timestamp :  %.3fs\n", (gdouble) GST_BUFFER_TIMESTAMP (buffer) / GST_SECOND);
 
   if (GST_BUFFER_TIMESTAMP (buffer) < GST_SECOND * (((double)frameNbr - 0.5) / fps))
   {
-    g_print ("skipping frame with timestamp %.5fs < %.5fs\n",
+    g_message ("skipping frame with timestamp %.5fs < %.5fs\n",
 	     (gdouble) GST_BUFFER_TIMESTAMP (buffer), GST_SECOND * (double)frameNbr / fps);
     return;
   }

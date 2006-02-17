@@ -62,7 +62,7 @@ static void NoMorePadsCallBack(GObject * obj, void * data)
 
 void NotifyVideoCapsCallBack(GObject * o, GParamSpec * pspec, void * data)
 {
-  g_print ("notify video\n");
+  g_message ("notify video\n");
   avs::gstreamer::PStructure structure = static_cast<avs::gstreamer::Object *>(o)->AsPad().GetNegotiatedStructure();
 
   static_cast<Factory *>(data)->Set(static_cast<avs::gstreamer::structure::Video const&>(*structure));

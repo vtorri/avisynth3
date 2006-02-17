@@ -1,14 +1,8 @@
 dnl ==========================================================================
 dnl
-dnl Autoconf script for XviD
+dnl Autoconf script for Avisynth 3.0
 dnl
-dnl Copyright(C) 2003-2004 Edouard Gomez <ed.gomez@free.fr>
-dnl
-dnl ==========================================================================
-dnl
-dnl Modified for Avisynth 3.0
-dnl
-dnl Copyright(C) 2005 Vincent TORRI <vtorri@univ-evry.fr>
+dnl Copyright(C) 2006 Vincent TORRI <vtorri@univ-evry.fr>
 dnl
 dnl ==========================================================================
 
@@ -16,7 +10,7 @@ dnl ==========================================================================
 dnl Prerequisites
 dnl ==========================================================================
 
-AC_PREREQ([2.52])
+AC_PREREQ([2.54])
 
 dnl ==========================================================================
 dnl Default initialization, install prefix and checks build type
@@ -34,7 +28,7 @@ dnl AC_CONFIG_SRCDIR([../../src/core.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 dnl Do not forget to increase that when needed.
-PACKAGE="Avisynth"
+PACKAGE="avisynth"
 API_MAJOR="3"
 API_MINOR="0"
 VERSION="${API_MAJOR}.${API_MINOR}"
@@ -158,6 +152,8 @@ dnl Check for the visibility feature of GCC 4.0
 dnl ==========================================================================
 
 AC_CHECK_GCC_VISIBILITY([have_visibility="yes"], [have_visibility="no"])
+dnl We disable it. There are some problems with stlport and it
+have_visibility="no"
 
 dnl ==========================================================================
 dnl Check for the install program
@@ -546,7 +542,12 @@ AM_CHECK_BOOST(
    [${BOOST_VERSION}],
    [${target_os}],
    [], 
-   [AC_MSG_ERROR("Boost is needed !")])
+   [AM_CHECK_BOOST(
+      [${BOOST_VERSION}_1],
+      [${target_os}],
+      [], 
+      [AC_MSG_ERROR("Boost is needed !")])
+   ])
 
 dnl ==========================================================================
 dnl Gstreamer header and library files

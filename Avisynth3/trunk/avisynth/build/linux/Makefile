@@ -75,7 +75,7 @@ distfile=$(distdir).tar
 
 .SUFFIXES: .$(OBJECT_EXTENSION) .$(ASSEMBLY_EXTENSION) .cpp
 
-all: $(PROG)
+all: .depend $(PROG) $(STATIC_LIB) $(SHARED_LIB)
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo " Avisynth has been successfully built."
@@ -145,7 +145,7 @@ $(SHARED_LIB): $(LIB_OBJECTS) $(ASM_OBJECTS)
 #-----------------------------------------------------------------------------
 # Test program
 #-----------------------------------------------------------------------------
-$(PROG): .depend $(STATIC_LIB) $(SHARED_LIB) $(BIN_OBJECTS)
+$(PROG): $(STATIC_LIB) $(SHARED_LIB) $(BIN_OBJECTS)
 	@echo "  P: $(@F)"
 	@cd $(BUILD_DIR) && $(CXX) -o $(PROG) $(GTK_LIBS) $(BIN_OBJECTS) $(STATIC_LIB) $(AVS3_LIBS) && chmod u+x $(PROG)
 

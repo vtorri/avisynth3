@@ -96,7 +96,7 @@ set_package_linux()
     MAJOR=$2
     MINOR=$3
 
-    VER=`$NAME --version | head -1 | sed 's/'^[^0-9]*'/''/'`
+    VER=`$NAME --version | head -n 1 | sed 's/'^[^0-9]*'/''/'`
     MAJORVER=`echo $VER | cut -f1 -d'.'`
     MINORVER=`echo $VER | cut -f2 -d'.'`
     if [ "$MAJORVER" -lt "$MAJOR" ]; then

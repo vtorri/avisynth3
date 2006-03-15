@@ -16,6 +16,29 @@ AC_DEFUN([AM_CHECK_BOOST],
           [BOOST Library prefix]),
        [with_boost_arg="yes"],
        [with_boost_arg="no"])
+
+    dnl
+    dnl Name of the thread library option.
+    dnl
+    AC_ARG_WITH(
+       [boost-lib-name],
+       AC_HELP_STRING(
+          [--with-boost-lib-name=name],
+          [BOOST thread library name]),
+       [with_boost_lib_name_arg="yes"],
+       [with_boost_lib_name_arg="no"])
+
+    dnl
+    dnl Name of the thread library with debug symbols option.
+    dnl
+    AC_ARG_WITH(
+       [boost-lib-debug-name],
+       AC_HELP_STRING(
+          [--with-boost-lib-debug-name=name],
+          [BOOST thread library name with debug symbols]),
+       [with_boost_lib_debug_name_arg="yes"],
+       [with_boost_lib_debug_name_arg="no"])
+
     dnl
     dnl Get the name of the library with respect
     dnl to the platform and the version of Boost.
@@ -23,9 +46,17 @@ AC_DEFUN([AM_CHECK_BOOST],
     case "$2" in
        *bsd* | linux* | irix* | solaris* )
           if test x"${core_debug_mode}" = x"yes" ; then
-             BOOST_LIB_NAME="boost_thread-gcc-mt-d-$1"
+             if test x"${with_boost_lib_debug_name_arg}" = x"yes" ; then
+                BOOST_LIB_NAME=${with_boost_lib_name}
+             else
+                BOOST_LIB_NAME="boost_thread-gcc-mt-d-$1"
+             fi
           else
-             BOOST_LIB_NAME="boost_thread-gcc-mt-$1"
+             if test x"${with_boost_lib_name_arg}" = x"yes" ; then
+                BOOST_LIB_NAME=${with_boost_lib_name}
+             else
+                BOOST_LIB_NAME="boost_thread-gcc-mt-$1"
+             fi
           fi
           
        ;;

@@ -10,12 +10,35 @@ AC_DEFUN([AM_CHECK_STLPORT],
     dnl Get the prefix where STLport is installed.
     dnl
     AC_ARG_WITH(
-       [stl-path],
+       [stlport-path],
        AC_HELP_STRING(
-          [--with-stl-path=PATH (default is /usr/local)],
-          [STL Library prefix]),
-       [with_stl_arg="yes"],
-       [with_stl_arg="no"])
+          [--with-stlport-path=PATH (default is /usr/local)],
+          [STLport Library prefix]),
+       [with_stlport_arg="yes"],
+       [with_stlport_arg="no"])
+
+    dnl
+    dnl Name of the thread library option.
+    dnl
+    AC_ARG_WITH(
+       [stlport-lib-name],
+       AC_HELP_STRING(
+          [--with-stlport-lib-name=name],
+          [STLport library name]),
+       [with_stlport_lib_name_arg="yes"],
+       [with_stlport_lib_name_arg="no"])
+
+    dnl
+    dnl Name of the thread library with debug symbols option.
+    dnl
+    AC_ARG_WITH(
+       [stlport-lib-debug-name],
+       AC_HELP_STRING(
+          [--with-stlport-lib-debug-name=name],
+          [STLport library name with debug symbols]),
+       [with_stlport_lib_debug_name_arg="yes"],
+       [with_stlport_lib_debug_name_arg="no"])
+
     dnl
     dnl Get the name of the library with respect
     dnl to the platform and the version of STLport.
@@ -23,9 +46,17 @@ AC_DEFUN([AM_CHECK_STLPORT],
     case "$1" in
        *bsd* | linux* | irix* | solaris* )
           if test x"${core_debug_mode}" = x"yes" ; then
-             STLPORT_LIB_NAME="stlportg"
+             if test x"${with_stlport_lib_debug_name_arg}" = x"yes" ; then
+                STLPORT_LIB_NAME=${with_stlport_lib_name}
+             else
+                STLPORT_LIB_NAME="stlportg"
+             fi
           else
-             STLPORT_LIB_NAME="stlport"
+             if test x"${with_stlport_lib_name_arg}" = x"yes" ; then
+                STLPORT_LIB_NAME=${with_stlport_lib_name}
+             else
+                STLPORT_LIB_NAME="stlport"
+             fi
           fi
        ;;
        [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
@@ -45,33 +76,34 @@ AC_DEFUN([AM_CHECK_STLPORT],
           STLPORT_LIB_NAME=""
        ;;
     esac
+
     dnl
     dnl Check STLport library.
     dnl
     dnl We set the path to use.
-    if test "${with_stl_path+set}" = set && test "x${with_stl_arg}" != "xno"; then
+    if test "${with_stlport_path+set}" = set && test "x${with_stlport_arg}" != "xno"; then
        dnl Argument given and not empty.
-       stl_path="${with_stl_path}"
+       stlport_path="${with_stlport_path}"
     else
        dnl No argument, or argument empty.
-       stl_path="/usr/local"
+       stlport_path="/usr/local"
     fi
     dnl We check the headers, then the library.
     saved_CPPFLAGS="${CPPFLAGS}"
     saved_LDFLAGS="${LDFLAGS}"
-    CPPFLAGS="${CPPFLAGS} -I${stl_path}/include/stlport"
-    LDFLAGS="${LDFLAGS} -L${stl_path}/lib"
+    CPPFLAGS="${CPPFLAGS} -I${stlport_path}/include/stlport"
+    LDFLAGS="${LDFLAGS} -L${stlport_path}/lib"
     AC_CHECK_HEADERS(
        [stl/_config.h],
        [AC_CHECK_LIB(
           [${STLPORT_LIB_NAME}],
           [main],
-          [STLPORT_LIBS="-L${stl_path}/lib -l${STLPORT_LIB_NAME}"],
-          [AC_MSG_WARN(STLport library not in ${stl_path}/lib)
+          [STLPORT_LIBS="-L${stlport_path}/lib -l${STLPORT_LIB_NAME}"],
+          [AC_MSG_WARN(STLport library not in ${stlport_path}/lib)
            m4_if([$3], [], [:], [$3])])
-        STLPORT_CFLAGS="-I${stl_path}/include/stlport"
+        STLPORT_CFLAGS="-I${stlport_path}/include/stlport"
         m4_if([$2], [], [:], [$2])],
-       [AC_MSG_WARN(STLport headers not in ${stl_path}/include/stlport)
+       [AC_MSG_WARN(STLport headers not in ${stlport_path}/include/stlport)
         m4_if([$3], [], [:], [$3])])
     CPPFLAGS="${saved_CPPFLAGS}"
     LDFLAGS="${saved_LDFLAGS}"

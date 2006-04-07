@@ -28,6 +28,7 @@
 #include "gstreamer/forward.h"                //for PPipeline
 #include "../../core/forward.h"               //for PImporter
 #include "../../clip/nochild.h"
+#include "../../gstreamer/buffer.h"           //for PBuffer
 #include "../../clip/framemaker/concrete.h"
 #include "../../gstreamer/signalhandler.h"
 
@@ -55,10 +56,8 @@ class GstreamerSource : public clip::NoChild
 
   CPVideoInfo vi_;
   PImporter importer_;
-  source::gstreamer::PPipeline pipeline_;
-  avs::gstreamer::SignalHandler fillData_;
-
-  mutable GstBuffer *buffer_;
+  source::gstreamer::PPipeline pipelineVideo_;
+  source::gstreamer::PPipeline pipelineAudio_;
 
 public:  //structors
 
@@ -77,11 +76,6 @@ public:  //Clip general interface
 public:  //FrameMaker interface
 
   virtual CPVideoFrame operator()(long int n) const;
-
-
-private:  //Gstreamer callback
-
-  static void FillDataCallback(GObject * obj, GstBuffer *buffer, GstPad * pad, void * data);
 
 
 public:  //factory functor

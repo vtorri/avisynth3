@@ -32,152 +32,130 @@
 #include "../../../core/videoinfo.h"
 #include "../../../gstreamer/bin.h"
 #include "../../../gstreamer/pad.h"
-#include "../../../gstreamer/object.h"
-#include "../../../gstreamer/element.h"
-
-//assert include
-#include <assert.h>
+#include "../../../gstreamer/iterator.h"
 
 
 namespace avs { namespace filters { namespace source { namespace gstreamer {
 
-// struct PipelineDeleter
-// {
-//   void operator()(Pipeline *pipeline) const
-//   {
-//     g_message ("On delete\n");
-//     pipeline->SetStateNull ();
-//     gst_object_unref (GST_OBJECT (pipeline));
-//   }
-// };
-
-
-
-PPipeline Pipeline::Create(std::string const& name)
-{
-  PPipeline pipeline = boost::static_pointer_cast<Pipeline>( avs::gstreamer::Pipeline::Create() );
-
-  avs::gstreamer::Bin& binPipeline = pipeline->operator avs::gstreamer::Bin&();
-
-  //file source  
-  avs::gstreamer::Element& fileSrc = binPipeline.AddNewElement("filesrc", "disk_source");
-  fileSrc.operator avs::gstreamer::Object&().Set("location", name.c_str());
-
-  //links fileSrc to a decoder
-  fileSrc.Link( binPipeline.AddNewElement("decodebin", "decoder") );
-
-  // FIXME: the gstreamer decoder has issues with mpeg streams
-  //        must check for updates / API changes  
-
-  binPipeline.AddNewElement("fakesink", "vsink");
-  binPipeline.AddNewElement("fakesink", "asink");
-
-  g_object_set (G_OBJECT ( &pipeline->GetVideoSink() ), "signal-handoffs", TRUE, NULL);
-
-  binPipeline.SyncChildrenState();
-
-  return pipeline;
-}
-
-
-avs::gstreamer::Element& Pipeline::GetDecoder() { return *operator avs::gstreamer::Bin&().GetByName("decoder"); }
-avs::gstreamer::Element& Pipeline::GetVideoSink() { return *operator avs::gstreamer::Bin&().GetByName("vsink"); }
-avs::gstreamer::Element& Pipeline::GetAudioSink() { return *operator avs::gstreamer::Bin&().GetByName("asink"); }
-
-
-void Pipeline::GoToFrame (int frame_number, Fraction& fps)
-{
-  GstSeekType type = (GstSeekType)(GST_FORMAT_DEFAULT  |
-				   GST_SEEK_METHOD_SET |
-				   GST_SEEK_FLAG_FLUSH);
-
-  frameNbr_ = frame_number;
-
-  //TODO: handle cases where there is no video or no audio
-  if (!GetVideoSink().Seek(type, frame_number))
-    {
-      int64 time = 1000000000*frame_number*fps.denominator() / fps.numerator();
-      type = (GstSeekType)(GST_FORMAT_TIME     |
-			   GST_SEEK_METHOD_SET |
-			   GST_SEEK_FLAG_FLUSH);
-      if (!GetVideoSink().Seek(type, time))
-	g_message ("pas bon !\n");
-    }
-
-  int64 time = 1000000000*frame_number*fps.denominator() / fps.numerator();
-  type = (GstSeekType)(GST_FORMAT_TIME     |
-		       GST_SEEK_METHOD_SET |
-		       GST_SEEK_FLAG_FLUSH);
-  GetAudioSink().Seek(type, time);
-}
 
 
 namespace {
 
 
-bool SetFrameCount(VideoInfo& vi, avs::gstreamer::Element& sink)
+static void DetectPadsCallback(GObject * obj, GstPad * pad, gboolean last, void * data)
 {
-  int64 length;
-
-  g_message ("set frame count \n");
-
-  if ( ! sink.QueryTotal(GST_FORMAT_DEFAULT, length) )
-    if ( ! sink.QueryTotal(GST_FORMAT_TIME, length) )
-      return true;
-    else
-    {
-      length *= vi.GetFPSNumerator();
-      length /= vi.GetFPSDenominator() * 1000000000;
-    }
-           
-  vi.SetFrameCount( static_cast<int>(length) );
-  return false;
+  static_cast<Pipeline *>(data)->PadDetected( static_cast<avs::gstreamer::Pad&>(*pad) );
 }
 
 
-bool SetSampleCount(VideoInfo& vi, avs::gstreamer::Element& sink)
+} // anonymous namespace
+
+struct PipelineDestructor
 {
-  int64 length;
-
-  if ( ! sink.QueryTotal(GST_FORMAT_DEFAULT, length) )
-    if ( ! sink.QueryTotal(GST_FORMAT_TIME, length) )
-      return true;
-    else
-      length = length * vi.GetSampleRate() / 1000000000;
-
-  vi.SetSampleCount(length);
-  return false;
-}
-
-
-} //namespace anonymous
-
-
-
-void Pipeline::SetLengths(VideoInfo& vi)
-{
-  avs::gstreamer::Bin& bin = *this;
-  avs::gstreamer::Element& vsink = GetVideoSink();
-  avs::gstreamer::Element& asink = GetAudioSink();
-
-  int i = 30;
-  bool handleVideo = vi.HasVideo();
-  bool handleAudio = vi.HasAudio();
-
-  do
+  void operator()(Pipeline *pipeline) const
   {
-    if ( handleVideo )
-      handleVideo = SetFrameCount(vi, vsink);
-    if ( handleAudio )
-      handleAudio = SetSampleCount(vi, asink);
+    g_print ("On delete la pipeline\n");
+    avs::gstreamer::Element& elementPipeline = pipeline->GetPipeline();
+    avs::gstreamer::Object& objectPipeline = elementPipeline.operator avs::gstreamer::Object&();
+    elementPipeline.SetStateNull ();
+    gst_object_unref (GST_OBJECT (&objectPipeline));
   }
-  while( i-- > 0 && (handleVideo || handleAudio) && bin.Iterate() );
+};
 
-  //throw if handleVideo or handleAudio is still true !?
+
+Pipeline::Pipeline(std::string const& filename)
+  : pipeline_( BuildPipeline( filename ) )
+  , detectPad_( &GetDecoder().operator avs::gstreamer::Object&(), "new-decoded-pad", &DetectPadsCallback, this )
+  , pad_( NULL )
+  , sink_( NULL ) { }
+
+
+avs::gstreamer::PPipeline Pipeline::BuildPipeline(std::string const& filename)
+{
+  avs::gstreamer::PPipeline pipeline = avs::gstreamer::Pipeline::Create();
+
+  avs::gstreamer::Bin& binPipeline = pipeline->operator avs::gstreamer::Bin&();
+
+  //file source
+  avs::gstreamer::Element& fileSrc = binPipeline.AddNewElement( "filesrc", "disk_source" );
+  fileSrc.operator avs::gstreamer::Object&().Set( "location", filename.c_str() );
+
+  //decodebin
+  avs::gstreamer::Element& decoder = binPipeline.AddNewElement( "decodebin", "decoder" );
+
+  //links fileSrc to the decoder
+  fileSrc.Link( decoder );
+
+  return pipeline;  
+}
+
+
+PPipeline Pipeline::Create(std::string const& filename)
+{
+  g_print ("Pipeline Create\n");
+  PPipeline pipeline = boost::shared_ptr<Pipeline>( new Pipeline( filename ), PipelineDestructor() );
+
+  return pipeline;
+}
+
+
+avs::gstreamer::Element& Pipeline::GetPipeline() { return pipeline_->operator avs::gstreamer::Element&(); }
+avs::gstreamer::Element& Pipeline::GetDecoder() { return *pipeline_->operator avs::gstreamer::Bin&().GetByName("decoder"); }
+
+
+void Pipeline::SetStatePaused()
+{
+  avs::gstreamer::Element& elementPipeline = *pipeline_;
+  elementPipeline.SetStatePaused();
+}
+
+
+void Pipeline::PadDetected(avs::gstreamer::Pad& pad)
+{
+  GstCaps *caps = gst_pad_get_caps (&pad);
+  g_print ("new pad %s\n\n", gst_caps_to_string (caps));
+  avs::gstreamer::Bin& binPipeline = pipeline_->operator avs::gstreamer::Bin&();
+  avs::gstreamer::Element& sink = binPipeline.AddNewElement( "avs3sink", NULL );
+  pad.Link( *sink.GetPad( "sink" ) );
+  sink.SetSimpleStatePaused();
+}
+
+void Pipeline::SetSink (int index, char *stream_type)
+{
+  avs::gstreamer::Element& decoder = GetDecoder();
+  avs::gstreamer::PIterator iter = avs::gstreamer::Iterator::Create(decoder);
+  int i = 0;
+  while ( iter->Next() ) {
+    avs::gstreamer::Pad *pad = iter->GetPad();
+    if (pad->CheckStream(stream_type)) {
+      if (i == index) {
+        pad_ = pad;
+        sink_ = &pad->GetPeerElement();
+        break;
+      }
+      i++;
+    }
+  }
+}
+
+
+void Pipeline::SetFrameCount(VideoInfo& vi)
+{
+  int64 length = pad_->QueryTotal();
+
+  vi.SetFrameCount( static_cast<int>( ( length * vi.GetFPSNumerator() ) / ( vi.GetFPSDenominator() * GST_SECOND ) ) );
+}
+
+
+void Pipeline::SetSampleCount(VideoInfo& vi)
+{
+  int64 length = pad_->QueryTotal();
+
+  vi.SetSampleCount( static_cast<long long>( length * vi.GetSampleRate() / GST_SECOND ) );
 }
 
 
 
-} } } } // namespace avs::filters::source::gstreamer
+} } } } //namespace avs::filters::source::gstreamer
 
 #endif //AVS_HAS_GSTREAMER_SOURCE

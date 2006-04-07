@@ -36,6 +36,7 @@
 #include "../../core/videoinfo.h"
 #include "../../core/block/base.h"
 #include "../../gstreamer/bin.h"
+#include "../../gstreamer/buffer.h"
 #include "../../gstreamer/object.h"
 #include "../../gstreamer/element.h"
 #include "../../core/colorspace/importer.h"
@@ -49,56 +50,29 @@ GstreamerSource::GstreamerSource(source::gstreamer::Factory const& factory, PEnv
   : clip::framemaker::Concrete( env )
   , vi_( factory.vi() )
   , importer_( factory.importer() )
-  , pipeline_( factory.pipeline() )
-  , fillData_( pipeline_->GetVideoSink(), "handoff", &FillDataCallback, this ) { }
+  , pipelineVideo_( factory.pipelineVideo() )
+  , pipelineAudio_( factory.pipelineAudio() ) { }
 
 
 CPVideoFrame GstreamerSource::operator()(long int n) const
 {
-  Fraction fps = vi_->GetFPS();
-  avs::gstreamer::Element& elementPipeline = *pipeline_;
-  avs::gstreamer::Bin& binPipeline = *pipeline_;
+  GstBuffer *buffer = NULL;
+  avs::gstreamer::Object * sink = pipelineVideo_->GetSink();
 
   //seeking to the nth frame
-  g_message ("we seek...\n");;
-  elementPipeline.SetStatePaused();
-  pipeline_->GoToFrame (n, fps);;
-  elementPipeline.SetStatePlaying();
-  
-  while ( binPipeline.Iterate() ) { }
-
-  g_message ("seek done\n");
+  g_print ("we seek... %ld\n", n);
+  g_signal_emit_by_name (G_OBJECT (sink), "seek", n, &buffer);
 
   return importer_->CreateFrame(vi_->GetDimension(),
 				PROGRESSIVE,
                                 owned_block<1>( new
-                                                gstreamer::OwnedHolder(GetEnvironment(), *buffer_)),
+                                                source::gstreamer::OwnedHolder(GetEnvironment(), *buffer)),
                                 0 );
 }
 
 BYTE * GstreamerSource::GetAudio(BYTE * buffer, long long start, long count) const
 {
   return NULL;
-}
-
-void GstreamerSource::FillDataCallback(GObject * obj, GstBuffer *buffer, GstPad * pad, void * data)
-{
-  GstreamerSource const * this_ = static_cast<GstreamerSource *>(data);
-  avs::gstreamer::Element& elementPipeline = *this_->pipeline_;
-  float fps = this_->vi_->GetFloatFPS();
-  long int frameNbr = this_->pipeline_->GetFrameNbr();
-  
-  g_message ("on associe le buffer %d %d\n", GST_BUFFER_SIZE(buffer), 704*400+704*200);
-  g_message ("Timestamp :  %.3fs\n", (gdouble) GST_BUFFER_TIMESTAMP (buffer) / GST_SECOND);
-
-  if (GST_BUFFER_TIMESTAMP (buffer) < GST_SECOND * (((double)frameNbr - 0.5) / fps))
-  {
-    g_message ("skipping frame with timestamp %.5fs < %.5fs\n",
-	     (gdouble) GST_BUFFER_TIMESTAMP (buffer), GST_SECOND * (double)frameNbr / fps);
-    return;
-  }
-  elementPipeline.SetStatePaused();
-  this_->buffer_ = buffer;
 }
 
 

@@ -26,11 +26,15 @@
 
 //avisynth includes
 #include "forward.h"                           //for PPipeline
+#include "../../../gstreamer/object.h"
 #include "../../../gstreamer/forward.h"        //for Element declaration
 #include "../../../gstreamer/pipeline.h"
+#include "../../../gstreamer/element.h"
+#include "../../../gstreamer/signalhandler.h"
 
 //boost include
 #include <boost/shared_ptr.hpp>                //so PPipeline is defined
+/* #include <boost/thread.hpp> */
 
 //stl include
 #include <string>
@@ -45,30 +49,44 @@ namespace avs { namespace filters { namespace source { namespace gstreamer {
 //
 //  
 //
-class Pipeline : public avs::gstreamer::Pipeline
+class Pipeline
 {
 
-  long int frameNbr_;  // used in FillData
+  avs::gstreamer::PPipeline pipeline_;
+  avs::gstreamer::SignalHandler detectPad_;
+  avs::gstreamer::Pad * pad_;
+  avs::gstreamer::Element * sink_;
+
+public:  //structors
+
+  Pipeline(std::string const& filename);
+
 
 public:  //access to elements
 
+  avs::gstreamer::Pad * GetPad() { return pad_; }
+  avs::gstreamer::Object * GetSink() { return &static_cast<avs::gstreamer::Object&>( *sink_ ); }
+  avs::gstreamer::Element& GetPipeline();
   avs::gstreamer::Element& GetDecoder();
-  avs::gstreamer::Element& GetVideoSink();
-  avs::gstreamer::Element& GetAudioSink();
-  
-  long int GetFrameNbr() const { return frameNbr_; }
+
+  void SetStatePaused();
 
 public:  //factory method
 
-  static PPipeline Create(std::string const& name);
+  boost::shared_ptr<avs::gstreamer::Pipeline> BuildPipeline(std::string const& filename);
 
-  void GoToFrame (int frame_number, Fraction& fps);
+  void SetSink (int index, char *stream_type);
 
-  void SetLengths(VideoInfo& vi);
+  void SetFrameCount(VideoInfo& vi);
+
+  void SetSampleCount(VideoInfo& vi);
+
+  static PPipeline Create(std::string const& filename);
 
 
-private:  //helpers for SetLengths
+public:  //used by callback
 
+  void PadDetected(avs::gstreamer::Pad& pad);
   
 };
 

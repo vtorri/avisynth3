@@ -33,7 +33,7 @@
 #include <gst/gstbuffer.h>
 
 
-namespace avs { namespace filters { namespace gstreamer {
+namespace avs { namespace filters { namespace source { namespace gstreamer {
 
 
 
@@ -54,7 +54,7 @@ OwnedHolder::~OwnedHolder()
 
 BYTE * OwnedHolder::Get() const 
 { 
-  return buffer_.data; 
+  return GST_BUFFER_DATA(&buffer_); 
 }
 
 bool OwnedHolder::Unique() const 
@@ -64,6 +64,6 @@ bool OwnedHolder::Unique() const
 
 
 
-} } } //namespace avs::filters::gstreamer
+} } } } //namespace avs::filters::gstreamer
 
 #endif //AVS_HAS_GSTREAMER_SOURCE

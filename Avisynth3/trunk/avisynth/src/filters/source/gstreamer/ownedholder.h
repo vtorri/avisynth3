@@ -31,7 +31,7 @@
 typedef struct _GstBuffer GstBuffer;
 
 
-namespace avs { namespace filters { namespace gstreamer {
+namespace avs { namespace filters { namespace source { namespace gstreamer {
 
 
 
@@ -65,6 +65,6 @@ public:  //OwnedHolder interface
 
 
 
-} } } //namespace avs::filters::gstreamer
+} } } } //namespace avs::filters::gstreamer
 
 #endif //__AVS_FILTERS_GSTREAMER_OWNEDHOLDER_H__

@@ -35,7 +35,6 @@ namespace avs { namespace filters { namespace source { namespace gstreamer {
 //declarations
 class Factory;
 class Pipeline;
-class StreamChooser;
   
 //typedef
 typedef boost::shared_ptr<Pipeline> PPipeline;

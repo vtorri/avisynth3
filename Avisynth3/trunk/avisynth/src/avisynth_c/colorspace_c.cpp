@@ -47,7 +47,7 @@ avs_colorspace_delete (AVS_ColorSpace *p_cs)
   delete p_cs;
 }
 
-EXTERN_C ColorSpace_Id avs_colorspace_id_get (AVS_ColorSpace *p_cs)
+EXTERN_C ColorSpace_Id avs_colorspace_id_get (const AVS_ColorSpace *p_cs)
 {
   switch (p_cs->p_cs_->id ())
     {

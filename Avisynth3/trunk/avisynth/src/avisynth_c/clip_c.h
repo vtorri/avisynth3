@@ -49,18 +49,17 @@
 typedef struct AVS_Clip_ AVS_Clip;
 
 
-AVS_C_API AVS_Clip *avs_clip_new_from_script (char *script, AVS_Environment *p_env);
-AVS_C_API AVS_Clip *avs_clip_new_from_file (char *filename, AVS_Environment *p_env);
+AVS_C_API AVS_Clip *avs_clip_new_from_script (const char *script, const AVS_Environment *p_env);
+AVS_C_API AVS_Clip *avs_clip_new_from_file   (const char *filename, const AVS_Environment *p_env);
+AVS_C_API AVS_Clip *avs_clip_new_to_rgb32    (const AVS_Clip *p_clip);
+AVS_C_API AVS_Clip *avs_clip_new_to_yv12     (const AVS_Clip *p_clip);
 AVS_C_API void      avs_clip_delete          (AVS_Clip *p_clip);
 
 /* Result must be freed with avs_videoinfo_delete */
-AVS_C_API AVS_VideoInfo *avs_clip_videoinfo_get (AVS_Clip *p_clip);
+AVS_C_API AVS_VideoInfo *avs_clip_videoinfo_get (const AVS_Clip *p_clip);
 
 /* Result must be freed with avs_videoframe_delete */
-AVS_C_API AVS_VideoFrame *avs_clip_videoframe_get (AVS_Clip *p_clip, long int n);
-
-/* Result must be freed with avs_clip_delete */
-AVS_C_API AVS_Clip *avs_clip_to_yv12 (AVS_Clip *p_clip);
+AVS_C_API AVS_VideoFrame *avs_clip_videoframe_get (const AVS_Clip *p_clip, long int n);
 
 
 #endif /* __CLIP_C_H__ */

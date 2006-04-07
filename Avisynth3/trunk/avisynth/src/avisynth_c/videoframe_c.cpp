@@ -50,13 +50,40 @@ avs_videoframe_delete (AVS_VideoFrame *p_vf)
   delete p_vf;
 }
 
-EXTERN_C void avs_videoframe_plane_blit (AVS_VideoFrame *p_vf, char plane, unsigned char *ptr, int pitch)
+EXTERN_C int
+avs_videoframe_width_get (const AVS_VideoFrame *p_vf)
 {
-  avs::PEnvironment env = p_vf->p_vf_->GetEnvironment ();
-  avs::Blitter const& blit = env->GetBlitter();
+  if (!p_vf)
+    return 0;
 
+  return p_vf->p_vf_->GetDimension().GetWidth ();
+}
+
+EXTERN_C int
+avs_videoframe_height_get (const AVS_VideoFrame *p_vf)
+{
+  if (!p_vf)
+    return 0;
+
+  return p_vf->p_vf_->GetDimension().GetHeight ();
+}
+
+EXTERN_C const unsigned char *
+avs_videoframe_plane_get (const AVS_VideoFrame *p_vf, char plane)
+{
+  if (!p_vf)
+    return NULL;
+
+  return p_vf->p_vf_->ReadFrom (plane).ptr;
+}
+
+EXTERN_C void avs_videoframe_plane_blit (const AVS_VideoFrame *p_vf, char plane, unsigned char *ptr, int pitch)
+{
   if (!p_vf)
     return;
+
+  avs::PEnvironment env = p_vf->p_vf_->GetEnvironment ();
+  avs::Blitter const& blit = env->GetBlitter();
 
   blit.Blit(p_vf->p_vf_->ReadFrom(plane), ptr, pitch);
 }

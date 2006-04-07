@@ -51,13 +51,14 @@
 #include "../parser/parser.h"
 #include "../core/videoinfo.h"
 #include "../filters/convert/toyv12.h"
+#include "../filters/convert/torgb32.h"
 
 
 using namespace std;
 
 // FIXME: link problem if I use the ifstream type. I don't understand...
 static string
-get_script (char *filename)
+get_script (const char *filename)
 {
   FILE *file;
   struct stat buf;
@@ -73,21 +74,20 @@ get_script (char *filename)
   if (!file)
     return script;
 
-  content = (char *)malloc (sizeof (char) * filesize);
-  if (!content)
-    {
-      fclose (file);
-      return script;
-    }
+  content = (char *)malloc (sizeof (char) * (filesize + 1));
+  if (!content) {
+    fclose (file);
+    return script;
+  }
   res = fread (content, 1, filesize, file);
-
+  content[filesize] = '\0';
   fclose (file);
 
-  if (res != filesize)
-    {
-      printf ("res != filesize\n");
-      return script;
-    }
+  if (res != filesize) {
+    printf ("res != filesize\n");
+    free (content);
+    return script;
+  }
   script = content;
   free (content);
 
@@ -119,7 +119,7 @@ get_script (char *filename)
 // Constructor
 
 EXTERN_C AVS_Clip *
-avs_clip_new_from_script (char *script, AVS_Environment *p_env)
+avs_clip_new_from_script (const char *script, const AVS_Environment *p_env)
 {
   AVS_Clip *p_clip;
 
@@ -135,7 +135,7 @@ avs_clip_new_from_script (char *script, AVS_Environment *p_env)
   return p_clip;
 }
 
-EXTERN_C AVS_Clip *avs_clip_new_from_file (char *filename, AVS_Environment *p_env)
+EXTERN_C AVS_Clip *avs_clip_new_from_file (const char *filename, const AVS_Environment *p_env)
 {
   AVS_Clip *p_clip;
 
@@ -153,6 +153,40 @@ EXTERN_C AVS_Clip *avs_clip_new_from_file (char *filename, AVS_Environment *p_en
   return p_clip;
 }
 
+EXTERN_C AVS_Clip *
+avs_clip_new_to_rgb32 (const AVS_Clip *p_clip)
+{
+  AVS_Clip *p_clip_rgb32;
+
+  if (!p_clip)
+    return NULL;
+
+  p_clip_rgb32 = new AVS_Clip;
+  if (!p_clip_rgb32)
+    return NULL;
+
+  p_clip_rgb32->p_clip_ = avs::filters::convert::ToRGB32::Create(p_clip->p_clip_);
+  
+  return p_clip_rgb32;
+}
+
+EXTERN_C AVS_Clip *
+avs_clip_new_to_yv12 (const AVS_Clip *p_clip)
+{
+  AVS_Clip *p_clip_yv12;
+
+  if (!p_clip)
+    return NULL;
+
+  p_clip_yv12 = new AVS_Clip;
+  if (!p_clip_yv12)
+    return NULL;
+
+  p_clip_yv12->p_clip_ = avs::filters::convert::ToYV12::Create(p_clip->p_clip_);
+  
+  return p_clip_yv12;
+}
+
 // Destructor
 
 EXTERN_C void
@@ -166,7 +200,7 @@ avs_clip_delete (AVS_Clip *p_clip)
 // General interface
 
 EXTERN_C AVS_VideoInfo *
-avs_clip_videoinfo_get (AVS_Clip *p_clip)
+avs_clip_videoinfo_get (const AVS_Clip *p_clip)
 {
   AVS_VideoInfo *p_vi;
 
@@ -183,7 +217,7 @@ avs_clip_videoinfo_get (AVS_Clip *p_clip)
 }
 
 EXTERN_C AVS_VideoFrame *
-avs_clip_videoframe_get (AVS_Clip *p_clip, long int n)
+avs_clip_videoframe_get (const AVS_Clip *p_clip, long int n)
 {
   AVS_VideoFrame *p_vf;
 
@@ -197,22 +231,4 @@ avs_clip_videoframe_get (AVS_Clip *p_clip, long int n)
   p_vf->p_vf_ = p_clip->p_clip_->GetFrame (n);
 
   return p_vf;
-}
-
-// Conversions
-EXTERN_C AVS_Clip *
-avs_clip_to_yv12 (AVS_Clip *p_clip)
-{
-  AVS_Clip *p_clip_yv12;
-
-  if (!p_clip)
-    return NULL;
-
-  p_clip_yv12 = new AVS_Clip;
-  if (!p_clip_yv12)
-    return NULL;
-
-  p_clip_yv12->p_clip_ = avs::filters::convert::ToYV12::Create(p_clip->p_clip_);
-  
-  return p_clip_yv12;
 }

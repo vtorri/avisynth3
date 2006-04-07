@@ -51,17 +51,25 @@ AVS_C_API void avs_videoinfo_delete (AVS_VideoInfo *p_vi);
 
 /* Video methods */
 
+AVS_C_API int             avs_videoinfo_has_video (const AVS_VideoInfo *p_vi);
 /* Result must be freed with avs_colorspace_delete */
-AVS_C_API AVS_ColorSpace *avs_videoinfo_colorspace_get (AVS_VideoInfo *p_vi);
+AVS_C_API AVS_ColorSpace *avs_videoinfo_colorspace_get (const AVS_VideoInfo *p_vi);
 
-AVS_C_API int             avs_videoinfo_width_get (AVS_VideoInfo *p_vi);
-AVS_C_API int             avs_videoinfo_height_get (AVS_VideoInfo *p_vi);
+AVS_C_API int             avs_videoinfo_width_get (const AVS_VideoInfo *p_vi);
+AVS_C_API int             avs_videoinfo_height_get (const AVS_VideoInfo *p_vi);
 
-AVS_C_API int             avs_videoinfo_framecount_get (AVS_VideoInfo *p_vi);
+AVS_C_API int             avs_videoinfo_framecount_get (const AVS_VideoInfo *p_vi);
 
-AVS_C_API int             avs_videoinfo_fps_numerator_get (AVS_VideoInfo *p_vi);
-AVS_C_API int             avs_videoinfo_fps_denominator_get (AVS_VideoInfo *p_vi);
-AVS_C_API float           avs_videoinfo_fps_float_get (AVS_VideoInfo *p_vi);
+AVS_C_API int             avs_videoinfo_fps_numerator_get (const AVS_VideoInfo *p_vi);
+AVS_C_API int             avs_videoinfo_fps_denominator_get (const AVS_VideoInfo *p_vi);
+AVS_C_API float           avs_videoinfo_fps_float_get (const AVS_VideoInfo *p_vi);
+
+/* Audio methods */
+
+AVS_C_API int           avs_videoinfo_has_audio (const AVS_VideoInfo *p_vi);
+AVS_C_API int           avs_videoinfo_sample_rate_get (const AVS_VideoInfo *p_vi);
+AVS_C_API long long int avs_videoinfo_sample_count_get (const AVS_VideoInfo *p_vi);
+AVS_C_API int           avs_videoinfo_channel_count_get (const AVS_VideoInfo *p_vi);
 
 
 #endif /* __VIDEOINFO_C_H__ */

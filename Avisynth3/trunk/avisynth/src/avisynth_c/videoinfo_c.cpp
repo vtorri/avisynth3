@@ -49,7 +49,7 @@ avs_videoinfo_delete (AVS_VideoInfo *p_vi)
 }
 
 EXTERN_C AVS_ColorSpace *
-avs_videoinfo_colorspace_get (AVS_VideoInfo *p_vi)
+avs_videoinfo_colorspace_get (const AVS_VideoInfo *p_vi)
 {
   AVS_ColorSpace *p_cs;
 
@@ -65,8 +65,19 @@ avs_videoinfo_colorspace_get (AVS_VideoInfo *p_vi)
   return p_cs;
 }
 
+// Audio methods
+
 EXTERN_C int
-avs_videoinfo_width_get (AVS_VideoInfo *p_vi)
+avs_videoinfo_has_video (const AVS_VideoInfo *p_vi)
+{
+  if (p_vi && p_vi->p_vi_->HasVideo ())
+    return 1;
+  
+  return 0;
+}
+
+EXTERN_C int
+avs_videoinfo_width_get (const AVS_VideoInfo *p_vi)
 {
   if (!p_vi)
     return 0;
@@ -75,7 +86,7 @@ avs_videoinfo_width_get (AVS_VideoInfo *p_vi)
 }
 
 EXTERN_C int
-avs_videoinfo_height_get (AVS_VideoInfo *p_vi)
+avs_videoinfo_height_get (const AVS_VideoInfo *p_vi)
 {
   if (!p_vi)
     return 0;
@@ -84,7 +95,7 @@ avs_videoinfo_height_get (AVS_VideoInfo *p_vi)
 }
 
 EXTERN_C int
-avs_videoinfo_framecount_get (AVS_VideoInfo *p_vi)
+avs_videoinfo_framecount_get (const AVS_VideoInfo *p_vi)
 {
   if (!p_vi)
     return 0;
@@ -93,7 +104,7 @@ avs_videoinfo_framecount_get (AVS_VideoInfo *p_vi)
 }
 
 EXTERN_C int
-avs_videoinfo_fps_numerator_get (AVS_VideoInfo *p_vi)
+avs_videoinfo_fps_numerator_get (const AVS_VideoInfo *p_vi)
 {
   if (!p_vi)
     return 0;
@@ -102,7 +113,7 @@ avs_videoinfo_fps_numerator_get (AVS_VideoInfo *p_vi)
 }
 
 EXTERN_C int
-avs_videoinfo_fps_denominator_get (AVS_VideoInfo *p_vi)
+avs_videoinfo_fps_denominator_get (const AVS_VideoInfo *p_vi)
 {
   if (!p_vi)
     return 1;
@@ -111,10 +122,48 @@ avs_videoinfo_fps_denominator_get (AVS_VideoInfo *p_vi)
 }
 
 EXTERN_C float
-avs_videoinfo_fps_float_get (AVS_VideoInfo *p_vi)
+avs_videoinfo_fps_float_get (const AVS_VideoInfo *p_vi)
 {
   if (!p_vi)
     return 0.0;
   
   return p_vi->p_vi_->GetFloatFPS ();
+}
+
+// Audio methods
+
+EXTERN_C int
+avs_videoinfo_has_audio (const AVS_VideoInfo *p_vi)
+{
+  if (p_vi && p_vi->p_vi_->HasAudio ())
+    return 1;
+  
+  return 0;
+}
+
+EXTERN_C int
+avs_videoinfo_sample_rate_get (const AVS_VideoInfo *p_vi)
+{
+  if (!p_vi)
+    return 0;
+  
+  return p_vi->p_vi_->GetSampleRate ();
+}
+
+EXTERN_C long long int
+avs_videoinfo_sample_count_get (const AVS_VideoInfo *p_vi)
+{
+  if (!p_vi)
+    return 0;
+  
+  return p_vi->p_vi_->GetSampleCount ();
+}
+
+EXTERN_C int
+avs_videoinfo_channel_count_get (const AVS_VideoInfo *p_vi)
+{
+  if (!p_vi)
+    return 0;
+  
+  return p_vi->p_vi_->GetChannelCount ();
 }

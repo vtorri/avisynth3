@@ -59,7 +59,7 @@ typedef enum
 
 AVS_C_API void avs_colorspace_delete (AVS_ColorSpace *p_cs);
 
-AVS_C_API ColorSpace_Id avs_colorspace_id_get (AVS_ColorSpace *p_cs);
+AVS_C_API ColorSpace_Id avs_colorspace_id_get (const AVS_ColorSpace *p_cs);
 
 
 #endif /* __COLORSPACE_C_H__ */

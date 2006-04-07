@@ -46,10 +46,15 @@
 typedef struct AVS_VideoFrame_ AVS_VideoFrame;
 
 
-AVS_C_API AVS_VideoFrame *avs_videoframe_new (void);
-AVS_C_API void            avs_videoframe_delete (AVS_VideoFrame *p_vf);
+AVS_C_API AVS_VideoFrame      *avs_videoframe_new (void);
+AVS_C_API void                 avs_videoframe_delete (AVS_VideoFrame *p_vf);
 
-AVS_C_API void avs_videoframe_plane_blit (AVS_VideoFrame *p_vf, char plane, unsigned char *ptr, int pitch);
+AVS_C_API int                  avs_videoframe_width_get (const AVS_VideoFrame *p_vf);
+AVS_C_API int                  avs_videoframe_height_get (const AVS_VideoFrame *p_vf);
+
+AVS_C_API const unsigned char *avs_videoframe_plane_get (const AVS_VideoFrame *p_vf, char plane);
+
+AVS_C_API void                 avs_videoframe_plane_blit (const AVS_VideoFrame *p_vf, char plane, unsigned char *ptr, int pitch);
 
 
 #endif /* __VIDEOFRAME_C_H__ */

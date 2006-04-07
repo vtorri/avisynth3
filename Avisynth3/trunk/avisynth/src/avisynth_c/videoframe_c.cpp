@@ -38,6 +38,7 @@
 
 // avisynth includes
 #include "../core/blitter.h"
+#include "../core/geometry/dimension.h"
 #include "../core/runtime_environment.h"
 
 // Destructor

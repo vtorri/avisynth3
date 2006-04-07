@@ -28,7 +28,6 @@
 #include "gstreamer/forward.h"                //for PPipeline
 #include "../../core/forward.h"               //for PImporter
 #include "../../clip/nochild.h"
-#include "../../gstreamer/buffer.h"           //for PBuffer
 #include "../../clip/framemaker/concrete.h"
 #include "../../gstreamer/signalhandler.h"
 

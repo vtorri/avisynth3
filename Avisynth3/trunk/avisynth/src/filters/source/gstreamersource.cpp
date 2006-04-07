@@ -36,7 +36,6 @@
 #include "../../core/videoinfo.h"
 #include "../../core/block/base.h"
 #include "../../gstreamer/bin.h"
-#include "../../gstreamer/buffer.h"
 #include "../../gstreamer/object.h"
 #include "../../gstreamer/element.h"
 #include "../../core/colorspace/importer.h"

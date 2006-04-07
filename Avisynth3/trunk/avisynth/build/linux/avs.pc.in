@@ -7,5 +7,5 @@ Name: @PACKAGE@
 Description: Frame Server for Linux and Windows
 Version: @VERSION@
 Libs: -L${libdir} -lavisynth
-Cflags: -I${includedir}/avs @STLPORT_CFLAGS@ @BOOST_CFLAGS@ @FREETYPE_CFLAGS@
+Cflags: -I${includedir}/@PACKAGE@-@VERSION@ @STLPORT_CFLAGS@ @BOOST_CFLAGS@ @FREETYPE_CFLAGS@
 

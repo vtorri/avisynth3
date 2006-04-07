@@ -52,6 +52,7 @@ RM = rm -rf
 ##############################################################################
 
 # Their Objects
+GST_OBJECTS  = $(GENERIC_GST_OBJECTS)
 BIN_OBJECTS  = $(GENERIC_BIN_OBJECTS)
 LIB_OBJECTS  = $(GENERIC_LIB_OBJECTS)
 ASM_OBJECTS  = $(ASSEMBLY_OBJECTS)
@@ -73,9 +74,9 @@ distfile=$(distdir).tar
 # The default rule
 #-----------------------------------------------------------------------------
 
-.SUFFIXES: .$(OBJECT_EXTENSION) .$(ASSEMBLY_EXTENSION) .cpp
+.SUFFIXES: .$(OBJECT_EXTENSION) .$(ASSEMBLY_EXTENSION) .cpp .c
 
-all: .depend $(PROG) $(STATIC_LIB) $(SHARED_LIB)
+all: $(GST_SINK_LIB) $(STATIC_LIB) $(SHARED_LIB) $(PROG)
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo " Avisynth has been successfully built."
@@ -111,14 +112,37 @@ $(BUILD_DIR):
 .cpp.$(OBJECT_EXTENSION):
 	@echo "  C: $(@D)/$(<F)"
 	@$(INSTALL) -d $(BUILD_DIR)/$(@D)
-	@$(CXX) -c $(ARCHITECTURE) $(BUS) $(ENDIANNESS) $(FEATURES) $(AVS3_DEBUG_CFLAGS) $(AVS3_CPPFLAGS) $(AVS3_CXXFLAGS) $(GTK_CFLAGS) $< -o $(BUILD_DIR)/$@
+	@$(CXX) -c $(ARCHITECTURE) $(BUS) $(ENDIANNESS) $(FEATURES) \
+	$(AVS3_DEBUG_CFLAGS) $(AVS3_CPPFLAGS) $(AVS3_CXXFLAGS) $< -o $(BUILD_DIR)/$@
 
+#-----------------------------------------------------------------------------
+# Generic C rule
+#-----------------------------------------------------------------------------
+
+.c.$(OBJECT_EXTENSION):
+	@echo "  C: $(@D)/$(<F)"
+	@$(INSTALL) -d $(BUILD_DIR)/$(@D)
+	@$(CC) -c $(ARCHITECTURE) $(BUS) $(ENDIANNESS) $(FEATURES) \
+	$(CFLAGS) $(GST_CFLAGS) $(GTK_CFLAGS) $(X264_CFLAGS) $< -o $(BUILD_DIR)/$@
+
+
+#-----------------------------------------------------------------------------
+# Gstreamer sink
+#-----------------------------------------------------------------------------
+
+$(GST_SINK_LIB): $(GST_OBJECTS)
+	@echo "  L: $(@F)"
+	@cd $(BUILD_DIR) && $(CC) $(LDFLAGS)  -o $(GST_SINK_LIB) $(GST_OBJECTS) $(GST_LIBS) $(SPECIFIC_LDFLAGS)
+	@echo "  D: $(HOME)/.gstreamer-0.10/plugins"
+	@$(INSTALL) -d $(HOME)/.gstreamer-0.10/plugins
+	@echo "  I: $(HOME)/.gstreamer-0.10/plugins/$(GST_SINK_LIB)"
+	@$(INSTALL) -m 755 $(BUILD_DIR)/$(GST_SINK_LIB) $(HOME)/.gstreamer-0.10/plugins/$(GST_SINK_LIB)
 
 #-----------------------------------------------------------------------------
 # Static Library
 #-----------------------------------------------------------------------------
 
-$(STATIC_LIB): $(LIB_OBJECTS) $(ASM_OBJECTS) $(SRC_LIB_GENERIC)
+$(STATIC_LIB): .depend $(LIB_OBJECTS) $(ASM_OBJECTS) $(SRC_LIB_GENERIC)
 	@echo "  L: $(@F)"
 	@cd $(BUILD_DIR) && ar rc $(@F) $(LIB_OBJECTS) $(ASM_OBJECTS) && $(RANLIB) $(@F)
 
@@ -137,7 +161,7 @@ $(STATIC_LIB): $(LIB_OBJECTS) $(ASM_OBJECTS) $(SRC_LIB_GENERIC)
 #      platforms
 #-----------------------------------------------------------------------------
 
-$(SHARED_LIB): $(LIB_OBJECTS) $(ASM_OBJECTS)
+$(SHARED_LIB): .depend $(LIB_OBJECTS) $(ASM_OBJECTS)
 	@echo "  L: $(@F)"
 	@$(INSTALL) -m 644 libavisynth.def $(BUILD_DIR)/libavisynth.def
 	@cd $(BUILD_DIR) && $(CXX) $(LDFLAGS) $(LIB_OBJECTS) $(ASM_OBJECTS) -o $(PRE_SHARED_LIB) $(SPECIFIC_LDFLAGS) $(AVS3_LIBS)
@@ -145,9 +169,9 @@ $(SHARED_LIB): $(LIB_OBJECTS) $(ASM_OBJECTS)
 #-----------------------------------------------------------------------------
 # Test program
 #-----------------------------------------------------------------------------
-$(PROG): $(STATIC_LIB) $(SHARED_LIB) $(BIN_OBJECTS)
+$(PROG): .depend $(BIN_OBJECTS) $(STATIC_LIB)
 	@echo "  P: $(@F)"
-	@cd $(BUILD_DIR) && $(CXX) -o $(PROG) $(GTK_LIBS) $(BIN_OBJECTS) $(STATIC_LIB) $(AVS3_LIBS) && chmod u+x $(PROG)
+	@cd $(BUILD_DIR) && $(CC) -o $(PROG) $(BIN_OBJECTS) $(AVS3_LIBS) $(STATIC_LIB) $(ASM_OBJECTS) $(GTK_LIBS) $(X264_LIBS)
 
 #-----------------------------------------------------------------------------
 # Installation

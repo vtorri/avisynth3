@@ -16,7 +16,7 @@ dnl ==========================================================================
 dnl Default initialization, install prefix and checks build type
 dnl ==========================================================================
 
-AC_INIT([Avisynth], [3.0], [http://forum.doom9.org])
+AC_INIT(Avisynth, 3.0, [http://forum.doom9.org])
 
 AC_PREFIX_DEFAULT("/usr/local")
 
@@ -28,7 +28,6 @@ dnl AC_CONFIG_SRCDIR([../../src/core.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 dnl Do not forget to increase that when needed.
-PACKAGE="avisynth"
 API_MAJOR="3"
 API_MINOR="0"
 VERSION="${API_MAJOR}.${API_MINOR}"
@@ -43,13 +42,18 @@ BOOST_VERSION_MINOR="33"
 BOOST_VERSION="${BOOST_VERSION_MAJOR}_${BOOST_VERSION_MINOR}"
 
 dnl Gstreamer version requirement
-GST_REQS=0.8.11
-GSTPLUG_REQS=0.8.11
+GST_REQS=0.10.1
+GSTPLUG_REQS=0.10.1
 
 dnl Gtk+ version requirement
 GTK_REQS=2.4
 
 dnl Default CFLAGS -- Big impact on overall speed
+our_cflags_defaults="-O2 -Wall"
+our_cflags_defaults="$our_cxxflags_defaults -fstrength-reduce"
+our_cflags_defaults="$our_cxxflags_defaults -finline-functions"
+our_cflags_defaults="$our_cxxflags_defaults -ffast-math"
+
 our_cxxflags_defaults="-O2 -Wall -Wno-non-virtual-dtor -fexceptions"
 our_cxxflags_defaults="$our_cxxflags_defaults -fstrength-reduce"
 our_cxxflags_defaults="$our_cxxflags_defaults -finline-functions"
@@ -127,12 +131,21 @@ dnl Check for the C compiler (could be passed on command line)
 dnl ==========================================================================
 
 dnl
-dnl First we test if CXXFLAGS have been passed on command line
+dnl First we test if CFLAGS/CXXFLAGS have been passed on command line
 dnl I do that because autoconf defaults (-g -O2) suck and they would kill
-dnl performance. To prevent that we define a good defult CXXFLAGS at the end
-dnl of the script if and only if CXXFLAGS has not been passed on the command
-dnl line
+dnl performance. To prevent that we define a good default CFLAGS/CXXFLAGS at
+dnl the end of the script if and only if CXXFLAGS has not been passed on the
+dnl command line
 dnl
+AC_MSG_CHECKING(whether to use default CFLAGS)
+if test  x"$CFLAGS" = x"" ; then
+   force_default_c_options="yes"
+   AC_MSG_RESULT([yes])
+else
+   force_default_c_options="no"
+   AC_MSG_RESULT([no])
+fi
+
 AC_MSG_CHECKING(whether to use default CXXFLAGS)
 if test  x"$CXXFLAGS" = x"" ; then
    force_default_cxx_options="yes"
@@ -142,10 +155,14 @@ else
    AC_MSG_RESULT([no])
 fi
 
-dnl Now we can safely check for the C++ compiler
+dnl Now we can safely check for the C compiler
+AC_PROG_CC([gcc])
+AC_PROG_CPP([gcc])
+
+dnl And the C++ compiler
 AC_LANG([C++])
-AC_PROG_CXX([${gpp}])
-AC_PROG_CXXCPP([${gpp}])
+AC_PROG_CXX([g++])
+AC_PROG_CXXCPP([g++])
 
 dnl ==========================================================================
 dnl Check for the visibility feature of GCC 4.0
@@ -172,6 +189,88 @@ dnl Check for the ranlib program to generate static library index
 dnl ==========================================================================
 
 AC_PROG_RANLIB
+
+dnl ==========================================================================
+dnl Check for the size of the standard types
+dnl
+dnl Standards says only: sizeof(char) <= sizeof(short) <= sizeof(int) <= sizeof(long) <= sizeof(long long)
+dnl ==========================================================================
+
+AC_CHECK_SIZEOF(char)
+AC_CHECK_SIZEOF(short)
+AC_CHECK_SIZEOF(long)
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(void *)
+AC_CHECK_SIZEOF(long long)
+AC_CHECK_SIZEOF(__int64)
+
+if ! test $ac_cv_sizeof_char = 1 ; then
+AC_MSG_ERROR(Size of type 'char' is not height bits)
+fi
+
+AINT8="char"
+
+case 2 in
+   $ac_cv_sizeof_short)
+   AINT16=short
+   ;;
+   $ac_cv_sizeof_int)
+   AINT16=int
+   ;;
+   $ac_cv_sizeof_long)
+   AINT16=long
+   ;;
+   $ac_cv_sizeof_long_long)
+   AINT16='long long'
+   ;;
+   *)
+   AC_MSG_ERROR(No type of size 16 bits found)
+   ;;
+esac
+
+case 4 in
+   $ac_cv_sizeof_short)
+   AINT32=short
+   ;;
+   $ac_cv_sizeof_int)
+   AINT32=int
+   ;;
+   $ac_cv_sizeof_long)
+   AINT32=long
+   ;;
+   $ac_cv_sizeof_long_long)
+   AINT32='long long'
+   ;;
+   *)
+   AC_MSG_ERROR(No type of size 32 bits found)
+   ;;
+esac
+
+case 8 in
+   $ac_cv_sizeof_int)
+   AINT64=int
+   ;;
+   $ac_cv_sizeof_long)
+   AINT64=long
+   ;;
+   $ac_cv_sizeof_long_long)
+   AINT64='long long'
+   ;;
+   $ac_cv_sizeof___int64)
+   AINT64='__int64'
+   ;;
+   *)
+   AC_MSG_ERROR(No type of size 64 bits found)
+   ;;
+esac
+
+APOINTER="void *"
+
+AC_SUBST(AINT8)
+AC_SUBST(AINT16)
+AC_SUBST(AINT32)
+AC_SUBST(AINT64)
+AC_SUBST(APOINTER)
 
 dnl ==========================================================================
 dnl
@@ -553,7 +652,7 @@ dnl ==========================================================================
 dnl Gstreamer header and library files
 dnl ==========================================================================
 
-GST_MAJORMINOR=0.8
+GST_MAJORMINOR=0.10
 PKG_CHECK_MODULES(
    [GST],
    [gstreamer-$GST_MAJORMINOR >= $GST_REQS],
@@ -562,7 +661,7 @@ PKG_CHECK_MODULES(
 
 PKG_CHECK_MODULES(
    [GSTPLUG],
-   [gstreamer-interfaces-$GST_MAJORMINOR >= $GSTPLUG_REQS],
+   [gstreamer-plugins-base-$GST_MAJORMINOR >= $GSTPLUG_REQS],
    [HAVE_GSTPLUG="yes"],
    [HAVE_GSTPLUG="no"])
 
@@ -579,6 +678,11 @@ case "$target_os" in
    ;;
 esac
 
+dnl HAVE_GSTPLUG="yes" implies HAVE_GSTREAMER="yes"
+if test "x${HAVE_GSTPLUG}" = "xyes" ; then
+   GST_SINK_LIB="gstavs3sink.${SHARED_EXTENSION}"
+fi
+
 dnl ==========================================================================
 dnl FREETYPE header and library files
 dnl ==========================================================================
@@ -590,11 +694,11 @@ AC_ARG_WITH(
    [
     FREETYPE_CONFIG=${withval}
     AC_CHECK_PROG(
-       [FREETYPE_CONFIG_IN_PATH],
-       [${FREETYPE_CONFIG}],
-       [yes],
-       [no])
-    if test ${FREETYPE_CONFIG_IN_PATH} = no ; then
+       FREETYPE_CONFIG_IN_PATH,
+       ${FREETYPE_CONFIG},
+       yes,
+       no)
+    if test "${FREETYPE_CONFIG_IN_PATH}" = "no" ; then
        echo "ERROR:"
        echo "The freetype-config development script you specified:"
        echo "${FREETYPE_CONFIG}"
@@ -638,7 +742,7 @@ HAVE_GTK="no"
 GTK_MAJORMINOR=2.0
 PKG_CHECK_MODULES(
    [GTK],
-   [gtk+-$GTK_MAJORMINOR >= $GTK_REQS],
+   [gtk+-$GTK_MAJORMINOR >= $GTK_REQS gthread-$GTK_MAJORMINOR],
    [HAVE_GTK="yes"],
    [HAVE_GTK="no"])
 
@@ -653,10 +757,24 @@ case "$target_os" in
 esac
 
 dnl ==========================================================================
+dnl x264 header and library files
+dnl ==========================================================================
+
+PKG_CHECK_MODULES(
+   [X264],
+   [x264],
+   [HAVE_X264="yes"],
+   [HAVE_X264="no"])
+
+dnl ==========================================================================
 dnl
-dnl Now we can set CXXFLAGS if needed
+dnl Now we can set CFLAS/CXXFLAGS if needed
 dnl
 dnl ==========================================================================
+
+if test "$force_default_c_options" = "yes" ; then
+   CFLAGS="$our_cflags_defaults"
+fi
 
 if test "$force_default_cxx_options" = "yes" ; then
    CXXFLAGS="$our_cxxflags_defaults"
@@ -683,6 +801,7 @@ dnl SOURCES
 dnl
 dnl ==========================================================================
 
+GENERIC_GST_SOURCES="SRC_GST_GENERIC"
 GENERIC_BIN_SOURCES="SRC_BIN_GENERIC"
 GENERIC_LIB_SOURCES="SRC_LIB_GENERIC"
 
@@ -704,8 +823,10 @@ AC_SUBST(AFLAGS)
 AC_SUBST(ASSEMBLY_EXTENSION)
 AC_SUBST(GENERIC_SOURCES)
 AC_SUBST(ASSEMBLY_SOURCES)
+AC_SUBST(CC)
 AC_SUBST(CXX)
 AC_SUBST(LDFLAGS)
+AC_SUBST(CFLAGS)
 AC_SUBST(CXXFLAGS)
 AC_SUBST(SPECIFIC_CFLAGS)
 AC_SUBST(SPECIFIC_LDFLAGS)
@@ -715,15 +836,16 @@ AC_SUBST(CORE_DEBUG_MODE_CFLAGS)
 AC_SUBST(INSTALL)
 AC_SUBST(LN_S)
 AC_SUBST(RANLIB)
-AC_SUBST(PACKAGE)
 AC_SUBST(API_MAJOR)
 AC_SUBST(API_MINOR)
 AC_SUBST(VERSION)
 AC_SUBST(STATIC_LIB)
 AC_SUBST(PRE_SHARED_LIB)
 AC_SUBST(SHARED_LIB)
+AC_SUBST(GENERIC_GST_SOURCES)
 AC_SUBST(GENERIC_BIN_SOURCES)
 AC_SUBST(GENERIC_LIB_SOURCES)
+AC_SUBST(GST_SINK_LIB)
 AC_SUBST(PROG)
 
 AC_SUBST(exec_prefix)
@@ -739,6 +861,7 @@ dnl
 dnl ==========================================================================
 
 AC_CONFIG_FILES([config.h])
+AC_CONFIG_FILES([avs3_config.h])
 AC_CONFIG_FILES([platform.inc])
 AC_CONFIG_FILES([gen_sources.sh],
                 [chmod +x gen_sources.sh && ./gen_sources.sh])
@@ -751,12 +874,12 @@ AC_OUTPUT
 
 echo
 echo "------------------------------------------------------------------------"
-echo " $PACKAGE $VERSION"
+echo " $PACKAGE_NAME $VERSION"
 echo "------------------------------------------------------------------------"
 echo
 echo " OS..................: $target_os"
 echo
-echo " Visibility feature..: $have_visibility"
+echo " Visibility feature..: $HAVE_VISIBILITY"
 echo " Core debug mode.....: $core_debug_mode"
 echo " ASM support.........: $assembly"
 echo
@@ -765,6 +888,8 @@ echo "    Gst-Plugin.......: $HAVE_GSTPLUG"
 echo "    Gst-FFmpeg.......: $HAVE_GSTFFMPEG"
 echo
 echo " Gtk+................: $HAVE_GTK"
+echo
+echo " x264................: $HAVE_X264"
 echo
 echo
 echo " Install path........: $prefix"

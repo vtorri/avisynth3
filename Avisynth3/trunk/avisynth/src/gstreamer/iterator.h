@@ -21,48 +21,50 @@
 // General Public License cover the whole combination.
 
 
-#ifndef __AVS_GSTREAMER_SIGNALHANDLER_H__
-#define __AVS_GSTREAMER_SIGNALHANDLER_H__
+#ifndef __AVS_GSTREAMER_ITERATOR_H__
+#define __AVS_GSTREAMER_ITERATOR_H__
 
-//avs include
-#include "forward.h"                 //for Object declaration
+//avisynth include
+#include "forward.h"             //for Element, Pad declarations
 
-//boost include
-#include <boost/noncopyable.hpp>
-
+//gstreamer include
+#include <gst/gstiterator.h>
+#include <gst/gstelement.h>        //for gst_element_iterate_src_pads
 
 
 namespace avs { namespace gstreamer {
 
 
-
-///////////////////////////////////////////////////////////////////////////////////////////
-//  SignalHandler
-//
-//  RAII wrapper that makes sure connected signals are disconnected
-//
-class SignalHandler : public boost::noncopyable
+ 
+class Iterator
 {
 
-  Object * target_;
-  unsigned long signalId_;
+  GstIterator *iterator_;
+  Pad *pad_;
 
-  static unsigned long Connect(Object * target, char const * signalName, void (*callBack)(), void * data);
+public:  //declared but not implemented
+
+  Iterator(GstIterator *iterator) { iterator_ = iterator; }
+  ~Iterator() { gst_iterator_free( iterator_ ); }
 
 
-public:  //structors
+public:  //iterate method
 
-  template <typename CallBack>
-  SignalHandler(Object * target, char const * signalName, CallBack callBack, void * data)
-    : target_( target )
-    , signalId_( Connect(target, signalName, reinterpret_cast<void (*)()>(callBack), data) ) { }
-  
-  ~SignalHandler();
+  bool Next();
 
 
 public:  //access
 
-  Object * GetTarget() const { return target_; }
+  GstIterator * GetIterator() { return iterator_; }
+
+  Pad * GetPad() { return pad_; }
+
+
+public:  //factory method
+
+  void SetIterator(GstIterator *iterator);
+
+  static PIterator Create(Element& element);
 
 };
 
@@ -70,4 +72,4 @@ public:  //access
 
 } } //namespace avs::gstreamer
 
-#endif //__AVS_GSTREAMER_SIGNALHANDLER_H__
+#endif //__AVS_GSTREAMER_ITERATOR_H__

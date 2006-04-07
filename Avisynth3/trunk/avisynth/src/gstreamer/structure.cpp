@@ -32,6 +32,12 @@
 //assert include
 #include <assert.h>
 
+//boost includes
+#include <boost/rational.hpp>     //so Fraction typedef is defined
+
+//gstreamer include
+#include <gst/gstvalue.h>
+
 
 namespace avs { namespace gstreamer {
 
@@ -59,17 +65,6 @@ bool Structure::GetBoolField(char const * name) const
 }
 
 
-double Structure::GetDoubleField(char const * name) const
-{
-  double result;
-
-  bool success = gst_structure_get_double(const_cast<Structure *>(this), name, &result) != 0;
-  assert( success );
-
-  return result;
-}
-
-
 unsigned long Structure::GetFourCCField(char const * name) const
 {
   guint32 result;
@@ -78,6 +73,15 @@ unsigned long Structure::GetFourCCField(char const * name) const
   assert( success );
 
   return result;
+}
+
+
+Fraction Structure::GetFractionField(char const * name) const
+{
+  const GValue *val = gst_structure_get_value (const_cast<Structure *>(this), name);
+  assert( val );
+
+  return Fraction( gst_value_get_fraction_numerator (val), gst_value_get_fraction_denominator (val) );
 }
 
 

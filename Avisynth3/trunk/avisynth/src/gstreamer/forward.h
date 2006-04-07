@@ -27,6 +27,7 @@
 
 //declaration of shared_ptr
 namespace boost { template <typename T> class shared_ptr; }
+namespace boost { template <class T> class intrusive_ptr; }
 
 
 namespace avs { namespace gstreamer {
@@ -35,9 +36,11 @@ namespace avs { namespace gstreamer {
 //declarations
 class Bin;
 class Pad;
+class Buffer;
 class Object;
 class Element;
 class Pipeline;
+class Iterator;
 class Structure;
 
 namespace structure {
@@ -48,6 +51,9 @@ class Audio;
 } //namespace structure
 
 //typedefs
+typedef boost::intrusive_ptr<Buffer> PBuffer;
+typedef boost::shared_ptr<Iterator> PIterator;
+typedef boost::shared_ptr<Pipeline> PPipeline;
 typedef boost::shared_ptr<Structure> PStructure;
 
 

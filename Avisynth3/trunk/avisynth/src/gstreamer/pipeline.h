@@ -26,9 +26,13 @@
 
 //avisynth include
 #include "forward.h"                //for Bin, Element, PPipeline
+#include "../core/integer.h"       //for uint64
 
 //boost include
 #include <boost/shared_ptr.hpp>
+
+//stl include
+#include <string>
 
 //gstreamer include
 #include <gst/gstpipeline.h>

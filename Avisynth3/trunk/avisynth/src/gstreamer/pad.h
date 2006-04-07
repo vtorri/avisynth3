@@ -27,6 +27,7 @@
 //avisynth includes
 #include "object.h"
 #include "forward.h"                 //for PStructure typedef
+#include "../core/integer.h"         //for int64
 
 //boost include
 #include <boost/shared_ptr.hpp>      //so PStructure is defined
@@ -55,14 +56,19 @@ private:  //declared but not implemented
 
 public:  //link/unlink
 
-  bool Link(Pad& sink) { return gst_pad_link(this, &sink) != 0; }
+  void Link(Pad& sink);
   void Unlink(Pad& sink) { gst_pad_unlink(this, &sink); }
 
 
 public:
 
   PStructure GetStructure();
-  PStructure GetNegotiatedStructure();
+
+  int64 QueryTotal();
+
+  bool CheckStream(char *stream_type);
+
+  Element& GetPeerElement ();
 
 
 public:  //cast

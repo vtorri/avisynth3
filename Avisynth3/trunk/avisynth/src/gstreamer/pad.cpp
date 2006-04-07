@@ -29,12 +29,15 @@
 //avisynth includes
 #include "pad.h"
 #include "structure.h"
+#include "element.h"
+#include "../core/exception/generic.h"
 
 //assert include
 #include <assert.h>
 
 //gstreamer include
 #include <gst/gstcaps.h>
+#include <gst/gstutils.h>
 
 
 namespace avs { namespace gstreamer {
@@ -52,7 +55,7 @@ struct StructureDestructor
 
   void operator()(Structure * structure) const
   {
-    gst_caps_free(caps_);
+    gst_caps_unref( caps_ );
   }
 };
 
@@ -69,11 +72,44 @@ PStructure Pad::GetStructure()
 }
 
 
-PStructure Pad::GetNegotiatedStructure()
+void Pad::Link(Pad& sink)
 {
-  G_CONST_RETURN GstCaps * caps = gst_pad_get_negotiated_caps(this);
+  if ( GST_PAD_LINK_FAILED( gst_pad_link(this, &sink) ) )
+    throw exception::Generic( "Gstreamer: can not link pads" );
+}
 
-  return PStructure( static_cast<Structure *>(gst_caps_get_structure(caps, 0)), std::identity<void *>() );
+
+int64 Pad::QueryTotal()
+{
+  GstQuery *query;
+      
+  query = gst_query_new_duration( GST_FORMAT_TIME );
+  if ( !gst_pad_query( this, query ) )
+    throw exception::Generic( "Gstreamer: can not query the length of the video pipeline" );
+  int64 duration;
+  gst_query_parse_duration( query, NULL, &duration );
+  gst_query_unref( query );
+
+  return duration;
+}
+
+
+bool Pad::CheckStream(char *stream_type)
+{
+  GstCaps * caps = gst_pad_get_caps(this);
+  char * str = gst_caps_to_string( caps );
+  bool res = g_str_has_prefix( str, stream_type ) != 0;
+  g_free( str );
+  gst_caps_unref( caps );
+
+  return res;
+}
+
+
+Element& Pad::GetPeerElement()
+{
+  GstPad *pad = gst_pad_get_peer( this );
+  return *static_cast<Element *>( gst_pad_get_parent_element( pad ) );
 }
 
 

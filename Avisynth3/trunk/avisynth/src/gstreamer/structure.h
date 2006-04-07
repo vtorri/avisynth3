@@ -24,6 +24,9 @@
 #ifndef __AVS_GSTREAMER_STRUCTURE_H__
 #define __AVS_GSTREAMER_STRUCTURE_H__
 
+//avisynth include
+#include "../core/forward.h"     //for Fraction
+
 //gstreamer includes
 #include <gst/gststructure.h>
 
@@ -56,8 +59,8 @@ public:  //access
   //get field methods
   int GetIntField(char const * name) const;
   bool GetBoolField(char const * name) const;
-  double GetDoubleField(char const * name) const;
   unsigned long GetFourCCField(char const * name) const;
+  Fraction GetFractionField(char const * name) const;
 
 };
 

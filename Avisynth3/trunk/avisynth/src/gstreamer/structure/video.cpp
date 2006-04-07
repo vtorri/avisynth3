@@ -77,12 +77,10 @@ PImporter Video::SetVideoInfo(VideoInfo& vi) const
 {
   PImporter importer = GetImporter();
 
-  g_message ("set videoinfo\n");
-
   vi.AddVideo( importer->GetColorSpace()
              , Dimension(GetIntField("width"), GetIntField("height"))
              , 0
-             , Fraction( static_cast<long>(GetDoubleField("framerate") * 1000000), 1000000 )
+             , Fraction( GetFractionField("framerate"))
              );
 
   return importer;
@@ -94,15 +92,15 @@ PImporter Video::SetVideoInfo(VideoInfo& vi) const
 PImporter Video::GetImporter() const
 {
   std::string name = GetName();
-  
+
   if ( name == "video/x-raw-rgb" )
     switch ( GetIntField("bpp") )
     {
     case 24: return rgb24.Get();
     case 32: return rgb32.Get();
     default: break;
-    }   
-    
+    }
+
   if ( name == "video/x-raw-yuv" )
     switch ( GetFourCCField("format") )
 	  {

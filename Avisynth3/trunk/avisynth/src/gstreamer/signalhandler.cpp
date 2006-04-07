@@ -37,16 +37,23 @@
 namespace avs { namespace gstreamer {
 
 
-unsigned long SignalHandler::Connect(Object& target, char const * signalName, void (*callBack)(), void * data)
+unsigned long SignalHandler::Connect(Object * target, char const * signalName, void (*callBack)(), void * data)
 {
-  return g_signal_connect(&target, signalName, callBack, data);
+  if (!target) {
+    return 0;
+  }
+  else {
+    return g_signal_connect(G_OBJECT(target), signalName, callBack, data);
+  }
 }
 
 
 SignalHandler::~SignalHandler()
 {
-  if ( g_signal_handler_is_connected(&target_, signalId_) != 0 )
-    g_signal_handler_disconnect(&target_, signalId_);
+  if (target_) {
+    if ( g_signal_handler_is_connected(G_OBJECT(target_), signalId_) != 0 )
+      g_signal_handler_disconnect(G_OBJECT(target_), signalId_);
+  }
 }
 
 

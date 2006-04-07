@@ -31,6 +31,7 @@
 #include "object.h"
 #include "element.h"
 #include "pipeline.h"
+#include "../core/exception/generic.h"
 
 //assert include
 #include <assert.h>
@@ -43,6 +44,21 @@ namespace avs { namespace gstreamer {
 Pad * Element::GetPad(char const * name)
 { 
   return static_cast<Pad *>( gst_element_get_pad(this, name) ); 
+}
+
+
+int64 Element::QueryTotal()
+{
+  GstQuery *query;
+      
+  query = gst_query_new_duration( GST_FORMAT_TIME );
+  if ( !gst_pad_query( GetPad( "sink" ), query ) )
+    throw exception::Generic( "Gstreamer: can not query the length of the video pipeline" );
+  int64 duration;
+  gst_query_parse_duration( query, NULL, &duration );
+  gst_query_unref( query );
+
+  return duration;
 }
 
 
@@ -64,6 +80,17 @@ Element * Element::Create(char const * type, char const * name)
   GstElement * result = gst_element_factory_make(type, name);   
   assert( result != NULL );
   return static_cast<Element *>(result);
+}
+
+
+void Element::ChangeState(GstState state)
+{
+  GstStateChangeReturn res = gst_element_set_state( this, state );
+  if (res == GST_STATE_CHANGE_FAILURE)
+    throw exception::Generic( "Gstreamer: can not pause" );
+  res = gst_element_get_state( this, NULL, NULL, GST_CLOCK_TIME_NONE );
+  if (res != GST_STATE_CHANGE_SUCCESS)
+    throw exception::Generic( "Gstreamer: can not complete pause" );
 }
 
 

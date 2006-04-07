@@ -30,6 +30,7 @@
 
 //gstreamer include
 #include <gst/gstelement.h>
+#include <gst/gstutils.h>        //for gst_element_link
 
 
 namespace avs { namespace gstreamer {
@@ -55,22 +56,31 @@ public:  //link
   bool Link(Element& target) { return gst_element_link(this, &target) != 0; }
 
 
+public:  //seek method
+
+  bool Seek(uint64 time) { g_print ("time (seek) : %lld\n", time);
+    return gst_element_seek( this,
+                                                    1.0,
+                                                    GST_FORMAT_TIME,
+                                                    (GstSeekFlags)(GST_SEEK_FLAG_ACCURATE | GST_SEEK_FLAG_FLUSH),
+                                                    GST_SEEK_TYPE_CUR,
+                                                    time,
+                                                    GST_SEEK_TYPE_NONE,
+                                                    -1) != 0; }
+
+
 public:  //state stuff
 
-  void SetStateNull() { gst_element_set_state( this, GST_STATE_NULL ); }
-  void SetStateReady() { gst_element_set_state( this, GST_STATE_READY ); }
-  void SetStatePaused() { gst_element_set_state( this, GST_STATE_PAUSED ); }
-  void SetStatePlaying() { gst_element_set_state( this, GST_STATE_PLAYING ); }
+  void SetStateNull() { ChangeState( GST_STATE_NULL ); }
+  void SetStateReady() { ChangeState( GST_STATE_READY ); }
+  void SetStatePaused() { ChangeState( GST_STATE_PAUSED ); }
+  void SetStatePlaying() { ChangeState( GST_STATE_PLAYING ); }
+  void SetSimpleStatePaused() { gst_element_set_state( this, GST_STATE_PAUSED ); }
 
 
 public:
 
-  bool Seek(GstSeekType type, int64 time) { return gst_element_seek(this, type, time) != 0; }
-
-  bool QueryTotal(GstFormat fmt, int64& result)
-  {
-    return gst_element_query(this, GST_QUERY_TOTAL, &fmt, &result) != 0;
-  }
+  int64 QueryTotal();
 
 
 public:  //casts
@@ -83,6 +93,11 @@ public:  //casts
 public:  //factory method
 
   static Element * Create(char const * type, char const * name);
+
+
+private:  //factory method
+
+  void ChangeState(GstState state);
 
 };
 

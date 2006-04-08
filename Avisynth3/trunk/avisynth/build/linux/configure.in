@@ -191,88 +191,6 @@ dnl ==========================================================================
 AC_PROG_RANLIB
 
 dnl ==========================================================================
-dnl Check for the size of the standard types
-dnl
-dnl Standards says only: sizeof(char) <= sizeof(short) <= sizeof(int) <= sizeof(long) <= sizeof(long long)
-dnl ==========================================================================
-
-AC_CHECK_SIZEOF(char)
-AC_CHECK_SIZEOF(short)
-AC_CHECK_SIZEOF(long)
-AC_CHECK_SIZEOF(int)
-AC_CHECK_SIZEOF(void *)
-AC_CHECK_SIZEOF(long long)
-AC_CHECK_SIZEOF(__int64)
-
-if ! test $ac_cv_sizeof_char = 1 ; then
-AC_MSG_ERROR(Size of type 'char' is not height bits)
-fi
-
-AINT8="char"
-
-case 2 in
-   $ac_cv_sizeof_short)
-   AINT16=short
-   ;;
-   $ac_cv_sizeof_int)
-   AINT16=int
-   ;;
-   $ac_cv_sizeof_long)
-   AINT16=long
-   ;;
-   $ac_cv_sizeof_long_long)
-   AINT16='long long'
-   ;;
-   *)
-   AC_MSG_ERROR(No type of size 16 bits found)
-   ;;
-esac
-
-case 4 in
-   $ac_cv_sizeof_short)
-   AINT32=short
-   ;;
-   $ac_cv_sizeof_int)
-   AINT32=int
-   ;;
-   $ac_cv_sizeof_long)
-   AINT32=long
-   ;;
-   $ac_cv_sizeof_long_long)
-   AINT32='long long'
-   ;;
-   *)
-   AC_MSG_ERROR(No type of size 32 bits found)
-   ;;
-esac
-
-case 8 in
-   $ac_cv_sizeof_int)
-   AINT64=int
-   ;;
-   $ac_cv_sizeof_long)
-   AINT64=long
-   ;;
-   $ac_cv_sizeof_long_long)
-   AINT64='long long'
-   ;;
-   $ac_cv_sizeof___int64)
-   AINT64='__int64'
-   ;;
-   *)
-   AC_MSG_ERROR(No type of size 64 bits found)
-   ;;
-esac
-
-APOINTER="void *"
-
-AC_SUBST(AINT8)
-AC_SUBST(AINT16)
-AC_SUBST(AINT32)
-AC_SUBST(AINT64)
-AC_SUBST(APOINTER)
-
-dnl ==========================================================================
 dnl
 dnl This part looks for:
 dnl
@@ -861,7 +779,6 @@ dnl
 dnl ==========================================================================
 
 AC_CONFIG_FILES([config.h])
-AC_CONFIG_FILES([avs3_config.h])
 AC_CONFIG_FILES([platform.inc])
 AC_CONFIG_FILES([gen_sources.sh],
                 [chmod +x gen_sources.sh && ./gen_sources.sh])

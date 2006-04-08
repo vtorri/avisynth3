@@ -50,7 +50,8 @@ avs3_open (Avs3_Data *data)
                                        "open");
     gtk_statusbar_push (GTK_STATUSBAR (data->status), data->id, "Opening file...");
 
-    data->thread = g_thread_create ((GThreadFunc)_open_script, data, FALSE, NULL);
+    _open_script (data);
+/*     data->thread = g_thread_create ((GThreadFunc)_open_script, data, FALSE, NULL); */
     break;
   }
   case GTK_RESPONSE_CANCEL:

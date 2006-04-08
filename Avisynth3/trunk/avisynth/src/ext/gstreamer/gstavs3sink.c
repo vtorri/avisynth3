@@ -240,12 +240,17 @@ gst_avs3_sink_preroll (GstBaseSink * bsink, GstBuffer * buffer)
   GST_OBJECT_LOCK (sink);
 
   g_print ("Timestamp    : %lld\n", GST_BUFFER_TIMESTAMP (buffer));
+  g_print ("Stream time  : %lld\n",
+           gst_segment_to_stream_time (&bsink->segment,
+                                       GST_FORMAT_TIME,
+                                       GST_BUFFER_TIMESTAMP (buffer)));
   g_print ("seek to      : %lld\n", (GST_SECOND * sink->frame_nbr * sink->fps_den) / sink->fps_num);
 
   if (GST_BUFFER_TIMESTAMP_IS_VALID (buffer) &&
       ((GST_BUFFER_TIMESTAMP (buffer) * sink->fps_num) >= (GST_SECOND * sink->frame_nbr * sink->fps_den))) {
     /* we do not own the buffer */
-    gst_buffer_unref (sink->buffer);
+/*     if (sink->buffer) */
+/*       gst_buffer_unref (sink->buffer); */
     sink->buffer = buffer;
     sink->got_buffer = TRUE;
   }
@@ -300,9 +305,9 @@ plugin_init (GstPlugin * plugin)
 }
 
 GST_PLUGIN_DEFINE (0,
-    1,
+    10,
     "avs3sink",
     "sink plugin for Avisynth 3.0",
-    plugin_init, "0.1", "GPL", PACKAGE, "http://avisynth3.unite-video.com/");
+    plugin_init, "0.10", "GPL", PACKAGE, "http://avisynth3.unite-video.com/");
 
 /* <wtay> take the segment info,send flush start/stop on the basesink sinkpad, send a newsegment with the saved segment info*/

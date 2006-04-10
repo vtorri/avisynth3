@@ -182,7 +182,7 @@ gst_avs3_sink_seek (GstAvs3Sink * sink, guint frame_nbr, GstBuffer **buffer)
                     1.0,
                     GST_FORMAT_TIME,
                     (GstSeekFlags)(GST_SEEK_FLAG_ACCURATE | GST_SEEK_FLAG_FLUSH),
-                    GST_SEEK_TYPE_CUR,
+                    GST_SEEK_TYPE_SET,
                     time,
                     GST_SEEK_TYPE_NONE,
                     -1);

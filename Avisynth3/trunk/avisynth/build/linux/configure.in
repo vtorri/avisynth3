@@ -578,6 +578,12 @@ PKG_CHECK_MODULES(
    [HAVE_GSTREAMER="no"])
 
 PKG_CHECK_MODULES(
+   [GSTBASE],
+   [gstreamer-$GST_MAJORMINOR >= $GST_REQS gstreamer-base-$GST_MAJORMINOR >= $GST_REQS],
+   [HAVE_GSTREAMER="yes"],
+   [HAVE_GSTREAMER="no"])
+
+PKG_CHECK_MODULES(
    [GSTPLUG],
    [gstreamer-plugins-base-$GST_MAJORMINOR >= $GSTPLUG_REQS],
    [HAVE_GSTPLUG="yes"],
@@ -595,6 +601,9 @@ case "$target_os" in
       fi
    ;;
 esac
+
+dnl Determine the path to install gstreamer plugins
+PKG_GET_VARIABLE([GST_PLUGIN_PATH], [pluginsdir], [gstreamer-$GST_MAJORMINOR])
 
 dnl HAVE_GSTPLUG="yes" implies HAVE_GSTREAMER="yes"
 if test "x${HAVE_GSTPLUG}" = "xyes" ; then
@@ -814,6 +823,7 @@ echo "   binaries..........: $bindir"
 echo "   libraries.........: ${libdir}"
 echo "   headers...........: ${includedir}/avisynth-3.0"
 echo "   data..............: ${datadir}/avisynth-3.0"
+echo "   gst-plugins.......: $GST_PLUGIN_PATH"
 echo
 echo " Compilation.........: make"
 echo " Installation........: make install"

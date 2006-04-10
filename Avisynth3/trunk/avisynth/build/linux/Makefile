@@ -132,11 +132,7 @@ $(BUILD_DIR):
 
 $(GST_SINK_LIB): $(GST_OBJECTS)
 	@echo "  L: $(@F)"
-	@cd $(BUILD_DIR) && $(CC) $(LDFLAGS)  -o $(GST_SINK_LIB) $(GST_OBJECTS) $(GST_LIBS) $(SPECIFIC_LDFLAGS)
-	@echo "  D: $(HOME)/.gstreamer-0.10/plugins"
-	@$(INSTALL) -d $(HOME)/.gstreamer-0.10/plugins
-	@echo "  I: $(HOME)/.gstreamer-0.10/plugins/$(GST_SINK_LIB)"
-	@$(INSTALL) -m 755 $(BUILD_DIR)/$(GST_SINK_LIB) $(HOME)/.gstreamer-0.10/plugins/$(GST_SINK_LIB)
+	@cd $(BUILD_DIR) && $(CC) $(LDFLAGS)  -o $(GST_SINK_LIB) $(GST_OBJECTS) $(GSTBASE_LIBS) $(SPECIFIC_LDFLAGS)
 
 #-----------------------------------------------------------------------------
 # Static Library
@@ -177,23 +173,23 @@ $(PROG): .depend $(BIN_OBJECTS) $(STATIC_LIB)
 # Installation
 #-----------------------------------------------------------------------------
 
-install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB) $(BUILD_DIR)/$(PROG)
-	@echo "  D: $(bindir)"
-	@$(INSTALL) -d $(DEST_DIR)$(bindir)
-	@echo "  I: $(bindir)/$(BIN_OBJECT)"
-	@$(INSTALL) -m 755 $(BUILD_DIR)/$(PROG) $(DEST_DIR)$(bindir)/$(PROG)
-	@echo "  D: $(libdir)"
-	@$(INSTALL) -d $(libdir)
-	@echo "  I: $(libdir)/$(SHARED_LIB)"
-	@$(INSTALL) -m 644 $(BUILD_DIR)/$(SHARED_LIB) $(DEST_DIR)$(libdir)/$(SHARED_LIB)
-	@echo "  I: $(libdir)/libavisynth.$(SHARED_EXTENSION).$(API_MAJOR)"
-	@$(LN_S) -f $(DEST_DIR)$(libdir)/$(SHARED_LIB) $(DEST_DIR)$(libdir)/libavisynth.$(SHARED_EXTENSION).$(API_MAJOR)
-	@echo "  I: $(libdir)/libavisynth.$(SHARED_EXTENSION)"
-	@$(LN_S) -f $(DEST_DIR)$(libdir)/$(SHARED_LIB) $(DEST_DIR)$(libdir)/libavisynth.$(SHARED_EXTENSION)
-	@echo "  I: $(libdir)/$(STATIC_LIB)"
-	@$(INSTALL) -m 644 $(BUILD_DIR)/$(STATIC_LIB) $(DEST_DIR)$(libdir)/$(STATIC_LIB)
-	@echo "  D: $(includedir)"
-	@$(INSTALL) -d $(DEST_DIR)$(includedir)
+install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB) $(BUILD_DIR)/$(PROG) $(BUILD_DIR)/$(GST_SINK_LIB)
+	@echo "  D: $(DESTDIR)$(bindir)"
+	@$(INSTALL) -d $(DESTDIR)$(bindir)
+	@echo "  I: $(DESTDIR)$(bindir)/$(BIN_OBJECT)"
+	@$(INSTALL) -m 755 $(BUILD_DIR)/$(PROG) $(DESTDIR)$(bindir)/$(PROG)
+	@echo "  D: $(DESTDIR)$(libdir)"
+	@$(INSTALL) -d $(DESTDIR)$(libdir)
+	@echo "  I: $(DESTDIR)$(libdir)/$(SHARED_LIB)"
+	@$(INSTALL) -m 644 $(BUILD_DIR)/$(SHARED_LIB) $(DESTDIR)$(libdir)/$(SHARED_LIB)
+	@echo "  I: $(DESTDIR)$(libdir)/libavisynth.$(SHARED_EXTENSION).$(API_MAJOR)"
+	@$(LN_S) -f $(libdir)/$(SHARED_LIB) $(DESTDIR)$(libdir)/libavisynth.$(SHARED_EXTENSION).$(API_MAJOR)
+	@echo "  I: $(DESTDIR)$(libdir)/libavisynth.$(SHARED_EXTENSION)"
+	@$(LN_S) -f $(libdir)/$(SHARED_LIB) $(DESTDIR)$(libdir)/libavisynth.$(SHARED_EXTENSION)
+	@echo "  I: $(DESTDIR)$(libdir)/$(STATIC_LIB)"
+	@$(INSTALL) -m 644 $(BUILD_DIR)/$(STATIC_LIB) $(DESTDIR)$(libdir)/$(STATIC_LIB)
+	@echo "  D: $(DESTDIR)$(includedir)"
+	@$(INSTALL) -d $(DESTDIR)$(includedir)
 	@cd $(SRC_DIR) && \
 	find . -name '*.h' | while read i; do \
 	  filename="`echo $$i | sed 's:^\./::'`"; \
@@ -202,21 +198,25 @@ install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB) $(BUILD_DIR)/$(PR
 	    dir=""; \
 	  fi; \
 	  if test "$$dir" != "avisynth_c/private"; then \
-	    install -d $(includedir)/$$dir; \
-	    echo "  I: $(includedir)/$$filename"; \
+	    install -d $(DESTDIR)$(includedir)/$$dir; \
+	    echo "  I: $(DESTDIR)$(includedir)/$$filename"; \
 	    if test "$$filename" = "core.h" ; then \
-	      install -m 644 $$filename $(includedir)/avisynth.h; \
+	      install -m 644 $$filename $(DESTDIR)$(includedir)/avisynth.h; \
 	    else \
-	      install -m 644 $$filename $(includedir)/$$filename; \
+	      install -m 644 $$filename $(DESTDIR)$(includedir)/$$filename; \
 	    fi; \
 	  fi \
 	done
-	@echo "  D: $(datadir)"
-	@$(INSTALL) -d $(DEST_DIR)$(datadir)
-	@echo "  D: $(pkgconfigdir)"
-	@$(INSTALL) -d $(DEST_DIR)$(pkgconfigdir)
-	@echo "  I: $(pkgconfigdir)/$(AVS_PC)"
-	@$(INSTALL) -m 644 ./$(AVS_PC) $(DEST_DIR)$(pkgconfigdir)
+	@echo "  D: $(DESTDIR)$(datadir)"
+	@$(INSTALL) -d $(DESTDIR)$(datadir)
+	@echo "  D: $(DESTDIR)$(pkgconfigdir)"
+	@$(INSTALL) -d $(DESTDIR)$(pkgconfigdir)
+	@echo "  I: $(DESTDIR)$(pkgconfigdir)/$(AVS_PC)"
+	@$(INSTALL) -m 644 ./$(AVS_PC) $(DESTDIR)$(pkgconfigdir)
+	@echo "  D: $(DESTDIR)$(GST_PLUGIN_PATH)"
+	@$(INSTALL) -d $(DESTDIR)$(GST_PLUGIN_PATH)
+	@echo "  I: $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_SINK_LIB)"
+	@$(INSTALL) -m 755 $(BUILD_DIR)/$(GST_SINK_LIB) $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_SINK_LIB)
 
 #-----------------------------------------------------------------------------
 # Platorm specific file -- dumb rules for people executing make before

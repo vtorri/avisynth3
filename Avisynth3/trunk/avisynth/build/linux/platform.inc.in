@@ -59,6 +59,7 @@ SPECIFIC_LDFLAGS=@SPECIFIC_LDFLAGS@
 STLPORT_LIBS=@STLPORT_LIBS@
 BOOST_LIBS=@BOOST_LIBS@
 GST_LIBS=@GST_LIBS@
+GSTBASE_LIBS=@GSTBASE_LIBS@
 FREETYPE_LIBS=@FREETYPE_LIBS@
 
 GTK_LIBS=@GTK_LIBS@
@@ -83,6 +84,7 @@ libdir=@libdir@
 includedir=@includedir@/avisynth-3.0
 datadir=@datadir@/avisynth-3.0
 pkgconfigdir=@libdir@/pkgconfig
+GST_PLUGIN_PATH=@GST_PLUGIN_PATH@
 
 ###########
 # Sources #

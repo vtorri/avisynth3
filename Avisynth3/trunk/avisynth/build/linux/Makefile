@@ -52,7 +52,9 @@ RM = rm -rf
 ##############################################################################
 
 # Their Objects
-GST_OBJECTS  = $(GENERIC_GST_OBJECTS)
+GST_VIDEO_OBJECTS  = $(GENERIC_GST_VIDEO_OBJECTS)
+GST_AUDIO_OBJECTS  = $(GENERIC_GST_AUDIO_OBJECTS)
+
 BIN_OBJECTS  = $(GENERIC_BIN_OBJECTS)
 LIB_OBJECTS  = $(GENERIC_LIB_OBJECTS)
 ASM_OBJECTS  = $(ASSEMBLY_OBJECTS)
@@ -67,7 +69,7 @@ BUILD_DIR = build
 VPATH     = $(SRC_DIR):$(BUILD_DIR)
 
 # The variables used for the dist rule
-distdir=$(PACKAGE)-$(VERSION)
+distdir=$(TARNAME)-$(VERSION)
 distfile=$(distdir).tar
 
 #-----------------------------------------------------------------------------
@@ -76,7 +78,7 @@ distfile=$(distdir).tar
 
 .SUFFIXES: .$(OBJECT_EXTENSION) .$(ASSEMBLY_EXTENSION) .cpp .c
 
-all: $(GST_SINK_LIB) $(STATIC_LIB) $(SHARED_LIB) $(PROG)
+all: $(GST_VIDEO_SINK_LIB) $(GST_AUDIO_SINK_LIB) $(STATIC_LIB) $(SHARED_LIB) $(PROG)
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo " Avisynth has been successfully built."
@@ -122,17 +124,21 @@ $(BUILD_DIR):
 .c.$(OBJECT_EXTENSION):
 	@echo "  C: $(@D)/$(<F)"
 	@$(INSTALL) -d $(BUILD_DIR)/$(@D)
-	@$(CC) -c $(ARCHITECTURE) $(BUS) $(ENDIANNESS) $(FEATURES) \
+	@$(CC) -c -fPIC $(ARCHITECTURE) $(BUS) $(ENDIANNESS) $(FEATURES) \
 	$(CFLAGS) $(GST_CFLAGS) $(GTK_CFLAGS) $(X264_CFLAGS) $< -o $(BUILD_DIR)/$@
 
 
 #-----------------------------------------------------------------------------
-# Gstreamer sink
+# Gstreamer sinks
 #-----------------------------------------------------------------------------
 
-$(GST_SINK_LIB): $(GST_OBJECTS)
+$(GST_VIDEO_SINK_LIB): $(BUILD_DIR) $(GST_VIDEO_OBJECTS)
 	@echo "  L: $(@F)"
-	@cd $(BUILD_DIR) && $(CC) $(LDFLAGS)  -o $(GST_SINK_LIB) $(GST_OBJECTS) $(GSTBASE_LIBS) $(SPECIFIC_LDFLAGS)
+	@cd $(BUILD_DIR) && $(CC) $(LDFLAGS) -o $(GST_VIDEO_SINK_LIB) $(GST_VIDEO_OBJECTS) $(GSTBASE_LIBS) $(SPECIFIC_LDFLAGS)
+
+$(GST_AUDIO_SINK_LIB): $(BUILD_DIR) $(GST_AUDIO_OBJECTS)
+	@echo "  L: $(@F)"
+	@cd $(BUILD_DIR) && $(CC) $(LDFLAGS) -o $(GST_AUDIO_SINK_LIB) $(GST_AUDIO_OBJECTS) $(GSTBASE_LIBS) $(SPECIFIC_LDFLAGS)
 
 #-----------------------------------------------------------------------------
 # Static Library
@@ -165,18 +171,18 @@ $(SHARED_LIB): .depend $(LIB_OBJECTS) $(ASM_OBJECTS)
 #-----------------------------------------------------------------------------
 # Test program
 #-----------------------------------------------------------------------------
-$(PROG): .depend $(BIN_OBJECTS) $(STATIC_LIB)
+$(PROG): .depend $(GST_VIDEO_OBJECTS) $(BIN_OBJECTS) $(STATIC_LIB)
 	@echo "  P: $(@F)"
-	@cd $(BUILD_DIR) && $(CC) -o $(PROG) $(BIN_OBJECTS) $(AVS3_LIBS) $(STATIC_LIB) $(ASM_OBJECTS) $(GTK_LIBS) $(X264_LIBS)
+	@cd $(BUILD_DIR) && $(CC) -o $(PROG) $(BIN_OBJECTS) $(STATIC_LIB) $(AVS3_LIBS) $(GTK_LIBS) $(X264_LIBS)
 
 #-----------------------------------------------------------------------------
 # Installation
 #-----------------------------------------------------------------------------
 
-install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB) $(BUILD_DIR)/$(PROG) $(BUILD_DIR)/$(GST_SINK_LIB)
+install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB) $(BUILD_DIR)/$(PROG) $(BUILD_DIR)/$(GST_VIDEO_SINK_LIB) $(BUILD_DIR)/$(GST_AUDIO_SINK_LIB)
 	@echo "  D: $(DESTDIR)$(bindir)"
 	@$(INSTALL) -d $(DESTDIR)$(bindir)
-	@echo "  I: $(DESTDIR)$(bindir)/$(BIN_OBJECT)"
+	@echo "  I: $(DESTDIR)$(bindir)/$(PROG)"
 	@$(INSTALL) -m 755 $(BUILD_DIR)/$(PROG) $(DESTDIR)$(bindir)/$(PROG)
 	@echo "  D: $(DESTDIR)$(libdir)"
 	@$(INSTALL) -d $(DESTDIR)$(libdir)
@@ -193,7 +199,7 @@ install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB) $(BUILD_DIR)/$(PR
 	@cd $(SRC_DIR) && \
 	find . -name '*.h' | while read i; do \
 	  filename="`echo $$i | sed 's:^\./::'`"; \
-	  dir="`echo $$filename | sed 's:\(.*\)/.*:\1:'`"; \
+	  dir="`echo $$i | sed 's,/[^/]*$$,,'`"; \
 	  if test "$$dir" = "$$filename" ; then \
 	    dir=""; \
 	  fi; \
@@ -215,8 +221,10 @@ install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB) $(BUILD_DIR)/$(PR
 	@$(INSTALL) -m 644 ./$(AVS_PC) $(DESTDIR)$(pkgconfigdir)
 	@echo "  D: $(DESTDIR)$(GST_PLUGIN_PATH)"
 	@$(INSTALL) -d $(DESTDIR)$(GST_PLUGIN_PATH)
-	@echo "  I: $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_SINK_LIB)"
-	@$(INSTALL) -m 755 $(BUILD_DIR)/$(GST_SINK_LIB) $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_SINK_LIB)
+	@echo "  I: $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_VIDEO_SINK_LIB)"
+	@$(INSTALL) -m 755 $(BUILD_DIR)/$(GST_VIDEO_SINK_LIB) $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_VIDEO_SINK_LIB)
+	@echo "  I: $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_AUDIO_SINK_LIB)"
+	@$(INSTALL) -m 755 $(BUILD_DIR)/$(GST_AUDIO_SINK_LIB) $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_AUDIO_SINK_LIB)
 
 #-----------------------------------------------------------------------------
 # Platorm specific file -- dumb rules for people executing make before
@@ -239,10 +247,10 @@ configure:
 	@touch $(BUILD_DIR)/.depend
 	@cd $(SRC_DIR) && \
 	find . -name '*.cpp' | while read i; do \
-	  echo $$filename; \
 	  filename="`echo $$i | sed 's:^\./::'`"; \
-	  dir="`echo $$filename | sed 's:\(.*\)/.*:\1:'`"; \
-	  (echo -n "$$dir/" && $(CXX) -MM -g0 $(AVS3_CPPFLAGS) $(GTK_CFLAGS) $$filename) 1>> ../build/linux/$(BUILD_DIR)/.depend; \
+	  dir="`echo $$i | sed 's,[^/]*$$,,'`"; \
+	  echo $$filename; \
+	  (echo -n "$$dir" && $(CXX) -MM -g0 $(AVS3_CPPFLAGS) $(GTK_CFLAGS) $$filename) 1>> ../build/linux/$(BUILD_DIR)/.depend; \
 	done
 
 #-----------------------------------------------------------------------------
@@ -265,6 +273,8 @@ distclean: clean
 	@$(RM) config.log
 	@$(RM) config.status
 	@$(RM) autom4te.cache
+	@$(RM) $(distfile).gz
+	@$(RM) $(distfile).bz2
 
 mrproper: distclean
 	@echo "  Cl: Bootstrapped build files"
@@ -274,18 +284,59 @@ mrproper: distclean
 	@$(RM) aclocal.m4
 
 distdir:
+	@echo "  T: $(distfile)"
 	@cd ../../ && \
 	test ! -d $(distdir) \
 	|| { find $(distdir) -type d ! -perm -200 -exec chmod u+w {} ';' \
 	&& $RM$ $(distdir); };
-	@mkdir $(distdir)
-	@cp -pR ../win32 \
-	../INSTALL \
-	../linux/Makefile ../linux/$(AVS_PC).in ../linux/bootstrap.sh ../linux/configure ../linux/configure.in ../linux/config.h.in ../linux/config.sub ../linux/config.guess ../linux/gen_sources.sh.in ../linux/libavisynth.def ../linux/platform.inc.in ../linux/m4 \
-	../../docs/Doxyfile ../../docs/README ../../docs/avisynth.css ../../docs/gendoc ../../docs/installdocs.c.in \
-	$(SRC_DIR)/ $(distdir)
-	@find $(distdir) -path '*CVS' | while read i; do \
-	  $(RM) $$i; \
+	@mkdir -p $(distdir)/build/linux/m4
+	@mkdir -p $(distdir)/build/win32/vc71
+	@mkdir $(distdir)/docs
+	@mkdir $(distdir)/src
+	@cp -p ../../TODO $(distdir)
+	@cp -p ../INSTALL $(distdir)/build
+	@cp -p \
+	  Makefile \
+	  $(AVS_PC).in \
+	  bootstrap.sh \
+	  configure \
+	  configure.in \
+	  config.sub \
+	  config.guess \
+	  install-sh \
+	  gen_sources.sh.in \
+	  libavisynth.def \
+	  platform.inc.in \
+	  $(distdir)/build/linux
+	@cd m4 && cp -p \
+	  boost.m4 \
+	  gst-element-check.m4 \
+	  pkg-get-variable.m4 \
+	  pkg.m4 \
+	  stlport.m4 \
+	  visibility.m4 \
+	  ../$(distdir)/build/linux/m4
+	@cd ../win32/vc71 && cp -p \
+	  avisynth.def \
+	  avisynth.rc \
+	  avisynth.sln \
+	  avisynth.vcproj \
+	  ../../linux/$(distdir)/build/win32/vc71
+	@cd ../../docs && cp -p \
+	  Doxyfile \
+	  README \
+	  avisynth.css \
+	  doxygen.css \
+	  doxygen.png \
+	  gendoc \
+	  installdocs.c.in \
+	  ../build/linux/$(distdir)/docs
+	@cd $(SRC_DIR)/.. && find src \( -name '*.h' -o -name '*.c' -o -name '*.cpp' \) | while read i; do \
+	  dir="`echo $$i | /bin/sed 's,/[^/]*$$,,'`"; \
+	  if ! test -d "build/linux/$(distdir)/$$dir" ; then \
+	    mkdir -p build/linux/$(distdir)/$$dir; \
+	  fi; \
+	  cp -p $$i build/linux/$(distdir)/$$dir; \
 	done
 
 dist-tar: distdir

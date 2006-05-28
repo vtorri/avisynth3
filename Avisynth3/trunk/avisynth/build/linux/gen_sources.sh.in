@@ -2,8 +2,11 @@
 rm -f sources.inc
 echo SRC_DIR = ../../src > sources.inc
 echo   >> sources.inc
-echo SRC_GST_GENERIC = \\ >> sources.inc
-echo "  ext/gstreamer/gstavs3sink.c" >> sources.inc
+echo SRC_GST_VIDEO_GENERIC = \\ >> sources.inc
+echo "  ext/gstreamer/gstavs3videosink.c" >> sources.inc
+echo   >> sources.inc
+echo SRC_GST_AUDIO_GENERIC = \\ >> sources.inc
+echo "  ext/gstreamer/gstavs3audiosink.c" >> sources.inc
 echo   >> sources.inc
 echo SRC_BIN_GENERIC = \\ >> sources.inc
 find ../../src/bin -name '*.c' | sed 's/..\/..\/src\//  /;s/\.c/\.c \\/' >> sources.inc

@@ -42,14 +42,14 @@ BOOST_VERSION_MINOR="33"
 BOOST_VERSION="${BOOST_VERSION_MAJOR}_${BOOST_VERSION_MINOR}"
 
 dnl Gstreamer version requirement
-GST_REQS=0.10.1
-GSTPLUG_REQS=0.10.1
+GST_REQS=0.10.5
+GSTPLUG_REQS=0.10.6
 
 dnl Gtk+ version requirement
 GTK_REQS=2.4
 
 dnl Default CFLAGS -- Big impact on overall speed
-our_cflags_defaults="-O2 -Wall"
+our_cflags_defaults="-O2 -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-declarations"
 our_cflags_defaults="$our_cxxflags_defaults -fstrength-reduce"
 our_cflags_defaults="$our_cxxflags_defaults -finline-functions"
 our_cflags_defaults="$our_cxxflags_defaults -ffast-math"
@@ -589,6 +589,7 @@ PKG_CHECK_MODULES(
    [HAVE_GSTPLUG="yes"],
    [HAVE_GSTPLUG="no"])
 
+HAVE_GSTFFMPEG="no"
 AM_GST_ELEMENT_CHECK(
    [ffmpeg],
    [HAVE_GSTFFMPEG="yes"],
@@ -607,58 +608,29 @@ PKG_GET_VARIABLE([GST_PLUGIN_PATH], [pluginsdir], [gstreamer-$GST_MAJORMINOR])
 
 dnl HAVE_GSTPLUG="yes" implies HAVE_GSTREAMER="yes"
 if test "x${HAVE_GSTPLUG}" = "xyes" ; then
-   GST_SINK_LIB="gstavs3sink.${SHARED_EXTENSION}"
+   GST_VIDEO_SINK_LIB="gstavs3videosink.${SHARED_EXTENSION}"
+   GST_AUDIO_SINK_LIB="gstavs3audiosink.${SHARED_EXTENSION}"
 fi
 
 dnl ==========================================================================
 dnl FREETYPE header and library files
 dnl ==========================================================================
 
-FREETYPE_CONFIG="freetype-config"
-AC_ARG_WITH(
-   [freetype-config],
-   [--with-freetype-config=FILE   freetype-config script to use (eg /usr/bin/freetype-config)],
-   [
-    FREETYPE_CONFIG=${withval}
-    AC_CHECK_PROG(
-       FREETYPE_CONFIG_IN_PATH,
-       ${FREETYPE_CONFIG},
-       yes,
-       no)
-    if test "${FREETYPE_CONFIG_IN_PATH}" = "no" ; then
-       echo "ERROR:"
-       echo "The freetype-config development script you specified:"
-       echo "${FREETYPE_CONFIG}"
-       echo "was not found.  Please check the path and make sure "
-       echo "the script exists and is executable."
-       AC_MSG_ERROR([Fatal Error: no freetype-config detected.])
-       exit;
-    fi
-    with_freetype_arg="yes"
-    FREETYPE_CFLAGS=`${FREETYPE_CONFIG} --cflags`
-    FREETYPE_LIBS=`${FREETYPE_CONFIG} --libs`
-   ],
-   [
-    AC_CHECK_PROG(FREETYPE_CONFIG_IN_PATH, $FREETYPE_CONFIG, yes, no)
-    if test $FREETYPE_CONFIG_IN_PATH = no; then
-       echo "ERROR:"
-       echo "The freetype-config development script was not found in your execute"
-       echo "path. This may mean one of several things"
-       echo "1. You may not have installed the freetype-devel (or freetype-dev)"
-       echo "   packages."
-       echo "2. You may have freetype installed somewhere not covered by your path."
-       echo ""
-       echo "If this is the case make sure you have the packages installed, AND"
-       echo "that the freetype-config script is in your execute path (see your"
-       echo "shell's manual page on setting the \$PATH environment variable), OR"
-       echo "alternatively, specify the script to use with --with-freetype-config."
-       AC_MSG_ERROR([Fatal Error: no freetype-config detected.])
-       exit;
-    fi
-    with_freetype_arg="yes"
-    FREETYPE_CFLAGS=`${FREETYPE_CONFIG} --cflags`
-    FREETYPE_LIBS=`${FREETYPE_CONFIG} --libs`
-   ])
+PKG_CHECK_MODULES(
+   [FREETYPE],
+   [freetype2],
+   [ ],
+   [AC_MSG_ERROR(Freetype isn't installed)])
+
+dnl ==========================================================================
+dnl Fontconfig header and library files
+dnl ==========================================================================
+
+PKG_CHECK_MODULES(
+   [FONTCONFIG],
+   [fontconfig],
+   [ ],
+   [AC_MSG_ERROR(Fontconfig isn't installed)])
 
 dnl ==========================================================================
 dnl Gtk+ header and library files
@@ -728,7 +700,8 @@ dnl SOURCES
 dnl
 dnl ==========================================================================
 
-GENERIC_GST_SOURCES="SRC_GST_GENERIC"
+GENERIC_GST_VIDEO_SOURCES="SRC_GST_VIDEO_GENERIC"
+GENERIC_GST_AUDIO_SOURCES="SRC_GST_AUDIO_GENERIC"
 GENERIC_BIN_SOURCES="SRC_BIN_GENERIC"
 GENERIC_LIB_SOURCES="SRC_LIB_GENERIC"
 
@@ -769,10 +742,12 @@ AC_SUBST(VERSION)
 AC_SUBST(STATIC_LIB)
 AC_SUBST(PRE_SHARED_LIB)
 AC_SUBST(SHARED_LIB)
-AC_SUBST(GENERIC_GST_SOURCES)
+AC_SUBST(GENERIC_GST_VIDEO_SOURCES)
+AC_SUBST(GENERIC_GST_AUDIO_SOURCES)
 AC_SUBST(GENERIC_BIN_SOURCES)
 AC_SUBST(GENERIC_LIB_SOURCES)
-AC_SUBST(GST_SINK_LIB)
+AC_SUBST(GST_VIDEO_SINK_LIB)
+AC_SUBST(GST_AUDIO_SINK_LIB)
 AC_SUBST(PROG)
 
 AC_SUBST(exec_prefix)
@@ -787,7 +762,6 @@ dnl Output files
 dnl
 dnl ==========================================================================
 
-AC_CONFIG_FILES([config.h])
 AC_CONFIG_FILES([platform.inc])
 AC_CONFIG_FILES([gen_sources.sh],
                 [chmod +x gen_sources.sh && ./gen_sources.sh])
@@ -800,7 +774,7 @@ AC_OUTPUT
 
 echo
 echo "------------------------------------------------------------------------"
-echo " $PACKAGE_NAME $VERSION"
+echo " $PACKAGE_NAME $VERSION $PACKAGE_TARNAME"
 echo "------------------------------------------------------------------------"
 echo
 echo " OS..................: $target_os"

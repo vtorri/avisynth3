@@ -18,6 +18,28 @@ AC_DEFUN([AM_CHECK_BOOST],
        [with_boost_arg="no"])
 
     dnl
+    dnl Get the include directory where Boost headers are installed.
+    dnl
+    AC_ARG_WITH(
+       [boost-includedir-path],
+       AC_HELP_STRING(
+          [--with-boost-includedir-path=PATH (default is /usr/local/include/boost-1_33)],
+          [BOOST headers directory. It must contain the boost/ directory]),
+       [with_boost_includedir_arg="yes"],
+       [with_boost_includedir_arg="no"])
+
+    dnl
+    dnl Get the library directory where Boost libraries are installed.
+    dnl
+    AC_ARG_WITH(
+       [boost-libdir-path],
+       AC_HELP_STRING(
+          [--with-boost-libdir-path=PATH (default is /usr/local/lib)],
+          [BOOST libraries directory]),
+       [with_boost_libdir_arg="yes"],
+       [with_boost_libdir_arg="no"])
+
+    dnl
     dnl Name of the thread library option.
     dnl
     AC_ARG_WITH(
@@ -76,6 +98,7 @@ AC_DEFUN([AM_CHECK_BOOST],
     dnl
     dnl Check Boost library.
     dnl
+
     dnl We set the path to use.
     if test "${with_boost_path+set}" = set && test "x${with_boost_arg}" != "xno"; then
        dnl Argument given and not empty.
@@ -84,49 +107,88 @@ AC_DEFUN([AM_CHECK_BOOST],
        dnl No argument, or argument empty.
        boost_path="/usr/local"
     fi
-    dnl We check the headers, then the library.
-    saved_CPPFLAGS="${CPPFLAGS}"
-    saved_LDFLAGS="${LDFLAGS}"
-    CPPFLAGS="${CPPFLAGS} -I${boost_path}/include/boost-$1"
-    AC_CHECK_HEADER(
-       [boost/config.hpp],
-       [
-        case "$2" in
-           *bsd* | linux* | irix* | solaris* )
-              LDFLAGS="${LDFLAGS} -L${boost_path}/lib/"
-              AC_CHECK_LIB(
-                 [${BOOST_LIB_NAME}],
-                 [main],
-                 [BOOST_LIBS="-L${boost_path}/lib -l${BOOST_LIB_NAME}"],
-                 [AC_MSG_WARN(Boost library not in ${boost_path}/lib)
-                  m4_if([$4], [], [:], [$4])])
 
-           ;;
-           [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
-              BOOST_LIB_NAME="boost_thread-mgw-mt-$1.dll"
-              LDFLAGS="${LDFLAGS} ${boost_path}/lib/${BOOST_LIB_NAME}"
-              AC_CHECK_FILE(
-                 [${boost_path}/lib/${BOOST_LIB_NAME}],
-                 [BOOST_LIBS="${boost_path}/lib/${BOOST_LIB_NAME}"],
-                 [AC_MSG_WARN(Boost library not in ${boost_path}/lib)
-                  m4_if([$4], [], [:], [$4])])
-           ;;
-           darwin*|raphsody*)
-              BOOST_LIB_NAME=""
-           ;;
-           beos)
-              BOOST_LIB_NAME=""
-           ;;
-           *)
-              BOOST_LIB_NAME=""
-           ;;
-        esac
-        BOOST_CFLAGS="-I${boost_path}/include/boost-$1"
-        m4_if([$3], [], [:], [$3])],
-       [AC_MSG_WARN(Boost headers not in ${boost_path}/include/boost-$1)
-        m4_if([$4], [], [:], [$4])])
+    dnl We set the include directory to use.
+    if test "${with_boost_includedir_path+set}" = set && test "x${with_boost_includedir_arg}" != "xno"; then
+       dnl Argument given and not empty.
+       boost_includedir_path="${with_boost_includedir_path}"
+    else
+       dnl No argument, or argument empty.
+       boost_includedir_path="${boost_path}/include/boost-$1"
+    fi
+
+    dnl We set the lib directory to use.
+    if test "${with_boost_libdir_path+set}" = set && test "x${with_boost_libdir_arg}" != "xno"; then
+       dnl Argument given and not empty.
+       boost_libdir_path="${with_boost_libdir_path}"
+    else
+       dnl No argument, or argument empty.
+       boost_libdir_path="${boost_path}/lib"
+    fi
+
+    dnl We check the headers.
+    have_boost_headers="no"
+    saved_CPPFLAGS="${CPPFLAGS}"
+    CPPFLAGS="${CPPFLAGS} -I${boost_includedir_path}"
+
+    AC_CHECK_HEADERS(
+       [boost/shared_ptr.hpp boost/thread/mutex.hpp boost/circular_buffer.hpp boost/spirit/phoenix/functions.hpp],
+       [
+        BOOST_CFLAGS="-I${boost_includedir_path}"
+        have_boost_headers="yes"
+       ],
+       [
+        AC_MSG_WARN(Boost headers not in ${boost_includedir_path})
+        m4_if([$4], [], [:], [$4])
+       ]
+    )
     CPPFLAGS="${saved_CPPFLAGS}"
-    LDFLAGS="${saved_LDFLAGS}"
+    
+    dnl We check the library if headers are not missing.
+    if test "x${have_boost_headers}" = "xyes" ; then
+       saved_LDFLAGS="${LDFLAGS}"
+       case "$2" in
+          *bsd* | linux* | irix* | solaris* )
+             LDFLAGS="${LDFLAGS} -L${boost_libdir_path}"
+             AC_CHECK_LIB(
+                [${BOOST_LIB_NAME}],
+                [main],
+                [
+                 BOOST_LIBS="-L${boost_libdir_path} -l${BOOST_LIB_NAME}"
+                 m4_if([$3], [], [:], [$3])
+                ],
+                [
+                 AC_MSG_WARN(Boost library not in ${boost_libdir_path})
+                 m4_if([$4], [], [:], [$4])
+                ]
+             )
+          ;;
+          [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
+             LDFLAGS="${LDFLAGS} ${boost_libdir_path}/${BOOST_LIB_NAME}"
+             AC_CHECK_FILE(
+                [${boost_libdir_path}/${BOOST_LIB_NAME}],
+                [
+                 BOOST_LIBS="${boost_libdir_path}/${BOOST_LIB_NAME}"
+                 m4_if([$3], [], [:], [$3])
+                ],
+                [
+                 AC_MSG_WARN(Boost library not in ${boost_libdir_path})
+                 m4_if([$4], [], [:], [$4])
+                ]
+             )
+          ;;
+          darwin*|raphsody*)
+             BOOST_LIB=""
+          ;;
+          beos)
+             BOOST_LIB=""
+          ;;
+          *)
+             BOOST_LIB=""
+          ;;
+       esac
+       LDFLAGS="${saved_LDFLAGS}"
+    fi
     dnl
     dnl Substitution
     dnl

@@ -20,17 +20,20 @@ AC_DEFUN([AM_GST_ELEMENT_CHECK],
       $2
     else
       AC_MSG_RESULT(not found.)
-      AC_CHECK_PROG(GST_INSPECT_0_8, gst-inspect-0.8, gst-inspect-0.8, [])
+      AC_CHECK_PROG(GST_INSPECT_0_10, gst-inspect-0.10, gst-inspect-0.10, [])
 
-      if test "x$GST_INSPECT_0_8" != "x"; then
-        AC_MSG_CHECKING(GStreamer element $1 with $GST_INSPECT_0_8)
-        if [ $GST_INSPECT_0_8 $1 > /dev/null 2> /dev/null ]; then
+      if test "x$GST_INSPECT_0_10" != "x"; then
+        AC_MSG_CHECKING(GStreamer element $1 with $GST_INSPECT_0_10)
+        if [ $GST_INSPECT_0_10 $1 > /dev/null 2> /dev/null ]; then
           AC_MSG_RESULT(found.)
           $2
         else
           AC_MSG_RESULT(not found.)
           $3
         fi
+      else
+        AC_MSG_RESULT(not found.)
+        $3
       fi
     fi
   fi

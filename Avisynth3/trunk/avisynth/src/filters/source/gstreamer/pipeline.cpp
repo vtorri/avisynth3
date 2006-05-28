@@ -113,11 +113,20 @@ void Pipeline::SetStatePaused()
 void Pipeline::PadDetected(avs::gstreamer::Pad& pad)
 {
   GstCaps *caps = gst_pad_get_caps (&pad);
-  g_print ("new pad %s\n\n", gst_caps_to_string (caps));
+  gchar *str = gst_caps_to_string (caps);
+  g_print ("new pad %s\n\n", str);
   avs::gstreamer::Bin& binPipeline = pipeline_->operator avs::gstreamer::Bin&();
-  avs::gstreamer::Element& sink = binPipeline.AddNewElement( "avs3sink", NULL );
+  if (g_str_has_prefix (str, "video/")) {
+    avs::gstreamer::Element& sink = binPipeline.AddNewElement( "avs3videosink", NULL );
   pad.Link( *sink.GetPad( "sink" ) );
   sink.SetSimpleStatePaused();
+  }
+  else {
+    avs::gstreamer::Element& sink = binPipeline.AddNewElement( "avs3audiosink", NULL );
+    pad.Link( *sink.GetPad( "sink" ) );
+    sink.SetSimpleStatePaused();
+  }
+  g_free( str );
 }
 
 void Pipeline::SetSink (int index, char *stream_type)

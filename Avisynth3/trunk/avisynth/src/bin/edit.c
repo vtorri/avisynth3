@@ -28,6 +28,7 @@ avs3_edit_begin (Avs3_Data *data, GtkWidget *parent)
 
   data->frame_current = 0;
   avs3_preview_draw (data, data->frame_current);
+  gtk_range_set_value (GTK_RANGE (data->scale), data->frame_current);
 }
 
 void
@@ -44,6 +45,7 @@ avs3_edit_end (Avs3_Data *data, GtkWidget *parent)
   data->frame_current = avs_videoinfo_framecount_get (info) - 1;
   avs_videoinfo_delete (info);
   avs3_preview_draw (data, data->frame_current);
+  gtk_range_set_value (GTK_RANGE (data->scale), data->frame_current);
 }
 
 void
@@ -92,6 +94,7 @@ avs3_edit_goto (Avs3_Data *data, GtkWidget *parent)
     str = gtk_entry_get_text (GTK_ENTRY (entry));
     data->frame_current = (gint)g_ascii_strtod (str, NULL);
     avs3_preview_draw (data, data->frame_current);
+    gtk_range_set_value (GTK_RANGE (data->scale), data->frame_current);
     break;
   }
   case GTK_RESPONSE_CANCEL:

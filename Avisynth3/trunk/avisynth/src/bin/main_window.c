@@ -18,7 +18,6 @@ avs3_main_window ()
   Avs3_Data *data;
   GtkWidget *vbox;
   GtkWidget *menu;
-  GtkWidget *scale;
 
   data = (Avs3_Data *)g_malloc0 (sizeof (Avs3_Data));
   if (!data) return;
@@ -47,11 +46,11 @@ avs3_main_window ()
   gtk_box_pack_start (GTK_BOX (vbox), data->preview, FALSE, TRUE, 0);
   gtk_widget_show (data->preview);
 
-  scale = gtk_hscale_new_with_range (0.0, 1.0, 1.0);
-  gtk_scale_set_digits (GTK_SCALE (scale), 0);
-  gtk_scale_set_value_pos (GTK_SCALE (scale), GTK_POS_RIGHT);
-  gtk_box_pack_start (GTK_BOX (vbox), scale, FALSE, TRUE, 0);
-  gtk_widget_show (scale);
+  data->scale = gtk_hscale_new_with_range (0.0, 1.0, 1.0);
+  gtk_scale_set_digits (GTK_SCALE (data->scale), 0);
+  gtk_scale_set_value_pos (GTK_SCALE (data->scale), GTK_POS_RIGHT);
+  gtk_box_pack_start (GTK_BOX (vbox), data->scale, FALSE, TRUE, 0);
+  gtk_widget_show (data->scale);
 
   data->status = gtk_statusbar_new ();
   gtk_box_pack_start (GTK_BOX (vbox), data->status, FALSE, TRUE, 0);
@@ -63,17 +62,13 @@ avs3_main_window ()
 void
 _data_delete (Avs3_Data *data)
 {
-  g_print ("1\n");
   if (data->filename)
     g_free (data->filename);
-  g_print ("2\n");
   if (data->clip)
     avs_clip_delete (data->clip);
-  g_print ("3\n");
   if (data->env)
     avs_environment_delete (data->env);
 
-  g_print ("4\n");
   g_free (data);
 }
 

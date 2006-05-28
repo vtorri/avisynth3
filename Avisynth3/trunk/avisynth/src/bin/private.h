@@ -11,6 +11,7 @@ struct _Avs3_Data
 {
   GtkWidget *window;
   GtkWidget *preview;
+  GtkWidget *scale;
   GtkWidget *status;
   
   gchar *filename;
@@ -19,6 +20,7 @@ struct _Avs3_Data
   AVS_Environment *env;
   AVS_Clip        *clip;
   gint             frame_current;
+  gint             frames_count;
 
   GThread *thread;
 };

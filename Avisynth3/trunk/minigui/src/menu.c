@@ -1,13 +1,21 @@
+#include <stdint.h>
+
 #include <gtk/gtk.h>
+
+#include <x264.h>
+#include <x264_gtk.h>
 
 #include "private.h"
 #include "open.h"
+#include "save.h"
 #include "info.h"
 #include "edit.h"
 #include "about.h"
 
 
 static void _open_cb (GtkMenuItem *menuitem,
+                      gpointer     user_data);
+static void _save_cb (GtkMenuItem *menuitem,
                       gpointer     user_data);
 static void _info_cb (GtkMenuItem *menuitem,
                       gpointer     user_data);
@@ -21,6 +29,8 @@ static void _edit_goto_cb (GtkMenuItem *menuitem,
                       gpointer     user_data);
 static void _about_window_cb (GtkMenuItem *menuitem,
                               gpointer     user_data);
+static void _x264_config_cb (GtkMenuItem *menuitem,
+                             gpointer     user_data);
 
 
 GtkWidget *
@@ -50,8 +60,8 @@ avs3_menu (Avs3_Data *data)
   
   item = gtk_image_menu_item_new_from_stock (GTK_STOCK_SAVE, NULL);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-/*   g_signal_connect (G_OBJECT (item), "activate", */
-/* 		    G_CALLBACK (save_window_create), win); */
+  g_signal_connect (G_OBJECT (item), "activate",
+		    G_CALLBACK (_save_cb), data);
   gtk_widget_show (item);
   
   item = gtk_image_menu_item_new_from_stock (GTK_STOCK_INFO, NULL);
@@ -110,8 +120,8 @@ avs3_menu (Avs3_Data *data)
   /* Video menu items */  
   item = gtk_menu_item_new_with_label ("Compression");
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-/*   g_signal_connect (G_OBJECT (item), "activate", */
-/* 		    G_CALLBACK (x264_window_config_create), NULL); */
+  g_signal_connect (G_OBJECT (item), "activate",
+		    G_CALLBACK (_x264_config_cb), data);
   gtk_widget_show (item);
   
   /* Help menu */
@@ -138,6 +148,13 @@ _open_cb (GtkMenuItem *menuitem,
           gpointer     user_data)
 {
   avs3_open ((Avs3_Data *)user_data);
+}
+
+static void
+_save_cb (GtkMenuItem *menuitem,
+          gpointer     user_data)
+{
+  avs3_save ((Avs3_Data *)user_data);
 }
 
 static void
@@ -182,4 +199,16 @@ _about_window_cb (GtkMenuItem *menuitem,
                   gpointer     user_data)
 {
   avs3_about ();
+}
+
+static void
+_x264_config_cb (GtkMenuItem *menuitem,
+                 gpointer     user_data)
+{
+  Avs3_Data *data;
+  GtkWidget *window;
+
+  data = (Avs3_Data *)user_data;
+  window = x264_gtk_window_create (GTK_WIDGET (data->window));
+  x264_gtk_shutdown (window);
 }

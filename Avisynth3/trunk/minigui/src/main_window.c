@@ -2,6 +2,7 @@
 
 #include "private.h"
 #include "menu.h"
+#include "scale.h"
 
 
 /* Callbacks */
@@ -9,6 +10,8 @@ static gboolean _delete_window_cb    (GtkWidget *widget,
                                       GdkEvent  *event,
                                       gpointer   user_data);
 static void     _destroy_window_cb   (GtkObject *widget,
+                                      gpointer   user_data);
+static gboolean _scale_cb            (GtkRange  *range,
                                       gpointer   user_data);
 
 /* Code */
@@ -50,6 +53,10 @@ avs3_main_window ()
   gtk_scale_set_digits (GTK_SCALE (data->scale), 0);
   gtk_scale_set_value_pos (GTK_SCALE (data->scale), GTK_POS_RIGHT);
   gtk_box_pack_start (GTK_BOX (vbox), data->scale, FALSE, TRUE, 0);
+  g_signal_connect (G_OBJECT (data->scale),
+                    "value-changed",
+                    G_CALLBACK (_scale_cb),
+                    data);
   gtk_widget_show (data->scale);
 
   data->status = gtk_statusbar_new ();
@@ -57,19 +64,6 @@ avs3_main_window ()
   gtk_widget_show (data->status);
 
   gtk_widget_show (data->window);
-}
-
-void
-_data_delete (Avs3_Data *data)
-{
-  if (data->filename)
-    g_free (data->filename);
-  if (data->clip)
-    avs_clip_delete (data->clip);
-  if (data->env)
-    avs_environment_delete (data->env);
-
-  g_free (data);
 }
 
 static gboolean
@@ -90,4 +84,18 @@ _destroy_window_cb (GtkObject *widget,
   gtk_main_quit ();
 
   _data_delete ((Avs3_Data *)user_data);
+}
+
+static gboolean
+_scale_cb (GtkRange *range,
+           gpointer  user_data)
+{
+  Avs3_Data *data;
+  gint       value;
+
+  value = (gint)gtk_range_get_value (range);
+  data = (Avs3_Data *)user_data;
+  avs3_scale (data, NULL, value);
+
+  return TRUE;
 }

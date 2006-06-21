@@ -13,7 +13,7 @@ struct _Avs3_Data
   GtkWidget *preview;
   GtkWidget *scale;
   GtkWidget *status;
-  
+
   gchar *filename;
   guint id;
 
@@ -24,6 +24,7 @@ struct _Avs3_Data
 
   GThread *thread;
 };
+
 
 void _data_delete (Avs3_Data *data);
 void _dialog_no_clip (GtkWidget *parent);

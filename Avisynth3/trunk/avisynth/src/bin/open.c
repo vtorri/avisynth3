@@ -4,7 +4,8 @@
 #include "preview.h"
 
 
-static gpointer _open_script (Avs3_Data *data)
+static gpointer
+_open_script (Avs3_Data *data)
 {
   AVS_VideoInfo *info;
 /*   gpointer ret; */

@@ -7,6 +7,7 @@
 #include <x264_gtk.h>
 
 #include "private.h"
+#include "private_x264.h"
 #include "status_window.h"
 #include "encode.h"
 
@@ -89,7 +90,7 @@ _save_file (Avs3_Encode_Data *encode_data, GtkWidget *dialog)
   gchar            *file_output = NULL;
   gchar            *ext;
   gint              container;
-  
+
   /* input */
   info = avs_clip_videoinfo_get (encode_data->data->clip);
   if (!avs_videoinfo_has_video (info))

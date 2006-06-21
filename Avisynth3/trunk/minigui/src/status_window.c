@@ -6,6 +6,7 @@
 #include <x264.h>
 
 #include "private.h"
+#include "private_x264.h"
 
 
 /* Callbacks */
@@ -133,7 +134,6 @@ static void
 _thread_data_free (Avs3_Thread_Data *thread_data)
 {
   g_free (thread_data->param);
-  g_free (thread_data->file_input);
   g_free (thread_data->file_output);
   g_io_channel_unref (thread_data->io_read);
   g_io_channel_unref (thread_data->io_write);

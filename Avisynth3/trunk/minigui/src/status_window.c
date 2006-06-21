@@ -58,6 +58,7 @@ avs3_status_window (Avs3_Thread_Data *thread_data)
   gtk_widget_show (label);
 
   thread_data->current_video_frame = gtk_entry_new ();
+  gtk_editable_set_editable (GTK_EDITABLE (thread_data->current_video_frame), FALSE);
   gtk_table_attach_defaults (GTK_TABLE (table),
                              thread_data->current_video_frame,
                              1, 2, 0, 1);
@@ -70,6 +71,7 @@ avs3_status_window (Avs3_Thread_Data *thread_data)
 
   thread_data->video_data = gtk_entry_new ();
   gtk_entry_set_text (GTK_ENTRY (thread_data->video_data), "0KB");
+  gtk_editable_set_editable (GTK_EDITABLE (thread_data->video_data), FALSE);
   gtk_table_attach_defaults (GTK_TABLE (table), thread_data->video_data,
                              1, 2, 1, 2);
   gtk_widget_show (thread_data->video_data);
@@ -80,6 +82,7 @@ avs3_status_window (Avs3_Thread_Data *thread_data)
   gtk_widget_show (label);
 
   thread_data->video_rendering_rate = gtk_entry_new ();
+  gtk_editable_set_editable (GTK_EDITABLE (thread_data->video_rendering_rate), FALSE);
   gtk_table_attach_defaults (GTK_TABLE (table),
                              thread_data->video_rendering_rate,
                              1, 2, 2, 3);
@@ -91,6 +94,7 @@ avs3_status_window (Avs3_Thread_Data *thread_data)
   gtk_widget_show (label);
 
   thread_data->time_elapsed = gtk_entry_new ();
+  gtk_editable_set_editable (GTK_EDITABLE (thread_data->time_elapsed), FALSE);
   gtk_table_attach_defaults (GTK_TABLE (table), thread_data->time_elapsed,
                              1, 2, 3, 4);
   gtk_widget_show (thread_data->time_elapsed);
@@ -101,6 +105,7 @@ avs3_status_window (Avs3_Thread_Data *thread_data)
   gtk_widget_show (label);
 
   thread_data->time_remaining = gtk_entry_new ();
+  gtk_editable_set_editable (GTK_EDITABLE (thread_data->time_remaining), FALSE);
   gtk_table_attach_defaults (GTK_TABLE (table), thread_data->time_remaining,
                              1, 2, 4, 5);
   gtk_widget_show (thread_data->time_remaining);

@@ -198,8 +198,8 @@ avs3_encode (Avs3_Thread_Data *thread_data)
              ((double) param->i_fps_den * i_frame * 1000));
   }
 
-/*   gtk_widget_set_sensitive (thread_data->end_button, TRUE); */
-/*   gtk_widget_hide (thread_data->button); */
+  gtk_widget_set_sensitive (thread_data->end_button, TRUE);
+  gtk_widget_hide (thread_data->button);
 
   return;
 }

@@ -213,8 +213,6 @@ install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB) $(BUILD_DIR)/$(PR
 	    fi; \
 	  fi \
 	done
-	@echo "  D: $(DESTDIR)$(datadir)"
-	@$(INSTALL) -d $(DESTDIR)$(datadir)
 	@echo "  D: $(DESTDIR)$(pkgconfigdir)"
 	@$(INSTALL) -d $(DESTDIR)$(pkgconfigdir)
 	@echo "  I: $(DESTDIR)$(pkgconfigdir)/$(AVS_PC)"
@@ -225,6 +223,30 @@ install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB) $(BUILD_DIR)/$(PR
 	@$(INSTALL) -m 755 $(BUILD_DIR)/$(GST_VIDEO_SINK_LIB) $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_VIDEO_SINK_LIB)
 	@echo "  I: $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_AUDIO_SINK_LIB)"
 	@$(INSTALL) -m 755 $(BUILD_DIR)/$(GST_AUDIO_SINK_LIB) $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_AUDIO_SINK_LIB)
+
+#-----------------------------------------------------------------------------
+# Uninstallation
+#-----------------------------------------------------------------------------
+
+uninstall:
+	@echo "  U: $(DESTDIR)$(bindir)/$(PROG)"
+	@$(RM) $(DESTDIR)$(bindir)/$(PROG)
+	@echo "  U: $(DESTDIR)$(libdir)/$(SHARED_LIB)"
+	@$(RM) $(DESTDIR)$(libdir)/$(SHARED_LIB)
+	@echo "  U: $(DESTDIR)$(libdir)/libavisynth.$(SHARED_EXTENSION).$(API_MAJOR)"
+	@$(RM) $(DESTDIR)$(libdir)/libavisynth.$(SHARED_EXTENSION).$(API_MAJOR)
+	@echo "  U: $(DESTDIR)$(libdir)/libavisynth.$(SHARED_EXTENSION)"
+	@$(RM) $(DESTDIR)$(libdir)/libavisynth.$(SHARED_EXTENSION)
+	@echo "  U: $(DESTDIR)$(libdir)/$(STATIC_LIB)"
+	@$(RM) $(DESTDIR)$(libdir)/$(STATIC_LIB)
+	@echo "  U: $(DESTDIR)$(includedir)"
+	@$(RM) $(DESTDIR)$(includedir)
+	@echo "  U: $(DESTDIR)$(pkgconfigdir)/$(AVS_PC)"
+	@$(RM) $(DESTDIR)$(pkgconfigdir)/$(AVS_PC)
+	@echo "  U: $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_VIDEO_SINK_LIB)"
+	@$(RM) $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_VIDEO_SINK_LIB)
+	@echo "  U: $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_AUDIO_SINK_LIB)"
+	@$(RM) $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_AUDIO_SINK_LIB)
 
 #-----------------------------------------------------------------------------
 # Platorm specific file -- dumb rules for people executing make before

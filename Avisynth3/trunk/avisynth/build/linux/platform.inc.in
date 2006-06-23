@@ -85,7 +85,6 @@ exec_prefix=@exec_prefix@
 bindir=@bindir@
 libdir=@libdir@
 includedir=@includedir@/avisynth-3.0
-datadir=@datadir@/avisynth-3.0
 pkgconfigdir=@libdir@/pkgconfig
 GST_PLUGIN_PATH=@GST_PLUGIN_PATH@
 

@@ -631,6 +631,7 @@ PKG_CHECK_MODULES(
    [fontconfig],
    [ ],
    [AC_MSG_ERROR(Fontconfig isn't installed)])
+FONTCONFIG_CFLAGS="${FONTCONFIG_CFLAGS} -DHAVE_FONTCONFIG"
 
 dnl ==========================================================================
 dnl Gtk+ header and library files
@@ -796,7 +797,6 @@ echo " Install path........: $prefix"
 echo "   binaries..........: $bindir"
 echo "   libraries.........: ${libdir}"
 echo "   headers...........: ${includedir}/avisynth-3.0"
-echo "   data..............: ${datadir}/avisynth-3.0"
 echo "   gst-plugins.......: $GST_PLUGIN_PATH"
 echo
 echo " Compilation.........: make"

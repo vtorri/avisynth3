@@ -51,7 +51,7 @@ template <int align> struct misAligned
   template <typename BW> bool operator()(BW const& bw) const
   {
     return std::max(bw.Pitch(), -bw.Pitch()) % align != 0       //pitch non aligned
-        || reinterpret_cast<int>( bw.read() ) % align != 0;     //data non aligned
+        || reinterpret_cast<size_t>( bw.read() ) % align != 0;     //data non aligned
   }
 };
 

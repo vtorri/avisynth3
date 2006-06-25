@@ -86,7 +86,7 @@ Recycler::BYTE * Recycler::mem_alloc(int size)
   if ( raw == NULL )
     throw std::bad_alloc();
 
-  BYTE * result = (BYTE *)AlignValue(int(raw + 1));   //align raw + 1 (need a byte to store shift)
+  BYTE * result = (BYTE *)AlignValue(size_t(raw + 1));   //align raw + 1 (need a byte to store shift)
 
   *(result - 1) = result - raw;   //store shift value
 #endif //_MSC_VER

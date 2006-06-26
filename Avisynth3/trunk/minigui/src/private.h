@@ -27,7 +27,7 @@ struct _Avs3_Data
 
 
 void _data_delete (Avs3_Data *data);
-void _dialog_no_clip (GtkWidget *parent);
+void _dialog_error (GtkWidget *parent, const gchar *msg);
 
 
 #endif /* __AVS3_PRIVATE_H__ */

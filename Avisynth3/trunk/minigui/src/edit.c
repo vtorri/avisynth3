@@ -8,7 +8,7 @@ void
 avs3_edit_begin (Avs3_Data *data, GtkWidget *parent)
 {
   if (!data->clip) {
-    _dialog_no_clip (parent);
+    _dialog_error (parent, "No video clip avalaible");
     return;
   }
 
@@ -23,7 +23,7 @@ avs3_edit_end (Avs3_Data *data, GtkWidget *parent)
   AVS_VideoInfo *info;
 
   if (!data->clip) {
-    _dialog_no_clip (parent);
+    _dialog_error (parent, "No video clip avalaible");
     return;
   }
 
@@ -44,7 +44,7 @@ avs3_edit_goto (Avs3_Data *data, GtkWidget *parent)
   gint       res;
 
   if (!data->clip) {
-    _dialog_no_clip (parent);
+    _dialog_error (parent, "No video clip avalaible");
     return;
   }
 

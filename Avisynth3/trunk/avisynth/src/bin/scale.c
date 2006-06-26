@@ -8,7 +8,7 @@ void
 avs3_scale (Avs3_Data *data, GtkWidget *parent, gint frame)
 {
   if (!data->clip) {
-    _dialog_no_clip (parent);
+    _dialog_error (parent, "No video clip avalaible");
     return;
   }
 

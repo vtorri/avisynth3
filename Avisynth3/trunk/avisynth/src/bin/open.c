@@ -17,7 +17,7 @@ _open_script (Avs3_Data *data)
   info = avs_clip_videoinfo_get (data->clip);
   if (avs_videoinfo_has_video (info)) {
     data->frames_count = avs_videoinfo_framecount_get (info);
-    g_print ("frame count !! : %d\n", data->frames_count);
+    g_print ("\n\nframe count !! : %d\n", data->frames_count);
     gtk_range_set_range (GTK_RANGE (data->scale),
                          0, data->frames_count - 1);
     avs3_preview_draw (data, data->frame_current);

@@ -101,15 +101,7 @@ _save_file (Avs3_Encode_Data *encode_data, GtkWidget *dialog)
   filename_output = gtk_entry_get_text (GTK_ENTRY (encode_data->file_output));
   if (!filename_output ||
       (filename_output[0] == '\0')) {
-    GtkWidget *dialog_message;
-
-    dialog_message = gtk_message_dialog_new (GTK_WINDOW (dialog),
-                                             GTK_DIALOG_DESTROY_WITH_PARENT,
-                                             GTK_MESSAGE_ERROR,
-                                             GTK_BUTTONS_CLOSE,
-                                             "Error: output file name is not set");
-    gtk_dialog_run (GTK_DIALOG (dialog_message));
-    gtk_widget_destroy (dialog_message);
+    _dialog_error (dialog, "Output file name is not set");
     goto free_vi;
   }
   container = gtk_combo_box_get_active (GTK_COMBO_BOX (encode_data->combo));
@@ -219,81 +211,78 @@ avs3_save (Avs3_Data *data)
   GtkWidget        *win_save;
   Avs3_Encode_Data *encode_data = NULL;
   gint              res;
+  GtkWidget        *table;
+  GtkWidget        *label;
 
-  if (data->clip) {
-    GtkWidget        *table;
-    GtkWidget        *label;
+  if (!data->clip) {
+    _dialog_error (data->window, "No clip avalaible");
+    return;
+  }
 
-    encode_data = (Avs3_Encode_Data *)g_malloc0 (sizeof (Avs3_Encode_Data));
-    if (!encode_data)
-      return;
 
-    encode_data->data = data;
+  encode_data = (Avs3_Encode_Data *)g_malloc0 (sizeof (Avs3_Encode_Data));
+  if (!encode_data)
+    return;
 
-    win_save = gtk_dialog_new_with_buttons ("Save File",
-                                            GTK_WINDOW (data->window),
-                                            GTK_DIALOG_DESTROY_WITH_PARENT,
-                                            GTK_STOCK_CANCEL,
-                                            GTK_RESPONSE_CANCEL,
-                                            GTK_STOCK_EXECUTE,
-                                            GTK_RESPONSE_APPLY,
-                                            NULL);
+  encode_data->data = data;
 
-    table = gtk_table_new (3, 2, TRUE);
-    gtk_table_set_row_spacings (GTK_TABLE (table), 6);
-    gtk_table_set_col_spacings (GTK_TABLE (table), 6);
-    gtk_container_set_border_width (GTK_CONTAINER (table), 6);
-    gtk_box_pack_start (GTK_BOX (GTK_DIALOG (win_save)->vbox), table,
-                        TRUE, TRUE, 0);
-    gtk_widget_show (table);
+  win_save = gtk_dialog_new_with_buttons ("Save File",
+                                          GTK_WINDOW (data->window),
+                                          GTK_DIALOG_DESTROY_WITH_PARENT,
+                                          GTK_STOCK_CANCEL,
+                                          GTK_RESPONSE_CANCEL,
+                                          GTK_STOCK_EXECUTE,
+                                          GTK_RESPONSE_APPLY,
+                                          NULL);
 
-    label = gtk_label_new ("Output path:");
-    gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-    gtk_table_attach_defaults (GTK_TABLE (table), label, 0, 1, 0, 1);
-    gtk_widget_show (label);
+  table = gtk_table_new (3, 2, TRUE);
+  gtk_table_set_row_spacings (GTK_TABLE (table), 6);
+  gtk_table_set_col_spacings (GTK_TABLE (table), 6);
+  gtk_container_set_border_width (GTK_CONTAINER (table), 6);
+  gtk_box_pack_start (GTK_BOX (GTK_DIALOG (win_save)->vbox), table,
+                      TRUE, TRUE, 0);
+  gtk_widget_show (table);
 
-    encode_data->path_output = gtk_file_chooser_button_new ("Select a path",
-                                                       GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
-    gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (encode_data->path_output),
-                                         g_get_home_dir ());
-    gtk_table_attach_defaults (GTK_TABLE (table), encode_data->path_output, 1, 2, 0, 1);
-    gtk_widget_show (encode_data->path_output);
+  label = gtk_label_new ("Output path:");
+  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+  gtk_table_attach_defaults (GTK_TABLE (table), label, 0, 1, 0, 1);
+  gtk_widget_show (label);
 
-    label = gtk_label_new ("Output file (without ext.):");
-    gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-    gtk_table_attach_defaults (GTK_TABLE (table), label, 0, 1, 1, 2);
-    gtk_widget_show (label);
+  encode_data->path_output = gtk_file_chooser_button_new ("Select a path",
+                                                          GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
+  gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (encode_data->path_output),
+                                       g_get_home_dir ());
+  gtk_table_attach_defaults (GTK_TABLE (table), encode_data->path_output, 1, 2, 0, 1);
+  gtk_widget_show (encode_data->path_output);
 
-    encode_data->file_output = gtk_entry_new_with_max_length (4095);
-    gtk_table_attach_defaults (GTK_TABLE (table), encode_data->file_output, 1, 2, 1, 2);
-    gtk_widget_show (encode_data->file_output);
+  label = gtk_label_new ("Output file (without ext.):");
+  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+  gtk_table_attach_defaults (GTK_TABLE (table), label, 0, 1, 1, 2);
+  gtk_widget_show (label);
 
-    label = gtk_label_new ("Container:");
-    gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-    gtk_table_attach_defaults (GTK_TABLE (table), label, 0, 1, 2, 3);
-    gtk_widget_show (label);
+  encode_data->file_output = gtk_entry_new_with_max_length (4095);
+  gtk_table_attach_defaults (GTK_TABLE (table), encode_data->file_output, 1, 2, 1, 2);
+  gtk_widget_show (encode_data->file_output);
 
-    encode_data->combo = gtk_combo_box_new_text ();
-    gtk_combo_box_append_text (GTK_COMBO_BOX (encode_data->combo),
-                               "Raw ES");
-    gtk_combo_box_append_text (GTK_COMBO_BOX (encode_data->combo),
-                               "Matroska");
+  label = gtk_label_new ("Container:");
+  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+  gtk_table_attach_defaults (GTK_TABLE (table), label, 0, 1, 2, 3);
+  gtk_widget_show (label);
+
+  encode_data->combo = gtk_combo_box_new_text ();
+  gtk_combo_box_append_text (GTK_COMBO_BOX (encode_data->combo),
+                             "Raw ES");
+  gtk_combo_box_append_text (GTK_COMBO_BOX (encode_data->combo),
+                             "Matroska");
 #ifdef MP4_OUTPUT
-    gtk_combo_box_append_text (GTK_COMBO_BOX (encode_data->combo),
-                               "Mp4");
+  gtk_combo_box_append_text (GTK_COMBO_BOX (encode_data->combo),
+                             "Mp4");
 #endif
-    gtk_table_attach_defaults (GTK_TABLE (table), encode_data->combo, 1, 2, 2, 3);
-    gtk_widget_show (encode_data->combo);
+  gtk_table_attach_defaults (GTK_TABLE (table), encode_data->combo, 1, 2, 2, 3);
+  gtk_widget_show (encode_data->combo);
 
-    gtk_combo_box_set_active (GTK_COMBO_BOX (encode_data->combo), 0);
-  }
-  else {
-    win_save = gtk_message_dialog_new (GTK_WINDOW (data->window),
-                                       GTK_DIALOG_DESTROY_WITH_PARENT,
-                                       GTK_MESSAGE_ERROR,
-                                       GTK_BUTTONS_CLOSE,
-                                       "No clip avalaible");
-  }
+  gtk_combo_box_set_active (GTK_COMBO_BOX (encode_data->combo), 0);
+
   res = gtk_dialog_run (GTK_DIALOG (win_save));
   switch (res) {
   case GTK_RESPONSE_APPLY:

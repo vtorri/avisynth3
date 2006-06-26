@@ -17,7 +17,7 @@ _data_delete (Avs3_Data *data)
 }
 
 void
-_dialog_no_clip (GtkWidget *parent)
+_dialog_error (GtkWidget *parent, const gchar *msg)
 {
   GtkWidget *dialog;
 
@@ -25,7 +25,7 @@ _dialog_no_clip (GtkWidget *parent)
                                    GTK_DIALOG_DESTROY_WITH_PARENT,
                                    GTK_MESSAGE_ERROR,
                                    GTK_BUTTONS_CLOSE,
-                                   "No video clip avalaible");
+                                   msg);
   gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (dialog);
 }

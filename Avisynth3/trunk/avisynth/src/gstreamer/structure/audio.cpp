@@ -55,16 +55,18 @@ SampleType Audio::GetSampleType() const
 
     if ( width == GetIntField("depth") )    
       if ( ! GetBoolField("signed") )    //if unsigned
+      {
         if ( width == 8 )                //and width 8
           return SAMPLE_INT8;
-        else                             //signed
-          switch ( width )
-          {
-          case 16: return SAMPLE_INT16;
-          case 24: return SAMPLE_INT24;
-          case 32: return SAMPLE_INT32;
-          default: break;
-          }
+      }
+      else                               //signed
+        switch ( width )
+        {
+        case 16: return SAMPLE_INT16;
+        case 24: return SAMPLE_INT24;
+        case 32: return SAMPLE_INT32;
+        default: break;
+        }
   }
 
   if ( name == "audio/x-raw-float" && GetIntField("width") == 32 )

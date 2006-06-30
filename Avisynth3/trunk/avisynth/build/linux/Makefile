@@ -1,14 +1,14 @@
 ##############################################################################
 #
-# - Unified Makefile for XviD for *nix environments -
+# - Unified Makefile for Avisynth 3.0 for *nix environments -
 #
-# Copyright(C) 2003-2004 Edouard Gomez <ed.gomez@free.fr>
+# Copyright(C) 2004-2006 Vincent Torri <vtorri at univ-evry dot fr>
 #
 #
 # Description:
-#  This Makefile allows building XviD sources to obtain a shared library
-#  and a static library. This Makefile uses variables defined in the
-#  platform.inc file. This platform.inc file is usually created by the
+#  This Makefile allows building Avisynth 3.0 sources to obtain a shared
+#  library and a static library. This Makefile uses variables defined in
+#  the platform.inc file. This platform.inc file is usually created by the
 #  ./configure script whenever a unix shell is available.
 #
 # Makefile functional dependencies:
@@ -23,17 +23,18 @@
 #  - A means "_A_ssembling"
 #  - I means "_I_nstalling"
 #  - D means "creating _D_irectory"
+#  - U means "_U_ninstalling"
 #  - Cl means "_Cl_eaning"
 #
 # NB: (for mingw32/djgpp users)
 #   These 2 environments do not provide a shell by default. So it's impossible
 #   to use the configure script to generate a platform.inc file suitable for
 #   your machine. You have two choices:
-#    - install minsys from the mingw project or install cygwin and then use
+#    - install msys from the mingw project or install cygwin and then use
 #      the configure script as on a unix system.
 #    - write a platform.inc file by hand.
 #
-# PS: default build directory is "=build", it fits naming conventions that
+# PS: default build directory is "build", it fits naming conventions that
 #     make the arch/tla revision control program ignore files contained in
 #     this directory during commits operations. This choice is completly
 #     arbitrary, but try not to change it.
@@ -154,7 +155,7 @@ $(STATIC_LIB): .depend $(LIB_OBJECTS) $(ASM_OBJECTS) $(SRC_LIB_GENERIC)
 # NB: This rule is used a nasty way by the MacOSX module build process
 #     In this only case, it uses the SPECIFIC_LDFLAGS to append an additionnal
 #     linking step:
-#      1/ it links a pre shared lib (libxvidcore.so-temp.4)
+#      1/ it links a pre shared lib (libavisynth.so-temp.4)
 #      2/ it links that pre shared lib outputing the real shared lib (module)
 #     In all other cases this rule is straight forward and simple.
 #     PRE_SHARED_LIB == SHARED_LIB and no nasty command appending.
@@ -264,7 +265,7 @@ configure:
 #-----------------------------------------------------------------------------
 
 .depend: $(BUILD_DIR)
-	@echo "  H: headers dependances"
+	@echo "  H: headers dependancies"
 	@$(RM) $(BUILD_DIR)/.depend
 	@touch $(BUILD_DIR)/.depend
 	@cd $(SRC_DIR) && \

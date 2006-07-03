@@ -51,11 +51,33 @@
  *
  * \section intro Introduction
  *
- * text.
+ * Avisynth 3.0 is a powerful frameserver for Windows and Linux. It
+ * aims at editing and processing videos in a non linear manner. It is
+ * written in C++, but a C API is provided, for those who do not like
+ * this language.
  *
- * \section example Example
+ * This document presents the complete C API and a general
+ * presentation on how to use it
  *
- * text.
+ * \section presentation Presentation
+ *
+ * This API has been used (and actually written) for the test
+ * application that is provided with avisynth. It is usually
+ * sufficient for the most common use of avisynth when writing a
+ * program, that is: reading a script.
+ *
+ * The general use of this API is:
+ * - You create an environment with avs_environment_new().
+ * - You create a clip from a file or a script (with respectively
+ * avs_clip_new_from_file() and avs_clip_new_from_script()).
+ * - You can get informations on the script with
+ * avs_clip_videoinfo_get().
+ * - You can get the data of the frames with
+ * avs_clip_videoframe_get().
+ * - You delete the environment.
+ *
+ * It is then easy to create an input for programs like x264 or
+ * gstreamer.
  */
 
 
@@ -76,12 +98,7 @@ extern "C"
  ******************************************************************/
 
 #ifndef __AVISYNTH_H__
-enum { AVISYNTH_INTERFACE_VERSION = 2 };
-#endif
-
-#if !defined(__ANSI__) && !defined(__cplusplus)
-#  define HAVE_BOOL
-typedef enum { false=0, true=1 } bool;
+enum { AVISYNTH_INTERFACE_VERSION = 1 };
 #endif
 
 

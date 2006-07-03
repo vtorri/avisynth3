@@ -79,7 +79,7 @@ distfile=$(distdir).tar
 
 .SUFFIXES: .$(OBJECT_EXTENSION) .$(ASSEMBLY_EXTENSION) .cpp .c
 
-all: $(GST_VIDEO_SINK_LIB) $(GST_AUDIO_SINK_LIB) $(STATIC_LIB) $(SHARED_LIB) $(PROG)
+all: $(GST_VIDEO_SINK_LIB) $(GST_AUDIO_SINK_LIB) $(STATIC_LIB) $(SHARED_LIB) $(PROG) $(DOC)
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo " Avisynth has been successfully built."
@@ -177,6 +177,13 @@ $(PROG): .depend $(GST_VIDEO_OBJECTS) $(BIN_OBJECTS) $(STATIC_LIB)
 	@cd $(BUILD_DIR) && $(CC) -o $(PROG) $(BIN_OBJECTS) $(STATIC_LIB) $(AVS3_LIBS) $(GTK_LIBS) $(X264_LIBS)
 
 #-----------------------------------------------------------------------------
+# Documentation
+#-----------------------------------------------------------------------------
+$(DOC):
+	@echo "  Do: c api"
+	@cd $(SRC_DIR)/../docs/api_c && doxygen
+
+#-----------------------------------------------------------------------------
 # Installation
 #-----------------------------------------------------------------------------
 
@@ -221,9 +228,12 @@ install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB) $(BUILD_DIR)/$(PR
 	@echo "  D: $(DESTDIR)$(GST_PLUGIN_PATH)"
 	@$(INSTALL) -d $(DESTDIR)$(GST_PLUGIN_PATH)
 	@echo "  I: $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_VIDEO_SINK_LIB)"
-	@$(INSTALL) -m 755 $(BUILD_DIR)/$(GST_VIDEO_SINK_LIB) $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_VIDEO_SINK_LIB)
+	@$(INSTALL) -m 644 $(BUILD_DIR)/$(GST_VIDEO_SINK_LIB) $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_VIDEO_SINK_LIB)
 	@echo "  I: $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_AUDIO_SINK_LIB)"
-	@$(INSTALL) -m 755 $(BUILD_DIR)/$(GST_AUDIO_SINK_LIB) $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_AUDIO_SINK_LIB)
+	@$(INSTALL) -m 644 $(BUILD_DIR)/$(GST_AUDIO_SINK_LIB) $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_AUDIO_SINK_LIB)
+	@echo "  I: $(DESTDIR)$(docdir)/api_c"
+	@$(INSTALL) -d $(DESTDIR)/$(docdir)/api_c
+	@$(INSTALL) -m 644 $(SRC_DIR)/../docs/api_c/html/* $(DESTDIR)/$(docdir)/api_c
 
 #-----------------------------------------------------------------------------
 # Uninstallation
@@ -248,6 +258,8 @@ uninstall:
 	@$(RM) $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_VIDEO_SINK_LIB)
 	@echo "  U: $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_AUDIO_SINK_LIB)"
 	@$(RM) $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_AUDIO_SINK_LIB)
+	@echo "  U: $(DESTDIR)$(docdir)"
+	@$(RM) $(DESTDIR)/$(docdir)
 
 #-----------------------------------------------------------------------------
 # Platorm specific file -- dumb rules for people executing make before

@@ -31,10 +31,6 @@
  * export plugins, or graphical user interfaces.
  */
 
-/*
- * colorspace interface
- */
-
 #ifndef __COLORSPACE_C_H__
 #define __COLORSPACE_C_H__
 
@@ -43,22 +39,48 @@
 #include "define_c.h"
 
 
+/** \file colorspace_c.h
+ * \brief C interface for colorspace of the video of a clip.
+ *
+ * C interface for colorspaces. You can get the colorspace with the
+ * function avs_videoinfo_colorspace_get(). Once you got it, you can
+ * check it with avs_colorspace_id_get().
+ */
+
+/**
+ * opaque declaration of a colorspace.
+ */
 typedef struct AVS_ColorSpace_ AVS_ColorSpace;
 
 
-/*ColorSpace ids, used to switch on color spaces */
+/** \brief ColorSpace ids, used to switch on color spaces */
 typedef enum
 {
-  I_EXTERNAL, /* reports an external colorspace (defined by a plugin) */
-  I_RGB24,
-  I_RGB32,
-  I_YUY2,
-  I_YV12,
-  I_YV24
+  I_EXTERNAL, /**< reports an external colorspace (defined by a plugin) */
+  I_RGB24,    /**< 24 bits RGB colorspace */
+  I_RGB32,    /**< 32 bits RGB colorspace */
+  I_YUY2,     /**< YUY2 interlaced colorspace */
+  I_YV12,     /**< YV12 planar colorspace */
+  I_YV24      /**< YV24 planar colorspace */
 }ColorSpace_Id;
 
+
+/** \brief Delete an AVS_ColorSpace.
+ *
+ * \param p_cs The colorspace to delete.
+ *
+ * Delete the colorspace \p p_cs.
+ */
 AVS_C_API void avs_colorspace_delete (AVS_ColorSpace *p_cs);
 
+
+/** \brief Retrieve the type of the colorspace.
+ *
+ * \param p_cs The colorspace.
+ * \return The id of the colorspace.
+ *
+ * Retrieve the type of the colorspace \p p_cs.
+ */
 AVS_C_API ColorSpace_Id avs_colorspace_id_get (const AVS_ColorSpace *p_cs);
 
 

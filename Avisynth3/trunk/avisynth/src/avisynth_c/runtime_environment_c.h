@@ -31,10 +31,6 @@
  * export plugins, or graphical user interfaces.
  */
 
-/*
- * runtime_environment interface
- */
-
 #ifndef __RUNTIME_ENVIRONMENT_C_H__
 #define __RUNTIME_ENVIRONMENT_C_H__
 
@@ -43,11 +39,40 @@
 #include "define_c.h"
 
 
+/** \file runtime_environment_c.h
+ * \brief C interface for environments
+ *
+ * C interface for environment.
+ *
+ * Once you have finished with an AVS_VideoInfo, you delete it with
+ * avs_environment_delete().
+ */
+
+
+/**
+ * opaque declaration of an environment.
+ */
 typedef struct AVS_Environment_ AVS_Environment;
 
 
+/** \brief Create an environment.
+ *
+ * \param size The string that contains the script.
+ * \return A newly allocated environment.
+ *
+ * Create an environment of size \p size (in bytes). If an error
+ *occurred, this function returns \c NULL.
+ */
 AVS_C_API AVS_Environment *avs_environment_new    (int size);
-AVS_C_API void             avs_environment_delete (AVS_Environment *env);
+
+
+/** \brief Delete an AVS_Environment.
+ *
+ * \param p_env The environment to delete.
+ *
+ * Delete the environment \p p_env.
+ */
+AVS_C_API void             avs_environment_delete (AVS_Environment *p_env);
 
 
 #endif /* __RUNTIME_ENVIRONMENT_C_H__ */

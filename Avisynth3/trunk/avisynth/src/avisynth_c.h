@@ -34,6 +34,31 @@
 #ifndef __AVISYNTH_3_0_C_H__
 #define __AVISYNTH_3_0_C_H__
 
+
+/**
+ * \file avisynth_c.h
+ * \brief The file that should be included by any project using the C
+ * interface of avisynth 3.0.
+ *
+ * The file that should be included by any project using the C
+ * interface of avisynth 3.0. It provides all the necessary headers
+ * and includes to work with the C interface. It is discouraged to
+ * include each header file individually.
+ */
+
+/**
+ * \mainpage The Avisynth 3.0 C Interface
+ *
+ * \section intro Introduction
+ *
+ * text.
+ *
+ * \section example Example
+ *
+ * text.
+ */
+
+
 /******************************************************************
  * extern stuff
  ******************************************************************/
@@ -44,6 +69,7 @@
 extern "C" 
 {
 #endif
+
 
 /******************************************************************
  * Constants

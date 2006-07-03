@@ -85,6 +85,7 @@ exec_prefix=@exec_prefix@
 bindir=@bindir@
 libdir=@libdir@
 includedir=@includedir@/avisynth-3.0
+docdir=@datadir@/doc/avisynth-3.0
 pkgconfigdir=@libdir@/pkgconfig
 GST_PLUGIN_PATH=@GST_PLUGIN_PATH@
 
@@ -115,6 +116,8 @@ GST_VIDEO_SINK_LIB=@GST_VIDEO_SINK_LIB@
 GST_AUDIO_SINK_LIB=@GST_AUDIO_SINK_LIB@
 
 PROG=@PROG@
+
+DOC=@DOC@
 
 AVS_PC=avisynth-3.0.pc
 

@@ -2,7 +2,7 @@ dnl ==========================================================================
 dnl
 dnl Autoconf script for Avisynth 3.0
 dnl
-dnl Copyright(C) 2006 Vincent TORRI <vtorri@univ-evry.fr>
+dnl Copyright(C) 2006 Vincent Torri <vtorri at univ-evry dot fr>
 dnl
 dnl ==========================================================================
 
@@ -49,15 +49,19 @@ dnl Gtk+ version requirement
 GTK_REQS=2.8
 
 dnl Default CFLAGS -- Big impact on overall speed
-our_cflags_defaults="-O2 -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-declarations"
-our_cflags_defaults="$our_cxxflags_defaults -fstrength-reduce"
-our_cflags_defaults="$our_cxxflags_defaults -finline-functions"
-our_cflags_defaults="$our_cxxflags_defaults -ffast-math"
+cflags_warnings="-ansi -pedantic -Wall -W -Wpointer-arith -Wconversion -Wstrict-prototypes -Wmissing-declarations"
+cxxflags_warnings="-ansi -Wall -Wpointer-arith -Wconversion -Wno-non-virtual-dtor"
 
-our_cxxflags_defaults="-O2 -Wall -Wno-non-virtual-dtor -fexceptions"
-our_cxxflags_defaults="$our_cxxflags_defaults -fstrength-reduce"
-our_cxxflags_defaults="$our_cxxflags_defaults -finline-functions"
-our_cxxflags_defaults="$our_cxxflags_defaults -ffast-math"
+cflags_optimization="-O2"
+cflags_optimization="${cxxflags_optimization} -fstrength-reduce"
+cflags_optimization="${cxxflags_optimization} -finline-functions"
+cflags_optimization="${cxxflags_optimization} -ffast-math"
+
+cxxflags_optimization="-O2"
+cxxflags_optimization="${cxxflags_optimization} -fexceptions"
+cxxflags_optimization="${cxxflags_optimization} -fstrength-reduce"
+cxxflags_optimization="${cxxflags_optimization} -finline-functions"
+cxxflags_optimization="${cxxflags_optimization} -ffast-math"
 
 dnl Default GEN_SOURCES for gen_source.sh
 dnl On Linux, Vfw and COM files should be removed
@@ -121,7 +125,7 @@ AC_ARG_ENABLE(
       [Build as a module on MacOS X]),
    [if test "${enable_macosx_module}" = "yes" ; then
        macosx_module="yes"
-    else 
+    else
        macosx_module="no"
     fi],
    [macosx_module="no"])
@@ -134,10 +138,23 @@ AC_ARG_ENABLE(
       [Build the gui program]),
    [ if test "x${enable_gui}" = "xyes" ; then
        gui_program="yes"
-    else 
+    else
        gui_program="no"
     fi ],
    [ gui_program="yes" ])
+
+dnl Build the documentation
+AC_ARG_ENABLE(
+   [doc],
+   AC_HELP_STRING(
+      [--disable-doc],
+      [Build the documentation]),
+   [ if test "x${enable_doc}" = "xyes" ; then
+       build_doc="yes"
+    else
+       build_doc="no"
+    fi ],
+   [ build_doc="yes" ])
 
 dnl ==========================================================================
 dnl Check for the C compiler (could be passed on command line)
@@ -233,10 +250,10 @@ if test x"$assembly" = x"yes" ; then
       i[[3456]]86)
          AC_MSG_RESULT(ia32)
          ARCHITECTURE="IA32"
-      ;;	
+      ;;
       powerpc)
          AC_MSG_RESULT(PowerPC)
-         dnl ATM the ppc port is out of date 
+         dnl ATM the ppc port is out of date
          dnl ARCHITECTURE="PPC"
          assembly="no"
       ;;
@@ -333,9 +350,9 @@ case "$target_os" in
 	   AC_MSG_RESULT([dylib options])
 	   SHARED_LIB="libavisynth.\$(API_MAJOR).\$(SHARED_EXTENSION)"
 	   SPECIFIC_LDFLAGS="-dynamiclib -flat_namespace -compatibility_version \$(API_MAJOR) -current_version \$(API_MAJOR).\$(API_MINOR) -install_name \$(libdir)/\$(SHARED_LIB)"
-	else 
+	else
 	   AC_MSG_RESULT([module options])
- 	   PRE_SHARED_LIB="libavisynth.\$(SHARED_EXTENSION)-temp.o"
+	   PRE_SHARED_LIB="libavisynth.\$(SHARED_EXTENSION)-temp.o"
 	   SHARED_LIB="libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR)"
 	   SPECIFIC_LDFLAGS="-r -keep_private_externs -nostdlib && \$(CC) \$(LDFLAGS) \$(PRE_SHARED_LIB) -o libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR) -bundle -flat_namespace -undefined suppress"
 	fi
@@ -357,7 +374,7 @@ case "$target_os" in
 	;;
 esac
 
-if test x"$PRE_SHARED_LIB" = x; then 
+if test x"$PRE_SHARED_LIB" = x; then
   PRE_SHARED_LIB=$SHARED_LIB
 fi
 
@@ -467,8 +484,13 @@ if test "$ARCHITECTURE" = "IA64" ; then
 
          dnl If the compiler is ecc, then i don't know its options
          dnl fallback to "no options"
-         if test "$force_default_cxx_options" = "yes" ; then
-            our_cflags_defaults=""
+         cflags_warnings=""
+         cxxflags_warnings=""
+         if test "${force_default_c_options}" = "yes" ; then
+            cflags_defaults=""
+         fi
+         if test "${force_default_cxx_options}" = "yes" ; then
+            cxxflags_optimization=""
          fi
       ;;
       *)
@@ -487,7 +509,8 @@ dnl ==========================================================================
 dnl Check debug mode
 if test "x${core_debug_mode}" = "xyes" ; then
    CORE_DEBUG_MODE_CFLAGS="-g"
-   our_cxxflags_defaults="-Wall -Wno-non-virtual-dtor -fexceptions"
+   cflags_optimization=""
+   cxxflags_optimization=""
 else
    CORE_DEBUG_MODE_CFLAGS="-DNDEBUG"
    SPECIFIC_LDFLAGS="-s ${SPECIFIC_LDFLAGS}"
@@ -530,7 +553,7 @@ AC_CHECK_HEADERS(
    [],
    [AC_MSG_ERROR(Missing header file)])
 
-case "$target_os" in 
+case "$target_os" in
    *bsd*|linux*|beos|irix*|solaris*)
       AC_CHECK_HEADER(
          [pthread.h],
@@ -592,11 +615,11 @@ dnl ==========================================================================
 AM_CHECK_BOOST(
    [${BOOST_VERSION}],
    [${target_os}],
-   [], 
+   [],
    [AM_CHECK_BOOST(
       [${BOOST_VERSION}_1],
       [${target_os}],
-      [], 
+      [],
       [AC_MSG_ERROR("Boost is needed !")])
    ])
 
@@ -640,7 +663,7 @@ PROG=""
 
 if test "x${gui_program}" = "xyes" ; then
 
-AC_MSG_NOTICE([checking if the gui program can be compiled])
+   AC_MSG_NOTICE([checking if the gui program can be compiled])
 
 dnl Gtk+ header and library files
    HAVE_GTK="no"
@@ -680,18 +703,35 @@ fi
 AC_MSG_CHECKING([whether the gui program can be compiled])
 AC_MSG_RESULT([${gui_program}])
 
+
+dnl ==========================================================================
+dnl Documentation
+dnl ==========================================================================
+
+DOC=""
+
+if test "x${build_doc}" = "xyes" ; then
+   AC_CHECK_PROG([ac_doxygen], [doxygen], [yes], [no], , [yes])
+   if test "x${ac_doxygen}" = "xyes" ; then
+      DOC="doc"
+   else
+      build_doc="no"
+   fi
+fi
+
+
 dnl ==========================================================================
 dnl
 dnl Now we can set CFLAS/CXXFLAGS if needed
 dnl
 dnl ==========================================================================
 
-if test "$force_default_c_options" = "yes" ; then
-   CFLAGS="$our_cflags_defaults"
+if test "${force_default_c_options}" = "yes" ; then
+   CFLAGS="${cflags_warnings} ${cflags_optimization}"
 fi
 
-if test "$force_default_cxx_options" = "yes" ; then
-   CXXFLAGS="$our_cxxflags_defaults"
+if test "${force_default_cxx_options}" = "yes" ; then
+   CXXFLAGS="${cxxflags_warnings} ${cxxflags_optimization}"
 fi
 
 dnl ==========================================================================
@@ -705,7 +745,7 @@ dnl ==========================================================================
 SPECIFIC_LDFLAGS="$SPECIFIC_LDFLAGS $GNU_PROF_LDFLAGS"
 SPECIFIC_CFLAGS="$SPECIFIC_CFLAGS $GNU_PROF_CFLAGS"
 
-if test "$enable_gnuprofile" = "yes" ; then
+if test "x${enable_gnuprofile}" = "xyes" ; then
    CFLAGS=`echo $CFLAGS | sed s/'-fomit-frame-pointer'/''/`
 fi
 
@@ -764,11 +804,7 @@ AC_SUBST(GENERIC_LIB_SOURCES)
 AC_SUBST(GST_VIDEO_SINK_LIB)
 AC_SUBST(GST_AUDIO_SINK_LIB)
 AC_SUBST(PROG)
-
-AC_SUBST(exec_prefix)
-AC_SUBST(bindir)
-AC_SUBST(libdir)
-AC_SUBST(includedir)
+AC_SUBST(DOC)
 
 
 dnl ==========================================================================
@@ -800,10 +836,13 @@ echo " ASM support.........: $assembly"
 echo
 echo " Gui program.........: ${gui_program}"
 echo
+echo " Documentation.......: ${build_doc}"
+echo
 echo " Install path........: $prefix"
 echo "   binaries..........: $bindir"
 echo "   libraries.........: ${libdir}"
 echo "   headers...........: ${includedir}/avisynth-3.0"
+echo "   documentation.....: ${datadir}/doc/avisynth-3.0"
 echo "   gst-plugins.......: $GST_PLUGIN_PATH"
 echo
 echo " Compilation.........: make"

@@ -158,7 +158,7 @@ avs_clip_new_to_rgb32 (const AVS_Clip *p_clip)
 {
   AVS_Clip *p_clip_rgb32;
 
-  if (!p_clip)
+  if (!p_clip || p_clip->p_clip_->GetVideoInfo ()->IsRGB32 ())
     return NULL;
 
   p_clip_rgb32 = new AVS_Clip;
@@ -175,7 +175,7 @@ avs_clip_new_to_yv12 (const AVS_Clip *p_clip)
 {
   AVS_Clip *p_clip_yv12;
 
-  if (!p_clip)
+  if (!p_clip || p_clip->p_clip_->GetVideoInfo ()->IsYV12 ())
     return NULL;
 
   p_clip_yv12 = new AVS_Clip;

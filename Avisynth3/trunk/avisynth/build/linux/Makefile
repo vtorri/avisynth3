@@ -79,7 +79,7 @@ distfile=$(distdir).tar
 
 .SUFFIXES: .$(OBJECT_EXTENSION) .$(ASSEMBLY_EXTENSION) .cpp .c
 
-all: $(GST_VIDEO_SINK_LIB) $(GST_AUDIO_SINK_LIB) $(STATIC_LIB) $(SHARED_LIB) $(PROG) $(DOC)
+all: $(STATIC_LIB) $(SHARED_LIB) $(GST_VIDEO_SINK_LIB) $(GST_AUDIO_SINK_LIB) $(PROG) $(DOC)
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo " Avisynth has been successfully built."
@@ -172,7 +172,7 @@ $(SHARED_LIB): .depend $(LIB_OBJECTS) $(ASM_OBJECTS)
 #-----------------------------------------------------------------------------
 # Test program
 #-----------------------------------------------------------------------------
-$(PROG): .depend $(GST_VIDEO_OBJECTS) $(BIN_OBJECTS) $(STATIC_LIB)
+$(PROG): .depend $(BIN_OBJECTS) $(STATIC_LIB)
 	@echo "  P: $(@F)"
 	@cd $(BUILD_DIR) && $(CC) -o $(PROG) $(BIN_OBJECTS) $(STATIC_LIB) $(AVS3_LIBS) $(GTK_LIBS) $(X264_LIBS)
 
@@ -188,10 +188,12 @@ $(DOC):
 #-----------------------------------------------------------------------------
 
 install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB) $(BUILD_DIR)/$(PROG) $(BUILD_DIR)/$(GST_VIDEO_SINK_LIB) $(BUILD_DIR)/$(GST_AUDIO_SINK_LIB)
-	@echo "  D: $(DESTDIR)$(bindir)"
-	@$(INSTALL) -d $(DESTDIR)$(bindir)
-	@echo "  I: $(DESTDIR)$(bindir)/$(PROG)"
-	@$(INSTALL) -m 755 $(BUILD_DIR)/$(PROG) $(DESTDIR)$(bindir)/$(PROG)
+	@if ! test "x$(PROG)" = "x"; then \
+	  echo "  D: $(DESTDIR)$(bindir)"; \
+	  $(INSTALL) -d $(DESTDIR)$(bindir); \
+	  echo "  I: $(DESTDIR)$(bindir)/$(PROG)"; \
+	  $(INSTALL) -m 755 $(BUILD_DIR)/$(PROG) $(DESTDIR)$(bindir)/$(PROG); \
+	fi
 	@echo "  D: $(DESTDIR)$(libdir)"
 	@$(INSTALL) -d $(DESTDIR)$(libdir)
 	@echo "  I: $(DESTDIR)$(libdir)/$(SHARED_LIB)"
@@ -240,8 +242,10 @@ install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB) $(BUILD_DIR)/$(PR
 #-----------------------------------------------------------------------------
 
 uninstall:
-	@echo "  U: $(DESTDIR)$(bindir)/$(PROG)"
-	@$(RM) $(DESTDIR)$(bindir)/$(PROG)
+	@if ! test "x$(PROG)" = "x"; then \
+	  echo "  U: $(DESTDIR)$(bindir)/$(PROG)"; \
+	  $(RM) $(DESTDIR)$(bindir)/$(PROG); \
+	fi
 	@echo "  U: $(DESTDIR)$(libdir)/$(SHARED_LIB)"
 	@$(RM) $(DESTDIR)$(libdir)/$(SHARED_LIB)
 	@echo "  U: $(DESTDIR)$(libdir)/libavisynth.$(SHARED_EXTENSION).$(API_MAJOR)"

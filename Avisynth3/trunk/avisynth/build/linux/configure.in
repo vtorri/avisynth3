@@ -634,6 +634,14 @@ PKG_CHECK_MODULES(
    [HAVE_GSTREAMER="yes"],
    [HAVE_GSTREAMER="no"])
 
+case "$target_os" in
+   *bsd*|linux*|beos|irix*|solaris*)
+      if test "${HAVE_GSTREAMER}" = "no" ; then
+         AC_MSG_ERROR([Gstreamer support is needed when building Avisynth 3.0 on linux])
+      fi
+   ;;
+esac
+
 PKG_CHECK_MODULES(
    [GSTBASE],
    [gstreamer-$GST_MAJORMINOR >= $GST_REQS gstreamer-base-$GST_MAJORMINOR >= $GST_REQS],

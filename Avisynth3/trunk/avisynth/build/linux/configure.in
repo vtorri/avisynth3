@@ -637,7 +637,7 @@ PKG_CHECK_MODULES(
 PKG_CHECK_MODULES(
    [GSTBASE],
    [gstreamer-$GST_MAJORMINOR >= $GST_REQS gstreamer-base-$GST_MAJORMINOR >= $GST_REQS],
-   [HAVE_GSTREAMER="yes"],
+   [],
    [HAVE_GSTREAMER="no"])
 
 case "$target_os" in

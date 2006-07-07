@@ -1,9 +1,0 @@
-#!/bin/sh
-rm -rf ./html ./latex ./man
-mkdir -p html man latex
-doxygen
-#cp doc/img/*.png doc/html/
-rm -f avs_docs.tar avs_docs.tar.gz
-tar -cvf avs_docs.tar html man latex
-gzip -9 avs_docs.tar
-exit 0

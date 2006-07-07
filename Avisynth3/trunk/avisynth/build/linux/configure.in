@@ -613,11 +613,11 @@ dnl BOOST header and library files
 dnl ==========================================================================
 
 AM_CHECK_BOOST(
-   [${BOOST_VERSION}],
+   [${BOOST_VERSION}_1],
    [${target_os}],
    [],
    [AM_CHECK_BOOST(
-      [${BOOST_VERSION}_1],
+      [${BOOST_VERSION}],
       [${target_os}],
       [],
       [AC_MSG_ERROR("Boost is needed !")])

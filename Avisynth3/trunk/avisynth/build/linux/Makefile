@@ -179,9 +179,11 @@ $(PROG): .depend $(BIN_OBJECTS) $(STATIC_LIB)
 #-----------------------------------------------------------------------------
 # Documentation
 #-----------------------------------------------------------------------------
-$(DOC):
-	@echo "  Do: c api"
-	@cd $(SRC_DIR)/../docs/api_c && doxygen
+$(DOC): $(BUILD_DIR)
+	@echo "  B: documentation"
+	@cd $(BUILD_DIR) && $(RM) doc
+	@cd $(BUILD_DIR) && mkdir doc
+	@cd $(SRC_DIR)/../docs/ && doxygen
 
 #-----------------------------------------------------------------------------
 # Installation
@@ -233,9 +235,11 @@ install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB) $(BUILD_DIR)/$(PR
 	@$(INSTALL) -m 644 $(BUILD_DIR)/$(GST_VIDEO_SINK_LIB) $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_VIDEO_SINK_LIB)
 	@echo "  I: $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_AUDIO_SINK_LIB)"
 	@$(INSTALL) -m 644 $(BUILD_DIR)/$(GST_AUDIO_SINK_LIB) $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_AUDIO_SINK_LIB)
-	@echo "  I: $(DESTDIR)$(docdir)/api_c"
-	@$(INSTALL) -d $(DESTDIR)/$(docdir)/api_c
-	@$(INSTALL) -m 644 $(SRC_DIR)/../docs/api_c/html/* $(DESTDIR)/$(docdir)/api_c
+	@if ! test "x$(DOC)" = "x"; then \
+	  echo "  I: $(DESTDIR)$(docdir)"; \
+	  $(INSTALL) -d $(DESTDIR)/$(docdir); \
+	  $(INSTALL) -m 644 $(SRC_DIR)/../docs/html/* $(DESTDIR)/$(docdir); \
+	fi
 
 #-----------------------------------------------------------------------------
 # Uninstallation
@@ -262,8 +266,10 @@ uninstall:
 	@$(RM) $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_VIDEO_SINK_LIB)
 	@echo "  U: $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_AUDIO_SINK_LIB)"
 	@$(RM) $(DESTDIR)$(GST_PLUGIN_PATH)/$(GST_AUDIO_SINK_LIB)
-	@echo "  U: $(DESTDIR)$(docdir)"
-	@$(RM) $(DESTDIR)/$(docdir)
+	@if ! test "x$(DOC)" = "x"; then \
+	  echo "  U: $(DESTDIR)$(docdir)"; \
+	  $(RM) $(DESTDIR)/$(docdir); \
+	fi
 
 #-----------------------------------------------------------------------------
 # Platorm specific file -- dumb rules for people executing make before
@@ -367,8 +373,10 @@ distdir:
 	  avisynth.css \
 	  doxygen.css \
 	  doxygen.png \
-	  gendoc \
-	  installdocs.c.in \
+	  installation.c \
+	  installation_mingw.c \
+	  installation_vc.c \
+	  installation_linux.c \
 	  ../build/linux/$(distdir)/docs
 	@cd $(SRC_DIR)/.. && find src \( -name '*.h' -o -name '*.c' -o -name '*.cpp' \) | while read i; do \
 	  dir="`echo $$i | /bin/sed 's,/[^/]*$$,,'`"; \

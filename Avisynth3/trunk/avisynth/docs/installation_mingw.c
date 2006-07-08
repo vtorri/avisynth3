@@ -18,11 +18,12 @@
  * To install Avisynth 3.0 with MinGW, we will need to install MinGW
  * and the following libraries:
  *
- * @li STLPort (another port of the STL (Standard Template Library)
+ * @li STLport (another port of the STL (Standard Template Library))
  * @li Boost (set of libraries, written in C++, used for the parser,
  * the threads, the pointers, etc...)
  * @li Freetype (a high quality font engine)
  * @li Fontconfig (library for font customization and configuration)
+ * @li Nasm (the Netwide Assembler)
  *
  * This section explains how to install MinGW (with MSYS) and these
  * libraries, taking into account the system. We will download all the
@@ -41,14 +42,14 @@ mkdir avs_main_dir
  * @section build_mingw_download_dependencies Download dependencies
  *
  * First, download the following libraries in a folder, say @em C:/tmp.
- * @li <a href=http://prdownloads.sourceforge.net/mingw/MSYS-1.0.11-2004.04.30-1.exe?download>MSYS 1.0.11</a>
- * @li <a href=http://prdownloads.sf.net/mingw/MinGW-5.0.3.exe?download>MinGW 5.0.3</a>
- * @li <a href=http://prdownloads.sourceforge.net/stlport/STLport-5.0.2.tar.bz2?download>STLport 5.0.2</a>
- * @li <a href=http://prdownloads.sourceforge.net/boost/boost_1_33_1.tar.bz2?download>Boost 1.33.1</a>
- * @li <a href=http://prdownloads.sourceforge.net/boost/boost-jam-3.1.12-1-ntx86.zip?download>bjam (make-like utility)</a>
- * @li <a href=http://prdownloads.sourceforge.net/freetype/freetype-2.2.1.tar.bz2?download>Freetype 2.2.1</a>
- * @li <a href=http://fontconfig.org/release/fontconfig-2.3.2.tar.gz>Fontconfig 2.3.2</a>
- * @li <a href=http://prdownloads.sourceforge.net/nasm/nasm-0.98.39-win32.zip?download>nasm 0.98.39</a>
+ * @li <a href="http://prdownloads.sourceforge.net/mingw/MSYS-1.0.11-2004.04.30-1.exe?download">MSYS 1.0.11</a>
+ * @li <a href="http://prdownloads.sf.net/mingw/MinGW-5.0.3.exe?download">MinGW 5.0.3</a>
+ * @li <a href="http://prdownloads.sourceforge.net/stlport/STLport-5.0.2.tar.bz2?download">STLport 5.0.2</a>
+ * @li <a href="http://prdownloads.sourceforge.net/boost/boost_1_33_1.tar.bz2?download">Boost 1.33.1</a>
+ * @li <a href="http://prdownloads.sourceforge.net/boost/boost-jam-3.1.12-1-ntx86.zip?download">bjam (make-like utility)</a>
+ * @li <a href="http://prdownloads.sourceforge.net/freetype/freetype-2.2.1.tar.bz2?download">Freetype 2.2.1</a>
+ * @li <a href="http://fontconfig.org/release/fontconfig-2.3.2.tar.gz">Fontconfig 2.3.2</a>
+ * @li <a href="http://prdownloads.sourceforge.net/nasm/nasm-0.98.39-win32.zip?download">nasm 0.98.39</a>
  *
  * @section build_mingw_install_msys_mingw Installation of MSYS / MinGW
  *

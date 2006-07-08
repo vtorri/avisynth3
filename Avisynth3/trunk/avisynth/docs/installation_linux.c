@@ -17,12 +17,13 @@
  *
  * To install Avisynth 3.0, we will need the following libraries:
  *
- * @li STLPort (another port of the STL (Standard Template Library)
+ * @li STLport (another port of the STL (Standard Template Library))
  * @li Boost (set of libraries, written in C++, used for the parser,
  * the threads, the pointers, etc...)
  * @li Freetype (a high quality font engine)
  * @li Fontconfig (library for font customization and configuration)
  * @li Gstreamer (multimedia framework)
+ * @li Nasm (the Netwide Assembler)
  *
  * This section explains how to install these libraries, taking into
  * account the system. We will download all the libraries in the same
@@ -42,19 +43,19 @@ mkdir avs_main_dir
  *
  * First, download the following libraries in the \em avs_main_dir
  * directory:
- * @li <a href=http://prdownloads.sourceforge.net/stlport/STLport-5.0.2.tar.bz2?download>STLport 5.0.2</a>
- * @li <a href=http://prdownloads.sourceforge.net/boost/boost_1_33_1.tar.bz2?download>Boost 1.33.1</a>
- * @li <a href=http://prdownloads.sourceforge.net/boost/boost-jam-3.1.12-1-linuxx86.tgz?download>bjam (make-like utility)</a>
- * @li <a href=http://prdownloads.sourceforge.net/freetype/freetype-2.2.1.tar.bz2?download>Freetype 2.2.1</a>
- * @li <a href=http://fontconfig.org/release/fontconfig-2.3.2.tar.gz>Fontconfig 2.3.2</a>
- * @li <a href=http://liboil.freedesktop.org/download/liboil-0.3.9.tar.gz>liboil 0.3.9</a>
- * @li <a href=http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-0.10.8.tar.bz2>Gstreamer 0.10.8</a>
- * @li <a href=http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-0.10.8.tar.bz2>Gst-Plugins-Base 0.10.8</a>
- * @li <a href=http://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-0.10.3.tar.bz2>Gst-Plugins-Good 0.10.3</a>
- * @li <a href=http://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-0.10.3.tar.bz2>Gst-Plugins-Bad 0.10.3</a>
- * @li <a href=http://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-0.10.3.tar.bz2>Gst-Plugins-Ugly 0.10.3</a>
- * @li <a href=http://gstreamer.freedesktop.org/src/gstffmpeg/gst-ffmpeg-0.10.1.tar.bz2>Gst-FFmpeg-Ugly 0.10.1</a>
- * @li <a href=http://prdownloads.sourceforge.net/nasm/nasm-0.98.39.tar.bz2?download>nasm 0.98.39</a>
+ * @li <a href="http://prdownloads.sourceforge.net/stlport/STLport-5.0.2.tar.bz2?download">STLport 5.0.2</a>
+ * @li <a href="http://prdownloads.sourceforge.net/boost/boost_1_33_1.tar.bz2?download">Boost 1.33.1</a>
+ * @li <a href="http://prdownloads.sourceforge.net/boost/boost-jam-3.1.12-1-linuxx86.tgz?download">bjam (make-like utility)</a>
+ * @li <a href="http://prdownloads.sourceforge.net/freetype/freetype-2.2.1.tar.bz2?download">Freetype 2.2.1</a>
+ * @li <a href="http://fontconfig.org/release/fontconfig-2.3.2.tar.gz">Fontconfig 2.3.2</a>
+ * @li <a href="http://liboil.freedesktop.org/download/liboil-0.3.9.tar.gz">liboil 0.3.9</a>
+ * @li <a href="http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-0.10.8.tar.bz2">Gstreamer 0.10.8</a>
+ * @li <a href="http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-0.10.8.tar.bz2">Gst-Plugins-Base 0.10.8</a>
+ * @li <a href="http://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-0.10.3.tar.bz2">Gst-Plugins-Good 0.10.3</a>
+ * @li <a href="http://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-0.10.3.tar.bz2">Gst-Plugins-Bad 0.10.3</a>
+ * @li <a href="http://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-0.10.3.tar.bz2">Gst-Plugins-Ugly 0.10.3</a>
+ * @li <a href="http://gstreamer.freedesktop.org/src/gstffmpeg/gst-ffmpeg-0.10.1.tar.bz2">Gst-FFmpeg-Ugly 0.10.1</a>
+ * @li <a href="http://prdownloads.sourceforge.net/nasm/nasm-0.98.39.tar.bz2?download">nasm 0.98.39</a>
  *
  * @section build_linux_install_stlport Installation of STLport 5.0.2
  *
@@ -346,4 +347,13 @@ cd ../linux
 make
 make install
  * @endcode
+ *
+ * If you have Gtk+ 2.8 and x264 installed, you can test avisynth with
+ * the program @em avisynth_test. Use the following script file:
+ * @code
+
+ * @endcode
+ *
+ * And see the result.
+ *
  */

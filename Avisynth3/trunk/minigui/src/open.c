@@ -2,6 +2,7 @@
 
 #include "private.h"
 #include "preview.h"
+#include "open.h"
 
 
 static gpointer
@@ -19,7 +20,7 @@ _open_script (Avs3_Data *data)
     data->frames_count = avs_videoinfo_framecount_get (info);
     g_print ("\n\nframe count !! : %d\n", data->frames_count);
     gtk_range_set_range (GTK_RANGE (data->scale),
-                         0, data->frames_count - 1);
+                         0.0, (gdouble)(data->frames_count - 1));
     avs3_preview_draw (data, data->frame_current);
   }
   avs_videoinfo_delete (info);

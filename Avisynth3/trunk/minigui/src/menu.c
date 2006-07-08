@@ -11,6 +11,7 @@
 #include "info.h"
 #include "edit.h"
 #include "about.h"
+#include "menu.h"
 
 
 static void _open_cb (GtkMenuItem *menuitem,
@@ -161,7 +162,7 @@ static void
 _info_cb (GtkMenuItem *menuitem,
           gpointer     user_data)
 {
-  avs3_info ((Avs3_Data *)user_data);
+  avs3_info_plugins ((Avs3_Data *)user_data);
 }
 
 static void

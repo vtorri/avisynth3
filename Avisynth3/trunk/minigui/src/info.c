@@ -44,7 +44,7 @@ _get_time_string (gdouble nbr_seconds)
 }
 
 void
-avs3_info (Avs3_Data *data)
+avs3_info_video (Avs3_Data *data)
 {
   GtkWidget *win_info;
 
@@ -278,6 +278,83 @@ avs3_info (Avs3_Data *data)
                                        GTK_BUTTONS_CLOSE,
                                        "No clip avalaible");
   }
+  gtk_dialog_run (GTK_DIALOG (win_info));
+  gtk_widget_destroy (win_info);
+}
+
+void
+avs3_info_plugins (Avs3_Data *data)
+{
+  GtkWidget *win_info;
+  GtkWidget *frame;
+  GtkWidget *vbox;
+  GtkWidget *check;
+
+  win_info = gtk_dialog_new_with_buttons ("Info",
+                                          NULL,
+                                          GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                          GTK_STOCK_CLOSE,
+                                          GTK_RESPONSE_CLOSE,
+                                          NULL);
+
+  /* demuxers */
+  frame = gtk_frame_new ("Demuxers");
+  gtk_container_set_border_width (GTK_CONTAINER (frame), 6);
+  gtk_box_pack_start_defaults (GTK_BOX (GTK_DIALOG (win_info)->vbox),
+                               frame);
+  gtk_widget_show (frame);
+
+  vbox = gtk_vbox_new (TRUE, 6);
+  gtk_widget_set_sensitive (vbox, FALSE);
+  gtk_container_add (GTK_CONTAINER (frame), vbox);
+  gtk_widget_show (vbox);
+
+  check = gtk_check_button_new_with_label ("Avi");
+  gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  gtk_widget_show (check);
+
+  check = gtk_check_button_new_with_label ("Matroska");
+  gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  gtk_widget_show (check);
+
+  check = gtk_check_button_new_with_label ("Mp4 / Mov");
+  gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  gtk_widget_show (check);
+
+  check = gtk_check_button_new_with_label ("Mpeg");
+  gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  gtk_widget_show (check);
+
+  check = gtk_check_button_new_with_label ("Real");
+  gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  gtk_widget_show (check);
+
+  /* decoders */
+  frame = gtk_frame_new ("Decoders");
+  gtk_container_set_border_width (GTK_CONTAINER (frame), 6);
+  gtk_box_pack_start_defaults (GTK_BOX (GTK_DIALOG (win_info)->vbox),
+                               frame);
+  gtk_widget_show (frame);
+
+  vbox = gtk_vbox_new (TRUE, 6);
+  gtk_widget_set_sensitive (vbox, FALSE);
+  gtk_container_add (GTK_CONTAINER (frame), vbox);
+  gtk_widget_show (vbox);
+
+  check = gtk_check_button_new_with_label ("Divx");
+  gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  gtk_widget_show (check);
+
+  check = gtk_check_button_new_with_label ("Xvid");
+  gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  gtk_widget_show (check);
+
+  check = gtk_check_button_new_with_label ("X264");
+  gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  gtk_widget_show (check);
+
+  gtk_widget_show (win_info);
+
   gtk_dialog_run (GTK_DIALOG (win_info));
   gtk_widget_destroy (win_info);
 }

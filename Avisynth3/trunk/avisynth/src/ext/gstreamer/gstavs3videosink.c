@@ -71,7 +71,7 @@ enum
     GST_DEBUG_CATEGORY_INIT (gst_avs3_video_sink_debug, "avs3videosink", 0, "avs3videosink element");
 
 GST_BOILERPLATE_FULL (GstAvs3VideoSink, gst_avs3_video_sink, GstBaseSink,
-    GST_TYPE_BASE_SINK, _do_init);
+    GST_TYPE_BASE_SINK, _do_init)
 
 
 static guint gst_avs3_video_sink_signals[LAST_SIGNAL] = { 0 };
@@ -92,14 +92,15 @@ static void gst_avs3_video_sink_seek (GstAvs3VideoSink * sink, guint frame_nbr, 
 
 /* basesink methods */
 
-static GstCaps *     gst_avs3_video_sink_getcaps (GstBaseSink * bsink);
+static GstCaps *     gst_avs3_video_sink_getcaps  (GstBaseSink * bsink);
 
-static gboolean      gst_avs3_video_sink_setcaps (GstBaseSink * bsink, GstCaps * caps);
+static gboolean      gst_avs3_video_sink_setcaps  (GstBaseSink * bsink,
+                                                   GstCaps     * caps);
 
 static GstFlowReturn gst_avs3_video_sink_preroll  (GstBaseSink * bsink,
-                                             GstBuffer   * buffer);
+                                                   GstBuffer   * buffer);
 static GstFlowReturn gst_avs3_video_sink_render   (GstBaseSink * bsink,
-                                             GstBuffer   * buffer);
+                                                   GstBuffer   * buffer);
 
 /*******************/
 /*                 */
@@ -184,9 +185,9 @@ gst_avs3_video_sink_seek (GstAvs3VideoSink * sink, guint frame_nbr, GstBuffer **
                     GST_FORMAT_TIME,
                     (GstSeekFlags)(GST_SEEK_FLAG_ACCURATE | GST_SEEK_FLAG_FLUSH),
                     GST_SEEK_TYPE_SET,
-                    time,
+                    (gint64)time,
                     GST_SEEK_TYPE_NONE,
-                    -1);
+                    -1LL);
 
   GST_OBJECT_LOCK (sink);
 
@@ -238,17 +239,23 @@ gst_avs3_video_sink_preroll (GstBaseSink * bsink, GstBuffer * buffer)
     return GST_FLOW_OK;
   }
 
+  g_print (" ** preroll \n");
+
   GST_OBJECT_LOCK (sink);
 
   g_print ("Timestamp    : %lld\n", GST_BUFFER_TIMESTAMP (buffer));
   g_print ("Stream time  : %lld\n",
            gst_segment_to_stream_time (&bsink->segment,
                                        GST_FORMAT_TIME,
-                                       GST_BUFFER_TIMESTAMP (buffer)));
+                                       (gint64)GST_BUFFER_TIMESTAMP (buffer)));
   g_print ("seek to      : %lld\n", (GST_SECOND * sink->frame_nbr * sink->fps_den) / sink->fps_num);
+  g_print ("reste        : %lld\n", (GST_SECOND * sink->frame_nbr * sink->fps_den) % sink->fps_num);
+  g_print ("buffer valid ? : %d\n", GST_BUFFER_TIMESTAMP_IS_VALID (buffer));
+  g_print ("val 1 : %lld\n", GST_BUFFER_TIMESTAMP (buffer) * sink->fps_num);
+  g_print ("val 2 : %lld\n", GST_SECOND * sink->frame_nbr * sink->fps_den);
 
   if (GST_BUFFER_TIMESTAMP_IS_VALID (buffer) &&
-      ((GST_BUFFER_TIMESTAMP (buffer) * sink->fps_num) >= (GST_SECOND * sink->frame_nbr * sink->fps_den))) {
+      (GST_BUFFER_TIMESTAMP (buffer) >= (((guint64)GST_SECOND * sink->frame_nbr * sink->fps_den) / sink->fps_num))) {
     /* we do not own the buffer */
 /*     if (sink->buffer) */
 /*       gst_buffer_unref (sink->buffer); */
@@ -309,6 +316,6 @@ GST_PLUGIN_DEFINE (0,
     10,
     "avs3videosink",
     "video sink plugin for Avisynth 3.0",
-    plugin_init, "0.10", "GPL", PACKAGE, "http://avisynth3.unite-video.com/");
+    plugin_init, "0.10", "GPL", PACKAGE, "http://avisynth3.unite-video.com/")
 
 /* <wtay> take the segment info,send flush start/stop on the basesink sinkpad, send a newsegment with the saved segment info*/

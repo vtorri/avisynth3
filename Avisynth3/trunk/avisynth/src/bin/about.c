@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 
 void
-avs3_about ()
+avs3_about (void)
 {
   GtkWidget *win_about;
   const gchar *authors[3] = {

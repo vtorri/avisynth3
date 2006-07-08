@@ -52,12 +52,12 @@ typedef struct _GstAvs3VideoSinkClass GstAvs3VideoSinkClass;
 struct _GstAvs3VideoSink {
   GstBaseSink           element;
 
-  gint                  frame_nbr;
+  guint                 frame_nbr;
   GstBuffer           * buffer;
 
   /* Framerate numerator and denominator */
-  gint                  fps_num;
-  gint                  fps_den;
+  guint                 fps_num;
+  guint                 fps_den;
 
   /* lock management */
   gboolean              start;

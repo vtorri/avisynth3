@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdint.h>
 #include <unistd.h>
 
@@ -10,6 +11,7 @@
 #include "private_x264.h"
 #include "status_window.h"
 #include "encode.h"
+#include "save.h"
 
 
 static gboolean

@@ -43,4 +43,17 @@ avs3_preview_draw (Avs3_Data *data, gint frame_nbr)
   avs_videoframe_delete (frame);
   if (csp_id != I_RGB32)
     avs_clip_delete (clip_rgb32);
+
+  {
+    int i, j, offset;
+
+    offset = 0;
+    for (j = 0; j < height; j++) {
+      for (i = 0; i < width; i++) {
+        g_print ("%d ", rgb[offset]);
+        offset += 4;
+      }
+      g_print ("\n");
+    }
+  }
 }

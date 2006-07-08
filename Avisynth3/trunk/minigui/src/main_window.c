@@ -16,7 +16,7 @@ static gboolean _scale_cb            (GtkRange  *range,
 
 /* Code */
 void
-avs3_main_window ()
+avs3_main_window (void)
 {
   Avs3_Data *data;
   GtkWidget *vbox;

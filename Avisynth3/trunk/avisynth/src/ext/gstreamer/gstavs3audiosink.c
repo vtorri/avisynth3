@@ -80,7 +80,7 @@ enum
     GST_DEBUG_CATEGORY_INIT (gst_avs3_audio_sink_debug, "avs3audiosink", 0, "avs3audiosink element");
 
 GST_BOILERPLATE_FULL (GstAvs3AudioSink, gst_avs3_audio_sink, GstBaseSink,
-    GST_TYPE_BASE_SINK, _do_init);
+                      GST_TYPE_BASE_SINK, _do_init)
 
 
 static guint gst_avs3_audio_sink_signals[LAST_SIGNAL] = { 0 };
@@ -239,9 +239,9 @@ gst_avs3_audio_sink_seek (GstAvs3AudioSink * sink, gint64 sample_start, gint sam
                     GST_FORMAT_TIME,
                     (GstSeekFlags)(GST_SEEK_FLAG_ACCURATE | GST_SEEK_FLAG_FLUSH),
                     GST_SEEK_TYPE_SET,
-                    time,
+                    (gint64)time,
                     GST_SEEK_TYPE_NONE,
-                    -1);
+                    -1LL);
 
   GST_OBJECT_LOCK (sink);
 
@@ -299,11 +299,11 @@ gst_avs3_audio_sink_preroll (GstBaseSink * bsink, GstBuffer * buffer)
   g_print ("Stream time  : %lld\n",
            gst_segment_to_stream_time (&bsink->segment,
                                        GST_FORMAT_TIME,
-                                       GST_BUFFER_TIMESTAMP (buffer)));
+                                       (gint64)GST_BUFFER_TIMESTAMP (buffer)));
   g_print ("seek to      : %lld\n", (GST_SECOND * sink->sample_start) / sink->sample_rate);
 
   if (GST_BUFFER_TIMESTAMP_IS_VALID (buffer) &&
-      ((GST_BUFFER_TIMESTAMP (buffer) * sink->sample_rate) >= (GST_SECOND * sink->sample_start))) {
+      (((gint64)GST_BUFFER_TIMESTAMP (buffer) * sink->sample_rate) >= (GST_SECOND * sink->sample_start))) {
     /* we do not own the buffer */
 /*     if (sink->buffer) */
 /*       gst_buffer_unref (sink->buffer); */
@@ -358,13 +358,13 @@ static gboolean
 plugin_init (GstPlugin * plugin)
 {
   return gst_element_register (plugin, "avs3audiosink", GST_RANK_NONE,
-      GST_TYPE_AVS3_AUDIO_SINK);
+                               GST_TYPE_AVS3_AUDIO_SINK);
 }
 
 GST_PLUGIN_DEFINE (0,
     10,
     "avs3audiosink",
     "audio sink plugin for Avisynth 3.0",
-    plugin_init, "0.10", "GPL", PACKAGE, "http://avisynth3.unite-video.com/");
+    plugin_init, "0.10", "GPL", PACKAGE, "http://avisynth3.unite-video.com/")
 
 /* <wtay> take the segment info,send flush start/stop on the basesink sinkpad, send a newsegment with the saved segment info*/

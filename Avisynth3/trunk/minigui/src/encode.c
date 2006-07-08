@@ -10,6 +10,7 @@
 #include "private.h"
 #include "private_x264.h"
 #include "matroska.h"
+#include "encode.h"
 
 
 typedef void *hnd_t;
@@ -383,7 +384,7 @@ static int set_param_bsf( hnd_t handle, x264_param_t *p_param )
 
 static int write_nalu_bsf( hnd_t handle, uint8_t *p_nalu, int i_size )
 {
-    if (fwrite(p_nalu, i_size, 1, (FILE *)handle) > 0)
+    if (fwrite(p_nalu, (size_t)i_size, 1, (FILE *)handle) > 0)
         return i_size;
     return -1;
 }
@@ -438,15 +439,15 @@ static int write_header_mkv( mkv_t *p_mkv )
     avcC[1] = p_mkv->sps[1];
     avcC[2] = p_mkv->sps[2];
     avcC[3] = p_mkv->sps[3];
-    avcC[4] = 0xff; // nalu size length is four bytes
-    avcC[5] = 0xe1; // one sps
+    avcC[4] = 0xff; /* nalu size length is four bytes */
+    avcC[5] = 0xe1; /* one sps */
 
     avcC[6] = p_mkv->sps_len >> 8;
     avcC[7] = p_mkv->sps_len;
 
     memcpy(avcC+8, p_mkv->sps, p_mkv->sps_len);
 
-    avcC[8+p_mkv->sps_len] = 1; // one pps
+    avcC[8+p_mkv->sps_len] = 1; /* one pps */
     avcC[9+p_mkv->sps_len] = p_mkv->pps_len >> 8;
     avcC[10+p_mkv->sps_len] = p_mkv->pps_len;
 
@@ -551,7 +552,7 @@ static int write_nalu_mkv( hnd_t handle, uint8_t *p_nalu, int i_size )
 
     switch( type )
     {
-    // sps
+    /* sps */
     case 0x07:
         if( !p_mkv->sps )
         {
@@ -563,7 +564,7 @@ static int write_nalu_mkv( hnd_t handle, uint8_t *p_nalu, int i_size )
         }
         break;
 
-    // pps
+    /* pps */
     case 0x08:
         if( !p_mkv->pps )
         {
@@ -575,7 +576,7 @@ static int write_nalu_mkv( hnd_t handle, uint8_t *p_nalu, int i_size )
         }
         break;
 
-    // slice, sei
+    /* slice, sei */
     case 0x1:
     case 0x5:
     case 0x6:
@@ -795,7 +796,7 @@ static int write_nalu_mp4( hnd_t handle, uint8_t *p_nalu, int i_size )
 
     switch(type)
     {
-    // sps
+    /* sps */
     case 0x07:
         if (!p_mp4->b_sps)
         {
@@ -813,7 +814,7 @@ static int write_nalu_mp4( hnd_t handle, uint8_t *p_nalu, int i_size )
         }
         break;
 
-    // pps
+    /* pps */
     case 0x08:
         if (!p_mp4->b_pps)
         {
@@ -829,7 +830,7 @@ static int write_nalu_mp4( hnd_t handle, uint8_t *p_nalu, int i_size )
         }
         break;
 
-    // slice, sei
+    /* slice, sei */
     case 0x1:
     case 0x5:
     case 0x6:

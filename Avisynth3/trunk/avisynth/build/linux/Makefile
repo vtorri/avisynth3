@@ -238,7 +238,7 @@ install: $(BUILD_DIR)/$(STATIC_LIB) $(BUILD_DIR)/$(SHARED_LIB) $(BUILD_DIR)/$(PR
 	@if ! test "x$(DOC)" = "x"; then \
 	  echo "  I: $(DESTDIR)$(docdir)"; \
 	  $(INSTALL) -d $(DESTDIR)/$(docdir); \
-	  $(INSTALL) -m 644 $(SRC_DIR)/../docs/html/* $(DESTDIR)/$(docdir); \
+	  $(INSTALL) -m 644 $(BUILD_DIR)/doc/html/* $(DESTDIR)/$(docdir); \
 	fi
 
 #-----------------------------------------------------------------------------

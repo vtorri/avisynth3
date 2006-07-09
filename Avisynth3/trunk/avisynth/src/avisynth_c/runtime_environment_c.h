@@ -1,4 +1,4 @@
-/* Avisynth 3.0 C Interface 
+/* Avisynth 3.0 C Interface
  * Copyright 2005 Vincent Torri <vtorri at univ-evry dot fr>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -39,8 +39,9 @@
 #include "define_c.h"
 
 
-/** \file runtime_environment_c.h
- * \brief C interface for environments
+/**
+ * @file runtime_environment_c.h
+ * @brief C interface for environments
  *
  * C interface for environment.
  *
@@ -58,22 +59,22 @@
 typedef struct AVS_Environment_ AVS_Environment;
 
 
-/** \brief Create an environment.
+/** @brief Create an environment.
  *
- * \param size The string that contains the script.
- * \return A newly allocated environment.
+ * @param size The string that contains the script.
+ * @return A newly allocated environment.
  *
- * Create an environment of size \p size (in bytes). If an error
- *occurred, this function returns \c NULL.
+ * Create an environment of size @p size (in bytes). If an error
+ *occurred, this function returns @c NULL.
  */
 AVS_C_API AVS_Environment *avs_environment_new    (int size);
 
 
-/** \brief Delete an AVS_Environment.
+/** @brief Delete an AVS_Environment.
  *
- * \param p_env The environment to delete.
+ * @param p_env The environment to delete.
  *
- * Delete the environment \p p_env.
+ * Delete the environment @p p_env.
  */
 AVS_C_API void             avs_environment_delete (AVS_Environment *p_env);
 

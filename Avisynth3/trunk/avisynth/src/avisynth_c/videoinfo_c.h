@@ -1,4 +1,4 @@
-/* Avisynth 3.0 C Interface 
+/* Avisynth 3.0 C Interface
  * Copyright 2005 Vincent Torri <vtorri at univ-evry dot fr>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -40,8 +40,9 @@
 #include "colorspace_c.h"
 
 
-/** \file videoinfo_c.h
- * \brief C interface for retrieving informations of a clip.
+/**
+ * @file videoinfo_c.h
+ * @brief C interface for retrieving informations of a clip.
  *
  * C interface for videoinfos. They are related to the clip they are
  * retrieved from. The clip contains informations about the video
@@ -66,151 +67,151 @@
 typedef struct AVS_VideoInfo_ AVS_VideoInfo;
 
 
-/** \brief Delete an AVS_VideoInfo.
+/** @brief Delete an AVS_VideoInfo.
  *
- * \param p_vi The videoinfo to delete.
+ * @param p_vi The videoinfo to delete.
  *
- * Delete the videoinfo \p p_vi.
+ * Delete the videoinfo @p p_vi.
  */
 AVS_C_API void avs_videoinfo_delete (AVS_VideoInfo *p_vi);
 
 
-/** \brief Check wether the clip has a video stream or not.
+/** @brief Check wether the clip has a video stream or not.
  *
- * \param p_vi The videoinfo to check.
- * \return \c 1 if the clip has a video stream, \c 0 otherwise.
+ * @param p_vi The videoinfo to check.
+ * @return @c 1 if the clip has a video stream, @c 0 otherwise.
  *
- * Check wether the clip has a video stream or not. If \p p_vi has
+ * Check wether the clip has a video stream or not. If @p p_vi has
  * informations on video, then the function returns 1, otherwise it
  * returns 0.
  */
-AVS_C_API int             avs_videoinfo_has_video (const AVS_VideoInfo *p_vi);
+AVS_C_API int avs_videoinfo_has_video (const AVS_VideoInfo *p_vi);
 
 
-/** \brief Retrieve the colorspace of the video.
+/** @brief Retrieve the colorspace of the video.
  *
- * \param p_vi The videoinfo.
- * \return The colorspace of the video stream.
+ * @param p_vi The videoinfo.
+ * @return The colorspace of the video stream.
  *
- * Retrieve the colorspace of the video from \p p_vi, as a
- * AVS_ColorSpace, or \c NULL if an error occurred. The returned
+ * Retrieve the colorspace of the video from @p p_vi, as a
+ * AVS_ColorSpace, or @c NULL if an error occurred. The returned
  * result must be freed with avs_colorspace_delete().
  */
 AVS_C_API AVS_ColorSpace *avs_videoinfo_colorspace_get (const AVS_VideoInfo *p_vi);
 
 
-/** \brief Retrieve the width of the video.
+/** @brief Retrieve the width of the video.
  *
- * \param p_vi The videoinfo.
- * \return The width of the video.
+ * @param p_vi The videoinfo.
+ * @return The width of the video.
  *
- * Retrieve the width of the video from the videoinfo \p p_vi. If
- * \p p_vi is \c NULL, this function returns \c 0.
+ * Retrieve the width of the video from the videoinfo @p p_vi. If
+ * @p p_vi is @c NULL, this function returns @c 0.
  */
-AVS_C_API int             avs_videoinfo_width_get (const AVS_VideoInfo *p_vi);
+AVS_C_API int avs_videoinfo_width_get (const AVS_VideoInfo *p_vi);
 
 
-/** \brief Retrieve the height of the video.
+/** @brief Retrieve the height of the video.
  *
- * \param p_vi The videoinfo.
- * \return The height of the video.
+ * @param p_vi The videoinfo.
+ * @return The height of the video.
  *
- * Retrieve the height of the video from the videoinfo \p p_vi. If
- * \p p_vi is \c NULL, this function returns \c 0.
+ * Retrieve the height of the video from the videoinfo @p p_vi. If
+ * @p p_vi is @c NULL, this function returns @c 0.
  */
-AVS_C_API int             avs_videoinfo_height_get (const AVS_VideoInfo *p_vi);
+AVS_C_API int avs_videoinfo_height_get (const AVS_VideoInfo *p_vi);
 
 
-/** \brief Retrieve the frame count of the video.
+/** @brief Retrieve the frame count of the video.
  *
- * \param p_vi The videoinfo.
- * \return The frame count of the video.
+ * @param p_vi The videoinfo.
+ * @return The frame count of the video.
  *
- * Retrieve the frame count of the video from the videoinfo \p p_vi. If
- * \p p_vi is \c NULL, this function returns \c 0.
+ * Retrieve the frame count of the video from the videoinfo @p p_vi. If
+ * @p p_vi is @c NULL, this function returns @c 0.
  */
-AVS_C_API int             avs_videoinfo_framecount_get (const AVS_VideoInfo *p_vi);
+AVS_C_API int avs_videoinfo_framecount_get (const AVS_VideoInfo *p_vi);
 
 
-/** \brief Retrieve the numerator of the frame rate of the video.
+/** @brief Retrieve the numerator of the frame rate of the video.
  *
- * \param p_vi The videoinfo.
- * \return The numerator of the frame rate of the video.
+ * @param p_vi The videoinfo.
+ * @return The numerator of the frame rate of the video.
  *
  * Retrieve the numerator of the frame rate of the video from the
- * videoinfo \p p_vi. If \p p_vi is \c NULL, this function returns
- * \c 0.
+ * videoinfo @p p_vi. If @p p_vi is @c NULL, this function returns
+ * @c 0.
  */
-AVS_C_API int             avs_videoinfo_fps_numerator_get (const AVS_VideoInfo *p_vi);
+AVS_C_API int avs_videoinfo_fps_numerator_get (const AVS_VideoInfo *p_vi);
 
 
-/** \brief Retrieve the denominator of the frame rate of the video.
+/** @brief Retrieve the denominator of the frame rate of the video.
  *
- * \param p_vi The videoinfo.
- * \return The denominator of the frame rate of the video.
+ * @param p_vi The videoinfo.
+ * @return The denominator of the frame rate of the video.
  *
  * Retrieve the denominator of the frame rate of the video from the
- * videoinfo \p p_vi. If \p p_vi is \c NULL, this function returns
- * \c 1.
+ * videoinfo @p p_vi. If @p p_vi is @c NULL, this function returns
+ * @c 1.
  */
-AVS_C_API int             avs_videoinfo_fps_denominator_get (const AVS_VideoInfo *p_vi);
+AVS_C_API int avs_videoinfo_fps_denominator_get (const AVS_VideoInfo *p_vi);
 
 
-/** \brief Retrieve the frame rate of the video as a float.
+/** @brief Retrieve the frame rate of the video as a float.
  *
- * \param p_vi The videoinfo.
- * \return The frame rate of the video.
+ * @param p_vi The videoinfo.
+ * @return The frame rate of the video.
  *
- * Retrieve the frame rate of the video from the videoinfo \p p_vi as a
- * float. If \p p_vi is \c NULL, this function returns \c 0.
+ * Retrieve the frame rate of the video from the videoinfo @p p_vi as a
+ * float. If @p p_vi is @c NULL, this function returns @c 0.
  */
-AVS_C_API float           avs_videoinfo_fps_float_get (const AVS_VideoInfo *p_vi);
+AVS_C_API float avs_videoinfo_fps_float_get (const AVS_VideoInfo *p_vi);
 
 
 
-/** \brief Check wether the clip has an audio stream or not.
+/** @brief Check wether the clip has an audio stream or not.
  *
- * \param p_vi The videoinfo to check.
- * \return \c 1 if the clip has a audio stream, \c 0 otherwise.
+ * @param p_vi The videoinfo to check.
+ * @return @c 1 if the clip has a audio stream, @c 0 otherwise.
  *
- * Check wether the clip has an audio stream or not. If \p p_vi has
+ * Check wether the clip has an audio stream or not. If @p p_vi has
  * informations on audio, then the function returns 1, otherwise it
  * returns 0.
  */
-AVS_C_API int           avs_videoinfo_has_audio (const AVS_VideoInfo *p_vi);
+AVS_C_API int avs_videoinfo_has_audio (const AVS_VideoInfo *p_vi);
 
 
-/** \brief Retrieve the sample rate of the audio.
+/** @brief Retrieve the sample rate of the audio.
  *
- * \param p_vi The videoinfo.
- * \return The sample rate of the audio.
+ * @param p_vi The videoinfo.
+ * @return The sample rate of the audio.
  *
- * Retrieve the sample rate of the audio from the videoinfo \p p_vi.
- * If \p p_vi is \c NULL, this function returns \c 0.
+ * Retrieve the sample rate of the audio from the videoinfo @p p_vi.
+ * If @p p_vi is @c NULL, this function returns @c 0.
  */
-AVS_C_API int           avs_videoinfo_sample_rate_get (const AVS_VideoInfo *p_vi);
+AVS_C_API int avs_videoinfo_sample_rate_get (const AVS_VideoInfo *p_vi);
 
 
-/** \brief Retrieve the sample count of the audio.
+/** @brief Retrieve the sample count of the audio.
  *
- * \param p_vi The videoinfo.
- * \return The sample count of the audio.
+ * @param p_vi The videoinfo.
+ * @return The sample count of the audio.
  *
- * Retrieve the sample count of the audio from the videoinfo \p p_vi. If
- * \p p_vi is \c NULL, this function returns \c 0.
+ * Retrieve the sample count of the audio from the videoinfo @p p_vi. If
+ * @p p_vi is @c NULL, this function returns @c 0.
  */
 AVS_C_API long long int avs_videoinfo_sample_count_get (const AVS_VideoInfo *p_vi);
 
 
-/** \brief Retrieve the channel count of the audio.
+/** @brief Retrieve the channel count of the audio.
  *
- * \param p_vi The videoinfo.
- * \return The channel count of the audio.
+ * @param p_vi The videoinfo.
+ * @return The channel count of the audio.
  *
- * Retrieve the channel count of the audio from the videoinfo \p p_vi. If
- * \p p_vi is \c NULL, this function returns \c 0.
+ * Retrieve the channel count of the audio from the videoinfo @p p_vi. If
+ * @p p_vi is @c NULL, this function returns @c 0.
  */
-AVS_C_API int           avs_videoinfo_channel_count_get (const AVS_VideoInfo *p_vi);
+AVS_C_API int avs_videoinfo_channel_count_get (const AVS_VideoInfo *p_vi);
 
 
 #endif /* __VIDEOINFO_C_H__ */

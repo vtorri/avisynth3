@@ -1,4 +1,4 @@
-/* Avisynth 3.0 C Interface 
+/* Avisynth 3.0 C Interface
  * Copyright 2005 Vincent Torri <vtorri at univ-evry dot fr>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -244,21 +244,12 @@ main (int argc, char *argv[])
  */
 
 
-/******************************************************************
- * extern stuff
- ******************************************************************/
-
-
 /* Always use C linkage */
 #ifdef __cplusplus
-extern "C" 
+extern "C"
 {
 #endif
 
-
-/******************************************************************
- * Constants
- ******************************************************************/
 
 #ifndef __AVISYNTH_H__
 enum { AVISYNTH_INTERFACE_VERSION = 1 };

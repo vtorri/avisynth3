@@ -39,8 +39,9 @@
 #include "define_c.h"
 
 
-/** \file videoframe_c.h
- * \brief C interface for accessing the data of frames.
+/**
+ * @file videoframe_c.h
+ * @brief C interface for accessing the data of frames.
  *
  * C interface for accessing the data of frames. A videoframe is
  * created with the function avs_clip_videoframe_get().
@@ -68,64 +69,64 @@
 typedef struct AVS_VideoFrame_ AVS_VideoFrame;
 
 
-/** \brief Delete an AVS_VideoFrame.
+/** @brief Delete an AVS_VideoFrame.
  *
- * \param p_vf The frame to delete.
+ * @param p_vf The frame to delete.
  *
- * Delete the frame \p p_vf.
+ * Delete the frame @p p_vf.
  */
-AVS_C_API void                 avs_videoframe_delete (AVS_VideoFrame *p_vf);
+AVS_C_API void avs_videoframe_delete (AVS_VideoFrame *p_vf);
 
 
-/** \brief Retrieve the width of a frame.
+/** @brief Retrieve the width of a frame.
  *
- * \param p_vf The videoframe.
- * \return The width of the frame.
+ * @param p_vf The videoframe.
+ * @return The width of the frame.
  *
- * Retrieve the width of the frame \p p_vf. If
- * \p p_vf is \c NULL, this function returns \c 0.
+ * Retrieve the width of the frame @p p_vf. If
+ * @p p_vf is @c NULL, this function returns @c 0.
  */
-AVS_C_API int                  avs_videoframe_width_get (const AVS_VideoFrame *p_vf);
+AVS_C_API int avs_videoframe_width_get (const AVS_VideoFrame *p_vf);
 
 
-/** \brief Retrieve the height of a frame.
+/** @brief Retrieve the height of a frame.
  *
- * \param p_vf The videoframe.
- * \return The height of the frame.
+ * @param p_vf The videoframe.
+ * @return The height of the frame.
  *
- * Retrieve the height of the frame \p p_vf. If
- * \p p_vf is \c NULL, this function returns \c 0.
+ * Retrieve the height of the frame @p p_vf. If
+ * @p p_vf is @c NULL, this function returns @c 0.
  */
-AVS_C_API int                  avs_videoframe_height_get (const AVS_VideoFrame *p_vf);
+AVS_C_API int avs_videoframe_height_get (const AVS_VideoFrame *p_vf);
 
 
-/** \brief Retrieve the plane of a frame.
+/** @brief Retrieve the plane of a frame.
  *
- * \param p_vf The videoframe.
- * \param plane The plane.
- * \return The pointer on the data of the plane.
+ * @param p_vf The videoframe.
+ * @param plane The plane.
+ * @return The pointer on the data of the plane.
  *
- * Retrieve the plane of the frame \p p_vf given by \p plane. For an
+ * Retrieve the plane of the frame @p p_vf given by @p plane. For an
  * interleaved colorspace, use '~'. For a planar colorspace, use 'Y',
- * 'U' or 'V' for respctively the planes Y, U and V. If 
- * \p p_vf is \c NULL, this function returns \c NULL, otherwise, it
+ * 'U' or 'V' for respctively the planes Y, U and V. If
+ * @p p_vf is @c NULL, this function returns @c NULL, otherwise, it
  * returns a pointer on the data of the plane.
  */
 AVS_C_API const unsigned char *avs_videoframe_plane_get (const AVS_VideoFrame *p_vf, char plane);
 
 
-/** \brief Blit the plane of a frame on some data.
+/** @brief Blit the plane of a frame on some data.
  *
- * \param p_vf The videoframe.
- * \param plane The plane to blit.
- * \param ptr the pointer on which we want to blit.
- * \param pitch The pitch to use.
+ * @param p_vf The videoframe.
+ * @param plane The plane to blit.
+ * @param ptr the pointer on which we want to blit.
+ * @param pitch The pitch to use.
  *
- * Blit the plane \p plane of the frame \p p_vf on the data specified
- * by \p ptr. The pitch is set by \p pitch. If \p p_vf is \c NULL,
+ * Blit the plane @p plane of the frame @p p_vf on the data specified
+ * by @p ptr. The pitch is set by @p pitch. If @p p_vf is @c NULL,
  * this function does nothing.
  */
-AVS_C_API void                 avs_videoframe_plane_blit (const AVS_VideoFrame *p_vf, char plane, unsigned char *ptr, int pitch);
+AVS_C_API void avs_videoframe_plane_blit (const AVS_VideoFrame *p_vf, char plane, unsigned char *ptr, int pitch);
 
 
 #endif /* __VIDEOFRAME_C_H__ */

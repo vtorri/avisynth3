@@ -1,4 +1,4 @@
-/* Avisynth 3.0 C Interface 
+/* Avisynth 3.0 C Interface
  * Copyright 2005 Vincent Torri <vtorri at univ-evry dot fr>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -39,8 +39,9 @@
 #include "define_c.h"
 
 
-/** \file colorspace_c.h
- * \brief C interface for colorspace of the video of a clip.
+/**
+ * @file colorspace_c.h
+ * @brief C interface for colorspace of the video of a clip.
  *
  * C interface for colorspaces. You can get the colorspace of a clip
  * with the function avs_videoinfo_colorspace_get().
@@ -58,7 +59,7 @@
 typedef struct AVS_ColorSpace_ AVS_ColorSpace;
 
 
-/** \brief ColorSpace ids, used to switch on color spaces */
+/** @brief ColorSpace ids, used to switch on color spaces */
 typedef enum
 {
   I_EXTERNAL, /**< reports an external colorspace (defined by a plugin) */
@@ -70,21 +71,21 @@ typedef enum
 }ColorSpace_Id;
 
 
-/** \brief Delete an AVS_ColorSpace.
+/** @brief Delete an AVS_ColorSpace.
  *
- * \param p_cs The colorspace to delete.
+ * @param p_cs The colorspace to delete.
  *
- * Delete the colorspace \p p_cs.
+ * Delete the colorspace @p p_cs.
  */
 AVS_C_API void avs_colorspace_delete (AVS_ColorSpace *p_cs);
 
 
-/** \brief Retrieve the type of the colorspace.
+/** @brief Retrieve the type of the colorspace.
  *
- * \param p_cs The colorspace.
- * \return The id of the colorspace.
+ * @param p_cs The colorspace.
+ * @return The id of the colorspace.
  *
- * Retrieve the type of the colorspace \p p_cs.
+ * Retrieve the type of the colorspace @p p_cs.
  */
 AVS_C_API ColorSpace_Id avs_colorspace_id_get (const AVS_ColorSpace *p_cs);
 

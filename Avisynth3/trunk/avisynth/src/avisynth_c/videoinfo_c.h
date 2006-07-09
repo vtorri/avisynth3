@@ -56,7 +56,7 @@
  * and the channel count. As with the video stream, be sure that the
  * clip has an audio stream by using avs_videoinfo_has_audio().
  *
- * Once you have finished with an AVS_VideoInfo, you delete it with
+ * Once you have finished with an #AVS_VideoInfo, you delete it with
  * avs_videoinfo_delete().
  */
 

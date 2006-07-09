@@ -47,7 +47,7 @@
  * The environment sets the quantity of memory that avisynth will
  * use. You set it with the function avs_environment_new().
  *
- * Once you have finished with an AVS_VideoInfo (usually when avisynth
+ * Once you have finished with an #AVS_Environment (usually when avisynth
  * is not used anymore), you delete it with avs_environment_delete().
  */
 

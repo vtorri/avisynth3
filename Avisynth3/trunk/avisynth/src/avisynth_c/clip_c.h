@@ -1,4 +1,4 @@
-/* Avisynth 3.0 C Interface 
+/* Avisynth 3.0 C Interface
  * Copyright 2006 Vincent Torri <vtorri at univ-evry dot fr>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -47,15 +47,32 @@
  *
  * C interface for clips. It allows to create clips from scripts,
  * files or other clips. You can get video informations and video
- * frames from that interface.
+ * frames data (in raw format) from that interface.
  *
- * An example script is:
+ * An example of Avisynth script is:
+
  * \code
  * GstreamerSource("file.mkv", 0, 0)
  * \endcode
  *
- * The clip structure is given by the opaque structure AVS_Clip. It
- * can be used to retrieve informations or frames.
+ * This script will load the file @em file.mkv in Avisynth using
+ * Gstreamer.
+ *
+ * @li If this script is in a file, then use avs_clip_new_from_file().
+ * @li If this script is in a string, then use avs_clip_new_from_script().
+ *
+ * You can convert a clip from its current color space to another with
+ * the functions avs_clip_new_to_yv12() and avs_clip_new_to_rgb32().
+ *
+ * You can retrieve frame of a clip with the function
+ * avs_clip_videoframe_get(). It is in raw format (that is, it is not
+ * compressed).
+ *
+ * You can retrieve the informations of a clip with the function
+ * avs_clip_videoinfo_get().
+ *
+ * Once you have finished to use an #AVS_Clip, free it with
+ * avs_clip_delete().
  */
 
 

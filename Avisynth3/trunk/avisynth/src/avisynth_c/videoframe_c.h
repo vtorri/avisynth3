@@ -58,7 +58,7 @@
  * If you want to blit the frame on your own data, use
  * avs_videoframe_plane_blit().
  *
- * Once you have finished with an AVS_VideoFrame, you delete it with
+ * Once you have finished with an #AVS_VideoFrame, you delete it with
  * avs_videoframe_delete().
  */
 

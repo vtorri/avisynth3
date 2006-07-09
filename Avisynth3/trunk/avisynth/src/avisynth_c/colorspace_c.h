@@ -42,9 +42,14 @@
 /** \file colorspace_c.h
  * \brief C interface for colorspace of the video of a clip.
  *
- * C interface for colorspaces. You can get the colorspace with the
- * function avs_videoinfo_colorspace_get(). Once you got it, you can
- * check it with avs_colorspace_id_get().
+ * C interface for colorspaces. You can get the colorspace of a clip
+ * with the function avs_videoinfo_colorspace_get().
+ *
+ * Once you got it, you can check it with avs_colorspace_id_get() and
+ * #ColorSpace_Id.
+ *
+ * Once you have finished with an #AVS_ColorSpace, you delete it with
+ * avs_colorspace_delete().
  */
 
 /**

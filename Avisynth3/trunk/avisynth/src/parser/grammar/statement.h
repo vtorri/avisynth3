@@ -35,7 +35,7 @@ namespace avs { namespace parser { namespace grammar {
 
 
 
-namespace closure {
+namespace closures {
 
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -98,12 +98,12 @@ struct StatementBlock : spirit::closure
 };
 
 
-} //namespace closure
+} //namespace closures
 
 
 
 
-struct Statement : public spirit::grammar<Statement, closure::Statement::context_t>
+struct Statement : public spirit::grammar<Statement, closures::Statement::context_t>
 {
 
   template <typename ScannerT>
@@ -119,14 +119,14 @@ struct Statement : public spirit::grammar<Statement, closure::Statement::context
   private:
 
     spirit::rule<ScannerT> top;
-    spirit::rule<ScannerT, closure::InnerStatement::context_t> statement;
-    spirit::rule<ScannerT, closure::CreateVar::context_t> createVar;
-    spirit::rule<ScannerT, closure::Value<StatementCode>::context_t> ifStatement;
-    spirit::rule<ScannerT, closure::Value<ElementalCode>::context_t> whileStatement;
-    spirit::rule<ScannerT, closure::Value<ElementalCode>::context_t> conditionBlock;
-    spirit::rule<ScannerT, closure::StatementBlock::context_t> subContextBlock;
+    spirit::rule<ScannerT, closures::InnerStatement::context_t> statement;
+    spirit::rule<ScannerT, closures::CreateVar::context_t> createVar;
+    spirit::rule<ScannerT, closures::Value<StatementCode>::context_t> ifStatement;
+    spirit::rule<ScannerT, closures::Value<ElementalCode>::context_t> whileStatement;
+    spirit::rule<ScannerT, closures::Value<ElementalCode>::context_t> conditionBlock;
+    spirit::rule<ScannerT, closures::StatementBlock::context_t> subContextBlock;
     spirit::rule<ScannerT> returnStatement;
-    spirit::rule<ScannerT, closure::Value<int>::context_t> argList;
+    spirit::rule<ScannerT, closures::Value<int>::context_t> argList;
 
     Name name;
     Expression expression;

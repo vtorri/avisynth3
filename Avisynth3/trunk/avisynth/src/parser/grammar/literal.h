@@ -43,7 +43,7 @@ namespace avs { namespace parser { namespace grammar {
   
 
 
-namespace closure {
+namespace closures {
 
 
 template <class Type> struct Value : spirit::closure<Value<Type>, Type>
@@ -52,7 +52,7 @@ template <class Type> struct Value : spirit::closure<Value<Type>, Type>
 };
 
 
-} //namespace closure
+} //namespace closures
  
 
 
@@ -61,7 +61,7 @@ template <class Type> struct Value : spirit::closure<Value<Type>, Type>
 //
 //  grammar to recognize literals
 //
-struct Literal : public spirit::grammar<Literal, closure::Value<value::Literal>::context_t>
+struct Literal : public spirit::grammar<Literal, closures::Value<value::Literal>::context_t>
 {
 
   template <typename ScannerT>
@@ -76,7 +76,7 @@ struct Literal : public spirit::grammar<Literal, closure::Value<value::Literal>:
   private:
 
     spirit::rule<ScannerT> top;
-    spirit::rule<ScannerT, closure::Value<std::string>::context_t> stringLiteral;
+    spirit::rule<ScannerT, closures::Value<std::string>::context_t> stringLiteral;
 
   };
 

@@ -32,7 +32,7 @@ namespace avs { namespace parser { namespace grammar {
 
 
 
-namespace closure {
+namespace closures {
 
 
 struct Script : spirit::closure
@@ -65,11 +65,11 @@ struct Function : spirit::closure
 
 
 
-} //namespace closure
+} //namespace closures
 
 
 
-struct Script : public spirit::grammar<Script, closure::Script::context_t>
+struct Script : public spirit::grammar<Script, closures::Script::context_t>
 {
 
   template <typename ScannerT>
@@ -84,8 +84,8 @@ struct Script : public spirit::grammar<Script, closure::Script::context_t>
   private:
 
     spirit::rule<ScannerT> top;
-    spirit::rule<ScannerT, closure::Function::context_t> function;
-    spirit::rule<ScannerT, closure::Value<char>::context_t> arg;
+    spirit::rule<ScannerT, closures::Function::context_t> function;
+    spirit::rule<ScannerT, closures::Value<char>::context_t> arg;
     spirit::rule<ScannerT> functionBody;
 
     Name name;                    //Name grammar

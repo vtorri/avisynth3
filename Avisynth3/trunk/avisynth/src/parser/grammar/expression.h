@@ -38,7 +38,7 @@ namespace avs { namespace parser { namespace grammar {
 
 
 
-namespace closure {
+namespace closures {
 
 
 
@@ -92,7 +92,7 @@ struct FunctionCall : spirit::closure
 };
 
 
-} //namespace closure
+} //namespace closures
 
 
 
@@ -102,7 +102,7 @@ struct FunctionCall : spirit::closure
 //
 //  expression grammar
 //
-class Expression : public spirit::grammar<Expression, closure::Expression::context_t>
+class Expression : public spirit::grammar<Expression, closures::Expression::context_t>
 {
 
   spirit::symbols<bool> equality_op;                //maps "==" to true and "!=" to false
@@ -129,20 +129,20 @@ public:  //definition nested class
   private:
 
     spirit::rule<ScannerT> top;
-    spirit::rule<ScannerT, closure::InnerExpression::context_t> expression;
-    spirit::rule<ScannerT, closure::Value<TypedIndex>::context_t> local_assign_expr;
-    spirit::rule<ScannerT, closure::Value<TypedIndex>::context_t> global_assign_expr;
-    spirit::rule<ScannerT, closure::Value<bool>::context_t> equality_expr;
-    spirit::rule<ScannerT, closure::Value<char>::context_t> add_expr;
-    spirit::rule<ScannerT, closure::Value<char>::context_t> mult_expr;
-    spirit::rule<ScannerT, closure::Value<value::ElementalOpProxy>::context_t> binaryop_helper;
-    spirit::rule<ScannerT, closure::Value<char>::context_t> atom_expr;
+    spirit::rule<ScannerT, closures::InnerExpression::context_t> expression;
+    spirit::rule<ScannerT, closures::Value<TypedIndex>::context_t> local_assign_expr;
+    spirit::rule<ScannerT, closures::Value<TypedIndex>::context_t> global_assign_expr;
+    spirit::rule<ScannerT, closures::Value<bool>::context_t> equality_expr;
+    spirit::rule<ScannerT, closures::Value<char>::context_t> add_expr;
+    spirit::rule<ScannerT, closures::Value<char>::context_t> mult_expr;
+    spirit::rule<ScannerT, closures::Value<value::ElementalOpProxy>::context_t> binaryop_helper;
+    spirit::rule<ScannerT, closures::Value<char>::context_t> atom_expr;
     spirit::rule<ScannerT> nested_expr, global_var_expr;
-    spirit::rule<ScannerT, closure::Value<int>::context_t> local_var_expr;
-    spirit::rule<ScannerT, closure::FunctionCall::context_t> call_expr;
+    spirit::rule<ScannerT, closures::Value<int>::context_t> local_var_expr;
+    spirit::rule<ScannerT, closures::FunctionCall::context_t> call_expr;
     spirit::rule<ScannerT> subscript_helper;
-    spirit::rule<ScannerT, closure::Value<std::string>::context_t> infix_helper;
-    spirit::rule<ScannerT, closure::Value<char>::context_t> fixed_type_expr;
+    spirit::rule<ScannerT, closures::Value<std::string>::context_t> infix_helper;
+    spirit::rule<ScannerT, closures::Value<char>::context_t> fixed_type_expr;
 
     Literal literal;
 

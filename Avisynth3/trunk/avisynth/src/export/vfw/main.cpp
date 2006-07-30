@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2006 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -28,13 +28,14 @@
 #include "main.h"
 #include "avifilefactory.h"
 
+using namespace avs::export_::vfw;
 
 
 //methods required of a COM dll
 
 BOOL APIENTRY DllMain(HANDLE /*hModule*/, ULONG ulReason, LPVOID /*lpReserved*/) 
 {
-	switch(ulReason) 
+  switch(ulReason) 
   {
 	case DLL_PROCESS_ATTACH:
 		CoInitialize(NULL);

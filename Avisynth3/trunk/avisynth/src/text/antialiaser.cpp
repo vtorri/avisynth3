@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2006 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -60,7 +60,7 @@ void Antialiaser::Apply(VideoFrame& frame, int textColor, int haloColor)
   case ColorSpace::I_YUY2: ApplyYUY2( frame, textColor, haloColor ); break;
   case ColorSpace::I_YV12: ApplyYV12( frame, textColor, haloColor ); break;
   
-  default: throw exception::cspace::Unsupported(frame.GetColorSpace());
+  default: throw exception::colorspace::Unsupported(frame.GetColorSpace());
   }
   
 }
@@ -72,7 +72,7 @@ void Antialiaser::ApplyRGB24(VideoFrame& frame, int textColor, int haloColor)
   int Rtext = ((textColor>>16)&255), Gtext = ((textColor>>8)&255), Btext = (textColor&255);
   int Rhalo = ((haloColor>>16)&255), Ghalo = ((haloColor>>8)&255), Bhalo = (haloColor&255);
   
-  WindowPtr dst = frame.WriteTo(NOT_PLANAR);
+  WindowPtr dst = frame.WriteTo('~');
   CWindowPtr alpha = alphaBuffer_.Read();
 
   for ( int y = alpha.height; y-- > 0; dst.pad(), alpha.pad() ) 
@@ -96,7 +96,7 @@ void Antialiaser::ApplyRGB32(VideoFrame& frame, int textColor, int haloColor)
   int Rtext = ((textColor>>16)&255), Gtext = ((textColor>>8)&255), Btext = (textColor&255);
   int Rhalo = ((haloColor>>16)&255), Ghalo = ((haloColor>>8)&255), Bhalo = (haloColor&255);
 
-  WindowPtr dst = frame.WriteTo(NOT_PLANAR);
+  WindowPtr dst = frame.WriteTo('~');
   CWindowPtr alpha = alphaBuffer_.Read();
 
   assert( (dst.height == alpha.height && dst.width == alpha.width * 2) );
@@ -123,7 +123,7 @@ void Antialiaser::ApplyYUY2(VideoFrame& frame, int textColor, int haloColor)
   int Ytext = ((textColor>>16)&255), Utext = ((textColor>>8)&255), Vtext = (textColor&255);
   int Yhalo = ((haloColor>>16)&255), Uhalo = ((haloColor>>8)&255), Vhalo = (haloColor&255);
 
-  WindowPtr dst = frame.WriteTo(NOT_PLANAR);
+  WindowPtr dst = frame.WriteTo('~');
   CWindowPtr alpha = alphaBuffer_.Read();
 
   for ( int y = alpha.height; y-- > 0; dst.pad(), alpha.pad() ) 
@@ -147,9 +147,9 @@ void Antialiaser::ApplyYV12(VideoFrame& frame, int textColor, int haloColor)
   int Ytext = ((textColor>>16)&255), Utext = ((textColor>>8)&255), Vtext = (textColor&255);
   int Yhalo = ((haloColor>>16)&255), Uhalo = ((haloColor>>8)&255), Vhalo = (haloColor&255);
 
-  WindowPtr Y = frame.WriteTo(PLANAR_Y);
-  WindowPtr U = frame.WriteTo(PLANAR_U);
-  WindowPtr V = frame.WriteTo(PLANAR_V);
+  WindowPtr Y = frame.WriteTo('Y');
+  WindowPtr U = frame.WriteTo('U');
+  WindowPtr V = frame.WriteTo('V');
   CWindowPtr alpha = alphaBuffer_.Read();
 
   for ( int y = V.height; y-- > 0; Y.skipPad(), U.pad(), V.pad(), alpha.skipPad() ) 

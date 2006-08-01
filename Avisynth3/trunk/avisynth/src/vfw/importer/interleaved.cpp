@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2006 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ PVideoFrame Interleaved::CreateFrame(Dimension const& dim, OwnedBlock const& blo
 {
   //create a 4-bytes aligned frame buffer of the expected size by promoting the block
   //since we respected guards into the block it shouldn't blit
-  buffer_window<4, Guard> main( space_->ToPlaneDim(dim, NOT_PLANAR), block, Guard );
+  buffer_window<4, Guard> main( space_->ToPlaneDim(dim, '~'), block, Guard );
 
   //use space_ to transform the frame buffer into a frame
   //if the size was favorable the conversion 

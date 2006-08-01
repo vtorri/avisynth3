@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2006 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,7 @@ namespace avs { namespace filters { namespace coloryuv {
 CPVideoFrame YUY2::MakeFrame(CPVideoFrame const& source) const
 {
   PVideoFrame frame = source;
-  WindowPtr wp = frame->WriteTo(NOT_PLANAR);
+  WindowPtr wp = frame->WriteTo('~');
   unsigned char *srcp = wp.ptr;
 
   if (analyze||autowhite||autogain)

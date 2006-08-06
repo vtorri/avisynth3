@@ -37,11 +37,11 @@ namespace avs { namespace memory {
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-//  block_<align>
+//  block<align>
 //
 //  Holds an aligned block of memory, with automatic deallocation.
 //
-template <int align> class block_
+template <int align> class block
 {
 
   PHolder holder_;
@@ -50,13 +50,13 @@ template <int align> class block_
 public:  //structors
   
   template <class HolderType>
-  explicit block_( HolderType * holder
+  explicit block( HolderType * holder
                  , typename boost::enable_if<align_compatible<HolderType::Align, align>, void>::type * dummy = NULL
                  )
     : holder_( static_cast<Holder *>(holder) ) { }
 
   template <int alignOther>
-  explicit block_( block_<alignOther> const& other
+  explicit block( block<alignOther> const& other
                  , typename boost::enable_if<align_compatible<alignOther, align>, void>::type * dummy = NULL 
                  )
     : holder_( other ) { } 
@@ -68,8 +68,8 @@ public:  //structors
 public:  //assignemnt
 
   template <int alignOther>
-  typename boost::enable_if<align_compatible<alignOther, align>, block_<align>&>::t
-  operator=(block_<alignOther> const& other)
+  typename boost::enable_if<align_compatible<alignOther, align>, block<align>&>::type
+  operator=(block<alignOther> const& other)
   {
     holder_ = other.holder_;
     return *this;
@@ -77,7 +77,7 @@ public:  //assignemnt
 
   //generated operator= is fine
   
-  void swap(block_<align>& other)
+  void swap(block<align>& other)
   {
     holder_.swap(other.holder_);
   }
@@ -93,9 +93,9 @@ public:  //queries
 
 public:  //misc
 
-  block_<align> Split(int32 splitSize)
+  block<align> Split(int32 splitSize)
   {
-    return block_<align>(holder_->Split(splitSize, holder_));
+    return block<align>(holder_->Split(splitSize, holder_));
   }
 
 };
@@ -103,7 +103,7 @@ public:  //misc
 
 //global scope swap
 template <int align>
-void swap(block_<align>& left, block_<align> right)
+void swap(block<align>& left, block<align> right)
 {
   left.swap(right);
 }

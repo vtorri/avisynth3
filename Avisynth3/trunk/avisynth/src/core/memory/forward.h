@@ -38,10 +38,10 @@ namespace avs { namespace memory {
 class Holder;
 class Blitter;
 class Manager;
-template <int align> class block_;
+template <int align> class block;
 
 //typedef
-typedef block_<Align> Block;
+typedef block<Align> Block;
 
 //ptr typedefs
 typedef boost::shared_ptr<Manager> PMemManager;

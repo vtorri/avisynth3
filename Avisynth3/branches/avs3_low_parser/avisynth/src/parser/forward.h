@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2006 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,22 +24,21 @@
 #ifndef __AVS_PARSER_FORWARD_H__
 #define __AVS_PARSER_FORWARD_H__
 
-//avisynth include
-#include "optype.h"
+//boost include
+#include <boost/function.hpp>
 
 
 namespace avs { namespace parser {
 
 
-//declarations
-template <typename Result> class VMCode;
-template <typename Result> class VMOperation;
 
-//typedefs
-typedef VMOperation<void> ElementalOperation;
-typedef VMOperation<OpType> StatementOperation;
-typedef VMCode<ElementalOperation> ElementalCode;
-typedef VMCode<StatementOperation> StatementCode;
+//declarations
+class CodePacker;
+class VirtualMachine;
+
+//typedef
+typedef boost::function<void (VirtualMachine&)> Operation;
+
 
 
 } } //namespace avs::parser

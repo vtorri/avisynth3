@@ -54,16 +54,17 @@ StatementCode Parser::operator()(std::string const& src)
 
   globalCtxt.get<1>().AddPlugin(linker::core::Plugin::Get());
 
-  //Script script;
+  Script script;
   //Statement statement;
-  Expression expression;
+  //Expression expression;
 
   parse(src.c_str(), 
-        //script( CodeCouple(), boost::ref(localCtxt), boost::ref(globalCtxt) )
+      script( CodeCouple(), boost::ref(localCtxt), boost::ref(globalCtxt) )
       //statement( CodeCouple(), boost::ref(localCtxt), boost::ref(globalCtxt), 'c' )
-      expression( value::Expression(), boost::ref(localCtxt), boost::ref(globalCtxt) )
+      //expression( value::Expression(), boost::ref(localCtxt), boost::ref(globalCtxt) )
       [            
-       var(code) += first(arg1)
+        var(code) += arg1
+        //var(code) += first(arg1)
       ]
       , spirit::blank_p);
 

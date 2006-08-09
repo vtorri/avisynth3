@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2006 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -74,7 +74,7 @@ PExporter YV12::GetExporter(PClip const& clip, std::string const& type) const
 {
 #ifdef _WIN32
   if ( type == "VFW" )
-    return PExporter( static_cast<Exporter *>(new vfw::exporter::YV12(clip)) );
+    return PExporter( static_cast<Exporter *>(new export_::vfw::exporter::YV12(clip)) );
 #endif //_WIN32
 
   throw exception::colorspace::Unsupported(shared_from_this());

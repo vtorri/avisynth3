@@ -25,7 +25,7 @@
 #define __AVS_PARSER_FUNCTOR_VAR_H__
 
 //avisynth include
-#include "../vmstate.h"
+#include "../virtualmachine.h"
 
 
 namespace avs { namespace parser { namespace functor {
@@ -45,11 +45,11 @@ struct LocalVar
   LocalVar(int pos)
     : pos_( pos ) { }
 
-  AVSValue& operator()(VMState& state) const { return state.peek(pos_); }
+  AVSValue& operator()(VirtualMachine& vm) const { return vm.stack[pos_]; }
 
 };
 
-
+/*
 ///////////////////////////////////////////////////////////////////////////////////
 //  GlobalVar
 //
@@ -66,7 +66,7 @@ struct GlobalVar
   AVSValue& operator()(VMState& state) const { return state.global(index_); }
 
 };
-
+*/
 
 } } } //namespace avs::parser::functor
 

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2006 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 #define __AVS_PARSER_FUNCTOR_LITERAL_H__
 
 //avisynth include
-#include "../vmstate.h"
+#include "../virtualmachine.h"
 
 //boost include
 #include <boost/ref.hpp>
@@ -52,7 +52,7 @@ struct literal
   literal(boost::reference_wrapper<Value> ref)
     : value_( ref.get() ) { }
 
-  Value const& operator()(VMState& /*state*/) const { return value_; }
+  Value const& operator()(VirtualMachine& /*vm*/) const { return value_; }
 
 };
 

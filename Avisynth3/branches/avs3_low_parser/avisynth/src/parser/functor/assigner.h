@@ -25,7 +25,7 @@
 #define __AVS_PARSER_FUNCTOR_ASSIGNER_H__
 
 //avisynth include
-#include "../vmstate.h"
+#include "../virtualmachine.h"
 
 
 namespace avs { namespace parser { namespace functor {
@@ -46,9 +46,10 @@ struct assigner
   assigner(Holder const& holder)
     : holder_( holder ) { }
 
-  void operator()(VMState& state) const 
+  void operator()(VirtualMachine& vm) const 
   { 
-    holder_(state) = state.top(); 
+    holder_(vm) = vm.stack.front();
+    vm.stack.pop_front();
   }
 
 };

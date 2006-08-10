@@ -22,7 +22,7 @@
 
 
 //avisynth includes
-#include "../main.h"
+#include "main.h"
 #include "avifile.h" 
 #include "avistream/yv12.h"
 #include "avistream/audio.h"

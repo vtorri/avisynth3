@@ -43,9 +43,14 @@ void YV24::Check(long x, long y, bool interlaced) const
 void YV24::ToPlane(long& x, long& y, char plane) const
 {
   if ( ! HasPlane(plane) )
-    throw exception::NoSuchPlane(shared_from_this(), plane);    
+    throw exception::NoSuchPlane(shared_from_this(), plane);
 }
 
+
+PExporter YV24::GetExporter(PClip const& clip, std::string const& type) const
+{
+  throw exception::colorspace::Unsupported(shared_from_this());
+}
 
 
 PVideoFrame YV24::CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const

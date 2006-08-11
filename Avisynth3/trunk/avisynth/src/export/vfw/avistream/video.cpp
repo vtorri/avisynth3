@@ -21,6 +21,9 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
+
 //avisynth includes
 #include "video.h"
 #include "../exporter.h"
@@ -101,3 +104,5 @@ long Video::FindKeySample(long n, bool previous)
 
 
 } } } } //namespace avs::export::vfw::avistream
+
+#endif //_WIN32

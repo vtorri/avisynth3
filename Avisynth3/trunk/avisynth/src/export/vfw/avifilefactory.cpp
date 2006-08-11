@@ -21,6 +21,9 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
+
 //avisynth includes
 #include "avifile.h"
 #include "avifilefactory.h"
@@ -71,3 +74,5 @@ HRESULT AviFileFactory::Create(IID const& riid, void ** ppv)
 
 
 } } } //namespace avs::export_::vfw
+
+#endif //_WIN32

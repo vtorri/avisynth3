@@ -21,6 +21,9 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
+
 //avisynth includes
 #include "audio.h"
 #include "../waveformatex.h"
@@ -95,3 +98,5 @@ void Audio::FillAviStreamInfo(AVISTREAMINFOW * psi)
 
 
 } } } } //namespace avs::export_::vfw::avistream
+
+#endif //_WIN32

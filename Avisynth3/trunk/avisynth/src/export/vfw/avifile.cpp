@@ -21,6 +21,9 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
+
 //avisynth includes
 #include "main.h"
 #include "avifile.h" 
@@ -266,3 +269,5 @@ AviStream * AviFile::GetStream(DWORD fccType, long lParam)
 
 
 } } //namespace avs::vfw
+
+#endif //_WIN32

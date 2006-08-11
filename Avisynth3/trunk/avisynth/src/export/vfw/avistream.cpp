@@ -21,6 +21,9 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
+
 //avisynth includes
 #include "avifile.h"
 #include "avistream.h"
@@ -99,4 +102,6 @@ STDMETHODIMP_(LONG) AviStream::FindSample(LONG lPos, LONG lFlags)
 
 
 
-} } } //namespace avs::export_::vfw
+} } } //namespace avs::export_::vfwm
+
+#endif //_WIN32

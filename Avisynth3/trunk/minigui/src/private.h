@@ -5,6 +5,13 @@
 #include "../avisynth_c/clip_c.h"
 
 
+#if HAVE___ATTRIBUTE__
+#  define __UNUSED__ __attribute__((unused))
+#else
+#  define __UNUSED__
+#endif
+
+
 typedef struct _Avs3_Data Avs3_Data;
 
 struct _Avs3_Data

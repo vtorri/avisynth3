@@ -2,7 +2,7 @@
 #
 # - Bootstrap script -
 #
-# Copyright(C) 2004-2005 Vincent Torri <torri@iecn.u-nancy.fr>
+# Copyright(C) 2004-2006 Vincent Torri <vtorri at univ-evry dot fr>
 #
 # This file builds the configure script and copies all needed files
 # provided by automake/libtoolize
@@ -112,6 +112,35 @@ set_package_linux()
     echo "     + $NAME: $NAME $MAJORVER.$MINORVER"
 }
 
+set_package_mingw()
+{
+# Check if the package exists (by checking the version),
+# and set the variable PACKAGE to the package name
+#
+# argument 1: name of the package
+# argument 2: minimum major version
+# argument 3: minimum minor version
+
+    NAME=$1
+    MAJOR=$2
+    MINOR=$3
+
+    VER=`$NAME --version | head -n 1 | sed 's/'^[^0-9]*'/''/'`
+    MAJORVER=`echo $VER | cut -f1 -d'.'`
+    MINORVER=`echo $VER | cut -f2 -d'.'`
+    if [ "$MAJORVER" -lt "$MAJOR" ]; then
+	echo ""
+	echo "Error: $NAME >= $MAJOR.$MINOR required (found $VER)"
+	exit 127
+    fi
+    if [ "$MINORVER" -lt "$MINOR" ]; then
+	echo ""
+	echo "Error: $NAME >= $MAJOR.$MINOR required (found $VER)"
+	exit 127
+    fi
+    echo "     + $NAME: $NAME $MAJORVER.$MINORVER"
+}
+
 ##############################################################################
 # Detect the right autoconf script
 ##############################################################################
@@ -149,9 +178,15 @@ case $OS in
 	set_package_linux "aclocal" "$AL_MAJOR" "$AL_MINOR"
 	ACLOCAL="aclocal"
 	;;
+    [Mm][Ii][Nn][Gg][Ww]32*)
+	set_package_mingw "autoconf" "$AC_MAJOR" "$AC_MINOR"
+	AUTOCONF="autoconf"
+	set_package_mingw "aclocal" "$AL_MAJOR" "$AL_MINOR"
+	ACLOCAL="aclocal"
+	;;
     *)
 	echo "Operating system not supported."
-	echo "Send a mail to <torri@iecn.u-nancy.fr>"
+	echo "Send a mail to <vtorri at univ-evry dot fr>"
 	;;
 esac
 

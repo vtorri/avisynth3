@@ -21,11 +21,7 @@ AC_INIT(Avisynth, 3.0, [http://forum.doom9.org])
 AC_PREFIX_DEFAULT("/usr/local")
 
 AC_CONFIG_AUX_DIR([.])
-
 AC_CANONICAL_TARGET
-
-dnl AC_CONFIG_SRCDIR([../../src/core.h])
-AC_CONFIG_MACRO_DIR([m4])
 
 dnl Do not forget to increase that when needed.
 API_MAJOR="3"
@@ -52,16 +48,8 @@ dnl Default CFLAGS -- Big impact on overall speed
 cflags_warnings="-ansi -pedantic -Wall -W -Wpointer-arith -Wconversion -Wstrict-prototypes -Wmissing-declarations"
 cxxflags_warnings="-ansi -Wall -Wpointer-arith -Wconversion -Wno-non-virtual-dtor"
 
-cflags_optimization="-O2"
-cflags_optimization="${cxxflags_optimization} -fstrength-reduce"
-cflags_optimization="${cxxflags_optimization} -finline-functions"
-cflags_optimization="${cxxflags_optimization} -ffast-math"
-
-cxxflags_optimization="-O2"
-cxxflags_optimization="${cxxflags_optimization} -fexceptions"
-cxxflags_optimization="${cxxflags_optimization} -fstrength-reduce"
-cxxflags_optimization="${cxxflags_optimization} -finline-functions"
-cxxflags_optimization="${cxxflags_optimization} -ffast-math"
+cflags_optimization="-O2 -fstrength-reduce -finline-functions -ffast-math"
+cxxflags_optimization="-O2 -fexceptions -fstrength-reduce -finline-functions -ffast-math"
 
 dnl Default GEN_SOURCES for gen_source.sh
 dnl On Linux, Vfw and COM files should be removed
@@ -82,7 +70,7 @@ AC_ARG_ENABLE(
    AC_HELP_STRING(
       [--enable-gcc-3-3-4],
       [Use g++ 3.3.4]),
-      [if test "$enable_gcc_3_3_4" = "yes" ; then
+      [if test "${enable_gcc_3_3_4}" = "yes" ; then
           gpp="/usr/gcc/bin/g++-3.3.4"
        fi],
       [])
@@ -168,7 +156,7 @@ dnl the end of the script if and only if CXXFLAGS has not been passed on the
 dnl command line
 dnl
 AC_MSG_CHECKING(whether to use default CFLAGS)
-if test  x"$CFLAGS" = x"" ; then
+if test  x"${CFLAGS}" = x"" ; then
    force_default_c_options="yes"
    AC_MSG_RESULT([yes])
 else
@@ -177,7 +165,7 @@ else
 fi
 
 AC_MSG_CHECKING(whether to use default CXXFLAGS)
-if test  x"$CXXFLAGS" = x"" ; then
+if test  x"${CXXFLAGS}" = x"" ; then
    force_default_cxx_options="yes"
    AC_MSG_RESULT([yes])
 else
@@ -188,6 +176,9 @@ fi
 dnl Now we can safely check for the C compiler
 AC_PROG_CC([gcc])
 AC_PROG_CPP([gcc])
+
+dnl checking for attributes
+AC_C___ATTRIBUTE__
 
 dnl And the C++ compiler
 AC_LANG([C++])
@@ -243,10 +234,10 @@ dnl
 ARCHITECTURE=""
 
 AC_MSG_CHECKING([for whether to use assembly code])
-if test x"$assembly" = x"yes" ; then
+if test x"${assembly}" = x"yes" ; then
    AC_MSG_RESULT([yes])
    AC_MSG_CHECKING([for architecture type])
-   case "$target_cpu" in
+   case "${target_cpu}" in
       i[[3456]]86)
          AC_MSG_RESULT(ia32)
          ARCHITECTURE="IA32"
@@ -262,7 +253,7 @@ if test x"$assembly" = x"yes" ; then
          ARCHITECTURE="IA64"
       ;;
       *)
-         AC_MSG_RESULT($target_cpu)
+         AC_MSG_RESULT(${target_cpu})
          assembly="no"
       ;;
    esac
@@ -282,7 +273,7 @@ AC_MSG_CHECKING(for build extensions)
 SHARED_EXTENSION=""
 STATIC_EXTENSION=""
 OBJECT_EXTENSION=""
-case "$target_os" in
+case "${target_os}" in
      *bsd*|linux*|beos|irix*|solaris*)
 	AC_MSG_RESULT([.so .a .o])
 	STATIC_EXTENSION="a"
@@ -296,7 +287,7 @@ case "$target_os" in
 	OBJECT_EXTENSION="obj"
 	;;
      darwin*|raphsody*)
-	if test x"$macosx_module" = x"yes"; then
+	if test x"${macosx_module}" = x"yes"; then
 	   AC_MSG_RESULT([.so .a .o])
 	   SHARED_EXTENSION="so"
         else
@@ -327,54 +318,57 @@ AC_MSG_CHECKING(for platform specific LDFLAGS/CFLAGS)
 SPECIFIC_LDFLAGS=""
 SPECIFIC_CFLAGS=""
 PRE_SHARED_LIB=""
-case "$target_os" in
-     *bsd*|linux*|irix*|solaris*)
+
+STATIC_LIB="libavisynth.${STATIC_EXTENSION}"
+
+case "${target_os}" in
+     *bsd*|linux*|irix*)
 	AC_MSG_RESULT([ok])
-	STATIC_LIB="libavisynth.\$(STATIC_EXTENSION)"
-	SHARED_LIB="libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR).\$(API_MINOR)"
-	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR) -shared -lc -lm -lrt -ldl"
+	SHARED_LIB="libavisynth.${SHARED_EXTENSION}.${API_MAJOR}.${API_MINOR}"
+	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.${SHARED_EXTENSION}.${API_MAJOR} -shared -lc -lm -lrt -ldl"
 	SPECIFIC_CFLAGS="-pthread -fPIC"
-	GEN_SOURCES="/com\\\\/d;/vfw\\\\/d;"
 	;;
      [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
 	AC_MSG_RESULT([ok])
-	STATIC_LIB="libavisynth.\$(STATIC_EXTENSION)"
-	SHARED_LIB="avisynth.\$(SHARED_EXTENSION)"
+	SHARED_LIB="avisynth.${SHARED_EXTENSION}"
 	SPECIFIC_LDFLAGS="-lgdi32 -lvfw32 -luuid -lole32 -lmsacm32 -shared -Wl,--out-implib,\$@.a libavisynth.def"
-	SPECIFIC_CFLAGS="-Os -mno-cygwin"
+	SPECIFIC_CFLAGS="-Os -mno-cygwin -mthreads"
+	;;
+     solaris*)
+	AC_MSG_RESULT([ok])
+	SHARED_LIB="libavisynth.${SHARED_EXTENSION}.${API_MAJOR}.${API_MINOR}"
+	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.${SHARED_EXTENSION}.${API_MAJOR} -shared -lc -lm -lrt -ldl"
+	SPECIFIC_CFLAGS="-pthreads -fPIC"
 	;;
      darwin*|raphsody*)
-	STATIC_LIB="libavisynth.\$(STATIC_EXTENSION)"
 	SPECIFIC_CFLAGS="-fPIC -fno-common -no-cpp-precomp"
-	if test x"$macosx_module" = x"no"; then
+	if test x"${macosx_module}" = x"no"; then
 	   AC_MSG_RESULT([dylib options])
-	   SHARED_LIB="libavisynth.\$(API_MAJOR).\$(SHARED_EXTENSION)"
-	   SPECIFIC_LDFLAGS="-dynamiclib -flat_namespace -compatibility_version \$(API_MAJOR) -current_version \$(API_MAJOR).\$(API_MINOR) -install_name \$(libdir)/\$(SHARED_LIB)"
+	   SHARED_LIB="libavisynth.${API_MAJOR}.${SHARED_EXTENSION}"
+	   SPECIFIC_LDFLAGS="-dynamiclib -flat_namespace -compatibility_version ${API_MAJOR} -current_version ${API_MAJOR}.${API_MINOR} -install_name ${libdir}/${SHARED_LIB}"
 	else
 	   AC_MSG_RESULT([module options])
-	   PRE_SHARED_LIB="libavisynth.\$(SHARED_EXTENSION)-temp.o"
-	   SHARED_LIB="libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR)"
-	   SPECIFIC_LDFLAGS="-r -keep_private_externs -nostdlib && \$(CC) \$(LDFLAGS) \$(PRE_SHARED_LIB) -o libavisynth.\$(SHARED_EXTENSION).\$(API_MAJOR) -bundle -flat_namespace -undefined suppress"
+	   PRE_SHARED_LIB="libavisynth.${SHARED_EXTENSION}-temp.o"
+	   SHARED_LIB="libavisynth.${SHARED_EXTENSION}.${API_MAJOR}"
+	   SPECIFIC_LDFLAGS="-r -keep_private_externs -nostdlib && ${CC} ${LDFLAGS} ${PRE_SHARED_LIB} -o libavisynth.${SHARED_EXTENSION}.${API_MAJOR} -bundle -flat_namespace -undefined suppress"
 	fi
-	GEN_SOURCES="/vfw\\/d;"
 	;;
      beos)
 	AC_MSG_RESULT([ok])
-	STATIC_LIB="libavisynth.\$(STATIC_EXTENSION)"
-	SHARED_LIB="libavisynth.\$(SHARED_EXTENSION)"
+	SHARED_LIB="libavisynth.${SHARED_EXTENSION}"
 	SPECIFIC_LDFLAGS="-nostart"
 	SPECIFIC_CFLAGS="-fPIC"
 	;;
      *)
         AC_MSG_RESULT([Unknown Platform (Using default -shared -lc -lm)])
-	STATIC_LIB="libavisynth.\$(STATIC_EXTENSION)"
-	SHARED_LIB="libavisynth.\$(SHARED_EXTENSION)"
+	STATIC_LIB="libavisynth.${STATIC_EXTENSION}"
+	SHARED_LIB="libavisynth.${SHARED_EXTENSION}"
 	SPECIFIC_LDFLAGS=""
 	SPECIFIC_CFLAGS=""
 	;;
 esac
 
-if test x"$PRE_SHARED_LIB" = x; then
+if test x"${PRE_SHARED_LIB}" = x; then
   PRE_SHARED_LIB=$SHARED_LIB
 fi
 
@@ -394,13 +388,13 @@ dnl
 dnl IA32
 dnl
 
-if test "$ARCHITECTURE" = "IA32" ; then
+if test "${ARCHITECTURE}" = "IA32" ; then
 
    dnl
    dnl Checking nasm existence
    dnl
    AC_CHECK_PROG([ac_nasm], [$nasm_prog], [yes], [no], , [yes])
-   if test "$ac_nasm" = "yes" ; then
+   if test "${ac_nasm}" = "yes" ; then
 
       dnl
       dnl Checking nasm patch version
@@ -413,7 +407,7 @@ if test "$ARCHITECTURE" = "IA32" ; then
       AC_MSG_RESULT([$nasm_patch])
 
 
-      if test "$nasm_patch" -lt "$minimum_nasm_patch_version" ; then
+      if test "${nasm_patch}" -lt "${minimum_nasm_patch_version}" ; then
         AC_MSG_ERROR([nasm patch version too old - Update nasm])
       else
 
@@ -421,7 +415,7 @@ if test "$ARCHITECTURE" = "IA32" ; then
          dnl Checking nasm format - win32 or elf
          dnl
          AC_MSG_CHECKING([for nasm object format])
-         case "$target_os" in
+         case "${target_os}" in
               *bsd*|linux*|beos|irix*|solaris*)
                   AC_MSG_RESULT([elf])
                   NASM_FORMAT="elf"
@@ -434,7 +428,7 @@ if test "$ARCHITECTURE" = "IA32" ; then
                   ;;
           esac
           AS=nasm
-          AFLAGS="-I\$(<D)/ -f $NASM_FORMAT $PREFIX -D_FORCE_NASM"
+          AFLAGS="-I\$(<D)/ -f ${NASM_FORMAT} ${PREFIX} -D_FORCE_NASM"
           ASSEMBLY_EXTENSION="asm"
           ASSEMBLY_SOURCES="SRC_IA32"
        fi
@@ -449,8 +443,8 @@ dnl
 dnl PPC
 dnl
 
-if test "$ARCHITECTURE" = "PPC" ; then
-   AS="\$(CC)"
+if test "${ARCHITECTURE}" = "PPC" ; then
+   AS="${CC}"
    AFLAGS="-c"
    ASSEMBLY_EXTENSION="s"
    ASSEMBLY_SOURCES="SRC_PPC"
@@ -461,7 +455,7 @@ if test "$ARCHITECTURE" = "PPC" ; then
 EOF
    if $CC -c conftest.S 2>/dev/null 1>/dev/null ; then
       AC_MSG_RESULT(yes)
-      SPECIFIC_CFLAGS="$SPECIFIC_CFLAGS -DARCH_IS_PPC_ALTIVEC"
+      SPECIFIC_CFLAGS="${SPECIFIC_CFLAGS} -DARCH_IS_PPC_ALTIVEC"
       ASSEMBLY_SOURCES="SRC_ALTIVEC"
    else
       AC_MSG_RESULT(no)
@@ -473,8 +467,8 @@ dnl
 dnl IA64
 dnl
 
-if test "$ARCHITECTURE" = "IA64" ; then
-   AS="\$(CC)"
+if test "${ARCHITECTURE}" = "IA64" ; then
+   AS="${CC}"
    AFLAGS="-c"
    ASSEMBLY_EXTENSION="s"
    ASSEMBLY_SOURCES="SRC_IA64"
@@ -516,7 +510,6 @@ else
    SPECIFIC_LDFLAGS="-s ${SPECIFIC_LDFLAGS}"
 fi
 
-
 dnl ==========================================================================
 dnl
 dnl Check for dependancies
@@ -537,12 +530,16 @@ dnl ==========================================================================
 dnl Fontconfig header and library files
 dnl ==========================================================================
 
-PKG_CHECK_MODULES(
-   [FONTCONFIG],
-   [fontconfig],
-   [ ],
-   [AC_MSG_ERROR(Fontconfig isn't installed)])
-FONTCONFIG_CFLAGS="${FONTCONFIG_CFLAGS} -DHAVE_FONTCONFIG"
+case "${target_os}" in
+   *bsd*|linux*|beos|irix*|solaris*)
+      PKG_CHECK_MODULES(
+         [FONTCONFIG],
+         [fontconfig],
+         [ ],
+         [AC_MSG_ERROR(Fontconfig isn't installed)])
+      FONTCONFIG_CFLAGS="${FONTCONFIG_CFLAGS} -DHAVE_FONTCONFIG"
+   ;;
+esac
 
 dnl ==========================================================================
 dnl Standard header files
@@ -553,7 +550,7 @@ AC_CHECK_HEADERS(
    [],
    [AC_MSG_ERROR(Missing header file)])
 
-case "$target_os" in
+case "${target_os}" in
    *bsd*|linux*|beos|irix*|solaris*)
       AC_CHECK_HEADER(
          [pthread.h],
@@ -627,41 +624,36 @@ dnl ==========================================================================
 dnl Gstreamer header and library files
 dnl ==========================================================================
 
-GST_MAJORMINOR=0.10
-PKG_CHECK_MODULES(
-   [GST],
-   [gstreamer-$GST_MAJORMINOR >= $GST_REQS gstreamer-plugins-base-$GST_MAJORMINOR >= $GSTPLUG_REQS],
-   [HAVE_GSTREAMER="yes"],
-   [HAVE_GSTREAMER="no"])
-
-case "$target_os" in
+case "${target_os}" in
    *bsd*|linux*|beos|irix*|solaris*)
+      GST_MAJORMINOR=0.10
+      PKG_CHECK_MODULES(
+         [GST],
+         [gstreamer-${GST_MAJORMINOR} >= ${GST_REQS} gstreamer-plugins-base-${GST_MAJORMINOR} >= ${GSTPLUG_REQS}],
+         [HAVE_GSTREAMER="yes"],
+         [HAVE_GSTREAMER="no"])
+
       if test "${HAVE_GSTREAMER}" = "no" ; then
          AC_MSG_ERROR([Gstreamer support is needed when building Avisynth 3.0 on linux])
       fi
-   ;;
-esac
 
-PKG_CHECK_MODULES(
-   [GSTBASE],
-   [gstreamer-$GST_MAJORMINOR >= $GST_REQS gstreamer-base-$GST_MAJORMINOR >= $GST_REQS],
-   [],
-   [HAVE_GSTREAMER="no"])
+      PKG_CHECK_MODULES(
+         [GSTBASE],
+         [gstreamer-${GST_MAJORMINOR} >= ${GST_REQS} gstreamer-base-${GST_MAJORMINOR} >= ${GST_REQS}],
+         [],
+         [HAVE_GSTREAMER="no"])
 
-case "$target_os" in
-   *bsd*|linux*|beos|irix*|solaris*)
       if test "${HAVE_GSTREAMER}" = "no" ; then
          AC_MSG_ERROR([Gstreamer support is needed when building Avisynth 3.0 on linux])
       fi
-   ;;
-esac
 
 dnl Determine the path to install gstreamer plugins
-PKG_GET_VARIABLE([GST_PLUGIN_PATH], [pluginsdir], [gstreamer-$GST_MAJORMINOR])
+      PKG_GET_VARIABLE([GST_PLUGIN_PATH], [pluginsdir], [gstreamer-${GST_MAJORMINOR}])
 
-GST_VIDEO_SINK_LIB="gstavs3videosink.${SHARED_EXTENSION}"
-GST_AUDIO_SINK_LIB="gstavs3audiosink.${SHARED_EXTENSION}"
-
+      GST_VIDEO_SINK_LIB="gstavs3videosink.${SHARED_EXTENSION}"
+      GST_AUDIO_SINK_LIB="gstavs3audiosink.${SHARED_EXTENSION}"
+   ;;
+esac
 
 dnl ==========================================================================
 dnl GUI program
@@ -678,7 +670,7 @@ dnl Gtk+ header and library files
    GTK_MAJORMINOR=2.0
    PKG_CHECK_MODULES(
       [GTK],
-      [gtk+-$GTK_MAJORMINOR >= $GTK_REQS gthread-$GTK_MAJORMINOR],
+      [gtk+-${GTK_MAJORMINOR} >= ${GTK_REQS} gthread-${GTK_MAJORMINOR}],
       [HAVE_GTK="yes"],
       [HAVE_GTK="no"])
 
@@ -750,11 +742,11 @@ dnl  - removes incompatible options from CFLAGS
 dnl
 dnl ==========================================================================
 
-SPECIFIC_LDFLAGS="$SPECIFIC_LDFLAGS $GNU_PROF_LDFLAGS"
-SPECIFIC_CFLAGS="$SPECIFIC_CFLAGS $GNU_PROF_CFLAGS"
+SPECIFIC_LDFLAGS="${SPECIFIC_LDFLAGS} ${GNU_PROF_LDFLAGS}"
+SPECIFIC_CFLAGS="${SPECIFIC_CFLAGS} ${GNU_PROF_CFLAGS}"
 
 if test "x${enable_gnuprofile}" = "xyes" ; then
-   CFLAGS=`echo $CFLAGS | sed s/'-fomit-frame-pointer'/''/`
+   CFLAGS=`echo ${CFLAGS} | sed s/'-fomit-frame-pointer'/''/`
 fi
 
 dnl ==========================================================================
@@ -791,6 +783,7 @@ AC_SUBST(CXX)
 AC_SUBST(LDFLAGS)
 AC_SUBST(CFLAGS)
 AC_SUBST(CXXFLAGS)
+AC_SUBST(HAVE_ATTRIBUTE)
 AC_SUBST(SPECIFIC_CFLAGS)
 AC_SUBST(SPECIFIC_LDFLAGS)
 AC_SUBST(FREETYPE_CFLAGS)
@@ -833,30 +826,38 @@ AC_OUTPUT
 
 echo
 echo "------------------------------------------------------------------------"
-echo " $PACKAGE_NAME $VERSION $PACKAGE_TARNAME"
+echo " ${PACKAGE_NAME} ${VERSION}"
 echo "------------------------------------------------------------------------"
 echo
-echo " OS..................: $target_os"
+echo " OS..................: ${target_os}"
 echo
-echo " Visibility feature..: $HAVE_VISIBILITY"
-echo " Core debug mode.....: $core_debug_mode"
-echo " ASM support.........: $assembly"
+echo " Visibility feature..: ${have_visibility}"
+echo " Core debug mode.....: ${core_debug_mode}"
+echo " ASM support.........: ${assembly}"
 echo
 echo " Gui program.........: ${gui_program}"
 echo
 echo " Documentation.......: ${build_doc}"
 echo
-echo " Install path........: $prefix"
-echo "   binaries..........: $bindir"
+echo " Install path........: ${prefix}"
+echo "   binaries..........: ${bindir}"
 echo "   libraries.........: ${libdir}"
 echo "   headers...........: ${includedir}/avisynth-3.0"
 echo "   documentation.....: ${datadir}/doc/avisynth-3.0"
-echo "   gst-plugins.......: $GST_PLUGIN_PATH"
+case "${target_os}" in
+   *bsd*|linux*|beos|irix*|solaris*)
+      echo "   gst-plugins.......: ${GST_PLUGIN_PATH}"
+   ;;
+esac
 echo
 echo " Compilation.........: make"
 echo " Installation........: make install"
-echo
-echo " Make sure that Gst-FFmpeg is installed. Without it, most of"
-echo " the usual video streams will not be decoded (huffyuv, xvid,"
-echo " divx, x264 for example). We recommend that you install it"
+case "${target_os}" in
+   *bsd*|linux*|beos|irix*|solaris*)
+      echo
+      echo " Make sure that Gst-FFmpeg is installed. Without it, most of"
+      echo " the usual video streams will not be decoded (huffyuv, xvid,"
+      echo " divx, x264 for example). We recommend that you install it"
+   ;;
+esac
 echo

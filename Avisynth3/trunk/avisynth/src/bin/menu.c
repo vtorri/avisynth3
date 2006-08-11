@@ -145,28 +145,28 @@ avs3_menu (Avs3_Data *data)
 }
 
 static void
-_open_cb (GtkMenuItem *menuitem,
+_open_cb (GtkMenuItem *menuitem __UNUSED__,
           gpointer     user_data)
 {
   avs3_open ((Avs3_Data *)user_data);
 }
 
 static void
-_save_cb (GtkMenuItem *menuitem,
+_save_cb (GtkMenuItem *menuitem __UNUSED__,
           gpointer     user_data)
 {
   avs3_save ((Avs3_Data *)user_data);
 }
 
 static void
-_info_cb (GtkMenuItem *menuitem,
+_info_cb (GtkMenuItem *menuitem __UNUSED__,
           gpointer     user_data)
 {
   avs3_info_plugins ((Avs3_Data *)user_data);
 }
 
 static void
-_quit_cb (GtkMenuItem *menuitem,
+_quit_cb (GtkMenuItem *menuitem __UNUSED__,
           gpointer     user_data)
 {
   gtk_main_quit ();
@@ -175,35 +175,35 @@ _quit_cb (GtkMenuItem *menuitem,
 }
 
 static void
-_edit_begin_cb (GtkMenuItem *menuitem,
+_edit_begin_cb (GtkMenuItem *menuitem __UNUSED__,
                 gpointer     user_data)
 {
   avs3_edit_begin ((Avs3_Data *)user_data, NULL);
 }
 
 static void
-_edit_end_cb (GtkMenuItem *menuitem,
+_edit_end_cb (GtkMenuItem *menuitem __UNUSED__,
               gpointer     user_data)
 {
   avs3_edit_end ((Avs3_Data *)user_data, NULL);
 }
 
 static void
-_edit_goto_cb (GtkMenuItem *menuitem,
+_edit_goto_cb (GtkMenuItem *menuitem __UNUSED__,
                gpointer     user_data)
 {
   avs3_edit_goto ((Avs3_Data *)user_data, NULL);
 }
 
 static void
-_about_window_cb (GtkMenuItem *menuitem,
-                  gpointer     user_data)
+_about_window_cb (GtkMenuItem *menuitem __UNUSED__,
+                  gpointer     user_data __UNUSED__)
 {
   avs3_about ();
 }
 
 static void
-_x264_config_cb (GtkMenuItem *menuitem,
+_x264_config_cb (GtkMenuItem *menuitem __UNUSED__,
                  gpointer     user_data)
 {
   Avs3_Data *data;

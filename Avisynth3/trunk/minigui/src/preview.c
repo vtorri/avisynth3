@@ -1,6 +1,8 @@
 #include <gtk/gtk.h>
 
 #include "private.h"
+#include "preview.h"
+
 
 void
 avs3_preview_draw (Avs3_Data *data, gint frame_nbr)
@@ -32,10 +34,10 @@ avs3_preview_draw (Avs3_Data *data, gint frame_nbr)
   rgb = avs_videoframe_plane_get (frame, '~');
   g_print ("size (preview) : %dx%d  %d\n", width, height, sizeof (*rgb));
 
-  gtk_widget_set_size_request (data->preview, width, height);
+  gtk_widget_set_size_request (data->preview, (gint)width, (gint)height);
   pixbuf = gdk_pixbuf_new_from_data (rgb,
 				     GDK_COLORSPACE_RGB, TRUE,
-				     8, width, height, 4 * width,
+				     8, (gint)width, (gint)height, 4 * (gint)width,
 				     (GdkPixbufDestroyNotify) g_free,
 				     NULL);
   gtk_image_set_from_pixbuf (GTK_IMAGE (data->preview), pixbuf);

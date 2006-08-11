@@ -3,6 +3,7 @@
 #include "private.h"
 #include "menu.h"
 #include "scale.h"
+#include "main_window.h"
 
 
 /* Callbacks */
@@ -67,8 +68,8 @@ avs3_main_window (void)
 }
 
 static gboolean
-_delete_window_cb (GtkWidget *widget,
-                   GdkEvent  *event,
+_delete_window_cb (GtkWidget *widget __UNUSED__,
+                   GdkEvent  *event __UNUSED__,
                    gpointer   user_data)
 {
   gtk_main_quit ();
@@ -78,7 +79,7 @@ _delete_window_cb (GtkWidget *widget,
   return TRUE;
 }
 static void
-_destroy_window_cb (GtkObject *widget,
+_destroy_window_cb (GtkObject *widget __UNUSED__,
                     gpointer   user_data)
 {
   gtk_main_quit ();

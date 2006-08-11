@@ -2,6 +2,7 @@
 
 #include "private.h"
 #include "preview.h"
+#include "edit.h"
 
 
 void
@@ -14,7 +15,7 @@ avs3_edit_begin (Avs3_Data *data, GtkWidget *parent)
 
   data->frame_current = 0;
   avs3_preview_draw (data, data->frame_current);
-  gtk_range_set_value (GTK_RANGE (data->scale), data->frame_current);
+  gtk_range_set_value (GTK_RANGE (data->scale), (gfloat)data->frame_current);
 }
 
 void
@@ -31,7 +32,7 @@ avs3_edit_end (Avs3_Data *data, GtkWidget *parent)
   data->frame_current = avs_videoinfo_framecount_get (info) - 1;
   avs_videoinfo_delete (info);
   avs3_preview_draw (data, data->frame_current);
-  gtk_range_set_value (GTK_RANGE (data->scale), data->frame_current);
+  gtk_range_set_value (GTK_RANGE (data->scale), (gfloat)data->frame_current);
 }
 
 void
@@ -63,7 +64,7 @@ avs3_edit_goto (Avs3_Data *data, GtkWidget *parent)
   gtk_widget_show (hbox);
   
   label = gtk_label_new ("Frame number:");
-  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+  gtk_misc_set_alignment (GTK_MISC (label), 0.0f, 0.5f);
   gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
   gtk_widget_show (label);
   
@@ -80,7 +81,7 @@ avs3_edit_goto (Avs3_Data *data, GtkWidget *parent)
     str = gtk_entry_get_text (GTK_ENTRY (entry));
     data->frame_current = (gint)g_ascii_strtod (str, NULL);
     avs3_preview_draw (data, data->frame_current);
-    gtk_range_set_value (GTK_RANGE (data->scale), data->frame_current);
+    gtk_range_set_value (GTK_RANGE (data->scale), (gfloat)data->frame_current);
     break;
   }
   case GTK_RESPONSE_CANCEL:

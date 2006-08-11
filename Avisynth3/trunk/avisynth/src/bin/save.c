@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdint.h>
 #include <unistd.h>
 
@@ -15,8 +14,8 @@
 
 
 static gboolean
-_fill_status_window (GIOChannel  *io,
-                     GIOCondition condition,
+_fill_status_window (GIOChannel  *io __UNUSED__,
+                     GIOCondition condition __UNUSED__,
                      gpointer     user_data)
 {
   gchar             str[128];
@@ -38,32 +37,31 @@ _fill_status_window (GIOChannel  *io,
     return FALSE;
   }
 
-  snprintf (str, 128, "%d/%d", pipe_data.frame, pipe_data.frame_total);
+  g_snprintf (str, 128, "%d/%d", pipe_data.frame, pipe_data.frame_total);
   gtk_entry_set_text (GTK_ENTRY (thread_data->current_video_frame),
                       str);
 
-  snprintf (str, 128, "%dKB",
-            pipe_data.file >> 10);
+  g_snprintf (str, 128, "%dKB", pipe_data.file >> 10);
   gtk_entry_set_text (GTK_ENTRY (thread_data->video_data),
                       str);
 
   fps = pipe_data.elapsed > 0 ? 1000000.0 * (gdouble)pipe_data.frame / (gdouble)pipe_data.elapsed : 0.0;
-  snprintf (str, 128, "%.2fKB/s (%.2f fps)",
-            (double) pipe_data.file * 8 * thread_data->param->i_fps_num /
-            ((double) thread_data->param->i_fps_den * pipe_data.frame * 1000),
-            fps);
+  g_snprintf (str, 128, "%.2fKB/s (%.2f fps)",
+	      (double) pipe_data.file * 8 * thread_data->param->i_fps_num /
+	      ((double) thread_data->param->i_fps_den * pipe_data.frame * 1000),
+	      fps);
   gtk_entry_set_text (GTK_ENTRY (thread_data->video_rendering_rate),
                       str);
 
-  snprintf (str, 128, "%lld:%02lld:%02lld",
-            (pipe_data.elapsed / 1000000) / 3600,
-            ((pipe_data.elapsed / 1000000) / 60) % 60,
-            (pipe_data.elapsed / 1000000) % 60);
+  g_snprintf (str, 128, "%lld:%02lld:%02lld",
+	      (pipe_data.elapsed / 1000000) / 3600,
+	      ((pipe_data.elapsed / 1000000) / 60) % 60,
+	      (pipe_data.elapsed / 1000000) % 60);
   gtk_entry_set_text (GTK_ENTRY (thread_data->time_elapsed),
                       str);
 
   eta = pipe_data.elapsed * (pipe_data.frame_total - pipe_data.frame) / ((int64_t)pipe_data.frame * 1000000);
-  snprintf (str, 128, "%d:%02d:%02d", eta / 3600, (eta / 60) % 60, eta % 60);
+  g_snprintf (str, 128, "%d:%02d:%02d", eta / 3600, (eta / 60) % 60, eta % 60);
   gtk_entry_set_text (GTK_ENTRY (thread_data->time_remaining),
                       str);
 
@@ -71,7 +69,7 @@ _fill_status_window (GIOChannel  *io,
   gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (thread_data->progress),
                                  progress);
 
-  snprintf (str, 128, "%0.1f%%", 100.0 * progress);
+  g_snprintf (str, 128, "%0.1f%%", 100.0 * progress);
   gtk_progress_bar_set_text (GTK_PROGRESS_BAR (thread_data->progress), str);
 
   return TRUE;

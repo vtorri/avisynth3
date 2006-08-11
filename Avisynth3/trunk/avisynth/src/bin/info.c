@@ -1,6 +1,7 @@
 #include <gtk/gtk.h>
 
 #include "private.h"
+#include "info.h"
 
 
 static gchar *
@@ -83,8 +84,7 @@ avs3_info_video (Avs3_Data *data)
       gtk_widget_show (table);
 
       label = gtk_label_new ("Size: ");
-      gtk_misc_set_alignment (GTK_MISC (label),
-                              0.0, 0.5);
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
       gtk_table_attach_defaults (GTK_TABLE (table),
                                  label,
                                  0, 1,
@@ -92,8 +92,7 @@ avs3_info_video (Avs3_Data *data)
       gtk_widget_show (label);
 
       label = gtk_label_new ("Framerate: ");
-      gtk_misc_set_alignment (GTK_MISC (label),
-                              0.0, 0.5);
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
       gtk_table_attach_defaults (GTK_TABLE (table),
                                  label,
                                  0, 1,
@@ -101,8 +100,7 @@ avs3_info_video (Avs3_Data *data)
       gtk_widget_show (label);
 
       label = gtk_label_new ("Frame count: ");
-      gtk_misc_set_alignment (GTK_MISC (label),
-                              0.0, 0.5);
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
       gtk_table_attach_defaults (GTK_TABLE (table),
                                  label,
                                  0, 1,
@@ -110,44 +108,40 @@ avs3_info_video (Avs3_Data *data)
       gtk_widget_show (label);
 
       label = gtk_label_new ("Time: ");
-      gtk_misc_set_alignment (GTK_MISC (label),
-                              0.0, 0.5);
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
       gtk_table_attach_defaults (GTK_TABLE (table),
                                  label,
                                  0, 1,
                                  3, 4);
       gtk_widget_show (label);
 
-      snprintf (str, 4096, "%dx%d",
-                avs_videoinfo_width_get (info),
-                avs_videoinfo_height_get (info));
+      g_snprintf (str, 4096, "%dx%d",
+		  avs_videoinfo_width_get (info),
+		  avs_videoinfo_height_get (info));
       label = gtk_label_new (str);
-      gtk_misc_set_alignment (GTK_MISC (label),
-                              0.0, 0.5);
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
       gtk_table_attach_defaults (GTK_TABLE (table),
                                  label,
                                  1, 2,
                                  0, 1);
       gtk_widget_show (label);
 
-      snprintf (str, 4096, "%d/%d (%.3f)",
-                avs_videoinfo_fps_numerator_get (info),
-                avs_videoinfo_fps_denominator_get (info),
-                avs_videoinfo_fps_float_get (info));
+      g_snprintf (str, 4096, "%d/%d (%.3f)",
+		  avs_videoinfo_fps_numerator_get (info),
+		  avs_videoinfo_fps_denominator_get (info),
+		  avs_videoinfo_fps_float_get (info));
       label = gtk_label_new (str);
-      gtk_misc_set_alignment (GTK_MISC (label),
-                              0.0, 0.5);
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
       gtk_table_attach_defaults (GTK_TABLE (table),
                                  label,
                                  1, 2,
                                  1, 2);
       gtk_widget_show (label);
 
-      snprintf (str, 4096, "%d",
-                avs_videoinfo_framecount_get (info));
+      g_snprintf (str, 4096, "%d",
+		  avs_videoinfo_framecount_get (info));
       label = gtk_label_new (str);
-      gtk_misc_set_alignment (GTK_MISC (label),
-                              0.0, 0.5);
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
       gtk_table_attach_defaults (GTK_TABLE (table),
                                  label,
                                  1, 2,
@@ -156,8 +150,7 @@ avs3_info_video (Avs3_Data *data)
 
       str_time = _get_time_string ((gdouble)(avs_videoinfo_framecount_get (info) * avs_videoinfo_fps_denominator_get (info)) / avs_videoinfo_fps_numerator_get (info));
       label = gtk_label_new (str_time);
-      gtk_misc_set_alignment (GTK_MISC (label),
-                              0.0, 0.5);
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
       gtk_table_attach_defaults (GTK_TABLE (table),
                                  label,
                                  1, 2,
@@ -199,8 +192,7 @@ avs3_info_video (Avs3_Data *data)
       gtk_widget_show (table);
 
       label = gtk_label_new ("Channels: ");
-      gtk_misc_set_alignment (GTK_MISC (label),
-                              0.0, 0.5);
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
       gtk_table_attach_defaults (GTK_TABLE (table),
                                  label,
                                  0, 1,
@@ -208,8 +200,7 @@ avs3_info_video (Avs3_Data *data)
       gtk_widget_show (label);
 
       label = gtk_label_new ("Samplerate: ");
-      gtk_misc_set_alignment (GTK_MISC (label),
-                              0.0, 0.5);
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
       gtk_table_attach_defaults (GTK_TABLE (table),
                                  label,
                                  0, 1,
@@ -217,41 +208,37 @@ avs3_info_video (Avs3_Data *data)
       gtk_widget_show (label);
 
       label = gtk_label_new ("Sample count: ");
-      gtk_misc_set_alignment (GTK_MISC (label),
-                              0.0, 0.5);
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
       gtk_table_attach_defaults (GTK_TABLE (table),
                                  label,
                                  0, 1,
                                  2, 3);
       gtk_widget_show (label);
 
-      snprintf (str, 4096, "%d",
+      g_snprintf (str, 4096, "%d",
                 avs_videoinfo_channel_count_get (info));
       label = gtk_label_new (str);
-      gtk_misc_set_alignment (GTK_MISC (label),
-                              0.0, 0.5);
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
       gtk_table_attach_defaults (GTK_TABLE (table),
                                  label,
                                  1, 2,
                                  0, 1);
       gtk_widget_show (label);
 
-      snprintf (str, 4096, "%d",
+      g_snprintf (str, 4096, "%d",
                 avs_videoinfo_sample_rate_get (info));
       label = gtk_label_new (str);
-      gtk_misc_set_alignment (GTK_MISC (label),
-                              0.0, 0.5);
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
       gtk_table_attach_defaults (GTK_TABLE (table),
                                  label,
                                  1, 2,
                                  1, 2);
       gtk_widget_show (label);
 
-      snprintf (str, 4096, "%Ld",
+      g_snprintf (str, 4096, "%lld",
                 avs_videoinfo_sample_count_get (info));
       label = gtk_label_new (str);
-      gtk_misc_set_alignment (GTK_MISC (label),
-                              0.0, 0.5);
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
       gtk_table_attach_defaults (GTK_TABLE (table),
                                  label,
                                  1, 2,
@@ -283,7 +270,7 @@ avs3_info_video (Avs3_Data *data)
 }
 
 void
-avs3_info_plugins (Avs3_Data *data)
+avs3_info_plugins (Avs3_Data *data __UNUSED__)
 {
   GtkWidget *win_info;
   GtkWidget *frame;

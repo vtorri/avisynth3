@@ -7,6 +7,7 @@
 
 #include "private.h"
 #include "private_x264.h"
+#include "status_window.h"
 
 
 /* Callbacks */
@@ -147,7 +148,7 @@ _thread_data_free (Avs3_Thread_Data *thread_data)
 
 static gboolean
 _delete_window_cb (GtkWidget *widget,
-                   GdkEvent  *event,
+                   GdkEvent  *event __UNUSED__,
                    gpointer   user_data)
 {
   gtk_widget_destroy (widget);

@@ -1,5 +1,8 @@
 #include <gtk/gtk.h>
 
+#include "about.h"
+
+
 void
 avs3_about (void)
 {

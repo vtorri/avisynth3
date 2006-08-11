@@ -377,7 +377,7 @@ static int open_file_bsf( char *psz_filename, hnd_t *p_handle )
     return 0;
 }
 
-static int set_param_bsf( hnd_t handle, x264_param_t *p_param )
+static int set_param_bsf( hnd_t handle __UNUSED__, x264_param_t *p_param __UNUSED__ )
 {
     return 0;
 }
@@ -389,7 +389,7 @@ static int write_nalu_bsf( hnd_t handle, uint8_t *p_nalu, int i_size )
     return -1;
 }
 
-static int set_eop_bsf( hnd_t handle,  x264_picture_t *p_picture )
+static int set_eop_bsf( hnd_t handle __UNUSED__,  x264_picture_t *p_picture __UNUSED__ )
 {
     return 0;
 }
@@ -408,22 +408,22 @@ typedef struct
     mk_Writer *w;
 
     uint8_t   *sps, *pps;
-    int       sps_len, pps_len;
+    unsigned   sps_len, pps_len;
 
-    int       width, height, d_width, d_height;
+    unsigned   width, height, d_width, d_height;
 
-    int64_t   frame_duration;
-    int       fps_num;
+    int64_t    frame_duration;
+    int        fps_num;
 
-    int       b_header_written;
-    char      b_writing_frame;
+    int        b_header_written;
+    char       b_writing_frame;
 } mkv_t;
 
 static int write_header_mkv( mkv_t *p_mkv )
 {
     int       ret;
-    uint8_t   *avcC;
-    int  avcC_len;
+    uint8_t  *avcC;
+    unsigned  avcC_len;
 
     if( p_mkv->sps == NULL || p_mkv->pps == NULL ||
         p_mkv->width == 0 || p_mkv->height == 0 ||
@@ -431,7 +431,7 @@ static int write_header_mkv( mkv_t *p_mkv )
         return -1;
 
     avcC_len = 5 + 1 + 2 + p_mkv->sps_len + 1 + 2 + p_mkv->pps_len;
-    avcC = malloc(avcC_len);
+    avcC = (uint8_t *)malloc(avcC_len);
     if (avcC == NULL)
         return -1;
 
@@ -453,10 +453,17 @@ static int write_header_mkv( mkv_t *p_mkv )
 
     memcpy( avcC+11+p_mkv->sps_len, p_mkv->pps, p_mkv->pps_len );
 
-    ret = mk_writeHeader( p_mkv->w, "x264", "V_MPEG4/ISO/AVC",
-                          avcC, avcC_len, p_mkv->frame_duration, 50000,
-                          p_mkv->width, p_mkv->height,
-                          p_mkv->d_width, p_mkv->d_height );
+    ret = mk_writeHeader( p_mkv->w,
+			  "x264",
+			  "V_MPEG4/ISO/AVC",
+                          avcC,
+			  avcC_len,
+			  p_mkv->frame_duration,
+			  (int64_t)50000,
+                          p_mkv->width,
+			  p_mkv->height,
+                          p_mkv->d_width,
+			  p_mkv->d_height );
 
     free( avcC );
 
@@ -556,11 +563,11 @@ static int write_nalu_mkv( hnd_t handle, uint8_t *p_nalu, int i_size )
     case 0x07:
         if( !p_mkv->sps )
         {
-            p_mkv->sps = malloc(i_size - 4);
+            p_mkv->sps = malloc((unsigned int)(i_size - 4));
             if (p_mkv->sps == NULL)
                 return -1;
             p_mkv->sps_len = i_size - 4;
-            memcpy(p_mkv->sps, p_nalu + 4, i_size - 4);
+            memcpy(p_mkv->sps, p_nalu + 4, (unsigned int)(i_size - 4));
         }
         break;
 
@@ -568,11 +575,11 @@ static int write_nalu_mkv( hnd_t handle, uint8_t *p_nalu, int i_size )
     case 0x08:
         if( !p_mkv->pps )
         {
-            p_mkv->pps = malloc(i_size - 4);
+            p_mkv->pps = malloc((unsigned int)(i_size - 4));
             if (p_mkv->pps == NULL)
                 return -1;
             p_mkv->pps_len = i_size - 4;
-            memcpy(p_mkv->pps, p_nalu + 4, i_size - 4);
+            memcpy(p_mkv->pps, p_nalu + 4, (unsigned int)(i_size - 4));
         }
         break;
 
@@ -592,7 +599,7 @@ static int write_nalu_mkv( hnd_t handle, uint8_t *p_nalu, int i_size )
         dsize[2] = psize >> 8;
         dsize[3] = psize;
         if( mk_addFrameData(p_mkv->w, dsize, 4) < 0 ||
-            mk_addFrameData(p_mkv->w, p_nalu + 4, i_size - 4) < 0 )
+            mk_addFrameData(p_mkv->w, p_nalu + 4, (unsigned int)(i_size - 4)) < 0 )
             return -1;
         break;
 

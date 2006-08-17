@@ -25,8 +25,8 @@
 #include "align.h"
 #include "recycler.h"
 
-//C Runtime
-#include <malloc.h>
+//stlport (C Runtime)
+#include <cstdlib>
 
 
 namespace avs { namespace block {

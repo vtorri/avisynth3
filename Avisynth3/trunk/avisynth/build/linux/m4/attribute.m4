@@ -15,7 +15,7 @@ int foo(int x __attribute__ ((unused))) { exit(1); }
       ac_cv___attribute__=no)
    ])
    if test "$ac_cv___attribute__" = "yes"; then
-      HAVE_ATTRIBUTE=-DHAVE___ATTRIBUTE__
+      cppflags_have_attribute=-DHAVE___ATTRIBUTE__
    fi
    AC_MSG_RESULT($ac_cv___attribute__)
 ])

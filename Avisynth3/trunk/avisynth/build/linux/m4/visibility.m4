@@ -5,11 +5,14 @@ dnl AC_CHECK_GCC_VISIBILITY([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Check the visibility feature of gcc and define VISIBILITY_CFLAGS
 dnl
 AC_DEFUN([AC_CHECK_GCC_VISIBILITY],
-   [VISIBILITY_CFLAGS=""
-    VISIBILITY_CPPFLAGS=""
+   [cppflags_visibility=""
+    cflags_visibility=""
+    cxxflags_visibility=""
     AC_MSG_CHECKING([whether ${CXX} supports -fvisibility=hidden])
     save_CFLAGS=${CFLAGS}
-    CFLAGS="$CFLAGS -fvisibility=hidden -fvisibility-inlines-hidden"
+    CFLAGS="$CFLAGS -fvisibility=hidden"
+    save_CXXFLAGS=${CXXFLAGS}
+    CXXFLAGS="$CXXFLAGS -fvisibility-inlines-hidden"
     AC_COMPILE_IFELSE(
        [AC_LANG_PROGRAM(
           [[
@@ -24,13 +27,13 @@ extern void g(int);
           ]],
           [[]]
         )],
-       [VISIBILITY_CFLAGS="-fvisibility=hidden -fvisibility-inlines-hidden"
-        VISIBILITY_CPPFLAGS="-DHAVE_GCC_VISIBILITY_FEATURE"
+       [cppflags_visibility="-DHAVE_GCC_VISIBILITY_FEATURE"
+        cflags_visibility="-fvisibility=hidden"
+        cxxflags_visibility="-fvisibility-inlines-hidden"
         m4_if([$1], [], [:], [$1])
         AC_MSG_RESULT("yes")],
        [m4_if([$2], [], [:], [$2])
         AC_MSG_RESULT("no")])
     CFLAGS=${save_CFLAGS}
-    AC_SUBST(VISIBILITY_CFLAGS)
-    AC_SUBST(VISIBILITY_CPPFLAGS)
+    CXXFLAGS=${save_CXXFLAGS}
    ])

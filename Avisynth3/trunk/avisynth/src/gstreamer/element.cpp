@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2005-2006 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -33,8 +33,8 @@
 #include "pipeline.h"
 #include "../core/exception/generic.h"
 
-//assert include
-#include <assert.h>
+//stlport include
+#include <cassert>
 
 
 namespace avs { namespace gstreamer {
@@ -77,7 +77,7 @@ Pipeline& Element::AsPipeline()
 
 Element * Element::Create(char const * type, char const * name)
 {
-  GstElement * result = gst_element_factory_make(type, name);   
+  GstElement * result = gst_element_factory_make(type, name);
   assert( result != NULL );
   return static_cast<Element *>(result);
 }

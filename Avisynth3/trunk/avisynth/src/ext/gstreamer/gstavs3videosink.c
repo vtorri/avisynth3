@@ -32,6 +32,13 @@
 
 #include "gstavs3videosink.h"
 
+
+#if HAVE___ATTRIBUTE__
+#  define __UNUSED__ __attribute__((unused))
+#else
+#  define __UNUSED__
+#endif
+
 #define PACKAGE "Avisynth 3.0"
 
 
@@ -111,7 +118,7 @@ static GstFlowReturn gst_avs3_video_sink_render   (GstBaseSink * bsink,
 /* avs3videosink methods */
 
 static void
-gst_avs3_video_sink_init (GstAvs3VideoSink * sink, GstAvs3VideoSinkClass * g_class)
+gst_avs3_video_sink_init (GstAvs3VideoSink * sink, GstAvs3VideoSinkClass * g_class __UNUSED__)
 {
   sink->frame_nbr = 0;
   sink->buffer = NULL;
@@ -195,6 +202,7 @@ gst_avs3_video_sink_seek (GstAvs3VideoSink * sink, guint frame_nbr, GstBuffer **
     g_cond_wait (sink->condition, GST_OBJECT_GET_LOCK (sink));
   *buffer = sink->buffer;
   sink->got_buffer = FALSE;
+
   GST_OBJECT_UNLOCK (sink);
 }
 
@@ -239,8 +247,6 @@ gst_avs3_video_sink_preroll (GstBaseSink * bsink, GstBuffer * buffer)
     return GST_FLOW_OK;
   }
 
-  g_print (" ** preroll \n");
-
   GST_OBJECT_LOCK (sink);
 
   g_print ("Timestamp    : %lld\n", GST_BUFFER_TIMESTAMP (buffer));
@@ -256,9 +262,6 @@ gst_avs3_video_sink_preroll (GstBaseSink * bsink, GstBuffer * buffer)
 
   if (GST_BUFFER_TIMESTAMP_IS_VALID (buffer) &&
       (GST_BUFFER_TIMESTAMP (buffer) >= (((guint64)GST_SECOND * sink->frame_nbr * sink->fps_den) / sink->fps_num))) {
-    /* we do not own the buffer */
-/*     if (sink->buffer) */
-/*       gst_buffer_unref (sink->buffer); */
     sink->buffer = buffer;
     sink->got_buffer = TRUE;
   }
@@ -270,8 +273,10 @@ gst_avs3_video_sink_preroll (GstBaseSink * bsink, GstBuffer * buffer)
 
 /* just in case we are in PLAY state */
 static GstFlowReturn
-gst_avs3_video_sink_render (GstBaseSink * bsink, GstBuffer * buf)
+gst_avs3_video_sink_render (GstBaseSink * bsink, GstBuffer * buf __UNUSED__)
 {
+  GST_DEBUG_OBJECT (bsink, "Render function !! We should not be here");
+
   return GST_FLOW_UNEXPECTED;
 }
 
@@ -293,8 +298,6 @@ gst_avs3_video_sink_change_state (GstElement * element, GstStateChange transitio
       break;
     case GST_STATE_CHANGE_READY_TO_NULL:
       GST_OBJECT_LOCK (sink);
-      if (sink->buffer)
-        gst_buffer_unref (sink->buffer);
       g_cond_free (sink->condition);
       GST_OBJECT_UNLOCK (sink);
       break;
@@ -308,8 +311,10 @@ gst_avs3_video_sink_change_state (GstElement * element, GstStateChange transitio
 static gboolean
 plugin_init (GstPlugin * plugin)
 {
-  return gst_element_register (plugin, "avs3videosink", GST_RANK_NONE,
-      GST_TYPE_AVS3_VIDEO_SINK);
+  return gst_element_register (plugin,
+			       "avs3videosink",
+			       GST_RANK_NONE,
+			       GST_TYPE_AVS3_VIDEO_SINK);
 }
 
 GST_PLUGIN_DEFINE (0,
@@ -318,4 +323,11 @@ GST_PLUGIN_DEFINE (0,
     "video sink plugin for Avisynth 3.0",
     plugin_init, "0.10", "GPL", PACKAGE, "http://avisynth3.unite-video.com/")
 
-/* <wtay> take the segment info,send flush start/stop on the basesink sinkpad, send a newsegment with the saved segment info*/
+/* <wtay> take the segment info,send flush start/stop on the basesink sinkpad, send a newsegment with the saved segment info */
+
+/*
+<wtay> caro, gst_pad_send_event(sinkpad, FLUSH_START); clear sink->buffer; send_event(sinkpad, FLUSH_STOP);
+<wtay> caro, instead of doing the seek. This will call the preroll again with the next buffer
+*/
+
+/* <wtay> tricky, you need to resend the segment after FLUSH_START and after grabbing STREAM_LOCK of the sink pad */

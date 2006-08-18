@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004-2006 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -26,8 +26,8 @@
 #include "../filter.h"
 #include "../subrange.h"
 
-//stl include
-#include <math.h>    //for ceil
+//stlport include
+#include <cmath>     //for ceil
 
 
 namespace avs { namespace filters { namespace resize { namespace pattern {

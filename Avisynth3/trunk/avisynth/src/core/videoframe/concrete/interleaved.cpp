@@ -26,8 +26,8 @@
 #include "../../colorspace.h"
 #include "../../exception/nosuchplane.h"
 
-//assert include
-#include <assert.h>
+//stlport include
+#include <cassert>
 
 
 namespace avs { namespace videoframe { namespace concrete {

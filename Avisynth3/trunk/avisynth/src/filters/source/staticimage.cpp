@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2004-2006 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -27,8 +27,8 @@
 #include "../../core/colorspace.h"
 #include "../../core/videoframe.h"
 
-//assert include
-#include <assert.h>
+//stlport include
+#include <cassert>
 
 
 namespace avs { namespace filters {

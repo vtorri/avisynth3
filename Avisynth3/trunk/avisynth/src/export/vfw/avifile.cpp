@@ -37,12 +37,10 @@
 #include "../filters/source/messageclip.h"
 #include "../parser/parser.h"
 
-//stl include
+//stlport include
+#include <cassert>
 #include <fstream>
 #include <sstream>
-
-//assert include
-#include <assert.h>
 
 
 extern "C" const GUID CLSID_CAVIFileSynth   // {E6D6B700-124D-11D4-86F3-DB80AFD98778}

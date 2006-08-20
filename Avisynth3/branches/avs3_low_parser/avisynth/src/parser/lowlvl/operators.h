@@ -48,7 +48,7 @@ public:  //sole instance
 
   static Operators const instance;
 
-}
+};
 
 
 

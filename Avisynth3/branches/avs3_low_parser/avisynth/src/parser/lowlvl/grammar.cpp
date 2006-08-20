@@ -21,8 +21,9 @@
 // General Public License cover the whole combination.
 
 
-//avisynth include
+//avisynth includes
 #include "grammar.h"
+#include "operators.h"
 #include "../functor/var.h"
 #include "../functor/pusher.h"
 #include "../functor/literal.h"
@@ -47,6 +48,11 @@ Grammar::definition<Scanner>::definition(Grammar const & self)
   top
       =   '!'
       >>  lit
+      |   "op"
+      >>  Operators::instance
+          [
+            var(self.packer) += arg1
+          ]
       |   stack
       ;
 

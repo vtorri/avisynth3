@@ -29,7 +29,6 @@
 #include "../functor/assigner.h"
 
 //spirit includes
-#include <boost/spirit/core.hpp>
 //#include <boost/spirit/phoenix/statements.hpp>      //for operator,
 //#include <boost/spirit/utility/escape_char.hpp>   //for c_escape_ch_p, the day it starts converting
 
@@ -54,23 +53,23 @@ Grammar::definition<Scanner>::definition(Grammar const & self)
   lit
       =   spirit::strict_real_p
           [
-            self.value += construct_<pusher<literal<double> > >(arg1)
+            var(self.packer) += construct_<pusher<literal<double> > >(arg1)
           ]
       |   spirit::int_p
           [
-            self.value += construct_<pusher<literal<int> > >(arg1)
+            var(self.packer) += construct_<pusher<literal<int> > >(arg1)
           ]
       |   stringLiteral
           [
-            self.value += construct_<pusher<literal<std::string> > >(arg1)
+            var(self.packer) += construct_<pusher<literal<std::string> > >(arg1)
           ]
       |   spirit::str_p("true")
           [
-            self.value += construct_<pusher<literal<bool> > >(val(true))
+            var(self.packer) += construct_<pusher<literal<bool> > >(val(true))
           ]
       |   spirit::str_p("false")
           [
-            self.value += construct_<pusher<literal<bool> > >(val(false))
+            var(self.packer) += construct_<pusher<literal<bool> > >(val(false))
           ]
       ;
 
@@ -101,11 +100,11 @@ Grammar::definition<Scanner>::definition(Grammar const & self)
       >>  ']'
       >>  (   spirit::ch_p('=')
               [
-                self.value += construct_<assigner<LocalVar> >(stack.value)
+                var(self.packer) += construct_<assigner<LocalVar> >(stack.value)
               ]
           |   spirit::eps_p
               [
-                self.value += construct_<pusher<LocalVar> >(stack.value)
+                var(self.packer) += construct_<pusher<LocalVar> >(stack.value)
               ]
           )
       ;

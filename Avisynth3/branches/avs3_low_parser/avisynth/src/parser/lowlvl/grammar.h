@@ -26,10 +26,15 @@
 
 //avisynth includes
 #include "../codepacker.h"
+#include "../functor/var.h"
+#include "../functor/pusher.h"
+#include "../functor/literal.h"
+#include "../functor/assigner.h"
 
 
 //spirit includes
 #define PHOENIX_LIMIT 6
+#include <boost/spirit/core.hpp>
 #include <boost/spirit/core/non_terminal/rule.hpp>
 #include <boost/spirit/core/non_terminal/grammar.hpp>
 #include <boost/spirit/attribute/closure.hpp>          //grammar.hpp before that one
@@ -55,8 +60,13 @@ template <class Type> struct Value : spirit::closure<Value<Type>, Type>
 
 
 
-struct Grammar : public spirit::grammar<Grammar, closures::Value<CodePacker>::context_t>
+struct Grammar : public spirit::grammar<Grammar>
 {
+
+  CodePacker& packer;
+
+  Grammar(CodePacker packer_) : packer( packer_ ) { }
+
 
   template <typename ScannerT>
   struct definition 
@@ -78,6 +88,7 @@ struct Grammar : public spirit::grammar<Grammar, closures::Value<CodePacker>::co
 
 };
 
+
 typedef spirit::scanner< char const *
                        , spirit::scanner_policies
                            < spirit::skip_parser_iteration_policy
@@ -93,7 +104,6 @@ typedef spirit::scanner< char const *
 
 template <>
 Grammar::definition<Scanner>::definition(Grammar const & self);
-
 
 
 } } } //namespace avs::parser::lowlvl

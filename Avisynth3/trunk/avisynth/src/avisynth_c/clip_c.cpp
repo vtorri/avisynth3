@@ -1,5 +1,5 @@
 /* Avisynth 3.0 C Interface
- * Copyright 2005 Vincent Torri <vtorri at univ-evry dot fr>
+ * Copyright 2005-2006 Vincent Torri <vtorri at univ-evry dot fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -131,7 +131,7 @@ avs_clip_new_from_script (const char *script, const AVS_Environment *p_env)
     return NULL;
 
   p_clip->p_clip_ = avs::parser::Parser()(script, p_env->p_env_);
-  
+
   return p_clip;
 }
 
@@ -141,7 +141,7 @@ EXTERN_C AVS_Clip *avs_clip_new_from_file (const char *filename, const AVS_Envir
 
   if (!p_env || !p_env->p_env_)
     return NULL;
-  
+
   string script = get_script (filename);
 
   p_clip = new AVS_Clip;
@@ -149,7 +149,7 @@ EXTERN_C AVS_Clip *avs_clip_new_from_file (const char *filename, const AVS_Envir
     return NULL;
 
   p_clip->p_clip_ = avs::parser::Parser()(script, p_env->p_env_);
-  
+
   return p_clip;
 }
 
@@ -166,7 +166,7 @@ avs_clip_new_to_rgb32 (const AVS_Clip *p_clip)
     return NULL;
 
   p_clip_rgb32->p_clip_ = avs::filters::convert::ToRGB32::Create(p_clip->p_clip_);
-  
+
   return p_clip_rgb32;
 }
 
@@ -183,7 +183,7 @@ avs_clip_new_to_yv12 (const AVS_Clip *p_clip)
     return NULL;
 
   p_clip_yv12->p_clip_ = avs::filters::convert::ToYV12::Create(p_clip->p_clip_);
-  
+
   return p_clip_yv12;
 }
 
@@ -231,4 +231,20 @@ avs_clip_videoframe_get (const AVS_Clip *p_clip, long int n)
   p_vf->p_vf_ = p_clip->p_clip_->GetFrame (n);
 
   return p_vf;
+}
+
+EXTERN_C unsigned char *
+avs_clip_audio_get (const AVS_Clip *p_clip, unsigned char *buffer, long long start, long count)
+{
+  unsigned char *position;
+
+  if (!p_clip || !buffer || (count < 0))
+    return NULL;
+
+  printf (" ** audio taille : %d\n", sizeof (*buffer));
+  memset (buffer, 0, sizeof (*buffer));
+
+  position = p_clip->p_clip_->GetAudio (buffer, start, count);
+
+  return position;
 }

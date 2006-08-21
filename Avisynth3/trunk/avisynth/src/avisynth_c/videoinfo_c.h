@@ -1,5 +1,5 @@
 /* Avisynth 3.0 C Interface
- * Copyright 2005 Vincent Torri <vtorri at univ-evry dot fr>
+ * Copyright 2005-2006 Vincent Torri <vtorri at univ-evry dot fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,17 @@
  * opaque declaration of a videoinfo
  */
 typedef struct AVS_VideoInfo_ AVS_VideoInfo;
+
+
+/** @brief Audio sample types */
+typedef enum
+{
+  SAMPLE_INT8,  /**< 8 bits integer sample type */
+  SAMPLE_INT16, /**< 16 bits integer sample type */
+  SAMPLE_INT24, /**< 24 bits integer sample type */
+  SAMPLE_INT32, /**< 32 bits integer sample type */
+  SAMPLE_FLOAT  /**< float sample type */
+}AVS_SampleType;
 
 
 /** @brief Delete an AVS_VideoInfo.
@@ -201,6 +212,18 @@ AVS_C_API int avs_videoinfo_sample_rate_get (const AVS_VideoInfo *p_vi);
  * @p p_vi is @c NULL, this function returns @c 0.
  */
 AVS_C_API long long int avs_videoinfo_sample_count_get (const AVS_VideoInfo *p_vi);
+
+
+/** @brief Retrieve the sample type of the audio.
+ *
+ * @param p_vi The videoinfo.
+ * @return The sample type of the audio.
+ *
+ * Retrieve the sample type of the audio from the videoinfo @p p_vi. If
+ * @p p_vi is @c NULL, this function returns @c SAMPLE_INT8. Otherwise,
+ * it return a value of type #AVS_SampleType.
+ */
+AVS_C_API AVS_SampleType avs_videoinfo_sample_type_get (const AVS_VideoInfo *p_vi);
 
 
 /** @brief Retrieve the channel count of the audio.

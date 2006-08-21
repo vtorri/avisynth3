@@ -1,5 +1,5 @@
-/* Avisynth 3.0 C Interface 
- * Copyright 2005 Vincent Torri <vtorri at univ-evry dot fr>
+/* Avisynth 3.0 C Interface
+ * Copyright 2005-2006 Vincent Torri <vtorri at univ-evry dot fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,16 @@
 
 /* Avisynth include */
 #include "../../core/videoinfo.h"
+
+
+typedef enum
+{
+  SAMPLE_INT8,
+  SAMPLE_INT16,
+  SAMPLE_INT24,
+  SAMPLE_INT32,
+  SAMPLE_FLOAT
+}AVS_SampleType;
 
 
 typedef struct AVS_VideoInfo_

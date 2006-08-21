@@ -1,5 +1,5 @@
 /* Avisynth 3.0 C Interface
- * Copyright 2005 Vincent Torri <vtorri at univ-evry dot fr>
+ * Copyright 2005-2006 Vincent Torri <vtorri at univ-evry dot fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ avs_videoinfo_colorspace_get (const AVS_VideoInfo *p_vi)
 
   if (!p_vi)
     return NULL;
-  
+
   p_cs = new AVS_ColorSpace;
   if (!p_cs)
     return NULL;
@@ -72,7 +72,7 @@ avs_videoinfo_has_video (const AVS_VideoInfo *p_vi)
 {
   if (p_vi && p_vi->p_vi_->HasVideo ())
     return 1;
-  
+
   return 0;
 }
 
@@ -81,7 +81,7 @@ avs_videoinfo_width_get (const AVS_VideoInfo *p_vi)
 {
   if (!p_vi)
     return 0;
-  
+
   return p_vi->p_vi_->GetWidth ();
 }
 
@@ -90,7 +90,7 @@ avs_videoinfo_height_get (const AVS_VideoInfo *p_vi)
 {
   if (!p_vi)
     return 0;
-  
+
   return p_vi->p_vi_->GetHeight ();
 }
 
@@ -99,7 +99,7 @@ avs_videoinfo_framecount_get (const AVS_VideoInfo *p_vi)
 {
   if (!p_vi)
     return 0;
-  
+
   return p_vi->p_vi_->GetFrameCount ();
 }
 
@@ -108,7 +108,7 @@ avs_videoinfo_fps_numerator_get (const AVS_VideoInfo *p_vi)
 {
   if (!p_vi)
     return 0;
-  
+
   return p_vi->p_vi_->GetFPSNumerator ();
 }
 
@@ -117,7 +117,7 @@ avs_videoinfo_fps_denominator_get (const AVS_VideoInfo *p_vi)
 {
   if (!p_vi)
     return 1;
-  
+
   return p_vi->p_vi_->GetFPSDenominator ();
 }
 
@@ -126,7 +126,7 @@ avs_videoinfo_fps_float_get (const AVS_VideoInfo *p_vi)
 {
   if (!p_vi)
     return 0.0;
-  
+
   return p_vi->p_vi_->GetFloatFPS ();
 }
 
@@ -137,7 +137,7 @@ avs_videoinfo_has_audio (const AVS_VideoInfo *p_vi)
 {
   if (p_vi && p_vi->p_vi_->HasAudio ())
     return 1;
-  
+
   return 0;
 }
 
@@ -146,7 +146,7 @@ avs_videoinfo_sample_rate_get (const AVS_VideoInfo *p_vi)
 {
   if (!p_vi)
     return 0;
-  
+
   return p_vi->p_vi_->GetSampleRate ();
 }
 
@@ -155,8 +155,30 @@ avs_videoinfo_sample_count_get (const AVS_VideoInfo *p_vi)
 {
   if (!p_vi)
     return 0;
-  
+
   return p_vi->p_vi_->GetSampleCount ();
+}
+
+EXTERN_C AVS_SampleType
+avs_videoinfo_sample_type_get (const AVS_VideoInfo *p_vi)
+{
+  if (!p_vi)
+    return SAMPLE_INT8;
+
+  switch (p_vi->p_vi_->GetSampleType ()) {
+  case SAMPLE_INT8:
+    return SAMPLE_INT8;
+  case SAMPLE_INT16:
+    return SAMPLE_INT16;
+  case SAMPLE_INT24:
+    return SAMPLE_INT24;
+  case SAMPLE_INT32:
+    return SAMPLE_INT32;
+  case SAMPLE_FLOAT:
+    return SAMPLE_FLOAT;
+  default:
+    return SAMPLE_INT8;
+  }
 }
 
 EXTERN_C int
@@ -164,6 +186,6 @@ avs_videoinfo_channel_count_get (const AVS_VideoInfo *p_vi)
 {
   if (!p_vi)
     return 0;
-  
+
   return p_vi->p_vi_->GetChannelCount ();
 }

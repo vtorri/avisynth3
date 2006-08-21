@@ -157,15 +157,31 @@ AVS_C_API AVS_VideoInfo *avs_clip_videoinfo_get (const AVS_Clip *p_clip);
 
 /** @brief Retrieve the video frame of a clip.
  *
- * @param p_clip The clip to retrieve informations from.
+ * @param p_clip The clip to retrieve the frames from.
  * @param n The frame number.
  * @return A newly allocated AVS_VideoFrame structure.
  *
  * Retrieve the video frame number @p n of the clip @p p_clip. If @p
- * p_clip is @c NULL, the returned value is @c NULL. The returned
- * value must be free with avs_videoframe_delete().
+ * p_clip is @c NULL, the returned value is @c NULL. If the frame @p n
+ * does not exist, the behavior is undefined. The returned value must
+ * be freed with avs_videoframe_delete().
  */
 AVS_C_API AVS_VideoFrame *avs_clip_videoframe_get (const AVS_Clip *p_clip, long int n);
+
+/** @brief Retrieve the audio samples of a clip.
+ *
+ * @param p_clip The clip to retrieve the samples from.
+ * @param buffer The buffer to fill.
+ * @param start The starting sample.
+ * @param count The sample count to retrieve.
+ * @return The position after the read samples.
+ *
+ * Fill the buffer @p buffer with the audio samples of the clip @p
+ * p_clip, from sample @p start. The number of read samples is @p count.
+ * Out of bounds values are allowed. The excess is filled with blank
+ * noise. The returned value is the position after the read samples.
+ */
+AVS_C_API unsigned char *avs_clip_audio_get (const AVS_Clip *p_clip, unsigned char *buffer, long long start, long count);
 
 
 #endif /* __CLIP_C_H__ */

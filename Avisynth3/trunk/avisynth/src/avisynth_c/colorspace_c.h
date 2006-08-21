@@ -1,5 +1,5 @@
 /* Avisynth 3.0 C Interface
- * Copyright 2005 Vincent Torri <vtorri at univ-evry dot fr>
+ * Copyright 2005-2006 Vincent Torri <vtorri at univ-evry dot fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@
  * with the function avs_videoinfo_colorspace_get().
  *
  * Once you got it, you can check it with avs_colorspace_id_get() and
- * #ColorSpace_Id.
+ * #AVS_ColorSpace_Id.
  *
  * Once you have finished with an #AVS_ColorSpace, you delete it with
  * avs_colorspace_delete().
@@ -68,7 +68,7 @@ typedef enum
   I_YUY2,     /**< YUY2 interlaced colorspace */
   I_YV12,     /**< YV12 planar colorspace */
   I_YV24      /**< YV24 planar colorspace */
-}ColorSpace_Id;
+}AVS_ColorSpace_Id;
 
 
 /** @brief Delete an AVS_ColorSpace.
@@ -85,9 +85,11 @@ AVS_C_API void avs_colorspace_delete (AVS_ColorSpace *p_cs);
  * @param p_cs The colorspace.
  * @return The id of the colorspace.
  *
- * Retrieve the type of the colorspace @p p_cs.
+ * Retrieve the type of the colorspace @p p_cs. If @p p_cs is NULL, the
+ * returned value is @c I_EXTERNAL, otherwise, it's a value of type
+ * #AVS_ColorSpace_Id.
  */
-AVS_C_API ColorSpace_Id avs_colorspace_id_get (const AVS_ColorSpace *p_cs);
+AVS_C_API AVS_ColorSpace_Id avs_colorspace_id_get (const AVS_ColorSpace *p_cs);
 
 
 #endif /* __COLORSPACE_C_H__ */

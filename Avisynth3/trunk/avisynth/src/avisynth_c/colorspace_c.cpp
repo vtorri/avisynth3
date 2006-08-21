@@ -1,5 +1,5 @@
 /* Avisynth 3.0 C Interface
- * Copyright 2005 Vincent Torri <vtorri at univ-evry dot fr>
+ * Copyright 2005-2006 Vincent Torri <vtorri at univ-evry dot fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,8 +47,10 @@ avs_colorspace_delete (AVS_ColorSpace *p_cs)
   delete p_cs;
 }
 
-EXTERN_C ColorSpace_Id avs_colorspace_id_get (const AVS_ColorSpace *p_cs)
+EXTERN_C AVS_ColorSpace_Id avs_colorspace_id_get (const AVS_ColorSpace *p_cs)
 {
+  if (!p_cs) return I_EXTERNAL;
+
   switch (p_cs->p_cs_->id ())
     {
     case I_EXTERNAL:

@@ -35,7 +35,7 @@ SubRange::SubRange(double lower, double upper, int whole)
   , upper_( upper )
   , whole_( whole )
 {
-  if ( lower < 0 || upper <= lower || whole < upper )
+  if ( (lower < 0.0) || (upper <= lower) || ((double)whole < upper) )
     throw exception::resize::BadRange(lower, upper, whole);
 }
 

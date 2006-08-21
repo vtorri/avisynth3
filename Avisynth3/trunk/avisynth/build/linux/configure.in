@@ -45,7 +45,7 @@ dnl Gtk+ version requirement
 GTK_REQS=2.8
 
 dnl Default CFLAGS -- Big impact on overall speed
-cflags_warnings="-ansi -pedantic -Wall -W -Wpointer-arith -Wconversion -Wstrict-prototypes -Wmissing-declarations"
+cflags_warnings="-ansi -pedantic -Wall -W -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations"
 cxxflags_warnings="-ansi -Wall -Wpointer-arith -Wconversion -Wno-non-virtual-dtor"
 
 cflags_optimization="-O2 -fstrength-reduce -finline-functions -ffast-math"

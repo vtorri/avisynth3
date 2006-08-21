@@ -55,7 +55,7 @@ struct _GstAvs3AudioSink {
   gint                  sample_rate;
   gint64                sample_start;
   gint                  samples_count;
-  GstBuffer           * buffer;
+  GstBuffer            *buffer;
 
   /* Amount of bits used and allocated per sample */
   gint                  width;

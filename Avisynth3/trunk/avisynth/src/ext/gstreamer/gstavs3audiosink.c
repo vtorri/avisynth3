@@ -31,11 +31,18 @@
 
 #include "gstavs3audiosink.h"
 
+
+#if HAVE___ATTRIBUTE__
+#  define __UNUSED__ __attribute__((unused))
+#else
+#  define __UNUSED__
+#endif
+
 #define PACKAGE "Avisynth 3.0"
 
 #ifdef G_ENABLE_DEBUG
-#define g_marshal_value_peek_int64(v)    g_value_get_int64 (v)
 #define g_marshal_value_peek_int(v)      g_value_get_int (v)
+#define g_marshal_value_peek_int64(v)    g_value_get_int64 (v)
 #define g_marshal_value_peek_pointer(v)  g_value_get_pointer (v)
 #else /* !G_ENABLE_DEBUG */
 #define g_marshal_value_peek_int(v)      (v)->data[0].v_int
@@ -111,6 +118,13 @@ static GstFlowReturn gst_avs3_audio_sink_preroll  (GstBaseSink * bsink,
 static GstFlowReturn gst_avs3_audio_sink_render   (GstBaseSink * bsink,
                                                    GstBuffer   * buffer);
 
+static void gst_marshal_VOID__INT64_INT_POINTER (GClosure     *closure,
+                                                 GValue       *return_value,
+                                                 guint         n_param_values,
+                                                 const GValue *param_values,
+                                                 gpointer      invocation_hint,
+                                                 gpointer      marshal_data);
+
 /*******************/
 /*                 */
 /* Implementation  */
@@ -118,14 +132,14 @@ static GstFlowReturn gst_avs3_audio_sink_render   (GstBaseSink * bsink,
 /*******************/
 
 /* marshaller */
-/* VOID:INT,INT,POINTER */
-void
+/* VOID:INT64,INT,POINTER */
+static void
 gst_marshal_VOID__INT64_INT_POINTER (GClosure     *closure,
-                                   GValue       *return_value,
-                                   guint         n_param_values,
-                                   const GValue *param_values,
-                                   gpointer      invocation_hint,
-                                   gpointer      marshal_data)
+                                     GValue       *return_value __UNUSED__,
+                                     guint         n_param_values,
+                                     const GValue *param_values,
+                                     gpointer      invocation_hint __UNUSED__,
+                                     gpointer      marshal_data)
 {
   typedef void (*GMarshalFunc_VOID__INT64_INT_POINTER) (gpointer     data1,
                                                         gint64       arg_1,
@@ -160,7 +174,8 @@ gst_marshal_VOID__INT64_INT_POINTER (GClosure     *closure,
 /* avs3audiosink methods */
 
 static void
-gst_avs3_audio_sink_init (GstAvs3AudioSink * sink, GstAvs3AudioSinkClass * g_class)
+gst_avs3_audio_sink_init (GstAvs3AudioSink      *sink,
+                          GstAvs3AudioSinkClass *g_class __UNUSED__)
 {
   sink->sample_rate = 0;
   sink->sample_start = 0;
@@ -202,9 +217,9 @@ gst_avs3_audio_sink_class_init (GstAvs3AudioSinkClass * klass)
                   G_STRUCT_OFFSET (GstAvs3AudioSinkClass, seek),
                   NULL,
                   NULL,
-                  g_cclosure_marshal_VOID__UINT_POINTER,
+                  gst_marshal_VOID__INT64_INT_POINTER,
                   G_TYPE_NONE,
-                  2, G_TYPE_INT, G_TYPE_POINTER);
+                  3, G_TYPE_INT64, G_TYPE_INT, G_TYPE_POINTER);
 
   gstbase_sink_class->get_caps = GST_DEBUG_FUNCPTR (gst_avs3_audio_sink_getcaps);
   gstbase_sink_class->set_caps = GST_DEBUG_FUNCPTR (gst_avs3_audio_sink_setcaps);
@@ -304,9 +319,6 @@ gst_avs3_audio_sink_preroll (GstBaseSink * bsink, GstBuffer * buffer)
 
   if (GST_BUFFER_TIMESTAMP_IS_VALID (buffer) &&
       (((gint64)GST_BUFFER_TIMESTAMP (buffer) * sink->sample_rate) >= (GST_SECOND * sink->sample_start))) {
-    /* we do not own the buffer */
-/*     if (sink->buffer) */
-/*       gst_buffer_unref (sink->buffer); */
     sink->buffer = buffer;
     sink->got_buffer = TRUE;
   }
@@ -318,7 +330,8 @@ gst_avs3_audio_sink_preroll (GstBaseSink * bsink, GstBuffer * buffer)
 
 /* just in case we are in PLAY state */
 static GstFlowReturn
-gst_avs3_audio_sink_render (GstBaseSink * bsink, GstBuffer * buf)
+gst_avs3_audio_sink_render (GstBaseSink *bsink __UNUSED__,
+                            GstBuffer   *buf __UNUSED__)
 {
   return GST_FLOW_UNEXPECTED;
 }
@@ -342,8 +355,6 @@ gst_avs3_audio_sink_change_state (GstElement * element, GstStateChange transitio
       break;
     case GST_STATE_CHANGE_READY_TO_NULL:
       GST_OBJECT_LOCK (sink);
-      if (sink->buffer)
-        gst_buffer_unref (sink->buffer);
       g_cond_free (sink->condition);
       GST_OBJECT_UNLOCK (sink);
       break;
@@ -367,4 +378,6 @@ GST_PLUGIN_DEFINE (0,
     "audio sink plugin for Avisynth 3.0",
     plugin_init, "0.10", "GPL", PACKAGE, "http://avisynth3.unite-video.com/")
 
-/* <wtay> take the segment info,send flush start/stop on the basesink sinkpad, send a newsegment with the saved segment info*/
+/* See gstavs3videosink.c for comments */
+
+/* <wtay> take the segment info,send flush start/stop on the basesink sinkpad, send a newsegment with the saved segment info */

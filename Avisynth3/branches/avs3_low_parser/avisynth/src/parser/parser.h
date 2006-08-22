@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2006 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 #define __AVS_PARSER_PARSER_H__
 
 //avisynth includes
-#include "vmcode.h"
+#include "codepacker.h"         
 #include "../core/forward.h"
 
 //stl includes
@@ -52,7 +52,7 @@ public:  //structors
 public:  //parsing methods
 
   //returns generated code and the number of distincts globals
-  StatementCode operator()(std::string const& src);
+  CodePacker operator()(std::string const& src);
 
   PClip operator()(std::string const& src, PEnvironment const& env);
 

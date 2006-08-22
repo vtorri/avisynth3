@@ -48,6 +48,12 @@ public:
     code_.push_back(op); 
     return *this;
   }
+
+  std::vector<Operation>::const_iterator begin() const
+  {
+    return code_.begin();
+  }
+
 /*
   int Dummy() 
   { 

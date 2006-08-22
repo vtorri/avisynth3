@@ -21,12 +21,9 @@
 // General Public License cover the whole combination.
 
 
-//avisynth include
+//avisynth includes
 #include "parser.h"
-#include "vmstate.h"
-#include "lazy/tuple.h"
-#include "grammar/script.h"
-#include "../linker/core/plugin.h"
+#include "lowlvl/grammar.h"
 #include "../filters/source/messageclip.h"
 
 //boost include
@@ -41,60 +38,47 @@ namespace avs { namespace parser {
 
 
 
-StatementCode Parser::operator()(std::string const& src)
+CodePacker Parser::operator()(std::string const& src)
 {
-
-  using namespace lazy;
   using namespace phoenix;
-  using namespace avs::parser::grammar;
 
-  CodeCouple code;
-  LocalContext localCtxt;
-  GlobalContext globalCtxt;
+  CodePacker packer;
 
-  globalCtxt.get<1>().AddPlugin(linker::core::Plugin::Get());
+  lowlvl::Grammar grammar(packer);
 
-  //Script script;
-  //Statement statement;
-  Expression expression;
+  parse( src.c_str()
+       , grammar
+       , spirit::blank_p
+       );
 
-  parse(src.c_str(), 
-        //script( CodeCouple(), boost::ref(localCtxt), boost::ref(globalCtxt) )
-      //statement( CodeCouple(), boost::ref(localCtxt), boost::ref(globalCtxt), 'c' )
-      expression( value::Expression(), boost::ref(localCtxt), boost::ref(globalCtxt) )
-      [            
-       var(code) += first(arg1)
-      ]
-      , spirit::blank_p);
+  return packer;
 
-  return code;
 }
 
 
 PClip Parser::operator ()(std::string const& src, PEnvironment const& env)
 {
-  
-  StatementCode code = operator()(src);
+  CodePacker code = operator()(src);
 
-  VMState state(env);  
-  //state.push(1);
+  VirtualMachine vm(env);
 
-  code(state); 
+  vm.Run(code.begin());
 
   //if top stack value is a clip, we return it
-  if ( state.size() != 0 && boost::get<PClip>(&state.top()) != NULL )
-    return boost::get<PClip>(state.top());
+  if ( vm.stack.size() != 0 && boost::get<PClip>(&vm.stack.front()) != NULL )
+    return boost::get<PClip>(vm.stack.front());
 
   //return boost::get<PClip>(state.top());
   std::stringstream stream;
 
   stream << "parsed:";
 
-  for(int i = 0; i < state.size(); ++i)
-    stream << ' '  << state[i];  
+  for( VirtualMachine::Stack::iterator it = vm.stack.begin(), end = vm.stack.end(); it != end; ++it )
+    stream << ' '  << *it;  
 
   return filters::MessageClip::Create(stream.str(), env );
 }
+
 
 
 } } //namespace avs::parser

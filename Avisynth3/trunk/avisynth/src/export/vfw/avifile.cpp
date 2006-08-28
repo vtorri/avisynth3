@@ -27,15 +27,14 @@
 //avisynth includes
 #include "main.h"
 #include "avifile.h" 
-#include "avistream/yv12.h"
 #include "avistream/audio.h"
-#include "avistream/interleaved.h"
-#include "../core/videoinfo.h"
-#include "../core/colorspace.h"
-#include "../core/exception/generic.h"
-#include "../core/runtime_environment.h"
-#include "../filters/source/messageclip.h"
-#include "../parser/parser.h"
+#include "avistream/video.h"
+#include "../../core/videoinfo.h"
+#include "../../core/colorspace.h"
+#include "../../core/exception/generic.h"
+#include "../../core/runtime_environment.h"
+#include "../../filters/source/messageclip.h"
+#include "../../parser/parser.h"
 
 //stlport include
 #include <cassert>

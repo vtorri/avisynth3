@@ -1497,11 +1497,19 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\src\core\memory\blitter.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\src\core\memory\block.h"
 					>
 				</File>
 				<File
 					RelativePath="..\..\..\src\core\memory\forward.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\src\core\memory\heap.h"
 					>
 				</File>
 				<File
@@ -2682,19 +2690,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\parser\codecouple.cpp"
+				RelativePath="..\..\..\src\parser\codepacker.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\parser\codecouple.h"
+				RelativePath="..\..\..\src\parser\codepacker.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\src\parser\forward.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\parser\optype.h"
 				>
 			</File>
 			<File
@@ -2706,23 +2710,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\parser\scopeenforcer.h"
+				RelativePath="..\..\..\src\parser\virtualmachine.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\parser\vmcode.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\parser\vmcode.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\parser\vmoperation.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\parser\vmstate.h"
+				RelativePath="..\..\..\src\parser\virtualmachine.h"
 				>
 			</File>
 			<Filter
@@ -3014,6 +3006,26 @@
 				</File>
 				<File
 					RelativePath="..\..\..\src\parser\action\get.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="LowLvl"
+				>
+				<File
+					RelativePath="..\..\..\src\parser\lowlvl\grammar.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\src\parser\lowlvl\grammar.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\src\parser\lowlvl\operators.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\src\parser\lowlvl\operators.h"
 					>
 				</File>
 			</Filter>

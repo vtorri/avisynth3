@@ -21,6 +21,9 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
+
 //avisynth includes
 #include "audio.h"
 #include "../waveformatex.h"
@@ -59,21 +62,21 @@ STDMETHODIMP Audio::Read(LONG lStart, LONG lSamples, LPVOID lpBuffer, LONG cbBuf
 
   if ( lSamples == AVISTREAMREAD_CONVENIENT )
     lSamples = static_cast<long>(vi.AudioSamplesFromFrames(1));
-    
-  if ( plBytes != NULL ) 
+
+  if ( plBytes != NULL )
     *plBytes = vi.BytesPerAudioSample() * lSamples;
-    
-  if ( plSamples != NULL ) 
+
+  if ( plSamples != NULL )
     *plSamples = lSamples;
-    
+
   if ( lpBuffer == NULL )   //case when caller wanted to know buffer size needed
     return S_OK;
 
   if ( cbBuffer < *plBytes )
     return AVIERR_BUFFERTOOSMALL;
 
-  
-  try 
+
+  try
   {
     try { GetClip().GetAudio(static_cast<BYTE *>(lpBuffer), lStart, lSamples); }
     catch (avs::Exception& ex) { MakeErrorStream(ex.msg()); }
@@ -95,3 +98,5 @@ void Audio::FillAviStreamInfo(AVISTREAMINFOW * psi)
 
 
 } } } } //namespace avs::export_::vfw::avistream
+
+#endif //_WIN32

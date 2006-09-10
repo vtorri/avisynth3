@@ -29,7 +29,7 @@ namespace avs { namespace parser {
 
 
 
-void VirtualMachine::operator()(iterator pc_)
+void VirtualMachine::Run(iterator pc_)
 {
   pc = pc_;
   continue_ = true;

@@ -91,5 +91,8 @@ Operators::Operators()
 
 }
 
+//sole instance
+Operators const Operators::instance;
+
 
 } } } //namespace avs::parser::lowlvl

@@ -47,6 +47,11 @@ void YV24::ToPlane(long& x, long& y, char plane) const
 }
 
 
+PExporter YV24::GetExporter(PClip const& clip, std::string const& type) const
+{
+  throw exception::colorspace::Unsupported(shared_from_this());
+}
+
 
 PVideoFrame YV24::CreateFrame(PEnvironment const& env, Dimension const& dim, FrameType type) const
 {

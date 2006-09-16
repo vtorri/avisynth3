@@ -54,6 +54,11 @@ public:
     return code_.begin();
   }
 
+  std::vector<Operation>::const_iterator end() const
+  {
+    return code_.end();
+  }
+
 /*
   int Dummy() 
   { 

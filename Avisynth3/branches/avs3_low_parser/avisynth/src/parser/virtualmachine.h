@@ -70,7 +70,7 @@ public:  //structors
 
 public:  //interface
 
-  void Run(iterator pc_);
+  void Run(iterator pc_, iterator end);
 
   void Stop() { continue_ = false; }
 

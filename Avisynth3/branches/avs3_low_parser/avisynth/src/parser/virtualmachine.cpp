@@ -29,12 +29,12 @@ namespace avs { namespace parser {
 
 
 
-void VirtualMachine::Run(iterator pc_)
+void VirtualMachine::Run(iterator pc_, iterator end)
 {
   pc = pc_;
   continue_ = true;
 
-  while( continue_ )
+  while( continue_ && (pc != end))
   {
     iterator current = pc;
     ++pc;

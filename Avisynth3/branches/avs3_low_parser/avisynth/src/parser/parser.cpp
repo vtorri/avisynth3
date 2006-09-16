@@ -62,7 +62,7 @@ PClip Parser::operator ()(std::string const& src, PEnvironment const& env)
 
   VirtualMachine vm(env);
 
-  vm.Run(code.begin());
+  vm.Run(code.begin(), code.end());
 
   //if top stack value is a clip, we return it
   if ( vm.stack.size() != 0 && boost::get<PClip>(&vm.stack.front()) != NULL )

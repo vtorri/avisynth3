@@ -65,7 +65,7 @@ struct Grammar : public spirit::grammar<Grammar>
 
   CodePacker& packer;
 
-  Grammar(CodePacker packer_) : packer( packer_ ) { }
+  Grammar(CodePacker& packer_) : packer( packer_ ) { }
 
 
   template <typename ScannerT>

@@ -46,15 +46,15 @@ Grammar::definition<Scanner>::definition(Grammar const & self)
   using namespace functor;
 
   top
-      =   '!'
-      >>  lit
-      |   "op"
-      >>  Operators::instance
-          [
-            var(self.packer) += arg1
-          ]
-      |   stack
-      ;
+      =  *(   '!'
+          >>  lit
+          |   "op"
+          >>  Operators::instance
+              [
+                var(self.packer) += arg1
+              ]
+          |   stack
+          );
 
   lit
       =   spirit::strict_real_p

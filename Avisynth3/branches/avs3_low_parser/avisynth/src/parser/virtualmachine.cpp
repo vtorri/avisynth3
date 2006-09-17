@@ -34,7 +34,7 @@ void VirtualMachine::Run(iterator pc_, iterator end)
   pc = pc_;
   continue_ = true;
 
-  while( continue_ && (pc != end))
+  while( continue_ && ( pc != end ) )
   {
     iterator current = pc;
     ++pc;

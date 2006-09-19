@@ -49,6 +49,10 @@ public:  //Plugin interface
   virtual char const * GetVersionLabel() const = 0;
 
 
+public:  //for PluginDef init
+
+  virtual void Fill(PluginDef& def) = 0;
+
 };
 
 

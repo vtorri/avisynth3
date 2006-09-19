@@ -3930,6 +3930,10 @@
 				RelativePath="..\..\..\src\plugin\plugin.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\..\src\plugin\plugindef.h"
+				>
+			</File>
 			<Filter
 				Name="Native"
 				>
@@ -3983,14 +3987,6 @@
 				</File>
 				<File
 					RelativePath="..\..\..\src\plugin\native\plugin.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Linker"
-				>
-				<File
-					RelativePath="..\..\..\src\plugin\linker\native.h"
 					>
 				</File>
 			</Filter>

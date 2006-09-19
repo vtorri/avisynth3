@@ -44,11 +44,10 @@ public: //structors
   virtual ~PluginDef() { }
 
 
-private: //function declarations
+public: //function declarations
 
-  virtual void AddFunction(std::string const& name, std::string const& signature, std::string const& logicalName);
-
-  friend class Plugin;  //so can call the above
+  //only plugins should call that one in their own Fill method
+  virtual void AddFunction(std::string const& name, std::string const& signature, std::string const& logicalName) = 0;
 
 };
 

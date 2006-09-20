@@ -32,7 +32,7 @@ namespace avs { namespace filters { namespace coloryuv {
 CPVideoFrame YV12::MakeFrame(CPVideoFrame const& source) const
 {
   PVideoFrame frame = source;
-  //WindowPtr wp = frame->WriteTo(PLANAR_Y);
+  //WindowPtr wp = frame->WriteTo('Y');
 
   if (analyze||autowhite||autogain)
   {
@@ -47,17 +47,17 @@ CPVideoFrame YV12::MakeFrame(CPVideoFrame const& source) const
     // - use an iterator instead of processing each plane
     // - MMX optimize it
     
-    WindowPtr wp = frame->WriteTo(PLANAR_Y)
+    WindowPtr wp = frame->WriteTo('Y')
     for ( int y = wp.height; y-- > 0; wp.pad() )
       for ( int x = wp.width; x-- > 0; wp.to(1, 0) ) 
         ++yPParam_.accum[ *wp.ptr ];
 
-    wp = frame->WriteTo(PLANAR_U);
+    wp = frame->WriteTo('U');
     for ( int y = wp.height; y-- > 0; wp.pad() )
       for ( int x = wp.width; x-- > 0; wp.to(1, 0) ) 
         ++uPParam_.accum[ *wp.ptr ];
 
-    wp = frame->WriteTo(PLANAR_V);
+    wp = frame->WriteTo('V');
     for ( int y = wp.height; y-- > 0; wp.pad() )
       for ( int x = wp.width; x-- > 0; wp.to(1, 0) ) 
         ++vPParam_.accum[ *wp.ptr ];
@@ -183,17 +183,17 @@ CPVideoFrame YV12::MakeFrame(CPVideoFrame const& source) const
   }
 
   //Third and last part specific to YV12
-  wp = frame->WriteTo(PLANAR_Y);
+  wp = frame->WriteTo('Y');
   for ( int y = wp.height; y-- > 0; wp.pad() )
     for ( int x = wp.width; x-- > 0; wp.to(1, 0) ) 
       *wp.ptr = yPParam_.LUT[ *wp.ptr ]
 
-  wp = frame->WriteTo(PLANAR_U);
+  wp = frame->WriteTo('U');
   for ( int y = wp.height; y-- > 0; wp.pad() )
     for ( int x = wp.width; x-- > 0; wp.to(1, 0) ) 
       *wp.ptr = uPParam_.LUT[ *wp.ptr ]
 
-  wp = frame->WriteTo(PLANAR_V);
+  wp = frame->WriteTo('V');
   for ( int y = wp.height; y-- > 0; wp.pad() )
     for ( int x = wp.width; x-- > 0; wp.to(1, 0) ) 
       *wp.ptr = vPParam_.LUT[ *wp.ptr ]

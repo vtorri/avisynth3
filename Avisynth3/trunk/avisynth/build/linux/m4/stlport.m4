@@ -18,24 +18,24 @@ AC_DEFUN([AM_CHECK_STLPORT],
        [with_stlport_arg="no"])
 
     dnl
-    dnl Name of the thread library option.
+    dnl Name of the stlport shared library option.
     dnl
     AC_ARG_WITH(
        [stlport-lib-name],
        AC_HELP_STRING(
-          [--with-stlport-lib-name=name],
-          [STLport library name]),
+          [--with-stlport-shared-lib-name=name],
+          [STLport shared library name]),
        [with_stlport_lib_name_arg="yes"],
        [with_stlport_lib_name_arg="no"])
 
     dnl
-    dnl Name of the thread library with debug symbols option.
+    dnl Name of the stlport shared library with debug symbols option.
     dnl
     AC_ARG_WITH(
        [stlport-lib-debug-name],
        AC_HELP_STRING(
-          [--with-stlport-lib-debug-name=name],
-          [STLport library name with debug symbols]),
+          [--with-stlport-shared-lib-debug-name=name],
+          [STLport shared library name with debug symbols]),
        [with_stlport_lib_debug_name_arg="yes"],
        [with_stlport_lib_debug_name_arg="no"])
 
@@ -49,21 +49,21 @@ AC_DEFUN([AM_CHECK_STLPORT],
              if test x"${with_stlport_lib_debug_name_arg}" = x"yes" ; then
                 STLPORT_LIB_NAME=${with_stlport_lib_name}
              else
-                STLPORT_LIB_NAME="stlportg"
+                STLPORT_LIB_NAME="libstlportg.so"
              fi
           else
              if test x"${with_stlport_lib_name_arg}" = x"yes" ; then
                 STLPORT_LIB_NAME=${with_stlport_lib_name}
              else
-                STLPORT_LIB_NAME="stlport"
+                STLPORT_LIB_NAME="libstlport.so"
              fi
           fi
        ;;
-       [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
+       [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]* | mingw32* | mks*)
           if test x"${core_debug_mode}" = x"yes" ; then
-             STLPORT_LIB_NAME="stlportg"
+             STLPORT_LIB_NAME="libstlportg.so"
           else
-             STLPORT_LIB_NAME="stlport"
+             STLPORT_LIB_NAME="libstlport.so"
           fi
        ;;
        darwin*|raphsody*)
@@ -89,24 +89,21 @@ AC_DEFUN([AM_CHECK_STLPORT],
        stlport_path="/usr/local"
     fi
     dnl We check the headers, then the library.
+    stlport_lib_fullname=${stlport_path}/lib/${STLPORT_LIB_NAME}
     saved_CPPFLAGS="${CPPFLAGS}"
-    saved_LDFLAGS="${LDFLAGS}"
     CPPFLAGS="${CPPFLAGS} -I${stlport_path}/include/stlport"
-    LDFLAGS="${LDFLAGS} -L${stlport_path}/lib"
     AC_CHECK_HEADERS(
        [stl/config/user_config.h],
-       [AC_CHECK_LIB(
-          [${STLPORT_LIB_NAME}],
-          [main],
-          [STLPORT_LIBS="-L${stlport_path}/lib -l${STLPORT_LIB_NAME}"],
-          [AC_MSG_WARN(STLport library not in ${stlport_path}/lib)
+       [AC_CHECK_FILE(
+          [${stlport_lib_fullname}],
+          [STLPORT_LIBS="${stlport_lib_fullname}"],
+          [AC_MSG_WARN(STLport shared library not in ${stlport_path}/lib)
            m4_if([$3], [], [:], [$3])])
         STLPORT_CFLAGS="-I${stlport_path}/include/stlport"
         m4_if([$2], [], [:], [$2])],
        [AC_MSG_WARN(STLport headers not in ${stlport_path}/include/stlport)
         m4_if([$3], [], [:], [$3])])
     CPPFLAGS="${saved_CPPFLAGS}"
-    LDFLAGS="${saved_LDFLAGS}"
     dnl
     dnl Substitution
     dnl

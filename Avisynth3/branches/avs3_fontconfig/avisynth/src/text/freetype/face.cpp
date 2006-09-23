@@ -38,8 +38,18 @@ namespace avs { namespace text { namespace freetype {
 
 
 
-PFace Face::Create (std::string const& fileName, int index)
+PFace Face::Create (std::string const& fontName, int index)
 {
+#ifdef HAVE_FONTCONFIG
+  fontconfig::Config config;
+  boost::optional<std::string> name;
+
+  assert (((name = config.GetExactFontFilename())) ||
+          ((name = config.GetApproximateFontFilename())));
+  std::string fileName  = *name;
+#else
+  std::string fileName = "C:\\WINNT\\Fonts\\Arial.ttf";
+#endif //HAVE_FONTCONFIG
   FT_Face  face;
   FT_Error error = FT_New_Face(Library::instance, fileName.c_str(), index, &face);
 

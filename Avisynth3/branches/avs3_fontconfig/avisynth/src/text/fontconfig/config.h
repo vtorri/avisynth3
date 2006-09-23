@@ -59,7 +59,7 @@ public:  //structors
 
 public:
 
-  boost::optional<std::string> GetExactFontFilename ( bool bold = false, bool italic = false );
+  boost::optional<std::string> GetExactFontFilename ( std::string const& fontName, bool bold = false, bool italic = false );
   boost::optional<std::string> GetApproximateFontFilename( bool bold = false, bool italic = false );
 
 };

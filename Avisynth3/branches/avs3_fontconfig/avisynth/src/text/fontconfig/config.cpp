@@ -68,7 +68,7 @@ Config::Config()
 }
 
 
-boost::optional<std::string> Config::GetExactFontFilename( bool bold, bool italic )
+boost::optional<std::string> Config::GetExactFontFilename( std::string const& fontName, bool bold, bool italic )
 {
   boost::optional<std::string> filename;
 
@@ -76,7 +76,7 @@ boost::optional<std::string> Config::GetExactFontFilename( bool bold, bool itali
     Pattern pattern( fonts_->fonts[i] );
     boost::optional<std::string> family = pattern.GetFamily();
 
-    if ( family && ( (*family.get_ptr()).find( "Vera" ) != std::string::npos ) ) {
+    if ( family && ( (*family.get_ptr()).find( fontName ) != std::string::npos ) ) {
       boost::optional<std::string> style = pattern.GetStyle();
       char *requested_style = "Roman";
       int requested_spacing = FC_PROPORTIONAL;

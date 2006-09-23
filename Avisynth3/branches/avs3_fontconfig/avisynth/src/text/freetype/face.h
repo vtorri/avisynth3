@@ -71,7 +71,7 @@ public:  //Face interface
 
 public:  //factory method
 
-  static PFace Create(std::string const& fileName, int index = 0);
+  static PFace Create(std::string const& fontName, int index = 0);
 
 };
 

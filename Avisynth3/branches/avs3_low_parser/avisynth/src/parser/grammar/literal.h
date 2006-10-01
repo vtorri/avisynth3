@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2006 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -24,10 +24,8 @@
 #ifndef __AVS_PARSER_GRAMMAR_LITERAL_H__
 #define __AVS_PARSER_GRAMMAR_LITERAL_H__
 
-//avisynth includes
-#include "forward.h"                  //for value::Literal
-//#include "../forward.h"
-#include "../vmoperation.h"
+//stl include
+#include <iosfwd>                       //for std::ostream declaration
 
 //spirit includes
 #define PHOENIX_LIMIT 6
@@ -61,8 +59,19 @@ template <class Type> struct Value : spirit::closure<Value<Type>, Type>
 //
 //  grammar to recognize literals
 //
-struct Literal : public spirit::grammar<Literal, closures::Value<value::Literal>::context_t>
+struct Literal : public spirit::grammar<Literal, closures::Value<char>::context_t>
 {
+
+  std::ostream& out_;
+
+
+public:  //structors
+
+  Literal(std::ostream& out) : out_( out ) { }
+  //generared destructor is fine
+
+
+public:  //inner definition struct
 
   template <typename ScannerT>
   struct definition 
@@ -76,7 +85,7 @@ struct Literal : public spirit::grammar<Literal, closures::Value<value::Literal>
   private:
 
     spirit::rule<ScannerT> top;
-    spirit::rule<ScannerT, closures::Value<std::string>::context_t> stringLiteral;
+    spirit::rule<ScannerT> stringLiteral;
 
   };
 

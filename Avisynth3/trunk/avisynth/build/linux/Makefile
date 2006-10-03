@@ -79,7 +79,7 @@ distfile=$(distdir).tar
 
 .SUFFIXES: .$(OBJECT_EXTENSION) .$(ASSEMBLY_EXTENSION) .cpp .c
 
-all: $(PROG) $(SHARED_LIB) $(GST_VIDEO_SINK_LIB) $(GST_AUDIO_SINK_LIB) $(DOC)
+all: $(PROG) $(STATIC_LIB) $(SHARED_LIB) $(GST_VIDEO_SINK_LIB) $(GST_AUDIO_SINK_LIB) $(DOC)
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo " Avisynth has been successfully built."

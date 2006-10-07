@@ -66,7 +66,7 @@ Literal::definition<Scanner>::definition(Literal const & self)
               ]
           )
           [
-            var(self.out_) << val('!') << construct_<std::string>(arg1, arg2)
+            var(self.out_) << val('!') << construct_<std::string>(arg1, arg2) << val(' ')
           ]
       ;
       

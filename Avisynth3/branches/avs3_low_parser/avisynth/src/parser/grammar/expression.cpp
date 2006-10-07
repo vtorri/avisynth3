@@ -23,12 +23,14 @@
 
 //avisynth includes
 #include "expression.h"
+/*
 #include "../lazy/tuple.h"
 #include "../action/get.h"
 #include "../action/check.h"
 #include "../functor/var.h"
 #include "../functor/pusher.h"
 #include "../functor/assigner.h"
+*/
 
 //spirit includes
 #include <boost/spirit/core.hpp>
@@ -40,9 +42,11 @@ namespace avs { namespace parser { namespace grammar {
 
 
 
-Expression::Expression()
+Expression::Expression(std::ostream& out)
+  : literal_( out )
+  , out_( out )
 {
-
+/*
   equality_op.add
     ( "==", true )
     ( "!=", false );
@@ -54,7 +58,7 @@ Expression::Expression()
   mult_op.add
       ( "*", '*' )
       ( "/", '/' );
-
+*/
 }
 
 
@@ -62,9 +66,9 @@ template <>
 Expression::definition<Scanner>::definition(Expression const & self)
 {
 
-  using namespace lazy;
+  //using namespace lazy;
   using namespace phoenix;
-
+/*
   typedef functor::pusher<functor::LocalVar> LocalVarPusher;
   typedef functor::pusher<functor::GlobalVar> GlobalVarPusher;
   typedef functor::assigner<functor::LocalVar> LocalVarAssigner;
@@ -77,7 +81,16 @@ Expression::definition<Scanner>::definition(Expression const & self)
             second(self.value) = arg1                   //set expr type in the grammar closure
           ]
       ;
-    
+*/
+  expression
+      =   (   atom
+              [
+                self.value = arg1
+              ]
+          )
+      ;
+
+/*
   expression 
       =   (   local_assign_expr   |   global_assign_expr    )
               [ 
@@ -154,7 +167,18 @@ Expression::definition<Scanner>::definition(Expression const & self)
             --second(self.localCtxt)
           ]
       ;
-
+*/
+  atom                             //atom can be
+      =   (   '('
+          >>  expression           //a nested expression
+              [
+                atom.value = arg1
+              ]
+          >>  ')'
+          )
+      |   self.literal_
+      ;
+/*
   atom_expr                        //atom can be
       =   (   nested_expr          //a nested expr (ie ( expr ) )
           |   call_expr            //a function call
@@ -278,7 +302,7 @@ Expression::definition<Scanner>::definition(Expression const & self)
             bind(&action::Check::TypeIsExpected)(arg1, fixed_type_expr.value)
           ]
       ;
-  
+*/
 }
 
 

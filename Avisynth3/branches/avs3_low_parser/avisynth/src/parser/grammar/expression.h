@@ -26,18 +26,18 @@
 
 //avisynth includes
 #include "literal.h"
-#include "../vmcode.h"
-#include "binaryopparser.h"
-#include "../function/table.h"
+//#include "../vmcode.h"
+//#include "binaryopparser.h"
+//#include "../function/table.h"
 
 //boost includes
-#include <boost/optional.hpp>               //for optional
+//#include <boost/optional.hpp>               //for optional
 
 
 namespace avs { namespace parser { namespace grammar {
 
 
-
+/*
 namespace closures {
 
 
@@ -95,23 +95,26 @@ struct FunctionCall : spirit::closure
 } //namespace closures
 
 
-
+*/
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //  grammar::Expression
 //
 //  expression grammar
 //
-class Expression : public spirit::grammar<Expression, closures::Expression::context_t>
+class Expression : public spirit::grammar<Expression, closures::Value<char>::context_t>
 {
-
+/*
   spirit::symbols<bool> equality_op;                //maps "==" to true and "!=" to false
   spirit::symbols<char const> add_op, mult_op;      //maps the symbol to itself
+*/
+  Literal literal_;
+  std::ostream& out_;
 
 
 public:  //structors
 
-  Expression();
+  Expression(std::ostream& out);
 
 
 public:  //definition nested class
@@ -123,20 +126,22 @@ public:  //definition nested class
     definition(Expression const& self);
 
 
-    spirit::rule<ScannerT> const& start() const { return top; }
+    spirit::rule<ScannerT> const& start() const { return expression; }
 
 
   private:
 
-    spirit::rule<ScannerT> top;
-    spirit::rule<ScannerT, closures::InnerExpression::context_t> expression;
-    spirit::rule<ScannerT, closures::Value<TypedIndex>::context_t> local_assign_expr;
+    //spirit::rule<ScannerT> top;
+    spirit::rule<ScannerT, closures::Value<char>::context_t> expression;
+/*    spirit::rule<ScannerT, closures::Value<TypedIndex>::context_t> local_assign_expr;
     spirit::rule<ScannerT, closures::Value<TypedIndex>::context_t> global_assign_expr;
     spirit::rule<ScannerT, closures::Value<bool>::context_t> equality_expr;
     spirit::rule<ScannerT, closures::Value<char>::context_t> add_expr;
     spirit::rule<ScannerT, closures::Value<char>::context_t> mult_expr;
     spirit::rule<ScannerT, closures::Value<value::ElementalOpProxy>::context_t> binaryop_helper;
-    spirit::rule<ScannerT, closures::Value<char>::context_t> atom_expr;
+*/
+    spirit::rule<ScannerT, closures::Value<char>::context_t> atom;
+/*
     spirit::rule<ScannerT> nested_expr, global_var_expr;
     spirit::rule<ScannerT, closures::Value<int>::context_t> local_var_expr;
     spirit::rule<ScannerT, closures::FunctionCall::context_t> call_expr;
@@ -145,7 +150,7 @@ public:  //definition nested class
     spirit::rule<ScannerT, closures::Value<char>::context_t> fixed_type_expr;
 
     Literal literal;
-
+*/
   };
 
 };

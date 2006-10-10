@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2006 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 
 //avisynth includes
 #include "expression.h"
+#include "binaryopparser.h"
 /*
 #include "../lazy/tuple.h"
 #include "../action/get.h"
@@ -83,7 +84,7 @@ Expression::definition<Scanner>::definition(Expression const & self)
       ;
 */
   expression
-      =   (   atom
+      =   (   add_expr
               [
                 self.value = arg1
               ]
@@ -145,7 +146,15 @@ Expression::definition<Scanner>::definition(Expression const & self)
                   ]
               )
           ;
+*/
+  add_expr
+      =   binary_op_p( self.out_, atom_expr, '+', '-' )
+          [
+            add_expr.value = arg1
+          ]
+      ;
 
+/*
   add_expr
       =   binary_op_p( mult_expr, self.add_op, binaryop_helper )
           [
@@ -168,11 +177,11 @@ Expression::definition<Scanner>::definition(Expression const & self)
           ]
       ;
 */
-  atom                             //atom can be
+  atom_expr                        //atom can be
       =   (   '('
           >>  expression           //a nested expression
               [
-                atom.value = arg1
+                atom_expr.value = arg1
               ]
           >>  ')'
           )

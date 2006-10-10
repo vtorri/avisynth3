@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2006 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,10 @@
 #define __AVS_PARSER_GRAMMAR_BINARYOPPARSER_H__
 
 //avisynth includes
-#include "../action/get.h"
+//#include "../action/get.h"
+
+//STL include
+#include <iosfwd>
 
 //boost includes
 #include <boost/spirit/core.hpp>
@@ -40,21 +43,24 @@ namespace avs { namespace parser { namespace grammar { namespace binaryop {
 
 
 
-template <typename TermT, typename OpT, typename ActT>
+template <typename TermT>
 class parser
 {
 
+  std::ostream& out_;
+  char const op1_;
+  char const op2_;
+
   typename spirit::as_parser<TermT>::type::embed_t term_;
-  typename spirit::as_parser<OpT>::type::embed_t op_table_;
-  typename spirit::as_parser<ActT>::type::embed_t act_;
 
 
 public:  //constructor
 
-  parser(TermT const & term, OpT const & op_table, ActT const & act)
-    : term_( term ) 
-    , op_table_( op_table )
-    , act_( act ) { }
+  parser(std::ostream& out, TermT const & term, char op1, char op2)
+    : out_( out )
+    , term_( term ) 
+    , op1_( op1 )
+    , op2_( op2 ) { }
 
 
 public:  //parser interface
@@ -62,7 +68,9 @@ public:  //parser interface
   typedef char result_t;
 
   template <typename ScannerT>
-  std::ptrdiff_t operator()(ScannerT const& scan, result_t& result) const
+  std::ptrdiff_t operator()(ScannerT const& scan, result_t& result) const;
+
+/*
   {
 
     char opSymbol;
@@ -89,34 +97,32 @@ public:  //parser interface
 
     return match.length();
   }
-
+*/
 };
 
 
 struct parser_gen
 {
-  template <typename TermT, typename OpT, typename ActT>
+  template <typename TermT>
   spirit::functor_parser<
 	    parser<
-          typename spirit::as_parser<TermT>::type,
-          typename spirit::as_parser<OpT>::type,
-          typename spirit::as_parser<ActT>::type
+          typename spirit::as_parser<TermT>::type
       >
   >
-  operator()(TermT const & term, OpT const & op_table, ActT const & act) const
+  operator()(std::ostream& out, TermT const & term, char op1, char op2) const
   {
   
     typedef typename spirit::as_parser<TermT>::type term_t;
-    typedef typename spirit::as_parser<OpT>::type op_t;
-    typedef typename spirit::as_parser<ActT>::type act_t;
-    typedef parser<term_t, op_t, act_t> functor_t;
+
+    typedef parser<term_t> functor_t;
     typedef spirit::functor_parser<functor_t> return_t;
 
     return return_t(
         functor_t(
+            out,
             spirit::as_parser<TermT>::convert(term),
-            spirit::as_parser<OpT>::convert(op_table),
-            spirit::as_parser<ActT>::convert(act)
+            op1,
+            op2
         )
     );
   }

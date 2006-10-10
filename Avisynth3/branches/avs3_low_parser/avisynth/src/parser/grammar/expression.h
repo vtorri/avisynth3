@@ -27,7 +27,6 @@
 //avisynth includes
 #include "literal.h"
 //#include "../vmcode.h"
-//#include "binaryopparser.h"
 //#include "../function/table.h"
 
 //boost includes
@@ -108,6 +107,7 @@ class Expression : public spirit::grammar<Expression, closures::Value<char>::con
   spirit::symbols<bool> equality_op;                //maps "==" to true and "!=" to false
   spirit::symbols<char const> add_op, mult_op;      //maps the symbol to itself
 */
+
   Literal literal_;
   std::ostream& out_;
 
@@ -136,11 +136,13 @@ public:  //definition nested class
 /*    spirit::rule<ScannerT, closures::Value<TypedIndex>::context_t> local_assign_expr;
     spirit::rule<ScannerT, closures::Value<TypedIndex>::context_t> global_assign_expr;
     spirit::rule<ScannerT, closures::Value<bool>::context_t> equality_expr;
+*/
     spirit::rule<ScannerT, closures::Value<char>::context_t> add_expr;
+/*
     spirit::rule<ScannerT, closures::Value<char>::context_t> mult_expr;
     spirit::rule<ScannerT, closures::Value<value::ElementalOpProxy>::context_t> binaryop_helper;
 */
-    spirit::rule<ScannerT, closures::Value<char>::context_t> atom;
+    spirit::rule<ScannerT, closures::Value<char>::context_t> atom_expr;
 /*
     spirit::rule<ScannerT> nested_expr, global_var_expr;
     spirit::rule<ScannerT, closures::Value<int>::context_t> local_var_expr;

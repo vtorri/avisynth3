@@ -57,10 +57,10 @@ class parser
 public:  //constructor
 
   parser(std::ostream& out, TermT const & term, char op1, char op2)
-    : out_( out )
-    , term_( term ) 
+    : out_( out ) 
     , op1_( op1 )
-    , op2_( op2 ) { }
+    , op2_( op2 )
+    , term_( term ) { }
 
 
 public:  //parser interface

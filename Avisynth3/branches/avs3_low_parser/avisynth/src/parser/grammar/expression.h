@@ -26,7 +26,7 @@
 
 //avisynth includes
 #include "literal.h"
-#include "./function/forward.h"               //for OperatorTable declaration
+#include "../function/forward.h"               //for OperatorTable declaration
 //#include "../vmcode.h"
 //#include "../function/table.h"
 
@@ -111,12 +111,12 @@ class Expression : public spirit::grammar<Expression, closures::Value<char>::con
 
   Literal literal_;
   std::ostream& out_;
-  function::OperatorTable const opTable_;
+  function::OperatorTable const& opTable_;
 
 
 public:  //structors
 
-  Expression(std::ostream& out, function::OperatorTable const opTable);
+  Expression(std::ostream& out, function::OperatorTable const& opTable);
 
 
 public:  //definition nested class

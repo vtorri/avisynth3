@@ -149,7 +149,7 @@ Expression::definition<Scanner>::definition(Expression const & self)
           ;
 */
   add_expr
-      =   binary_op_p( self.out_, atom_expr, '+', '-' )
+      =   binary_op_p( self.out_, self.opTable_, atom_expr, '+', '-' )
           [
             add_expr.value = arg1
           ]

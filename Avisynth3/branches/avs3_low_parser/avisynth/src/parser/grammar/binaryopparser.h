@@ -26,6 +26,7 @@
 
 //avisynth includes
 //#include "../action/get.h"
+#include "../function/forward.h"          //for OperatorTable
 
 //STL include
 #include <iosfwd>
@@ -51,15 +52,17 @@ class parser
   char const op1_;
   char const op2_;
 
+  function::OperatorTable const& opTable_;
   typename spirit::as_parser<TermT>::type::embed_t term_;
 
 
 public:  //constructor
 
-  parser(std::ostream& out, TermT const & term, char op1, char op2)
+  parser(std::ostream& out, function::OperatorTable const& opTable, TermT const & term, char op1, char op2)
     : out_( out ) 
     , op1_( op1 )
     , op2_( op2 )
+    , opTable_( opTable )
     , term_( term ) { }
 
 
@@ -109,7 +112,7 @@ struct parser_gen
           typename spirit::as_parser<TermT>::type
       >
   >
-  operator()(std::ostream& out, TermT const & term, char op1, char op2) const
+  operator()(std::ostream& out, function::OperatorTable const& opTable, TermT const & term, char op1, char op2) const
   {
   
     typedef typename spirit::as_parser<TermT>::type term_t;
@@ -120,6 +123,7 @@ struct parser_gen
     return return_t(
         functor_t(
             out,
+            opTable,
             spirit::as_parser<TermT>::convert(term),
             op1,
             op2

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2006 Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,11 +25,11 @@
 #define __AVS_PARSER_FUNCTION_FORWARD_H__
 
 //boost include
-#include <boost/shared_ptr.hpp>
-#include <boost/tuple/tuple.hpp>
+//#include <boost/shared_ptr.hpp>
+//#include <boost/tuple/tuple.hpp>
 
 //stl include
-#include <string>
+//#include <string>
 
 
 namespace avs { namespace parser { namespace function {
@@ -37,11 +37,12 @@ namespace avs { namespace parser { namespace function {
 
 //declarations
 class Table;
+class OperatorTable;
 class ScriptFunction;
 
 //typedefs
-typedef boost::shared_ptr<ScriptFunction const> PScriptFunction;
-typedef boost::tuples::tuple<char, std::string, std::string> FunctionId;
+//typedef boost::shared_ptr<ScriptFunction const> PScriptFunction;
+//typedef boost::tuples::tuple<char, std::string, std::string> FunctionId;
 
 
 } //namespace function
@@ -51,7 +52,7 @@ namespace functor { namespace function {
 
 
 //more declaration
-struct ForwardCall;
+//struct ForwardCall;
 
 
 } } } } //namespace avs::parser::functor::function

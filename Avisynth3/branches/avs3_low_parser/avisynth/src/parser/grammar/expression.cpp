@@ -43,9 +43,10 @@ namespace avs { namespace parser { namespace grammar {
 
 
 
-Expression::Expression(std::ostream& out)
+  Expression::Expression(std::ostream& out, function::OperatorTable const& opTable)
   : literal_( out )
   , out_( out )
+  , opTable_( opTable )
 {
 /*
   equality_op.add

@@ -37,7 +37,6 @@ namespace avs { namespace parser { namespace function {
 
 //declarations
 class Table;
-class OperatorTable;
 class ScriptFunction;
 
 //typedefs

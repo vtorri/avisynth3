@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2006 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,16 @@ namespace avs { namespace parser {
 class CodePacker
 {
 
-  std::vector<Operation> code_;
+  typedef std::vector<Operation> Code;
+  typedef std::map<std::string, Code::size_type> LabelMap;
+  typedef std::map<Code::size_type, std::string> PendingJumpMap;
+
+  Code code_;
+  
+  LabelMap labelMap_;
+  PendingJumpMap jumpMap_;
+  PendingJumpMap jumpIfMap_;
+  PendingJumpMap jumpIfNotMap_;
 
 
 public:
@@ -59,16 +68,17 @@ public:
     return code_.end();
   }
 
-/*
-  int Dummy() 
-  { 
-    code_.push_back( Operation() );
-    return code_.size() - 1;
-  }
 
-  void ResolveJumpAt(int index, int target);
-  void ResolveIfNotJumpAt(int index, int target);
-*/
+public:  //label stuff
+  
+  void setLab(std::string const& label);
+
+  void jumpTo(std::string const& label);
+  void jumpIf(std::string const& label);
+  void jumpIfNot(std::string const& label);
+
+  void pack();   //resout les sauts vers les labels
+
 };
 
 

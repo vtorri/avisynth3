@@ -27,6 +27,9 @@
 //avisynth include
 #include "../forward.h"          //for Operation definition
 
+//STL include
+#include <map>
+
 //spirit include
 #include <boost/spirit/symbols.hpp>
 
@@ -37,6 +40,11 @@ namespace avs { namespace parser { namespace lowlvl {
 
 class Operators : public boost::spirit::symbols<Operation>
 {
+
+  typedef std::map<char[3], std::pair<char, char *> > ResultTable;
+
+  ResultTable resultTable;
+
 
 private:  //structors
 

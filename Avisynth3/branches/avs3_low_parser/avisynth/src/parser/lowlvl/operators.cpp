@@ -76,18 +76,18 @@ struct divides_equal
 
 Operators::Operators()
 {
-  add( "+[ii]", Operation(plus_equal<int>()) );
-  add( "+[dd]", Operation(plus_equal<double>()) );
-  add( "+[ss]", Operation(plus_equal<std::string>()) );
+  add( "op+[ii]", Operation(plus_equal<int>()) );
+  add( "op+[dd]", Operation(plus_equal<double>()) );
+  add( "op+[ss]", Operation(plus_equal<std::string>()) );
 
-  add( "-[ii]", Operation(minus_equal<int>()) );
-  add( "-[dd]", Operation(minus_equal<double>()) );
+  add( "op-[ii]", Operation(minus_equal<int>()) );
+  add( "op-[dd]", Operation(minus_equal<double>()) );
 
-  add( "*[ii]", Operation(multiplies_equal<int>()) );
-  add( "*[dd]", Operation(multiplies_equal<double>()) );
+  add( "op*[ii]", Operation(multiplies_equal<int>()) );
+  add( "op*[dd]", Operation(multiplies_equal<double>()) );
 
-  add( "/[ii]", Operation(divides_equal<int>()) );
-  add( "/[dd]", Operation(divides_equal<double>()) );
+  add( "op/[ii]", Operation(divides_equal<int>()) );
+  add( "op/[dd]", Operation(divides_equal<double>()) );
 
 }
 

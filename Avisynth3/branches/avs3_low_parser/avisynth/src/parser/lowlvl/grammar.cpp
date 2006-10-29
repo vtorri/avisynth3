@@ -48,8 +48,7 @@ Grammar::definition<Scanner>::definition(Grammar const & self)
   top
       =  *(   '!'
           >>  lit
-          |   "op"
-          >>  Operators::instance
+          |   Operators::instance
               [
                 var(self.packer) += arg1
               ]

@@ -1,5 +1,7 @@
 #include <gtk/gtk.h>
 
+#include <gst/gst.h>
+
 #include "private.h"
 #include "info.h"
 
@@ -45,7 +47,7 @@ _get_time_string (gdouble nbr_seconds)
 }
 
 void
-avs3_info_video (Avs3_Data *data)
+avs3_file_info (Avs3_Data *data)
 {
   GtkWidget *win_info;
 
@@ -270,12 +272,14 @@ avs3_info_video (Avs3_Data *data)
 }
 
 void
-avs3_info_plugins (Avs3_Data *data __UNUSED__)
+avs3_plugins_info (Avs3_Data *data __UNUSED__)
 {
-  GtkWidget *win_info;
-  GtkWidget *frame;
-  GtkWidget *vbox;
-  GtkWidget *check;
+  GtkWidget  *win_info;
+  GtkWidget  *frame;
+  GtkWidget  *hbox;
+  GtkWidget  *vbox;
+  GtkWidget  *check;
+  GstElement *elt;
 
   win_info = gtk_dialog_new_with_buttons ("Info",
                                           NULL,
@@ -284,60 +288,145 @@ avs3_info_plugins (Avs3_Data *data __UNUSED__)
                                           GTK_RESPONSE_CLOSE,
                                           NULL);
 
+  hbox = gtk_hbox_new (TRUE, 6);
+  gtk_widget_set_sensitive (hbox, TRUE);
+  gtk_container_set_border_width (GTK_CONTAINER (hbox), 6);
+  gtk_box_pack_start_defaults (GTK_BOX (GTK_DIALOG (win_info)->vbox),
+                               hbox);
+  gtk_widget_show (hbox);
+
   /* demuxers */
   frame = gtk_frame_new ("Demuxers");
-  gtk_container_set_border_width (GTK_CONTAINER (frame), 6);
-  gtk_box_pack_start_defaults (GTK_BOX (GTK_DIALOG (win_info)->vbox),
-                               frame);
+  gtk_box_pack_start (GTK_BOX (hbox), frame, TRUE, TRUE, 6);
   gtk_widget_show (frame);
 
   vbox = gtk_vbox_new (TRUE, 6);
   gtk_widget_set_sensitive (vbox, FALSE);
+  gtk_container_set_border_width (GTK_CONTAINER (vbox), 6);
   gtk_container_add (GTK_CONTAINER (frame), vbox);
   gtk_widget_show (vbox);
 
+  check = gtk_check_button_new_with_label ("Asf");
+  gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  if ((elt = gst_element_factory_make ("asfdemux", NULL))) {
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), TRUE);
+    gst_object_unref (elt);
+  }
+  gtk_widget_show (check);
+
   check = gtk_check_button_new_with_label ("Avi");
   gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  if ((elt = gst_element_factory_make ("avidemux", NULL))) {
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), TRUE);
+    gst_object_unref (elt);
+  }
+  gtk_widget_show (check);
+
+  check = gtk_check_button_new_with_label ("DV");
+  gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  if ((elt = gst_element_factory_make ("dvdemux", NULL))) {
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), TRUE);
+    gst_object_unref (elt);
+  }
+  gtk_widget_show (check);
+
+  check = gtk_check_button_new_with_label ("DVD");
+  gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  if ((elt = gst_element_factory_make ("dvddemux", NULL))) {
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), TRUE);
+    gst_object_unref (elt);
+  }
   gtk_widget_show (check);
 
   check = gtk_check_button_new_with_label ("Matroska");
   gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  if ((elt = gst_element_factory_make ("matroskademux", NULL))) {
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), TRUE);
+    gst_object_unref (elt);
+  }
   gtk_widget_show (check);
 
-  check = gtk_check_button_new_with_label ("Mp4 / Mov");
+  check = gtk_check_button_new_with_label ("Mp4 / QuickTime");
   gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  if ((elt = gst_element_factory_make ("qtdemux", NULL))) {
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), TRUE);
+    gst_object_unref (elt);
+  }
   gtk_widget_show (check);
 
-  check = gtk_check_button_new_with_label ("Mpeg");
+  check = gtk_check_button_new_with_label ("Mpeg Stream");
   gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  if ((elt = gst_element_factory_make ("mpegdemux", NULL))) {
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), TRUE);
+    gst_object_unref (elt);
+  }
   gtk_widget_show (check);
 
-  check = gtk_check_button_new_with_label ("Real");
+  check = gtk_check_button_new_with_label ("Ogg");
   gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  if ((elt = gst_element_factory_make ("oggdemux", NULL))) {
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), TRUE);
+    gst_object_unref (elt);
+  }
+  gtk_widget_show (check);
+
+  check = gtk_check_button_new_with_label ("Real Media");
+  gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  if ((elt = gst_element_factory_make ("rmdemux", NULL))) {
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), TRUE);
+    gst_object_unref (elt);
+  }
   gtk_widget_show (check);
 
   /* decoders */
   frame = gtk_frame_new ("Decoders");
-  gtk_container_set_border_width (GTK_CONTAINER (frame), 6);
-  gtk_box_pack_start_defaults (GTK_BOX (GTK_DIALOG (win_info)->vbox),
-                               frame);
+  gtk_box_pack_start (GTK_BOX (hbox), frame, TRUE, TRUE, 6);
   gtk_widget_show (frame);
 
   vbox = gtk_vbox_new (TRUE, 6);
   gtk_widget_set_sensitive (vbox, FALSE);
+  gtk_container_set_border_width (GTK_CONTAINER (vbox), 6);
   gtk_container_add (GTK_CONTAINER (frame), vbox);
   gtk_widget_show (vbox);
 
   check = gtk_check_button_new_with_label ("Divx");
   gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  if ((elt = gst_element_factory_make ("divxdemux", NULL))) {
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), TRUE);
+    gst_object_unref (elt);
+  }
+  gtk_widget_show (check);
+
+  check = gtk_check_button_new_with_label ("Dv");
+  gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  if ((elt = gst_element_factory_make ("dvdec", NULL))) {
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), TRUE);
+    gst_object_unref (elt);
+  }
+  gtk_widget_show (check);
+
+  check = gtk_check_button_new_with_label ("Theora");
+  gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  if ((elt = gst_element_factory_make ("theoradec", NULL))) {
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), TRUE);
+    gst_object_unref (elt);
+  }
   gtk_widget_show (check);
 
   check = gtk_check_button_new_with_label ("Xvid");
   gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  if ((elt = gst_element_factory_make ("xviddec", NULL))) {
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), TRUE);
+    gst_object_unref (elt);
+  }
   gtk_widget_show (check);
 
-  check = gtk_check_button_new_with_label ("X264");
+  check = gtk_check_button_new_with_label ("H264");
   gtk_box_pack_start (GTK_BOX (vbox), check, TRUE, TRUE, 0);
+  if ((elt = gst_element_factory_make ("ffdec_h264", NULL))) {
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), TRUE);
+    gst_object_unref (elt);
+  }
   gtk_widget_show (check);
 
   gtk_widget_show (win_info);

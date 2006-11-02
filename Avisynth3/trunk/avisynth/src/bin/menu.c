@@ -18,16 +18,18 @@ static void _open_cb (GtkMenuItem *menuitem,
                       gpointer     user_data);
 static void _save_cb (GtkMenuItem *menuitem,
                       gpointer     user_data);
-static void _info_cb (GtkMenuItem *menuitem,
-                      gpointer     user_data);
+static void _file_info_cb (GtkMenuItem *menuitem,
+                           gpointer     user_data);
+static void _plugins_info_cb (GtkMenuItem *menuitem,
+                              gpointer     user_data);
 static void _quit_cb (GtkMenuItem *menuitem,
                       gpointer     user_data);
 static void _edit_begin_cb (GtkMenuItem *menuitem,
-                      gpointer     user_data);
+                            gpointer     user_data);
 static void _edit_end_cb (GtkMenuItem *menuitem,
-                      gpointer     user_data);
+                          gpointer     user_data);
 static void _edit_goto_cb (GtkMenuItem *menuitem,
-                      gpointer     user_data);
+                           gpointer     user_data);
 static void _about_window_cb (GtkMenuItem *menuitem,
                               gpointer     user_data);
 static void _x264_config_cb (GtkMenuItem *menuitem,
@@ -40,6 +42,11 @@ avs3_menu (Avs3_Data *data)
   GtkWidget       *menubar;
   GtkWidget       *menu;
   GtkWidget       *item;
+  GtkStockItem     stock;
+
+  gtk_stock_lookup (GTK_STOCK_INFO, &stock);
+  stock.label = "File _Information";
+  gtk_stock_add (&stock, 1);
 
   menubar = gtk_menu_bar_new ();
 
@@ -64,11 +71,25 @@ avs3_menu (Avs3_Data *data)
   g_signal_connect (G_OBJECT (item), "activate",
 		    G_CALLBACK (_save_cb), data);
   gtk_widget_show (item);
+
+  item = gtk_separator_menu_item_new ();
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show (item);
   
   item = gtk_image_menu_item_new_from_stock (GTK_STOCK_INFO, NULL);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   g_signal_connect (G_OBJECT (item), "activate",
-		    G_CALLBACK (_info_cb), data);
+		    G_CALLBACK (_file_info_cb), data);
+  gtk_widget_show (item);
+
+  item = gtk_separator_menu_item_new ();
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show (item);
+  
+  item = gtk_image_menu_item_new_from_stock (GTK_STOCK_PROPERTIES, NULL);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  g_signal_connect (G_OBJECT (item), "activate",
+		    G_CALLBACK (_plugins_info_cb), data);
   gtk_widget_show (item);
 
   item = gtk_separator_menu_item_new ();
@@ -159,10 +180,17 @@ _save_cb (GtkMenuItem *menuitem __UNUSED__,
 }
 
 static void
-_info_cb (GtkMenuItem *menuitem __UNUSED__,
-          gpointer     user_data)
+_file_info_cb (GtkMenuItem *menuitem __UNUSED__,
+               gpointer     user_data)
 {
-  avs3_info_plugins ((Avs3_Data *)user_data);
+  avs3_file_info ((Avs3_Data *)user_data);
+}
+
+static void
+_plugins_info_cb (GtkMenuItem *menuitem __UNUSED__,
+                  gpointer     user_data)
+{
+  avs3_plugins_info ((Avs3_Data *)user_data);
 }
 
 static void

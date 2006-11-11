@@ -625,8 +625,14 @@ dnl ==========================================================================
 
 AM_CHECK_STLPORT(
    [${target_os}],
+   [/usr],
    [],
-   [AC_MSG_ERROR("STLport is needed !")])
+   [AM_CHECK_STLPORT(
+      [${target_os}],
+      [/usr/local],
+      [],
+      [AC_MSG_ERROR("STLport is needed !")])
+   ])
 
 dnl ==========================================================================
 dnl BOOST header and library files
@@ -635,12 +641,26 @@ dnl ==========================================================================
 AM_CHECK_BOOST(
    [${BOOST_VERSION}_1],
    [${target_os}],
+   [/usr],
    [],
    [AM_CHECK_BOOST(
-      [${BOOST_VERSION}],
+      [${BOOST_VERSION}_1],
       [${target_os}],
+      [/usr/local],
       [],
-      [AC_MSG_ERROR("Boost is needed !")])
+      [AM_CHECK_BOOST(
+         [${BOOST_VERSION}],
+         [${target_os}],
+         [/usr],
+         [],
+         [AM_CHECK_BOOST(
+            [${BOOST_VERSION}],
+            [${target_os}],
+            [/usr/local],
+            [],
+            [AC_MSG_ERROR("Boost is needed !")])
+         ])
+      ])
    ])
 
 dnl ==========================================================================
@@ -700,7 +720,10 @@ dnl Gtk+ header and library files
    case "${target_os}" in
       *bsd*|linux*|beos|irix*|solaris*)
          if test "x${HAVE_GTK}" = "xno" ; then
-            AC_MSG_WARN([Test application not built (gtk+ ${GTK_REQS} missing)])
+            AC_MSG_WARN([
+Test application not built (gtk+ ${GTK_REQS} missing).
+If you install Gtk+ with packages, don't forget to
+install also the development packages])
             gui_program="no"
          else
             PROG="avisynth_test"
@@ -716,7 +739,14 @@ dnl x264 header and library files
          [HAVE_X264="yes"],
          [HAVE_X264="no"])
       if test "x${HAVE_X264}" = "xno" ; then
-         AC_MSG_WARN([Test application not built (x264 codec missing)])
+         AC_MSG_WARN([
+Test application not built (x264 codec missing).
+Either you have not installed x264, or you
+have not installed it with the Gtk+ interface.
+If you compile it from source, add these options
+to configure:
+--enable-shared
+--enable-gtk])
          gui_program="no"
          PROG=""
       fi

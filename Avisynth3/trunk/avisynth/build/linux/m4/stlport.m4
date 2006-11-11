@@ -1,5 +1,5 @@
 dnl Configure path for STLport
-dnl Vincent Torri 2005-12-16
+dnl Vincent Torri 2004-2006
 dnl
 dnl AM_CHECK_STLPORT(platform, prefix [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for STLport 5.0 and define STLPORT_LIBS and STLPORT_CFLAGS.

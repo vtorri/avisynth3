@@ -1,7 +1,7 @@
 dnl Configure path for STLport
 dnl Vincent Torri 2005-12-16
 dnl
-dnl AM_CHECK_STLPORT(platform [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
+dnl AM_CHECK_STLPORT(platform, prefix [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for STLport 5.0 and define STLPORT_LIBS and STLPORT_CFLAGS.
 dnl
 AC_DEFUN([AM_CHECK_STLPORT],
@@ -12,10 +12,32 @@ AC_DEFUN([AM_CHECK_STLPORT],
     AC_ARG_WITH(
        [stlport-path],
        AC_HELP_STRING(
-          [--with-stlport-path=PATH (default is /usr/local)],
+          [--with-stlport-path=PATH],
           [STLport Library prefix]),
        [with_stlport_arg="yes"],
        [with_stlport_arg="no"])
+
+    dnl
+    dnl Get the include directory where STLport headers are installed.
+    dnl
+    AC_ARG_WITH(
+       [stlport-includedir-path],
+       AC_HELP_STRING(
+          [--with-stlport-includedir-path=PATH],
+          [STLport headers directory. It must contain the stlport/ directory]),
+       [with_stlport_includedir_arg="yes"],
+       [with_stlport_includedir_arg="no"])
+
+    dnl
+    dnl Get the library directory where STLport libraries are installed.
+    dnl
+    AC_ARG_WITH(
+       [stlport-libdir-path],
+       AC_HELP_STRING(
+          [--with-stlport-libdir-path=PATH],
+          [STLport libraries directory]),
+       [with_stlport_libdir_arg="yes"],
+       [with_stlport_libdir_arg="no"])
 
     dnl
     dnl Name of the stlport shared library option.
@@ -86,23 +108,42 @@ AC_DEFUN([AM_CHECK_STLPORT],
        stlport_path="${with_stlport_path}"
     else
        dnl No argument, or argument empty.
-       stlport_path="/usr/local"
+       stlport_path="$2"
     fi
+
+    dnl We set the include directory to use.
+    if test "${with_stlport_includedir_path+set}" = set && test "x${with_stlport_includedir_arg}" != "xno"; then
+       dnl Argument given and not empty.
+       stlport_includedir_path="${with_stlport_includedir_path}"
+    else
+       dnl No argument, or argument empty.
+       stlport_includedir_path="${stlport_path}/include/stlport"
+    fi
+
+    dnl We set the lib directory to use.
+    if test "${with_stlport_libdir_path+set}" = set && test "x${with_stlport_libdir_arg}" != "xno"; then
+       dnl Argument given and not empty.
+       stlport_libdir_path="${with_stlport_libdir_path}"
+    else
+       dnl No argument, or argument empty.
+       stlport_libdir_path="${stlport_path}/lib"
+    fi
+
     dnl We check the headers, then the library.
-    stlport_lib_fullname=${stlport_path}/lib/${STLPORT_LIB_NAME}
+    stlport_lib_fullname=${stlport_libdir_path}/lib/${STLPORT_LIB_NAME}
     saved_CPPFLAGS="${CPPFLAGS}"
-    CPPFLAGS="${CPPFLAGS} -I${stlport_path}/include/stlport"
+    CPPFLAGS="${CPPFLAGS} -I${stlport_includedir_path}/include/stlport"
     AC_CHECK_HEADERS(
        [stl/config/user_config.h],
        [AC_CHECK_FILE(
           [${stlport_lib_fullname}],
           [STLPORT_LIBS="${stlport_lib_fullname}"],
-          [AC_MSG_WARN(STLport shared library not in ${stlport_path}/lib)
-           m4_if([$3], [], [:], [$3])])
-        STLPORT_CFLAGS="-I${stlport_path}/include/stlport"
-        m4_if([$2], [], [:], [$2])],
-       [AC_MSG_WARN(STLport headers not in ${stlport_path}/include/stlport)
-        m4_if([$3], [], [:], [$3])])
+          [AC_MSG_WARN(STLport shared library not in ${stlport_libdir_path}/lib)
+           m4_if([$4], [], [:], [$4])])
+        STLPORT_CFLAGS="-I${stlport_includedir_path}/include/stlport"
+        m4_if([$3], [], [:], [$3])],
+       [AC_MSG_WARN(STLport headers not in ${stlport_includedir_path}/include/stlport)
+        m4_if([$4], [], [:], [$4])])
     CPPFLAGS="${saved_CPPFLAGS}"
     dnl
     dnl Substitution

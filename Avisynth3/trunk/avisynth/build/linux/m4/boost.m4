@@ -160,7 +160,8 @@ AC_DEFUN([AM_CHECK_BOOST],
                 [
                  AC_MSG_WARN(Boost library not in ${boost_libdir_path})
                  m4_if([$5], [], [:], [$5])
-                ]
+                ],
+                [-pthread]
              )
           ;;
           [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)

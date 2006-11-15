@@ -574,7 +574,7 @@ dnl Standard header files
 dnl ==========================================================================
 
 case "${target_os}" in
-   *bsd*|linux*|beos|irix*|solaris*)
+   linux*|beos|irix*|solaris*)
       AC_CHECK_HEADER(
          [pthread.h],
          [],
@@ -593,6 +593,29 @@ case "${target_os}" in
             [AC_MSG_ERROR(Missing function: dlclose)])
           AC_CHECK_LIB(
             [dl],
+            [dlsym],
+            [],
+            [AC_MSG_ERROR(Missing function: dlsym)])],
+         [AC_MSG_ERROR(Missing header file)])
+   *bsd*)
+      AC_CHECK_HEADER(
+         [pthread.h],
+         [],
+         [AC_MSG_ERROR(Missing header file)])
+      AC_CHECK_HEADER(
+         [dlfcn.h],
+         [AC_CHECK_LIB(
+            [c],
+            [dlopen],
+            [],
+            [AC_MSG_ERROR(Missing function: dlopen)])
+          AC_CHECK_LIB(
+            [c],
+            [dlclose],
+            [],
+            [AC_MSG_ERROR(Missing function: dlclose)])
+          AC_CHECK_LIB(
+            [c],
             [dlsym],
             [],
             [AC_MSG_ERROR(Missing function: dlsym)])],

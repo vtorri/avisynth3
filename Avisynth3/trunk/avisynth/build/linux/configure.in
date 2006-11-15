@@ -580,14 +580,6 @@ case "${target_os}" in
          [],
          [AC_MSG_ERROR(Missing header file)])
       AC_CHECK_HEADER(
-         [time.h],
-         [AC_CHECK_LIB(
-            [rt],
-            [clock_gettime],
-            [],
-            [AC_MSG_ERROR(Missing function: clock_gettime)])],
-         [AC_MSG_ERROR(Missing header file)])
-      AC_CHECK_HEADER(
          [dlfcn.h],
          [AC_CHECK_LIB(
             [dl],

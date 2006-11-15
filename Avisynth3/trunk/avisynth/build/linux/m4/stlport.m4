@@ -130,19 +130,19 @@ AC_DEFUN([AM_CHECK_STLPORT],
     fi
 
     dnl We check the headers, then the library.
-    stlport_lib_fullname=${stlport_libdir_path}/lib/${STLPORT_LIB_NAME}
+    stlport_lib_fullname=${stlport_libdir_path}/${STLPORT_LIB_NAME}
     saved_CPPFLAGS="${CPPFLAGS}"
-    CPPFLAGS="${CPPFLAGS} -I${stlport_includedir_path}/include/stlport"
+    CPPFLAGS="${CPPFLAGS} -I${stlport_includedir_path}"
     AC_CHECK_HEADERS(
        [stl/config/user_config.h],
        [AC_CHECK_FILE(
           [${stlport_lib_fullname}],
           [STLPORT_LIBS="${stlport_lib_fullname}"],
-          [AC_MSG_WARN(STLport shared library not in ${stlport_libdir_path}/lib)
+          [AC_MSG_WARN(STLport shared library not in ${stlport_libdir_path})
            m4_if([$4], [], [:], [$4])])
-        STLPORT_CFLAGS="-I${stlport_includedir_path}/include/stlport"
+        STLPORT_CFLAGS="-I${stlport_includedir_path}"
         m4_if([$3], [], [:], [$3])],
-       [AC_MSG_WARN(STLport headers not in ${stlport_includedir_path}/include/stlport)
+       [AC_MSG_WARN(STLport headers not in ${stlport_includedir_path})
         m4_if([$4], [], [:], [$4])])
     CPPFLAGS="${saved_CPPFLAGS}"
     dnl

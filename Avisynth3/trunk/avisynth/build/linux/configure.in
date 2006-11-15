@@ -340,7 +340,7 @@ case "${target_os}" in
      *bsd*|linux*|irix*)
 	AC_MSG_RESULT([ok])
 	SHARED_LIB="libavisynth.${SHARED_EXTENSION}.${API_MAJOR}.${API_MINOR}"
-	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.${SHARED_EXTENSION}.${API_MAJOR} -shared -lc -lm -lrt -ldl"
+	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.${SHARED_EXTENSION}.${API_MAJOR} -shared -lc -lm -ldl"
 	SPECIFIC_CFLAGS="-pthread -fPIC"
 	;;
      [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
@@ -352,7 +352,7 @@ case "${target_os}" in
      solaris*)
 	AC_MSG_RESULT([ok])
 	SHARED_LIB="libavisynth.${SHARED_EXTENSION}.${API_MAJOR}.${API_MINOR}"
-	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.${SHARED_EXTENSION}.${API_MAJOR} -shared -lc -lm -lrt -ldl"
+	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.${SHARED_EXTENSION}.${API_MAJOR} -shared -lc -lm -ldl"
 	SPECIFIC_CFLAGS="-pthreads -fPIC"
 	;;
      darwin*|raphsody*)

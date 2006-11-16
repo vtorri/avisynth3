@@ -50,6 +50,35 @@ set_package_freebsd()
     fi
 }
 
+set_package_netbsd()
+{
+# Check if the package exists (by checking the version),
+# and set the variable PACKAGE to the package name
+#
+# argument 1: name of the package
+# argument 2: minimum major version
+# argument 3: minimum minor version
+
+    NAME=$1
+    MAJOR=$2
+    MINOR=$3
+
+    VER=`$NAME --version | sed -n '1s/^[^0-9]*//p'`
+    MAJORVER=`echo $VER | cut -f1 -d'.'`
+    MINORVER=`echo $VER | cut -f2 -d'.'`
+    if [ "$MAJORVER" -lt "$MAJOR" ]; then
+	echo ""
+	echo "Error: $NAME >= $MAJOR.$MINOR required (found $VER)"
+	exit 127
+    fi
+    if [ "$MINORVER" -lt "$MINOR" ]; then
+	echo ""
+	echo "Error: $NAME >= $MAJOR.$MINOR required (found $VER)"
+	exit 127
+    fi
+    echo "     + $NAME: $NAME $MAJORVER.$MINORVER"
+}
+
 set_package_openbsd()
 {
 # Check if the package exists (by checking the version),
@@ -96,7 +125,7 @@ set_package_linux()
     MAJOR=$2
     MINOR=$3
 
-    VER=`$NAME --version | head -n 1 | sed 's/'^[^0-9]*'/''/'`
+    VER=`$NAME --version | sed -n '1s/^[^0-9]*//p'`
     MAJORVER=`echo $VER | cut -f1 -d'.'`
     MINORVER=`echo $VER | cut -f2 -d'.'`
     if [ "$MAJORVER" -lt "$MAJOR" ]; then
@@ -125,7 +154,36 @@ set_package_mingw()
     MAJOR=$2
     MINOR=$3
 
-    VER=`$NAME --version | head -n 1 | sed 's/'^[^0-9]*'/''/'`
+    VER=`$NAME --version | sed -n '1s/^[^0-9]*//p'`
+    MAJORVER=`echo $VER | cut -f1 -d'.'`
+    MINORVER=`echo $VER | cut -f2 -d'.'`
+    if [ "$MAJORVER" -lt "$MAJOR" ]; then
+	echo ""
+	echo "Error: $NAME >= $MAJOR.$MINOR required (found $VER)"
+	exit 127
+    fi
+    if [ "$MINORVER" -lt "$MINOR" ]; then
+	echo ""
+	echo "Error: $NAME >= $MAJOR.$MINOR required (found $VER)"
+	exit 127
+    fi
+    echo "     + $NAME: $NAME $MAJORVER.$MINORVER"
+}
+
+set_package_sunos()
+{
+# Check if the package exists (by checking the version),
+# and set the variable PACKAGE to the package name
+#
+# argument 1: name of the package
+# argument 2: minimum major version
+# argument 3: minimum minor version
+
+    NAME=$1
+    MAJOR=$2
+    MINOR=$3
+
+    VER=`$NAME --version | sed -n '1s/^[^0-9]*//p'`
     MAJORVER=`echo $VER | cut -f1 -d'.'`
     MINORVER=`echo $VER | cut -f2 -d'.'`
     if [ "$MAJORVER" -lt "$MAJOR" ]; then
@@ -166,6 +224,12 @@ case $OS in
 	set_package_freebsd "aclocal" "$AL_MAJOR" "$AL_MINOR" "7 8 9"
 	ACLOCAL=$PACKAGE
 	;;
+    NetBSD)
+	set_package_netbsd "autoconf" "$AC_MAJOR" "$AC_MINOR"
+	AUTOCONF="autoconf"
+	set_package_netbsd "aclocal" "$AL_MAJOR" "$AL_MINOR"
+	ACLOCAL="aclocal"
+	;;
     OpenBSD)
 	set_package_openbsd "autoconf" "$AC_MAJOR" "$AC_MINOR" "50 51 52 53 54 55 56 57 58 59"
 	AUTOCONF=$PACKAGE
@@ -184,9 +248,16 @@ case $OS in
 	set_package_mingw "aclocal" "$AL_MAJOR" "$AL_MINOR"
 	ACLOCAL="aclocal"
 	;;
+    SunOS)
+	set_package_sunos "autoconf" "$AC_MAJOR" "$AC_MINOR"
+	AUTOCONF="autoconf"
+	set_package_sunos "aclocal" "$AL_MAJOR" "$AL_MINOR"
+	ACLOCAL="aclocal"
+	;;
     *)
 	echo "Operating system not supported."
 	echo "Send a mail to <vtorri at univ-evry dot fr>"
+        exit 127
 	;;
 esac
 

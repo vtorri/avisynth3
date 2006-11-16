@@ -134,7 +134,7 @@ AC_DEFUN([AM_CHECK_STLPORT],
     saved_CPPFLAGS="${CPPFLAGS}"
     CPPFLAGS="${CPPFLAGS} -I${stlport_includedir_path}"
     AC_CHECK_HEADERS(
-       [stl/config/user_config.h],
+       [stl/_config.h],
        [AC_CHECK_FILE(
           [${stlport_lib_fullname}],
           [STLPORT_LIBS="${stlport_lib_fullname}"],

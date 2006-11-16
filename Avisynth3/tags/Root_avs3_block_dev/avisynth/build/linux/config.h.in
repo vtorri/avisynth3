@@ -1,0 +1,2 @@
+
+#define PACKAGE_DATA_DIR "@prefix@/share/avisynth-3.0/"

@@ -337,10 +337,16 @@ PRE_SHARED_LIB=""
 STATIC_LIB="libavisynth.${STATIC_EXTENSION}"
 
 case "${target_os}" in
-     *bsd*|linux*|irix*)
+     linux*|irix*)
 	AC_MSG_RESULT([ok])
 	SHARED_LIB="libavisynth.${SHARED_EXTENSION}.${API_MAJOR}.${API_MINOR}"
 	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.${SHARED_EXTENSION}.${API_MAJOR} -shared -lc -lm -ldl"
+	SPECIFIC_CFLAGS="-pthread -fPIC"
+	;;
+     *bsd*)
+	AC_MSG_RESULT([ok])
+	SHARED_LIB="libavisynth.${SHARED_EXTENSION}.${API_MAJOR}.${API_MINOR}"
+	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.${SHARED_EXTENSION}.${API_MAJOR} -shared -lc -lm"
 	SPECIFIC_CFLAGS="-pthread -fPIC"
 	;;
      [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
@@ -597,6 +603,7 @@ case "${target_os}" in
             [],
             [AC_MSG_ERROR(Missing function: dlsym)])],
          [AC_MSG_ERROR(Missing header file)])
+   ;;
    *bsd*)
       AC_CHECK_HEADER(
          [pthread.h],

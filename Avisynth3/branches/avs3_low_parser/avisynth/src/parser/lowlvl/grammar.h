@@ -83,7 +83,7 @@ struct Grammar : public spirit::grammar<Grammar>
     spirit::rule<ScannerT> lit;
     spirit::rule<ScannerT, closures::Value<int>::context_t> stack;
     spirit::rule<ScannerT, closures::Value<std::string>::context_t> stringLiteral;
-
+    spirit::rule<ScannerT, closures::Value<std::string>::context_t> label;
   };
 
 };

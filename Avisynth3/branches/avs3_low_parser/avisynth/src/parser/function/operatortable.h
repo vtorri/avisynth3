@@ -27,6 +27,11 @@
 //STL include
 #include <map>
 
+//spirit include
+#include <boost/spirit/symbols.hpp>
+
+namespace spirit = boost::spirit;
+
 
 namespace avs { namespace parser { namespace function {
 
@@ -35,11 +40,10 @@ namespace avs { namespace parser { namespace function {
 class OperatorTable
 {
 
-public:  //inner structs
+public:  //inner structs and typedefs
 
   struct OpInfo
   {
-    char op;
     char left;
     char right;
   }
@@ -50,10 +54,12 @@ public:  //inner structs
     char * symbol;
   };
 
+  typedef std::map<OpInfo, ResultInfo> OpMap;
+
+  typedef spirit::symbols<OpMap const>
+
 
 private: //members
-
-  typedef std::map<OpInfo, ResultInfo> OpMap;
 
   OpMap opMap_;
 

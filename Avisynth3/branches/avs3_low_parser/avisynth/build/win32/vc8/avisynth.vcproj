@@ -2917,6 +2917,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\src\parser\function\operatortable.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\src\parser\function\pool.cpp"
 					>
 				</File>

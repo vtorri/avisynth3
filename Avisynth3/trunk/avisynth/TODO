@@ -2,8 +2,6 @@
 BUGS:
 -----
 
-* The parser is broken with just a source
-* Some videos crashes.
 * src/avisynth_c/clip_c.cpp: using C code to parse a script. When
                              using ifstream with STLport, I have
                              linking errors. We must fix that.
@@ -22,7 +20,7 @@ TESTS:
 ------
 
 * parser
-  [ ] source
+  [X] source
   [ ] if/then/else
   [ ] for
   [ ] while
@@ -41,3 +39,8 @@ TESTS:
 * resizers
   [ ] horizontal
   [ ] vertical
+
+APPLICATION TEST:
+-----------------
+
+* 

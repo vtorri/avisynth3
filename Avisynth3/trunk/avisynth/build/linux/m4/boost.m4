@@ -69,7 +69,7 @@ AC_DEFUN([AM_CHECK_BOOST],
        *bsd* | linux* | irix* | solaris* )
           if test x"${core_debug_mode}" = x"yes" ; then
              if test x"${with_boost_lib_debug_name_arg}" = x"yes" ; then
-                BOOST_LIB_NAME=${with_boost_lib_name}
+                BOOST_LIB_NAME=${with_boost_lib_debug_name}
              else
                 BOOST_LIB_NAME="boost_thread-gcc-mt-d-$1"
              fi

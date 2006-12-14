@@ -521,11 +521,10 @@ dnl
 dnl ==========================================================================
 
 
-dnl Check GNU profile mode. That implies the core debug mode
+dnl Check GNU profile mode
 if test "x${profile_mode}" = "xyes" ; then
    PROFILE_CFLAGS="-pg"
    PROFILE_LDFLAGS="-pg"
-   core_debug_mode="yes"
 else
    PROFILE_CFLAGS=""
    PROFILE_LDFLAGS=""
@@ -909,7 +908,7 @@ echo " OS..................: ${target_os}"
 echo
 echo " Visibility feature..: ${have_visibility}"
 echo " Core debug mode.....: ${core_debug_mode}"
-echo " GNU Profile mode....: ${core_debug_mode}"
+echo " GNU Profile mode....: ${profile_mode}"
 echo " ASM support.........: ${assembly}"
 echo
 echo " Gui program.........: ${gui_program}"

@@ -235,21 +235,21 @@ static void
 gst_avs3_audio_sink_seek (GstAvs3AudioSink * sink, gint64 sample_start, gint samples_count, GstBuffer **buffer)
 {
   GstClockTime time;
-  g_print ("Seek audio !\n");
+  g_message ("Seek audio !");
   if (!sink->start)
     sink->start = TRUE;
 
-  g_print ("Start sample : %lld\n", sample_start);
+  g_message ("Start sample : %lld", sample_start);
   if (sample_start != sink->sample_start)
     sink->sample_start = sample_start;
 
-  g_print ("Sample count : %d\n", samples_count);
+  g_message ("Sample count : %d", samples_count);
   if (samples_count != sink->samples_count)
     sink->samples_count = samples_count;
 
   time = (GST_SECOND * sink->sample_start) / sink->sample_rate;
-  g_print ("Time         : %lld\n", time);
-  gst_element_seek( GST_ELEMENT (sink),
+  g_message ("Time         : %lld", time);
+  gst_element_seek (GST_ELEMENT (sink),
                     1.0,
                     GST_FORMAT_TIME,
                     (GstSeekFlags)(GST_SEEK_FLAG_ACCURATE | GST_SEEK_FLAG_FLUSH),
@@ -308,14 +308,14 @@ gst_avs3_audio_sink_preroll (GstBaseSink * bsink, GstBuffer * buffer)
 
   GST_OBJECT_LOCK (sink);
 
-  g_print ("Size         : %d\n", GST_BUFFER_SIZE (buffer) / (sink->width >> 3));
-  g_print ("Size reques. : %d\n", sink->samples_count);
-  g_print ("Timestamp    : %lld\n", GST_BUFFER_TIMESTAMP (buffer));
-  g_print ("Stream time  : %lld\n",
+  g_message ("Size         : %d", GST_BUFFER_SIZE (buffer) / (sink->width >> 3));
+  g_message ("Size reques. : %d", sink->samples_count);
+  g_message ("Timestamp    : %lld", GST_BUFFER_TIMESTAMP (buffer));
+  g_message ("Stream time  : %lld",
            gst_segment_to_stream_time (&bsink->segment,
                                        GST_FORMAT_TIME,
                                        (gint64)GST_BUFFER_TIMESTAMP (buffer)));
-  g_print ("seek to      : %lld\n", (GST_SECOND * sink->sample_start) / sink->sample_rate);
+  g_message ("seek to      : %lld", (GST_SECOND * sink->sample_start) / sink->sample_rate);
 
   if (GST_BUFFER_TIMESTAMP_IS_VALID (buffer) &&
       (((gint64)GST_BUFFER_TIMESTAMP (buffer) * sink->sample_rate) >= (GST_SECOND * sink->sample_start))) {

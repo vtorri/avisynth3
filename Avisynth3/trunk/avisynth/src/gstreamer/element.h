@@ -58,7 +58,7 @@ public:  //link
 
 public:  //seek method
 
-  bool Seek(uint64 time) { g_print ("time (seek) : %lld\n", time);
+  bool Seek(uint64 time) { g_message ("time (seek) : %lld", time);
     return gst_element_seek( this,
                                                     1.0,
                                                     GST_FORMAT_TIME,

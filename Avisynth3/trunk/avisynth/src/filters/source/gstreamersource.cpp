@@ -31,6 +31,7 @@
 #include "gstreamer/factory.h"
 #include "gstreamer/pipeline.h"
 #include "gstreamer/ownedholder.h"
+#include "messageclip.h"
 #include "../../core/clip.h"
 #include "../../core/forward.h"
 #include "../../core/videoinfo.h"
@@ -59,7 +60,7 @@ CPVideoFrame GstreamerSource::operator()(long int n) const
   avs::gstreamer::Object * sink = pipelineVideo_->GetSink();
 
   //seeking to the nth frame
-  g_print ("we seek video... %ld\n", n);
+  g_message ("we seek video... %ld", n);
   g_signal_emit_by_name (G_OBJECT (sink), "seek", n, &buffer);
 
   return importer_->CreateFrame(vi_->GetDimension(),
@@ -75,7 +76,7 @@ BYTE * GstreamerSource::GetAudio(BYTE * buffer, long long start, long count) con
   avs::gstreamer::Object * sink = pipelineAudio_->GetSink();
 
   //seeking to the startth sample
-  g_print ("we seek audio... %lld, %ld\n", start, count);
+  g_message ("we seek audio... %lld, %ld", start, count);
   g_signal_emit_by_name (G_OBJECT (sink), "seek", start, count, &gstbuffer);
 
   return GST_BUFFER_DATA(gstbuffer);
@@ -86,7 +87,12 @@ PClip GstreamerSource::Create(std::string const& fileName, int videoIndex, int a
 { 
   source::gstreamer::Factory factory(fileName, videoIndex, audioIndex);
   
-  return PClip( static_cast<Clip *>(new GstreamerSource(factory, env)) ); 
+  if (!factory.vi()->HasVideo() && !factory.vi()->HasAudio()) {
+    std::cout << "** no audio, nor video" << std::endl;
+    return filters::MessageClip::Create("No audio, nor video", env );
+  }
+  else
+    return PClip( static_cast<Clip *>(new GstreamerSource(factory, env)) ); 
 }
 
 

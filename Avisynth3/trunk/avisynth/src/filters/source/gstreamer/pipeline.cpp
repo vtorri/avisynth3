@@ -54,7 +54,7 @@ struct PipelineDestructor
 {
   void operator()(Pipeline *pipeline) const
   {
-    g_print ("On delete la pipeline\n");
+    g_message ("On delete la pipeline");
     avs::gstreamer::Element& elementPipeline = pipeline->GetPipeline();
     avs::gstreamer::Object& objectPipeline = elementPipeline.operator avs::gstreamer::Object&();
     elementPipeline.SetStateNull ();
@@ -92,7 +92,7 @@ avs::gstreamer::PPipeline Pipeline::BuildPipeline(std::string const& filename)
 
 PPipeline Pipeline::Create(std::string const& filename)
 {
-  g_print ("Pipeline Create\n");
+  g_message ("Pipeline Create");
   PPipeline pipeline = boost::shared_ptr<Pipeline>( new Pipeline( filename ), PipelineDestructor() );
 
   return pipeline;
@@ -114,7 +114,7 @@ void Pipeline::PadDetected(avs::gstreamer::Pad& pad)
 {
   GstCaps *caps = gst_pad_get_caps (&pad);
   gchar *str = gst_caps_to_string (caps);
-  g_print ("new pad %s\n\n", str);
+  g_message ("new pad %s\n", str);
   avs::gstreamer::Bin& binPipeline = pipeline_->operator avs::gstreamer::Bin&();
   if (g_str_has_prefix (str, "video/")) {
     avs::gstreamer::Element& sink = binPipeline.AddNewElement( "avs3videosink", NULL );

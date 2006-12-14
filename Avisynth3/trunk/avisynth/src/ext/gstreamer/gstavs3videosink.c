@@ -177,17 +177,17 @@ static void
 gst_avs3_video_sink_seek (GstAvs3VideoSink * sink, guint frame_nbr, GstBuffer **buffer)
 {
   GstClockTime time;
-  g_print ("Seek !\n");
+  g_message ("Seek !");
   if (!sink->start)
     sink->start = TRUE;
 
-  g_print ("Frame number : %d\n", frame_nbr);
+  g_message ("Frame number : %d", frame_nbr);
   if (frame_nbr != sink->frame_nbr)
     sink->frame_nbr = frame_nbr;
 
   time = (GST_SECOND * sink->frame_nbr * sink->fps_den) / sink->fps_num;
-  g_print ("Time         : %lld\n", time);
-  gst_element_seek( GST_ELEMENT (sink),
+  g_message ("Time         : %lld", time);
+  gst_element_seek (GST_ELEMENT (sink),
                     1.0,
                     GST_FORMAT_TIME,
                     (GstSeekFlags)(GST_SEEK_FLAG_ACCURATE | GST_SEEK_FLAG_FLUSH),
@@ -249,16 +249,16 @@ gst_avs3_video_sink_preroll (GstBaseSink * bsink, GstBuffer * buffer)
 
   GST_OBJECT_LOCK (sink);
 
-  g_print ("Timestamp    : %lld\n", GST_BUFFER_TIMESTAMP (buffer));
-  g_print ("Stream time  : %lld\n",
+  g_message ("Timestamp    : %lld", GST_BUFFER_TIMESTAMP (buffer));
+  g_message ("Stream time  : %lld",
            gst_segment_to_stream_time (&bsink->segment,
                                        GST_FORMAT_TIME,
                                        (gint64)GST_BUFFER_TIMESTAMP (buffer)));
-  g_print ("seek to      : %lld\n", (GST_SECOND * sink->frame_nbr * sink->fps_den) / sink->fps_num);
-  g_print ("reste        : %lld\n", (GST_SECOND * sink->frame_nbr * sink->fps_den) % sink->fps_num);
-  g_print ("buffer valid ? : %d\n", GST_BUFFER_TIMESTAMP_IS_VALID (buffer));
-  g_print ("val 1 : %lld\n", GST_BUFFER_TIMESTAMP (buffer) * sink->fps_num);
-  g_print ("val 2 : %lld\n", GST_SECOND * sink->frame_nbr * sink->fps_den);
+  g_message ("seek to      : %lld", (GST_SECOND * sink->frame_nbr * sink->fps_den) / sink->fps_num);
+  g_message ("reste        : %lld", (GST_SECOND * sink->frame_nbr * sink->fps_den) % sink->fps_num);
+  g_message ("buffer valid ? : %d", GST_BUFFER_TIMESTAMP_IS_VALID (buffer));
+  g_message ("val 1 : %lld", GST_BUFFER_TIMESTAMP (buffer) * sink->fps_num);
+  g_message ("val 2 : %lld", GST_SECOND * sink->frame_nbr * sink->fps_den);
 
   if (GST_BUFFER_TIMESTAMP_IS_VALID (buffer) &&
       (GST_BUFFER_TIMESTAMP (buffer) >= (((guint64)GST_SECOND * sink->frame_nbr * sink->fps_den) / sink->fps_num))) {

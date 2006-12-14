@@ -86,22 +86,22 @@ Factory::Factory(std::string const& name, int videoIndex, int audioIndex)
 
   /* display */
   if (vi_->HasVideo()) {
-    g_print ("size         : %dx%d\n", vi_->GetWidth(), vi_->GetHeight());
-    g_print ("frame count  : %d\n", vi_->GetFrameCount());
-    g_print ("fps          : %d/%d\n", vi_->GetFPSNumerator(), vi_->GetFPSDenominator());
+    g_message ("size         : %dx%d", vi_->GetWidth(), vi_->GetHeight());
+    g_message ("frame count  : %d", vi_->GetFrameCount());
+    g_message ("fps          : %d/%d", vi_->GetFPSNumerator(), vi_->GetFPSDenominator());
     PColorSpace const& cp = vi_->GetColorSpace();
-    g_print ("colorspace   : %s\n", cp->GetName());
+    g_message ("colorspace   : %s", cp->GetName());
   }
   else {
-    g_print ("No video...\n");
+    g_message ("No video...");
   }
   if (vi_->HasAudio()) {
-    g_print ("sample count : %lld\n", vi_->GetSampleCount());
-    g_print ("sample rate  : %d\n", vi_->GetSampleRate());
-    g_print ("channels     : %d\n", vi_->GetChannelCount());
+    g_message ("sample count : %lld", vi_->GetSampleCount());
+    g_message ("sample rate  : %d", vi_->GetSampleRate());
+    g_message ("channels     : %d", vi_->GetChannelCount());
   }
   else {
-    g_print ("No audio...\n");
+    g_message ("No audio...");
   }
 }
 

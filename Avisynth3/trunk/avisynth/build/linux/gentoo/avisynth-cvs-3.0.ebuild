@@ -15,7 +15,7 @@ IUSE="debug doc ffmpeg gtk profile"
 DEPEND="x86? ( >=dev-lang/nasm-0.98.39-r3 )
 	doc? ( >=app-doc/doxygen-1.4.4 )
 	ffmpeg? ( >=media-plugins/gst-plugins-ffmpeg-0.10.1 )
-	gtk? ( >=x11-libs/gtk+-2.8.12 >=media-libs/x264-svn-20061014-r1 )
+	gtk? ( >=x11-libs/gtk+-2.8.12 >=media-video/x264-svn-encoder-20061014 )
 	>=dev-libs/boost-1.33.1 >=dev-libs/boost-circular-buffer-3.7
 	>=media-libs/fontconfig-2.3.2-r1 >=media-libs/freetype-2.1.10
 	>=media-libs/gstreamer-0.10.8 >=media-libs/gst-plugins-base-0.10.8
@@ -42,10 +42,10 @@ pkg_setup() {
 		die "boost with debug required for avisynth with debug"
 	fi
 
-	if use gtk && ! built_with_use media-libs/x264-svn gtk ; then
+	if use gtk && ! built_with_use media-video/x264-svn-encoder gtk ; then
 		eerror "If you wish to build the optional (GTK) GUI encoding program"
-		eerror "then you must build media-libs/x264-svn with gtk support"
-		die "x264-svn with gtk required for avisynth with gtk"
+		eerror "then you must build media-video/x264-svn-encoder with gtk support"
+		die "x264-svn-encoder with gtk required for avisynth with gtk"
 	fi
 }
 
@@ -57,11 +57,6 @@ src_unpack() {
 	# build directory. Portage always starts from a clean one, so we save
 	# ourselves some build time by removing the checks.
 	epatch ${FILESDIR}/gentoo-remove-unnecessary-depend-check.patch
-	# Replace debug messages in libraries that print to stdout with ones that
-	# print to stderr. Debug messages in programs are left unchanged.
-	epatch ${FILESDIR}/messages.patch
-	# Various fixes for bugs in the build system.
-	epatch ${FILESDIR}/build.patch
 	cd ${S}/build/linux
 	sh bootstrap.sh
 }

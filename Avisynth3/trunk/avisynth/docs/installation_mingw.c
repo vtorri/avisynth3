@@ -43,12 +43,12 @@ mkdir avs_main_dir
  *
  * First, download the following libraries in a folder, say @em C:/tmp.
  * @li <a href="http://prdownloads.sourceforge.net/mingw/MSYS-1.0.11-2004.04.30-1.exe?download">MSYS 1.0.11</a>
- * @li <a href="http://prdownloads.sf.net/mingw/MinGW-5.0.3.exe?download">MinGW 5.0.3</a>
- * @li <a href="http://prdownloads.sourceforge.net/stlport/STLport-5.0.2.tar.bz2?download">STLport 5.0.2</a>
+ * @li <a href="http://prdownloads.sf.net/mingw/MinGW-5.1.2.exe?download">MinGW 5.1.2</a>
+ * @li <a href="http://prdownloads.sourceforge.net/stlport/STLport-5.1.0.tar.bz2?download">STLport 5.1.0</a>
  * @li <a href="http://prdownloads.sourceforge.net/boost/boost_1_33_1.tar.bz2?download">Boost 1.33.1</a>
- * @li <a href="http://prdownloads.sourceforge.net/boost/boost-jam-3.1.12-1-ntx86.zip?download">bjam (make-like utility)</a>
+ * @li <a href="http://prdownloads.sourceforge.net/boost/boost-jam-3.1.13-1-ntx86.zip?download">bjam (make-like utility)</a>
  * @li <a href="http://prdownloads.sourceforge.net/freetype/freetype-2.2.1.tar.bz2?download">Freetype 2.2.1</a>
- * @li <a href="http://fontconfig.org/release/fontconfig-2.3.2.tar.gz">Fontconfig 2.3.2</a>
+ * @li <a href="http://fontconfig.org/release/fontconfig-2.4.2.tar.gz">Fontconfig 2.4.2</a>
  * @li <a href="http://prdownloads.sourceforge.net/nasm/nasm-0.98.39-win32.zip?download">nasm 0.98.39</a>
  *
  * @section build_mingw_install_msys_mingw Installation of MSYS / MinGW
@@ -148,14 +148,14 @@ $ g++
 g++.exe: no input files
  * @endcode
  *
- * @section build_mingw_install_stlport Installation of STLport 5.0.2
+ * @section build_mingw_install_stlport Installation of STLport 5.1.0
  *
  * Install STLport in the @em /usr/local directory. OPen a MSYS terminal:
  *
  * @code
 cd /c/tmp
-tar jxvf STLport-5.0.2.tar.bz2
-cd STLport/build/lib
+tar jxvf STLport-5.1.0.tar.bz2
+cd STLport-5.1.0/build/lib
 make -f gcc.mak depend
 make -f gcc.mak
 make -f gcc.mak all-static
@@ -163,8 +163,8 @@ make -f gcc.mak install
 make -f gcc.mak install-static
  * @endcode
  *
- * The libraries are located in @em STLport/lib and the headers in
- * @em STLport/stlport.
+ * The libraries are located in @em STLport-5.1.0/lib and the headers in
+ * @em STLport-5.1.0/stlport.
  *
  * @li If one wants to install STLPort in @em /usr/local, go the the
  * @em STLport directory and copy the files manually (while being
@@ -186,9 +186,9 @@ cp -R stlport /usr/local/include/
  * @code
 cd ..
 tar jxvf boost_1_33_1.tar.bz2
-unzip boost-jam-3.1.12-1-ntx86.zip
+unzip boost-jam-3.1.13-1-ntx86.zip
 cd boost_1_33_1
-../boost-jam-3.1.12-1-ntx86/bjam "-sTOOLS=mingw" --prefix=/usr/local --with-thread install
+../boost-jam-3.1.12-1-ntx86/bjam "-sTOOLS=mingw-stlport" -sSTLPORT_PATH="/usr/local/include/stlport/" -sSTLPORT_VERSION="5.1.0" --prefix=/usr/local --with-thread install
  * @endcode
  *
  * @section build_mingw_install_freetype Installation of Freetype 2.2.1
@@ -205,14 +205,14 @@ make
 make install
  * @endcode
  *
- * @section build_mingw_install_fontconfig Installation of Fonconfig 2.3.2
+ * @section build_mingw_install_fontconfig Installation of Fonconfig 2.4.2
  *
  * Install Fontconfig in the @em /usr/local directory:
  *
  * @code
 cd ..
-tar jxvf fontconfig-2.3.2.tar.bz2
-cd fontconfig-2.3.2
+tar jxvf fontconfig-2.4.2.tar.bz2
+cd fontconfig-2.4.2
 ./configure --prefix=/usr/local
 make
 make install

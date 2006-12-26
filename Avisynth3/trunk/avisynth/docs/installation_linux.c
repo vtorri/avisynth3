@@ -47,7 +47,7 @@ mkdir avs_main_dir
  * @li <a href="http://prdownloads.sourceforge.net/boost/boost_1_33_1.tar.bz2?download">Boost 1.33.1</a>
  * @li <a href="http://prdownloads.sourceforge.net/boost/boost-jam-3.1.13-1-linuxx86.tgz?download">bjam (make-like utility)</a>
  * @li <a href="http://prdownloads.sourceforge.net/freetype/freetype-2.2.1.tar.bz2?download">Freetype 2.2.1</a>
- * @li <a href="http://fontconfig.org/release/fontconfig-2.3.2.tar.gz">Fontconfig 2.3.2</a>
+ * @li <a href="http://fontconfig.org/release/fontconfig-2.4.2.tar.gz">Fontconfig 2.4.2</a>
  * @li <a href="http://liboil.freedesktop.org/download/liboil-0.3.10.tar.gz">liboil 0.3.10</a>
  * @li <a href="http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-0.10.11.tar.bz2">Gstreamer 0.10.11</a>
  * @li <a href="http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-0.10.11.tar.bz2">Gst-Plugins-Base 0.10.11</a>
@@ -142,15 +142,15 @@ make install
  * If one wants to install it elsewhere, change the value given to the
  * @em --prefix parameter.
  *
- * @section build_linux_install_fontconfig Installation of Fonconfig 2.3.2
+ * @section build_linux_install_fontconfig Installation of Fonconfig 2.4.2
  *
  * Install Fontconfig in the @em /usr/local directory:
  *
  * @code
 cd
 cd avs_main_dir
-tar jxvf fontconfig-2.3.2.tar.bz2
-cd fontconfig-2.3.2
+tar jxvf fontconfig-2.4.2.tar.bz2
+cd fontconfig-2.4.2
 ./configure --prefix=/usr/local
 make
 su <type the root password>

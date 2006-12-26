@@ -19,7 +19,7 @@ DEPEND="x86? ( >=dev-lang/nasm-0.98.39-r3 )
 	>=dev-libs/boost-1.33.1 >=dev-libs/boost-circular-buffer-3.7
 	>=media-libs/fontconfig-2.3.2-r1 >=media-libs/freetype-2.1.10
 	>=media-libs/gstreamer-0.10.8 >=media-libs/gst-plugins-base-0.10.8
-	>=dev-libs/STLport-5.0.2"
+	>=dev-libs/STLport-5.1.0"
 
 ECVS_SERVER="avisynth2.cvs.sourceforge.net:/cvsroot/avisynth2"
 ECVS_USER="anonymous"

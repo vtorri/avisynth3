@@ -43,40 +43,38 @@ mkdir avs_main_dir
  *
  * First, download the following libraries in the \em avs_main_dir
  * directory:
- * @li <a href="http://prdownloads.sourceforge.net/stlport/STLport-5.0.2.tar.bz2?download">STLport 5.0.2</a>
+ * @li <a href="http://prdownloads.sourceforge.net/stlport/STLport-5.1.0.tar.bz2?download">STLport 5.1.0</a>
  * @li <a href="http://prdownloads.sourceforge.net/boost/boost_1_33_1.tar.bz2?download">Boost 1.33.1</a>
- * @li <a href="http://prdownloads.sourceforge.net/boost/boost-jam-3.1.12-1-linuxx86.tgz?download">bjam (make-like utility)</a>
+ * @li <a href="http://prdownloads.sourceforge.net/boost/boost-jam-3.1.13-1-linuxx86.tgz?download">bjam (make-like utility)</a>
  * @li <a href="http://prdownloads.sourceforge.net/freetype/freetype-2.2.1.tar.bz2?download">Freetype 2.2.1</a>
  * @li <a href="http://fontconfig.org/release/fontconfig-2.3.2.tar.gz">Fontconfig 2.3.2</a>
- * @li <a href="http://liboil.freedesktop.org/download/liboil-0.3.9.tar.gz">liboil 0.3.9</a>
- * @li <a href="http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-0.10.8.tar.bz2">Gstreamer 0.10.8</a>
- * @li <a href="http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-0.10.8.tar.bz2">Gst-Plugins-Base 0.10.8</a>
- * @li <a href="http://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-0.10.3.tar.bz2">Gst-Plugins-Good 0.10.3</a>
- * @li <a href="http://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-0.10.3.tar.bz2">Gst-Plugins-Bad 0.10.3</a>
- * @li <a href="http://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-0.10.3.tar.bz2">Gst-Plugins-Ugly 0.10.3</a>
- * @li <a href="http://gstreamer.freedesktop.org/src/gstffmpeg/gst-ffmpeg-0.10.1.tar.bz2">Gst-FFmpeg-Ugly 0.10.1</a>
+ * @li <a href="http://liboil.freedesktop.org/download/liboil-0.3.10.tar.gz">liboil 0.3.10</a>
+ * @li <a href="http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-0.10.11.tar.bz2">Gstreamer 0.10.11</a>
+ * @li <a href="http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-0.10.11.tar.bz2">Gst-Plugins-Base 0.10.11</a>
+ * @li <a href="http://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-0.10.5.tar.bz2">Gst-Plugins-Good 0.10.5</a>
+ * @li <a href="http://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-0.10.4.tar.bz2">Gst-Plugins-Bad 0.10.4</a>
+ * @li <a href="http://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-0.10.5.tar.bz2">Gst-Plugins-Ugly 0.10.5</a>
+ * @li <a href="http://gstreamer.freedesktop.org/src/gstffmpeg/gst-ffmpeg-0.10.2.tar.bz2">Gst-FFmpeg-Ugly 0.10.2</a>
  * @li <a href="http://prdownloads.sourceforge.net/nasm/nasm-0.98.39.tar.bz2?download">nasm 0.98.39</a>
  *
- * @section build_linux_install_stlport Installation of STLport 5.0.2
+ * @section build_linux_install_stlport Installation of STLport 5.1.0
  *
  * Install STLport in the @em /usr/local directory:
  *
  * @code
 cd avs_main_dir
-tar jxvf STLport-5.0.2.tar.bz2
-cd STLport/build/lib
+tar jxvf STLport-5.1.0.tar.bz2
+cd STLport-5.1.0/build/lib
 make -f gcc.mak depend
 make -f gcc.mak
-make -f gcc.mak all-static
 make -f gcc.mak install
-make -f gcc.mak install-static
  * @endcode
  *
- * The libraries are located in @em STLport/lib and the headers in
- * @em STLport/stlport.
+ * The libraries are located in @em STLport-5.1.0/lib and the headers in
+ * @em STLport-5.1.0/stlport.
  *
  * @li If one wants to install STLPort in @em /usr/local, go the the
- * @em STLport directory and copy the files manually (while being
+ * @em STLport-5.1.0 directory and copy the files manually (while being
  * root, of course):
  *
  * @code
@@ -107,10 +105,10 @@ cp -R stlport $HOME/local/include/
 cd
 cd avs_main_dir
 tar jxvf boost_1_33_1.tar.bz2
-tar zxvf boost-jam-3.1.12-1-linuxx86.tgz
+tar zxvf boost-jam-3.1.13-1-linuxx86.tgz
 cd boost_1_33_1
 su <type the root password>
-../boost-jam-3.1.12-1-linuxx86/bjam "-sTOOLS=gcc" --prefix=/usr/local --with-thread install
+../boost-jam-3.1.13-1-linuxx86/bjam "-sTOOLS=gcc-stlport" -sSTLPORT_PATH="/usr/local/include/stlport/" -sSTLPORT_VERSION="5.1.0" --prefix=/usr/local --with-thread install
 <Ctrl-d>
  * @endcode
  *
@@ -177,8 +175,8 @@ make install
  *
  * @code
 cd ..
-tar zxvf liboil-0.3.9.tar.gz
-cd liboil-0.3.9
+tar zxvf liboil-0.3.10.tar.gz
+cd liboil-0.3.10
 ./configure --prefix=/usr/local
 make
 su <type the root password>
@@ -188,8 +186,8 @@ make install
  *
  * @code
 cd ..
-tar jxvf gstreamer-0.10.8.tar.bz2
-cd gstreamer-0.10.8
+tar jxvf gstreamer-0.10.11.tar.bz2
+cd gstreamer-0.10.11
 ./configure --prefix=/usr/local
 make
 su <type the root password>
@@ -199,8 +197,8 @@ make install
  *
  * @code
 d ..
-tar jxvf gst-plugins-base-0.10.8.tar.bz2
-cd gst-plugins-base-0.10.8
+tar jxvf gst-plugins-base-0.10.11.tar.bz2
+cd gst-plugins-base-0.10.11
 ./configure --prefix=/usr/local
 make
 su <type the root password>
@@ -210,8 +208,8 @@ make install
  *
  * @code
 cd ..
-tar jxvf gst-plugins-good-0.10.3.tar.bz2
-cd gst-plugins-good-0.10.3
+tar jxvf gst-plugins-good-0.10.5.tar.bz2
+cd gst-plugins-good-0.10.5
 ./configure --prefix=/usr/local
 make
 su <type the root password>
@@ -221,8 +219,8 @@ make install
  *
  * @code
 cd ..
-tar jxvf gst-plugins-bad-0.10.3.tar.bz2
-cd gst-plugins-bad-0.10.3
+tar jxvf gst-plugins-bad-0.10.4.tar.bz2
+cd gst-plugins-bad-0.10.4
 ./configure --prefix=/usr/local
 make
 su <type the root password>
@@ -232,8 +230,8 @@ make install
  *
  * @code
 cd ..
-tar jxvf gst-plugins-ugly-0.10.3.tar.bz2
-cd gst-plugins-ugly-0.10.3
+tar jxvf gst-plugins-ugly-0.10.5.tar.bz2
+cd gst-plugins-ugly-0.10.5
 ./configure --prefix=/usr/local
 make
 su <type the root password>
@@ -243,8 +241,8 @@ make install
  *
  * @code
 cd ..
-tar jxvf gst-ffmpeg-0.10.1.tar.bz2
-cd gst-ffmpeg-0.10.1
+tar jxvf gst-ffmpeg-0.10.2.tar.bz2
+cd gst-ffmpeg-0.10.2
 ./configure --prefix=/usr/local
 make
 su <type the root password>

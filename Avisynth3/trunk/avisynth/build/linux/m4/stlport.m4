@@ -83,9 +83,17 @@ AC_DEFUN([AM_CHECK_STLPORT],
        ;;
        [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]* | mingw32* | mks*)
           if test x"${core_debug_mode}" = x"yes" ; then
-             STLPORT_LIB_NAME="libstlportg.so"
+             if test x"${with_stlport_lib_debug_name_arg}" = x"yes" ; then
+                STLPORT_LIB_NAME=${with_stlport_lib_name}
+             else
+                STLPORT_LIB_NAME="libstlportg.5.1.a"
+             fi
           else
-             STLPORT_LIB_NAME="libstlport.so"
+             if test x"${with_stlport_lib_name_arg}" = x"yes" ; then
+                STLPORT_LIB_NAME=${with_stlport_lib_name}
+             else
+                STLPORT_LIB_NAME="libstlport.5.1.a"
+             fi
           fi
        ;;
        darwin*|raphsody*)
@@ -134,7 +142,7 @@ AC_DEFUN([AM_CHECK_STLPORT],
     saved_CPPFLAGS="${CPPFLAGS}"
     CPPFLAGS="${CPPFLAGS} -I${stlport_includedir_path}"
     AC_CHECK_HEADERS(
-       [stl/_config.h],
+       [stl/config/user_config.h],
        [AC_CHECK_FILE(
           [${stlport_lib_fullname}],
           [STLPORT_LIBS="${stlport_lib_fullname}"],

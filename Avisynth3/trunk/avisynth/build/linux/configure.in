@@ -341,25 +341,29 @@ case "${target_os}" in
 	AC_MSG_RESULT([ok])
 	SHARED_LIB="libavisynth.${SHARED_EXTENSION}.${API_MAJOR}.${API_MINOR}"
 	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.${SHARED_EXTENSION}.${API_MAJOR} -shared -lc -lm -ldl"
-	SPECIFIC_CFLAGS="-pthread -fPIC"
+	SPECIFIC_CFLAGS="-fPIC"
+	cppflags_threads="-pthread"
 	;;
      *bsd*)
 	AC_MSG_RESULT([ok])
 	SHARED_LIB="libavisynth.${SHARED_EXTENSION}.${API_MAJOR}.${API_MINOR}"
 	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.${SHARED_EXTENSION}.${API_MAJOR} -shared -lc -lm"
-	SPECIFIC_CFLAGS="-pthread -fPIC"
+	SPECIFIC_CFLAGS="-fPIC"
+	cppflags_threads="-pthread"
 	;;
      [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
 	AC_MSG_RESULT([ok])
 	SHARED_LIB="avisynth.${SHARED_EXTENSION}"
 	SPECIFIC_LDFLAGS="-lgdi32 -lvfw32 -luuid -lole32 -lmsacm32 -shared -Wl,--out-implib,\$@.a libavisynth.def"
-	SPECIFIC_CFLAGS="-Os -mno-cygwin -mthreads"
+	SPECIFIC_CFLAGS="-Os -mno-cygwin"
+	cppflags_threads="-mthreads"
 	;;
      solaris*)
 	AC_MSG_RESULT([ok])
 	SHARED_LIB="libavisynth.${SHARED_EXTENSION}.${API_MAJOR}.${API_MINOR}"
 	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.${SHARED_EXTENSION}.${API_MAJOR} -shared -lc -lm -ldl"
-	SPECIFIC_CFLAGS="-pthreads -fPIC"
+	SPECIFIC_CFLAGS="-fPIC"
+	cppflags_threads="-pthreads"
 	;;
      darwin*|raphsody*)
 	SPECIFIC_CFLAGS="-fPIC -fno-common -no-cpp-precomp"
@@ -801,7 +805,7 @@ dnl
 dnl ==========================================================================
 
 if test "${force_default_c_options}" = "yes" ; then
-   CPPFLAGS="${cppflags_debug} ${cppflags_have_attribute} ${cppflags_visibility}"
+   CPPFLAGS="${cppflags_debug} ${cppflags_threads} ${cppflags_have_attribute} ${cppflags_visibility}"
    CFLAGS="${cflags_debug} ${cflags_warnings} ${cflags_optimization} ${cflags_visibility}"
 fi
 

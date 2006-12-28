@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003-2005 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2006 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,9 @@
 #define __AVS_EXPORT_VFW_MAIN_H__
 
 //windows includes
+#ifndef NOMINMAX
 #define NOMINMAX          //prevents generation of min and max macros
+#endif //NOMINMAX
 #include <initguid.h>
 #include <objbase.h>
 

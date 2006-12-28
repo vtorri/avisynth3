@@ -1,7 +1,7 @@
 dnl Configure path for STLport
 dnl Vincent Torri 2004-2006
 dnl
-dnl AM_CHECK_STLPORT(platform, prefix [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
+dnl AM_CHECK_STLPORT(prefix [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for STLport 5.0 and define STLPORT_LIBS and STLPORT_CFLAGS.
 dnl
 AC_DEFUN([AM_CHECK_STLPORT],
@@ -65,19 +65,19 @@ AC_DEFUN([AM_CHECK_STLPORT],
     dnl Get the name of the library with respect
     dnl to the platform and the version of STLport.
     dnl
-    case "$1" in
+    case "${target_os}" in
        *bsd* | linux* | irix* | solaris* )
           if test x"${core_debug_mode}" = x"yes" ; then
              if test x"${with_stlport_lib_debug_name_arg}" = x"yes" ; then
                 STLPORT_LIB_NAME=${with_stlport_lib_name}
              else
-                STLPORT_LIB_NAME="libstlportg.so"
+                STLPORT_LIB_NAME="libstlportg.5.1.so"
              fi
           else
              if test x"${with_stlport_lib_name_arg}" = x"yes" ; then
                 STLPORT_LIB_NAME=${with_stlport_lib_name}
              else
-                STLPORT_LIB_NAME="libstlport.so"
+                STLPORT_LIB_NAME="libstlport.5.1.so"
              fi
           fi
        ;;
@@ -86,13 +86,13 @@ AC_DEFUN([AM_CHECK_STLPORT],
              if test x"${with_stlport_lib_debug_name_arg}" = x"yes" ; then
                 STLPORT_LIB_NAME=${with_stlport_lib_name}
              else
-                STLPORT_LIB_NAME="libstlportg.5.1.a"
+                STLPORT_LIB_NAME="stlportg.5.1"
              fi
           else
              if test x"${with_stlport_lib_name_arg}" = x"yes" ; then
                 STLPORT_LIB_NAME=${with_stlport_lib_name}
              else
-                STLPORT_LIB_NAME="libstlport.5.1.a"
+                STLPORT_LIB_NAME="stlport.5.1"
              fi
           fi
        ;;
@@ -116,7 +116,7 @@ AC_DEFUN([AM_CHECK_STLPORT],
        stlport_path="${with_stlport_path}"
     else
        dnl No argument, or argument empty.
-       stlport_path="$2"
+       stlport_path="$1"
     fi
 
     dnl We set the include directory to use.
@@ -141,18 +141,49 @@ AC_DEFUN([AM_CHECK_STLPORT],
     stlport_lib_fullname=${stlport_libdir_path}/${STLPORT_LIB_NAME}
     saved_CPPFLAGS="${CPPFLAGS}"
     CPPFLAGS="${CPPFLAGS} -I${stlport_includedir_path}"
+    have_stlport_headers="no"
     AC_CHECK_HEADERS(
        [stl/config/user_config.h],
-       [AC_CHECK_FILE(
-          [${stlport_lib_fullname}],
-          [STLPORT_LIBS="${stlport_lib_fullname}"],
-          [AC_MSG_WARN(STLport shared library not in ${stlport_libdir_path})
-           m4_if([$4], [], [:], [$4])])
-        STLPORT_CFLAGS="-I${stlport_includedir_path}"
-        m4_if([$3], [], [:], [$3])],
+       [STLPORT_CFLAGS="-I${stlport_includedir_path}"
+        have_stlport_headers="yes"],
        [AC_MSG_WARN(STLport headers not in ${stlport_includedir_path})
-        m4_if([$4], [], [:], [$4])])
+        m4_if([$3], [], [:], [$3])])
     CPPFLAGS="${saved_CPPFLAGS}"
+
+    saved_LDFLAGS="${LDFLAGS}"
+    if test "x${have_stlport_headers}" = "xyes" ; then
+       case "${target_os}" in
+          *bsd* | linux* | irix* | solaris* )
+             AC_CHECK_FILE(
+                [${stlport_lib_fullname}],
+                [STLPORT_LIBS="${stlport_lib_fullname}"
+                 m4_if([$2], [], [:], [$2])],
+                [AC_MSG_WARN(STLport shared library not in ${stlport_libdir_path})
+                 m4_if([$3], [], [:], [$3])])
+          ;;
+          [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]* | mingw32* | mks*)
+             LDFLAGS="${LDFLAGS} -L${stlport_libdir_path}"
+             AC_CHECK_LIB(
+                [${STLPORT_LIB_NAME}],
+                [main],
+                [STLPORT_LIBS="-L${stlport_libdir_path} -l${STLPORT_LIB_NAME}"
+                 m4_if([$2], [], [:], [$2])],
+                [
+                 AC_MSG_WARN(STLport static library not in ${stlport_libdir_path})
+                 m4_if([$3], [], [:], [$3])
+                ],
+                [-mthreads]
+             )
+          ;;
+          darwin*|raphsody*)
+          ;;
+          beos)
+          ;;
+          *)
+          ;;
+       esac
+    fi
+    LDFLAGS="${saved_LDFLAGS}"
     dnl
     dnl Substitution
     dnl

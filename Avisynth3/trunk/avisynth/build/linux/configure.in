@@ -648,16 +648,18 @@ dnl ==========================================================================
 dnl STLPORT header and library files
 dnl ==========================================================================
 
+have_stlport_in_usr="no"
 AM_CHECK_STLPORT(
-   [${target_os}],
    [/usr],
-   [],
-   [AM_CHECK_STLPORT(
-      [${target_os}],
+   [have_stlport_in_usr="yes"],
+   [])
+
+if test "x${have_stlport_in_usr}" = "xno" ; then
+   AM_CHECK_STLPORT(
       [/usr/local],
       [],
       [AC_MSG_ERROR("STLport is needed !")])
-   ])
+fi
 
 dnl ==========================================================================
 dnl BOOST header and library files

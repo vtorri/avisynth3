@@ -64,7 +64,8 @@ src_unpack() {
 src_compile() {
 	cd ${S}/build/linux
 
-	econf --with-stlport-path=/usr --with-boost-path=/usr \
+	econf --with-stlport-path=/usr --with-stlport-lib-name=libstlport.so \
+		--with-stlport-lib-debug-name=libstlportg.so --with-boost-path=/usr \
 		--with-boost-includedir-path=/usr/include \
 		--with-boost-lib-debug-name=boost_thread-gcc-mt-d \
 		--with-boost-lib-name=boost_thread-gcc-mt $(use_enable doc ) \

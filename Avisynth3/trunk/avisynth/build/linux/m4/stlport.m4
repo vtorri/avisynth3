@@ -69,7 +69,7 @@ AC_DEFUN([AM_CHECK_STLPORT],
        *bsd* | linux* | irix* | solaris* )
           if test x"${core_debug_mode}" = x"yes" ; then
              if test x"${with_stlport_lib_debug_name_arg}" = x"yes" ; then
-                STLPORT_LIB_NAME=${with_stlport_lib_name}
+                STLPORT_LIB_NAME=${with_stlport_lib_debug_name}
              else
                 STLPORT_LIB_NAME="libstlportg.5.1.so"
              fi
@@ -84,7 +84,7 @@ AC_DEFUN([AM_CHECK_STLPORT],
        [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]* | mingw32* | mks*)
           if test x"${core_debug_mode}" = x"yes" ; then
              if test x"${with_stlport_lib_debug_name_arg}" = x"yes" ; then
-                STLPORT_LIB_NAME=${with_stlport_lib_name}
+                STLPORT_LIB_NAME=${with_stlport_lib_debug_name}
              else
                 STLPORT_LIB_NAME="stlportg.5.1"
              fi

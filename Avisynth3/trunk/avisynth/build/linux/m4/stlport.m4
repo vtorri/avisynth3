@@ -45,7 +45,7 @@ AC_DEFUN([AM_CHECK_STLPORT],
     AC_ARG_WITH(
        [stlport-lib-name],
        AC_HELP_STRING(
-          [--with-stlport-shared-lib-name=name],
+          [--with-stlport-lib-name=name],
           [STLport shared library name]),
        [with_stlport_lib_name_arg="yes"],
        [with_stlport_lib_name_arg="no"])
@@ -56,7 +56,7 @@ AC_DEFUN([AM_CHECK_STLPORT],
     AC_ARG_WITH(
        [stlport-lib-debug-name],
        AC_HELP_STRING(
-          [--with-stlport-shared-lib-debug-name=name],
+          [--with-stlport-lib-debug-name=name],
           [STLport shared library name with debug symbols]),
        [with_stlport_lib_debug_name_arg="yes"],
        [with_stlport_lib_debug_name_arg="no"])

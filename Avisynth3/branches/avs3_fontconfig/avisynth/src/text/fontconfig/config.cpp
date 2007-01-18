@@ -21,6 +21,7 @@
 // combined work based on Avisynth.  Thus, the terms and conditions of the GNU
 // General Public License cover the whole combination.
 
+#ifndef WIN32
 
 //avisynth includes
 #include "config.h"
@@ -154,3 +155,5 @@ boost::optional<std::string> Config::GetApproximateFontFilename( bool bold, bool
 
 
 } } // namespace avs::fontconfig
+
+#endif //WIN32

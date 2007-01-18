@@ -42,10 +42,9 @@ PFace Face::Create (std::string const& fontName, int index)
 {
 #ifdef HAVE_FONTCONFIG
   fontconfig::Config config;
-  boost::optional<std::string> name;
+  boost::optional<std::string> name = config.GetFontFilename(fontName);
 
-  assert (((name = config.GetExactFontFilename())) ||
-          ((name = config.GetApproximateFontFilename())));
+  assert (name);
   std::string fileName  = *name;
 #else
   std::string fileName = "C:\\WINNT\\Fonts\\Arial.ttf";

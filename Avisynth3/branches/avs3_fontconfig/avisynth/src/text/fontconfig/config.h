@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2006 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2006 David Pierre - Ben Rudiak-Gould et al.
 // Copyleft 2006 Vincent Torri
 // http://www.avisynth.org
 
@@ -57,11 +57,20 @@ public:  //structors
 
   //generated copy constructor and destructor are fine
 
-public:
+private:
 
   boost::optional<std::string> GetExactFontFilename ( std::string const& fontName, bool bold = false, bool italic = false );
   boost::optional<std::string> GetApproximateFontFilename( bool bold = false, bool italic = false );
 
+public:
+
+  boost::optional<std::string> GetFontFilename ( std::string const& fontName, bool bold = false, bool italic = false )
+    {
+      boost::optional<std::string> name = GetExactFontFilename(fontName, bold, italic);
+      if (!name)
+        name = GetApproximateFontFilename(fontName, bold, italic);
+      return name;
+    }
 };
 
 

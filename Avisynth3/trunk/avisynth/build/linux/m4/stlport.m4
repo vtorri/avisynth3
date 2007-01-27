@@ -71,13 +71,13 @@ AC_DEFUN([AM_CHECK_STLPORT],
              if test x"${with_stlport_lib_debug_name_arg}" = x"yes" ; then
                 STLPORT_LIB_NAME=${with_stlport_lib_debug_name}
              else
-                STLPORT_LIB_NAME="libstlportg.5.1.so"
+                STLPORT_LIB_NAME="libstlportg.so"
              fi
           else
              if test x"${with_stlport_lib_name_arg}" = x"yes" ; then
                 STLPORT_LIB_NAME=${with_stlport_lib_name}
              else
-                STLPORT_LIB_NAME="libstlport.5.1.so"
+                STLPORT_LIB_NAME="libstlport.so"
              fi
           fi
        ;;
@@ -86,13 +86,13 @@ AC_DEFUN([AM_CHECK_STLPORT],
              if test x"${with_stlport_lib_debug_name_arg}" = x"yes" ; then
                 STLPORT_LIB_NAME=${with_stlport_lib_debug_name}
              else
-                STLPORT_LIB_NAME="stlportg.5.1"
+                STLPORT_LIB_NAME="stlportg
              fi
           else
              if test x"${with_stlport_lib_name_arg}" = x"yes" ; then
                 STLPORT_LIB_NAME=${with_stlport_lib_name}
              else
-                STLPORT_LIB_NAME="stlport.5.1"
+                STLPORT_LIB_NAME="stlport
              fi
           fi
        ;;
@@ -110,6 +110,7 @@ AC_DEFUN([AM_CHECK_STLPORT],
     dnl
     dnl Check STLport library.
     dnl
+
     dnl We set the path to use.
     if test "${with_stlport_path+set}" = set && test "x${with_stlport_arg}" != "xno"; then
        dnl Argument given and not empty.
@@ -137,37 +138,74 @@ AC_DEFUN([AM_CHECK_STLPORT],
        stlport_libdir_path="${stlport_path}/lib"
     fi
 
-    dnl We check the headers, then the library.
-    stlport_lib_fullname=${stlport_libdir_path}/${STLPORT_LIB_NAME}
+    dnl We check the header files
+    have_stlport_headers="no"
     saved_CPPFLAGS="${CPPFLAGS}"
     CPPFLAGS="${CPPFLAGS} -I${stlport_includedir_path}"
-    have_stlport_headers="no"
-    AC_CHECK_HEADERS(
-       [stl/config/user_config.h],
-       [STLPORT_CFLAGS="-I${stlport_includedir_path}"
-        have_stlport_headers="yes"],
-       [AC_MSG_WARN(STLport headers not in ${stlport_includedir_path})
-        m4_if([$3], [], [:], [$3])])
-    CPPFLAGS="${saved_CPPFLAGS}"
 
-    saved_LDFLAGS="${LDFLAGS}"
+    AC_MSG_CHECKING([for STLport header files in ${stlport_includedir_path}])
+    AC_COMPILE_IFELSE(
+       [
+        AC_LANG_PROGRAM(
+           [[
+#include <algorithm>
+#include <cassert>
+#include <cmath>
+#include <cstdlib>
+#include <fstream>
+#include <functional>
+#include <hash_map>
+#include <iosfwd>
+#include <iostream>
+#include <map>
+#include <numeric>
+#include <set>
+#include <sstream>
+#include <stack>
+#include <string>
+#include <vector>
+           ]])
+       ],
+       [
+        AC_MSG_RESULT([yes])
+        STLPORT_CFLAGS="-I${stlport_includedir_path}"
+        have_stlport_headers="yes"
+       ],
+       [
+        AC_MSG_RESULT([no])
+        AC_MSG_WARN(STLport header files not in ${stlport_includedir_path})
+        m4_if([$3], [], [:], [$3])
+       ]
+    )
+    CPPFLAGS="${saved_CPPFLAGS}"
+    
+    dnl We check the library if header files are not missing.
     if test "x${have_stlport_headers}" = "xyes" ; then
+       saved_LDFLAGS="${LDFLAGS}"
        case "${target_os}" in
           *bsd* | linux* | irix* | solaris* )
+             stlport_lib_fullname=${stlport_libdir_path}/${STLPORT_LIB_NAME}
              AC_CHECK_FILE(
                 [${stlport_lib_fullname}],
-                [STLPORT_LIBS="${stlport_lib_fullname}"
-                 m4_if([$2], [], [:], [$2])],
-                [AC_MSG_WARN(STLport shared library not in ${stlport_libdir_path})
-                 m4_if([$3], [], [:], [$3])])
+                [
+                 STLPORT_LIBS="${stlport_lib_fullname}"
+                 m4_if([$2], [], [:], [$2])
+                ],
+                [
+                 AC_MSG_WARN(STLport shared library not in ${stlport_libdir_path})
+                 m4_if([$3], [], [:], [$3])
+                ]
+             )
           ;;
           [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]* | mingw32* | mks*)
              LDFLAGS="${LDFLAGS} -L${stlport_libdir_path}"
              AC_CHECK_LIB(
                 [${STLPORT_LIB_NAME}],
                 [main],
-                [STLPORT_LIBS="-L${stlport_libdir_path} -l${STLPORT_LIB_NAME}"
-                 m4_if([$2], [], [:], [$2])],
+                [
+                 STLPORT_LIBS="-L${stlport_libdir_path} -l${STLPORT_LIB_NAME}"
+                 m4_if([$2], [], [:], [$2])
+                ],
                 [
                  AC_MSG_WARN(STLport static library not in ${stlport_libdir_path})
                  m4_if([$3], [], [:], [$3])
@@ -182,8 +220,9 @@ AC_DEFUN([AM_CHECK_STLPORT],
           *)
           ;;
        esac
+       LDFLAGS="${saved_LDFLAGS}"
     fi
-    LDFLAGS="${saved_LDFLAGS}"
+
     dnl
     dnl Substitution
     dnl

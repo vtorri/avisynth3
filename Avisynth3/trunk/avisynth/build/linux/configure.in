@@ -667,22 +667,18 @@ dnl ==========================================================================
 
 AM_CHECK_BOOST(
    [${BOOST_VERSION}_1],
-   [${target_os}],
    [/usr],
    [],
    [AM_CHECK_BOOST(
       [${BOOST_VERSION}_1],
-      [${target_os}],
       [/usr/local],
       [],
       [AM_CHECK_BOOST(
          [${BOOST_VERSION}],
-         [${target_os}],
          [/usr],
          [],
          [AM_CHECK_BOOST(
             [${BOOST_VERSION}],
-            [${target_os}],
             [/usr/local],
             [],
             [AC_MSG_ERROR("Boost is needed !")])

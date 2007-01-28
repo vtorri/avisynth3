@@ -69,6 +69,24 @@ avs_videoframe_height_get (const AVS_VideoFrame *p_vf)
   return p_vf->p_vf_->GetDimension().GetHeight ();
 }
 
+EXTERN_C int
+avs_videoframe_pitch_get (const AVS_VideoFrame *p_vf, char plane)
+{
+  if (!p_vf)
+    return 0;
+
+  return p_vf->p_vf_->ReadFrom (plane).pitch;
+}
+
+EXTERN_C int
+avs_videoframe_pad_get (const AVS_VideoFrame *p_vf, char plane)
+{
+  if (!p_vf)
+    return 0;
+
+  return p_vf->p_vf_->ReadFrom (plane).padValue ();
+}
+
 EXTERN_C const unsigned char *
 avs_videoframe_plane_get (const AVS_VideoFrame *p_vf, char plane)
 {

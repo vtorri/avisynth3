@@ -104,6 +104,36 @@ AVS_C_API int avs_videoframe_height_get (const AVS_VideoFrame *p_vf);
  *
  * @param p_vf The videoframe.
  * @param plane The plane.
+ * @return The pitch of the data of the plane.
+ *
+ * Retrieve the pitch of the frame @p p_vf given by @p plane. For an
+ * interleaved colorspace, use '~'. For a planar colorspace, use 'Y',
+ * 'U' or 'V' for respctively the planes Y, U and V. If
+ * @p p_vf is @c NULL, this function returns @c 0, otherwise, it
+ * returns the pitch of the data of the plane.
+ */
+AVS_C_API int avs_videoframe_pitch_get (const AVS_VideoFrame *p_vf, char plane);
+
+
+/** @brief Retrieve the plane of a frame.
+ *
+ * @param p_vf The videoframe.
+ * @param plane The plane.
+ * @return The pitch of the data of the plane.
+ *
+ * Retrieve the pad of the frame @p p_vf given by @p plane. For an
+ * interleaved colorspace, use '~'. For a planar colorspace, use 'Y',
+ * 'U' or 'V' for respctively the planes Y, U and V. If
+ * @p p_vf is @c NULL, this function returns @c 0, otherwise, it
+ * returns the pad of the data of the plane.
+ */
+AVS_C_API int avs_videoframe_pad_get (const AVS_VideoFrame *p_vf, char plane);
+
+
+/** @brief Retrieve the plane of a frame.
+ *
+ * @param p_vf The videoframe.
+ * @param plane The plane.
  * @return The pointer on the data of the plane.
  *
  * Retrieve the plane of the frame @p p_vf given by @p plane. For an

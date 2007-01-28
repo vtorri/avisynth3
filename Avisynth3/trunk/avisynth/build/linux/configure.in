@@ -45,11 +45,11 @@ dnl Gtk+ version requirement
 GTK_REQS=2.8
 
 dnl Default CFLAGS -- Big impact on overall speed
-cflags_warnings="-ansi -pedantic -Wall -W -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations"
+cflags_warnings="-ansi -Wall -W -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations"
 cxxflags_warnings="-ansi -Wall -Wpointer-arith -Wconversion -Wno-non-virtual-dtor"
 
-cflags_optimization="-O2 -fstrength-reduce -finline-functions -ffast-math"
-cxxflags_optimization="-O2 -fexceptions -fstrength-reduce -finline-functions -ffast-math"
+cflags_optimization="-O2 -fstrength-reduce -finline-functions -ffast-math -pipe"
+cxxflags_optimization="-O2 -fexceptions -fstrength-reduce -finline-functions -ffast-math -pipe"
 
 dnl Default GEN_SOURCES for gen_source.sh
 dnl On Linux, Vfw and COM files should be removed
@@ -342,28 +342,28 @@ case "${target_os}" in
 	SHARED_LIB="libavisynth.${SHARED_EXTENSION}.${API_MAJOR}.${API_MINOR}"
 	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.${SHARED_EXTENSION}.${API_MAJOR} -shared -lc -lm -ldl"
 	SPECIFIC_CFLAGS="-fPIC"
-	cppflags_threads="-pthread"
+	THREADS_CFLAGS="-pthread"
 	;;
      *bsd*)
 	AC_MSG_RESULT([ok])
 	SHARED_LIB="libavisynth.${SHARED_EXTENSION}.${API_MAJOR}.${API_MINOR}"
 	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.${SHARED_EXTENSION}.${API_MAJOR} -shared -lc -lm"
 	SPECIFIC_CFLAGS="-fPIC"
-	cppflags_threads="-pthread"
+	THREADS_CFLAGS="-pthread"
 	;;
      [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
 	AC_MSG_RESULT([ok])
 	SHARED_LIB="avisynth.${SHARED_EXTENSION}"
 	SPECIFIC_LDFLAGS="-lgdi32 -lvfw32 -luuid -lole32 -lmsacm32 -shared -Wl,--out-implib,\$@.a libavisynth.def"
 	SPECIFIC_CFLAGS="-Os -mno-cygwin"
-	cppflags_threads="-mthreads"
+	THREADS_CFLAGS="-mthreads"
 	;;
      solaris*)
 	AC_MSG_RESULT([ok])
 	SHARED_LIB="libavisynth.${SHARED_EXTENSION}.${API_MAJOR}.${API_MINOR}"
 	SPECIFIC_LDFLAGS="-Wl,-soname,libavisynth.${SHARED_EXTENSION}.${API_MAJOR} -shared -lc -lm -ldl"
 	SPECIFIC_CFLAGS="-fPIC"
-	cppflags_threads="-pthreads"
+	THREADS_CFLAGS="-pthreads"
 	;;
      darwin*|raphsody*)
 	SPECIFIC_CFLAGS="-fPIC -fno-common -no-cpp-precomp"
@@ -803,7 +803,7 @@ dnl
 dnl ==========================================================================
 
 if test "${force_default_c_options}" = "yes" ; then
-   CPPFLAGS="${cppflags_debug} ${cppflags_threads} ${cppflags_have_attribute} ${cppflags_visibility}"
+   CPPFLAGS="${cppflags_debug} ${cppflags_have_attribute} ${cppflags_visibility}"
    CFLAGS="${cflags_debug} ${cflags_warnings} ${cflags_optimization} ${cflags_visibility}"
 fi
 
@@ -866,6 +866,7 @@ AC_SUBST(SPECIFIC_CFLAGS)
 AC_SUBST(SPECIFIC_LDFLAGS)
 AC_SUBST(PROFILE_CFLAGS)
 AC_SUBST(PROFILE_LDFLAGS)
+AC_SUBST(THREADS_CFLAGS)
 AC_SUBST(INSTALL)
 AC_SUBST(LN_S)
 AC_SUBST(RANLIB)

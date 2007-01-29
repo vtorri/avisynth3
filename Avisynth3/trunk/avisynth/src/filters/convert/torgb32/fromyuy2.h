@@ -21,38 +21,50 @@
 // General Public License cover the whole combination.
 
 
-//avisynth includes
-#include "torgb32.h"
-#include "torgb32/fromyv12.h"
-#include "torgb32/fromyuy2.h"
-#include "../../core/videoinfo.h"
-#include "../../core/colorspace.h"
-#include "../../core/colorspace/get.h"
-#include "../../core/exception/colorspace/unsupported.h"
+#ifndef __AVS_FILTERS_CONVERT_TORGB32_FROMYUY2_H__
+#define __AVS_FILTERS_CONVERT_TORGB32_FROMYUY2_H__
+
+//avisynth include
+#include "../torgb32.h"
 
 
-namespace avs { namespace filters { namespace convert {
+namespace avs { namespace filters { namespace convert { namespace torgb32 {
 
 
 
-ToRGB32::ToRGB32(PClip const& child)
-  : Convert( child, colorspace::Get::RGB32() ) { }
-
-  
-PClip ToRGB32::Create(PClip const& child)
+////////////////////////////////////////////////////////////////////////////////////////////////
+//  convert::torgb32::FromYUY2
+//
+//  YUY2 to RGB32 code path
+//
+class FromYUY2 : public ToRGB32
 {
-  PColorSpace space = child->GetVideoInfo()->GetColorSpace();
 
-  switch( space->id() )
-  {
-  case ColorSpace::I_EXTERNAL: return FromExternal( child, colorspace::Get::RGB32() );
-  case ColorSpace::I_YV12:     return torgb32::FromYV12::Create(child);
-  case ColorSpace::I_YUY2:     return torgb32::FromYUY2::Create(child);
+public: //structors
 
-  default: throw exception::colorspace::Unsupported(space);
-  }
-}
+  FromYUY2(PClip const& child)
+    : ToRGB32( child ) { }
+
+  //generated destructor is fine
 
 
+private:  //Convert method
 
-} } } //namespace avs::filters::convert
+  virtual void ConvertFrame(VideoFrame const& source, VideoFrame& target) const;
+
+
+public:  //free function version
+
+  static void ConvertFrame(CWindowPtr src, WindowPtr dst);
+
+
+public:  //factory method
+
+  static PClip Create(PClip const& child) { return PClip( static_cast<Clip *>(new FromYUY2(child)) ); }
+
+};
+
+
+} } } } //namespace avs::filters::convert::torgb32
+
+#endif //__AVS_FILTERS_CONVERT_TORGB32_FROMYUY2_H__

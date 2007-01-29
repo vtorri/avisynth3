@@ -46,49 +46,83 @@ avs3_preview_draw (Avs3_Data *data, gint frame_nbr)
   AVS_ColorSpace      *csp;
   AVS_VideoFrame      *frame;
   AVS_ColorSpace_Id    csp_id;
-  guint                width;
-  guint                height;
+  AVS_Error           *error = NULL;
+  gint                 width;
+  gint                 height;
   const unsigned char *rgb;
 
   guchar *buffer;
   guchar *position;
   AVS_SampleType type;
-  gint nbytes;
+  gint nbytes = 0;
 
   info = avs_clip_videoinfo_get (data->clip);
   csp = avs_videoinfo_colorspace_get (info);
   csp_id = avs_colorspace_id_get (csp);
 
-  type = avs_videoinfo_sample_type_get (info);
-  switch (type) {
-  case SAMPLE_INT8:
-    nbytes = 1;
-    break;
-  case SAMPLE_INT16:
-    nbytes = 2;
-    break;
-  case SAMPLE_INT24:
-    nbytes = 3;
-    break;
-  case SAMPLE_INT32:
-    nbytes = 4;
-    break;
-  case SAMPLE_FLOAT:
-    nbytes = sizeof (float);
-    break;
+  if (avs_videoinfo_has_audio (info)) {
+    type = avs_videoinfo_sample_type_get (info);
+    switch (type) {
+    case SAMPLE_INT8:
+      nbytes = 1;
+      break;
+    case SAMPLE_INT16:
+      nbytes = 2;
+      break;
+    case SAMPLE_INT24:
+      nbytes = 3;
+      break;
+    case SAMPLE_INT32:
+      nbytes = 4;
+      break;
+    case SAMPLE_FLOAT:
+      nbytes = sizeof (float);
+      break;
+    }
   }
 
   avs_colorspace_delete (csp);
   avs_videoinfo_delete (info);
 
   if (csp_id == I_RGB32)
-    clip_rgb32 = data->clip;
-  else
-    clip_rgb32 = avs_clip_new_to_rgb32 (data->clip);
+    frame = avs_clip_videoframe_get (data->clip, frame_nbr);
+  else {
+    clip_rgb32 = avs_clip_new_to_rgb32 (data->clip, &error);
+    if (!clip_rgb32) {
+      GtkWidget *dialog;
 
-  frame = avs_clip_videoframe_get (clip_rgb32, frame_nbr);
+      if (error) {
+        dialog = gtk_message_dialog_new (GTK_WINDOW (data->window),
+                                         GTK_DIALOG_DESTROY_WITH_PARENT,
+                                         GTK_MESSAGE_ERROR,
+                                         GTK_BUTTONS_CLOSE,
+                                         "Avisynth error (%d): %s",
+                                         avs_error_code_get (error),
+                                         avs_error_message_get (error));
+        g_print ("error : %s\n", avs_error_description_get (error));
+        gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+                                                  avs_error_description_get (error));
+      }
+      else {
+        dialog = gtk_message_dialog_new (GTK_WINDOW (data->window),
+                                         GTK_DIALOG_DESTROY_WITH_PARENT,
+                                         GTK_MESSAGE_ERROR,
+                                         GTK_BUTTONS_CLOSE,
+                                         "Internal error");
+        gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+                                                  "memory allocation failure");
+      }
+      g_print ("ERROR\n");
+      gtk_dialog_run (GTK_DIALOG (dialog));
+      gtk_widget_destroy (dialog);
+      return;
+    }
+    frame = avs_clip_videoframe_get (clip_rgb32, frame_nbr);
+    avs_clip_delete (clip_rgb32);
+  }
 
-  {
+#if 0
+  if (nbytes > 0){
 
     g_print (" ** audio type   : %d\n", type);
     g_print (" ** audio buffer : %d\n", 150 * nbytes);
@@ -103,21 +137,20 @@ avs3_preview_draw (Avs3_Data *data, gint frame_nbr)
                                   150);
     g_free (buffer);
   }
+#endif
 
   width = avs_videoframe_width_get (frame);
   height = avs_videoframe_height_get (frame);
   rgb = avs_videoframe_plane_get (frame, '~');
-  g_print ("size (preview) : %dx%d  %d\n", width, height, sizeof (*rgb));
+  g_print ("size (preview) : %dx%d\n", width, height);
 
-  gtk_widget_set_size_request (data->preview, (gint)width, (gint)height);
+  gtk_widget_set_size_request (data->preview, width, height);
   pixbuf = gdk_pixbuf_new_from_data (rgb,
 				     GDK_COLORSPACE_RGB, TRUE,
-				     8, (gint)width, (gint)height, 4 * (gint)width,
+				     8, width, height, 4 * width,
 				     (GdkPixbufDestroyNotify) g_free,
 				     NULL);
   gtk_image_set_from_pixbuf (GTK_IMAGE (data->preview), pixbuf);
 
   avs_videoframe_delete (frame);
-  if (csp_id != I_RGB32)
-    avs_clip_delete (clip_rgb32);
 }

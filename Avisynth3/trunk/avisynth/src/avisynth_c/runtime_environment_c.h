@@ -1,5 +1,5 @@
 /* Avisynth 3.0 C Interface
- * Copyright 2005 Vincent Torri <vtorri at univ-evry dot fr>
+ * Copyright 2005-2007 Vincent Torri <vtorri at univ-evry dot fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,8 +31,8 @@
  * export plugins, or graphical user interfaces.
  */
 
-#ifndef __RUNTIME_ENVIRONMENT_C_H__
-#define __RUNTIME_ENVIRONMENT_C_H__
+#ifndef __AVS3_RUNTIME_ENVIRONMENT_C_H__
+#define __AVS3_RUNTIME_ENVIRONMENT_C_H__
 
 
 /* C API include */
@@ -79,4 +79,4 @@ AVS_C_API AVS_Environment *avs_environment_new    (int size);
 AVS_C_API void             avs_environment_delete (AVS_Environment *p_env);
 
 
-#endif /* __RUNTIME_ENVIRONMENT_C_H__ */
+#endif /* __AVS3_RUNTIME_ENVIRONMENT_C_H__ */

@@ -31,41 +31,26 @@
  * export plugins, or graphical user interfaces.
  */
 
+/*
+ * colorspace private structure
+ */
 
-/* C API include */
-#include "define_c.h"
-#include "private/colorspace_c_private.h"
+#ifndef __AVS3_ERROR_C_PRIVATE_H__
+#define __AVS3_ERROR_C_PRIVATE_H__
 
 
-/* Destructor */
+/* Avisynth include */
+#include "../enum_c.h"
 
-EXTERN_C void
-avs_colorspace_delete (AVS_ColorSpace *p_cs)
+
+typedef struct AVS_Error_
 {
-  if (!p_cs) return;
+  AVS_Error_Code code;
+  std::string    description;
+}AVS_Error;
 
-  delete p_cs;
-}
 
-EXTERN_C AVS_ColorSpace_Id avs_colorspace_id_get (const AVS_ColorSpace *p_cs)
-{
-  if (!p_cs) return I_EXTERNAL;
+AVS_Error *avs_error_new (AVS_Error_Code code, const char *description);
 
-  switch (p_cs->p_cs_->id ())
-    {
-    case I_EXTERNAL:
-      return I_EXTERNAL;
-    case I_RGB24:
-      return I_RGB24;
-    case I_RGB32:
-      return I_RGB32;
-    case I_YUY2:
-      return I_YUY2;
-    case I_YV12:
-      return I_YV12;
-    case I_YV24:
-      return I_YV24;
-    default:
-      return I_EXTERNAL;
-    }
-}
+
+#endif /* __AVS3_ERROR_C_PRIVATE_H__ */

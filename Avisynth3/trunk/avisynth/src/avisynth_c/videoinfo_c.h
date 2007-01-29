@@ -1,5 +1,5 @@
 /* Avisynth 3.0 C Interface
- * Copyright 2005-2006 Vincent Torri <vtorri at univ-evry dot fr>
+ * Copyright 2005-2007 Vincent Torri <vtorri at univ-evry dot fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,8 +31,8 @@
  * export plugins, or graphical user interfaces.
  */
 
-#ifndef __VIDEOINFO_C_H__
-#define __VIDEOINFO_C_H__
+#ifndef __AVS3_VIDEOINFO_C_H__
+#define __AVS3_VIDEOINFO_C_H__
 
 
 /* C API include */
@@ -237,4 +237,4 @@ AVS_C_API AVS_SampleType avs_videoinfo_sample_type_get (const AVS_VideoInfo *p_v
 AVS_C_API int avs_videoinfo_channel_count_get (const AVS_VideoInfo *p_vi);
 
 
-#endif /* __VIDEOINFO_C_H__ */
+#endif /* __AVS3_VIDEOINFO_C_H__ */

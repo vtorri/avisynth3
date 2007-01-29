@@ -1,5 +1,5 @@
 /* Avisynth 3.0 C Interface
- * Copyright 2005-2006 Vincent Torri <vtorri at univ-evry dot fr>
+ * Copyright 2005-2007 Vincent Torri <vtorri at univ-evry dot fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,8 @@
  * colorspace private structure
  */
 
-#ifndef __COLORSPACE_C_PRIVATE_H__
-#define __COLORSPACE_C_PRIVATE_H__
+#ifndef __AVS3_COLORSPACE_C_PRIVATE_H__
+#define __AVS3_COLORSPACE_C_PRIVATE_H__
 
 
 /* Avisynth include */
@@ -60,4 +60,4 @@ typedef struct AVS_ColorSpace_
 }AVS_ColorSpace;
 
 
-#endif /* __COLORSPACE_C_PRIVATE_H__ */
+#endif /* __AVS3_COLORSPACE_C_PRIVATE_H__ */

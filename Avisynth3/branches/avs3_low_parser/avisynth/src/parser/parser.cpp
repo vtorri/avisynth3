@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2004 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2007 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -44,7 +44,7 @@ CodePacker Parser::operator()(std::string const& src)
 
   CodePacker packer;
 
-  lowlvl::Grammar grammar(packer);
+  lowlvl::Grammar grammar(packer, spirit::symbols<Operation>());
 
   parse( src.c_str()
        , grammar

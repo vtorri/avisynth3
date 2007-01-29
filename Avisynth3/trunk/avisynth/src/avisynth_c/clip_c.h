@@ -1,5 +1,5 @@
 /* Avisynth 3.0 C Interface
- * Copyright 2006 Vincent Torri <vtorri at univ-evry dot fr>
+ * Copyright 2005-2007 Vincent Torri <vtorri at univ-evry dot fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,12 +31,13 @@
  * export plugins, or graphical user interfaces.
  */
 
-#ifndef __CLIP_C_H__
-#define __CLIP_C_H__
+#ifndef __AVS3_CLIP_C_H__
+#define __AVS3_CLIP_C_H__
 
 
 /* C API include */
 #include "define_c.h"
+#include "error_c.h"
 #include "videoinfo_c.h"
 #include "videoframe_c.h"
 #include "runtime_environment_c.h"
@@ -110,16 +111,37 @@ AVS_C_API AVS_Clip *avs_clip_new_from_script (const char *script, const AVS_Envi
 AVS_C_API AVS_Clip *avs_clip_new_from_file (const char *filename, const AVS_Environment *p_env);
 
 
+/** @brief Create a clip from a message.
+ *
+ * @param msg The message
+ * @param p_env A pointer to an AVS_Environment pointer.
+ * @return A newly allocated clip.
+ *
+ * Create a clip from the message @p msg. The environment is set by
+ * @p p_env. If an error occurred, the returned value is @c NULL.
+ * Otherwise, it is a valid clip.
+ */
+AVS_C_API AVS_Clip *avs_clip_new_from_message (const char *msg, const AVS_Environment *p_env)
+
+
 /** @brief Convert a clip to a newly allocated RGB32 clip.
  *
  * @param p_clip The clip to convert to RGB32 colorspace.
+ * @param error The returned error.
  * @return A newly allocated clip in RGB32 colorspace.
  *
  * Convert the clip @p p_clip to a newly allocated RGB32 clip. If @p
- * p_clip is already in RGB32, then @c NULL is returned. If an error
- * occurred, the returned value is @c NULL.
+ * p_clip is already in RGB32, then @c NULL is returned. If a system
+ * error occurred, the returned value is @c NULL. If an Avisynth error
+ * occurs, the returned value is @c NULL and @p error stores the
+ * description of the error. @p error can be NULL.
+ *
+ * The check of error is the following. Check if the returned value is
+ * @c NULL. If so, check @p error. If @p error is not @c NULL, an
+ * Avisynth error occured and use the AVS_Error api to get the error
+ * messages. If @p error is not NULL, then a system error occured.
  */
-AVS_C_API AVS_Clip *avs_clip_new_to_rgb32 (const AVS_Clip *p_clip);
+AVS_C_API AVS_Clip *avs_clip_new_to_rgb32 (const AVS_Clip *p_clip, AVS_Error **error);
 
 
 /** @brief Convert a clip to a newly allocated YV12 clip.
@@ -184,4 +206,4 @@ AVS_C_API AVS_VideoFrame *avs_clip_videoframe_get (const AVS_Clip *p_clip, long 
 AVS_C_API unsigned char *avs_clip_audio_get (const AVS_Clip *p_clip, unsigned char *buffer, long long start, long count);
 
 
-#endif /* __CLIP_C_H__ */
+#endif /* __AVS3_CLIP_C_H__ */

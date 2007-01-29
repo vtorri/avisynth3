@@ -1,5 +1,5 @@
 /* Avisynth 3.0 C Interface
- * Copyright 2005-2006 Vincent Torri <vtorri at univ-evry dot fr>
+ * Copyright 2005-2007 Vincent Torri <vtorri at univ-evry dot fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@
 // C API include
 #include "define_c.h"
 #include "private/clip_c_private.h"
+#include "private/error_c_private.h"
 #include "private/videoinfo_c_private.h"
 #include "private/videoframe_c_private.h"
 #include "private/runtime_environment_c_private.h"
@@ -49,9 +50,12 @@
 // Avisynth include
 #include "../core/clip.h"
 #include "../parser/parser.h"
+#include "../core/exception.h"
+#include "../core/exception/colorspace/unsupported.h"
 #include "../core/videoinfo.h"
 #include "../filters/convert/toyv12.h"
 #include "../filters/convert/torgb32.h"
+#include "../filters/source/messageclip.h"
 
 
 using namespace std;
@@ -91,6 +95,8 @@ get_script (const char *filename)
   script = content;
   free (content);
 
+  cout << "script : " << script << endl;
+
 //   while (getline (file, line))
 //     {
 //       if (!line.empty())
@@ -123,7 +129,7 @@ avs_clip_new_from_script (const char *script, const AVS_Environment *p_env)
 {
   AVS_Clip *p_clip;
 
-  if (!p_env || !p_env->p_env_)
+  if (!script || !p_env || !p_env->p_env_)
     return NULL;
 
   p_clip = new AVS_Clip;
@@ -139,7 +145,7 @@ EXTERN_C AVS_Clip *avs_clip_new_from_file (const char *filename, const AVS_Envir
 {
   AVS_Clip *p_clip;
 
-  if (!p_env || !p_env->p_env_)
+  if (! filename || !p_env || !p_env->p_env_)
     return NULL;
 
   string script = get_script (filename);
@@ -153,20 +159,48 @@ EXTERN_C AVS_Clip *avs_clip_new_from_file (const char *filename, const AVS_Envir
   return p_clip;
 }
 
-EXTERN_C AVS_Clip *
-avs_clip_new_to_rgb32 (const AVS_Clip *p_clip)
+EXTERN_C AVS_Clip *avs_clip_new_from_message (const char *msg, const AVS_Environment *p_env)
 {
-  AVS_Clip *p_clip_rgb32;
+  AVS_Clip *p_clip;
+
+  if (! msg || !p_env || !p_env->p_env_)
+    return NULL;
+
+  p_clip = new AVS_Clip;
+  if (!p_clip)
+    return NULL;
+
+  p_clip->p_clip_ = avs::filters::MessageClip::Create(msg, p_env->p_env_);
+
+  return p_clip;
+}
+
+EXTERN_C AVS_Clip *
+avs_clip_new_to_rgb32 (const AVS_Clip *p_clip, AVS_Error **error)
+{
+  if (error)
+    *error = NULL;
 
   if (!p_clip || p_clip->p_clip_->GetVideoInfo ()->IsRGB32 ())
     return NULL;
 
-  p_clip_rgb32 = new AVS_Clip;
+  avs::PClip clip;
+  try {
+     clip = avs::filters::convert::ToRGB32::Create(p_clip->p_clip_);
+  }
+  catch (avs::exception::colorspace::Unsupported e) {
+    if (error) {
+      *error = avs_error_new (AVS_ERROR_COLORPSACE_UNSUPPORTED,
+                              e.msg ().c_str ());
+      return NULL;
+    }
+  }
+
+  AVS_Clip *p_clip_rgb32 = new AVS_Clip;
   if (!p_clip_rgb32)
     return NULL;
 
-  p_clip_rgb32->p_clip_ = avs::filters::convert::ToRGB32::Create(p_clip->p_clip_);
-
+  p_clip_rgb32->p_clip_ = clip;
   return p_clip_rgb32;
 }
 

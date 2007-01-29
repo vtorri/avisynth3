@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2003-2006 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2007 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -35,6 +35,7 @@
 //spirit includes
 #define PHOENIX_LIMIT 6
 #include <boost/spirit/core.hpp>
+#include <boost/spirit/symbols.hpp>
 #include <boost/spirit/core/non_terminal/rule.hpp>
 #include <boost/spirit/core/non_terminal/grammar.hpp>
 #include <boost/spirit/attribute/closure.hpp>          //grammar.hpp before that one
@@ -64,8 +65,11 @@ struct Grammar : public spirit::grammar<Grammar>
 {
 
   CodePacker& packer;
+  spirit::symbols<Operation> const& functionTable;  
 
-  Grammar(CodePacker& packer_) : packer( packer_ ) { }
+  Grammar(CodePacker& packer_, spirit::symbols<Operation> const& functionTable_)
+   	: packer( packer_ )
+   	, functionTable( functionTable_ ) { }
 
 
   template <typename ScannerT>

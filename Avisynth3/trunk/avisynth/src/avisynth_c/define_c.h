@@ -1,5 +1,5 @@
 /* Avisynth 3.0 C Interface 
- * Copyright 2005 Vincent Torri <vtorri at univ-evry dot fr>
+ * Copyright 2005-2007 Vincent Torri <vtorri at univ-evry dot fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,13 +35,13 @@
  * runtime_environment interface
  */
 
-#ifndef __DEFINE_C_H__
-#define __DEFINE_C_H__
+#ifndef __AVS3_DEFINE_C_H__
+#define __AVS3_DEFINE_C_H__
 
 
 #define EXTERN_C extern "C"
 
-# ifdef _WIN32 /* Windows (tm) platform */
+# ifdef _MSC_VER /* Windows (tm) platform */
 
 #  ifdef AVS_C_EXPORTS
 #    define AVS_C_API __declspec(dllexport)
@@ -56,4 +56,4 @@
 #endif /* Windows (tm) platform */
 
 
-#endif /* __DEFINE_C_H__ */
+#endif /* __AVS3_DEFINE_C_H__ */

@@ -79,7 +79,7 @@ distfile=$(distdir).tar
 
 .SUFFIXES: .$(OBJECT_EXTENSION) .$(ASSEMBLY_EXTENSION) .cpp .c
 
-all: $(STATIC_LIB) $(SHARED_LIB) $(GST_VIDEO_SINK_LIB) $(GST_AUDIO_SINK_LIB) $(PROG) $(DOC)
+all: $(PROG) $(STATIC_LIB) $(SHARED_LIB) $(GST_VIDEO_SINK_LIB) $(GST_AUDIO_SINK_LIB) $(DOC)
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo " Avisynth has been successfully built."
@@ -116,7 +116,7 @@ $(BUILD_DIR):
 	@echo "  C: $(@D)/$(<F)"
 	@$(INSTALL) -d $(BUILD_DIR)/$(@D)
 	@$(CXX) -c $(ARCHITECTURE) $(BUS) $(ENDIANNESS) $(FEATURES) \
-	$(AVS3_DEBUG_CFLAGS) $(AVS3_CPPFLAGS) $(AVS3_CXXFLAGS) $< -o $(BUILD_DIR)/$@
+	$(AVS3_CXXFLAGS) $(PROFILE_CFLAGS) $(AVS3_CPPFLAGS) $< -o $(BUILD_DIR)/$@
 
 #-----------------------------------------------------------------------------
 # Generic C rule
@@ -126,7 +126,7 @@ $(BUILD_DIR):
 	@echo "  C: $(@D)/$(<F)"
 	@$(INSTALL) -d $(BUILD_DIR)/$(@D)
 	@$(CC) -c -fPIC $(ARCHITECTURE) $(BUS) $(ENDIANNESS) $(FEATURES) \
-	$(CFLAGS) $(GST_CFLAGS) $(GTK_CFLAGS) $(X264_CFLAGS) $< -o $(BUILD_DIR)/$@
+	$(CFLAGS) $(PROFILE_CFLAGS) $(CPPFLAGS) $(GST_CFLAGS) $(GTK_CFLAGS) $(X264_CFLAGS) $< -o $(BUILD_DIR)/$@
 
 
 #-----------------------------------------------------------------------------
@@ -135,11 +135,11 @@ $(BUILD_DIR):
 
 $(GST_VIDEO_SINK_LIB): $(BUILD_DIR) $(GST_VIDEO_OBJECTS)
 	@echo "  L: $(@F)"
-	@cd $(BUILD_DIR) && $(CC) $(LDFLAGS) -o $(GST_VIDEO_SINK_LIB) $(GST_VIDEO_OBJECTS) $(GSTBASE_LIBS) $(SPECIFIC_LDFLAGS)
+	@cd $(BUILD_DIR) && $(CC) $(CFLAGS) $(LDFLAGS) $(PROFILE_LDFLAGS) $(SPECIFIC_LDFLAGS) -o $(GST_VIDEO_SINK_LIB) $(GST_VIDEO_OBJECTS) $(GSTBASE_LIBS)
 
 $(GST_AUDIO_SINK_LIB): $(BUILD_DIR) $(GST_AUDIO_OBJECTS)
 	@echo "  L: $(@F)"
-	@cd $(BUILD_DIR) && $(CC) $(LDFLAGS) -o $(GST_AUDIO_SINK_LIB) $(GST_AUDIO_OBJECTS) $(GSTBASE_LIBS) $(SPECIFIC_LDFLAGS)
+	@cd $(BUILD_DIR) && $(CC) $(CFLAGS) $(LDFLAGS) $(PROFILE_LDFLAGS) $(SPECIFIC_LDFLAGS) -o $(GST_AUDIO_SINK_LIB) $(GST_AUDIO_OBJECTS) $(GSTBASE_LIBS)
 
 #-----------------------------------------------------------------------------
 # Static Library
@@ -167,14 +167,14 @@ $(STATIC_LIB): .depend $(LIB_OBJECTS) $(ASM_OBJECTS) $(SRC_LIB_GENERIC)
 $(SHARED_LIB): .depend $(LIB_OBJECTS) $(ASM_OBJECTS)
 	@echo "  L: $(@F)"
 	@$(INSTALL) -m 644 libavisynth.def $(BUILD_DIR)/libavisynth.def
-	@cd $(BUILD_DIR) && $(CXX) $(LDFLAGS) $(LIB_OBJECTS) $(ASM_OBJECTS) -o $(PRE_SHARED_LIB) $(SPECIFIC_LDFLAGS) $(AVS3_LIBS)
+	@cd $(BUILD_DIR) && $(CXX) $(LDFLAGS) $(PROFILE_LDFLAGS) $(LIB_OBJECTS) $(ASM_OBJECTS) -o $(PRE_SHARED_LIB) $(SPECIFIC_LDFLAGS) $(AVS3_LIBS)
 
 #-----------------------------------------------------------------------------
 # Test program
 #-----------------------------------------------------------------------------
-$(PROG): .depend $(BIN_OBJECTS) $(STATIC_LIB)
+$(PROG):  $(STATIC_LIB) $(BIN_OBJECTS)
 	@echo "  P: $(@F)"
-	@cd $(BUILD_DIR) && $(CC) -o $(PROG) $(BIN_OBJECTS) $(STATIC_LIB) $(AVS3_LIBS) $(GTK_LIBS) $(X264_LIBS)
+	@cd $(BUILD_DIR) && $(CC) -o $(PROG) $(LDFLAGS) $(PROFILE_LDFLAGS) $(BIN_OBJECTS) $(STATIC_LIB) $(AVS3_LIBS) $(GTK_LIBS) $(X264_LIBS)
 
 #-----------------------------------------------------------------------------
 # Documentation

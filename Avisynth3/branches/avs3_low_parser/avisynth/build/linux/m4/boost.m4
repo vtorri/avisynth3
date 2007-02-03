@@ -1,7 +1,7 @@
 dnl Configure path for Boost
-dnl Vincent Torri 2005-01-06
+dnl Vincent Torri 2004-2006
 dnl
-dnl AM_CHECK_BOOST(version, platform [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
+dnl AM_CHECK_BOOST(version, prefix [, ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for BOOST, and define BOOST_LIBS and BOOST_CFLAGS.
 dnl
 AC_DEFUN([AM_CHECK_BOOST],
@@ -12,7 +12,7 @@ AC_DEFUN([AM_CHECK_BOOST],
     AC_ARG_WITH(
        [boost-path],
        AC_HELP_STRING(
-          [--with-boost-path=PATH (default is /usr/local)],
+          [--with-boost-path=PATH],
           [BOOST Library prefix]),
        [with_boost_arg="yes"],
        [with_boost_arg="no"])
@@ -23,7 +23,7 @@ AC_DEFUN([AM_CHECK_BOOST],
     AC_ARG_WITH(
        [boost-includedir-path],
        AC_HELP_STRING(
-          [--with-boost-includedir-path=PATH (default is /usr/local/include/boost-1_33)],
+          [--with-boost-includedir-path=PATH],
           [BOOST headers directory. It must contain the boost/ directory]),
        [with_boost_includedir_arg="yes"],
        [with_boost_includedir_arg="no"])
@@ -34,7 +34,7 @@ AC_DEFUN([AM_CHECK_BOOST],
     AC_ARG_WITH(
        [boost-libdir-path],
        AC_HELP_STRING(
-          [--with-boost-libdir-path=PATH (default is /usr/local/lib)],
+          [--with-boost-libdir-path=PATH],
           [BOOST libraries directory]),
        [with_boost_libdir_arg="yes"],
        [with_boost_libdir_arg="no"])
@@ -65,11 +65,11 @@ AC_DEFUN([AM_CHECK_BOOST],
     dnl Get the name of the library with respect
     dnl to the platform and the version of Boost.
     dnl
-    case "$2" in
+    case "${target_os}" in
        *bsd* | linux* | irix* | solaris* )
           if test x"${core_debug_mode}" = x"yes" ; then
              if test x"${with_boost_lib_debug_name_arg}" = x"yes" ; then
-                BOOST_LIB_NAME=${with_boost_lib_name}
+                BOOST_LIB_NAME=${with_boost_lib_debug_name}
              else
                 BOOST_LIB_NAME="boost_thread-gcc-mt-d-$1"
              fi
@@ -95,6 +95,7 @@ AC_DEFUN([AM_CHECK_BOOST],
           BOOST_LIB_NAME=""
        ;;
     esac
+
     dnl
     dnl Check Boost library.
     dnl
@@ -105,7 +106,7 @@ AC_DEFUN([AM_CHECK_BOOST],
        boost_path="${with_boost_path}"
     else
        dnl No argument, or argument empty.
-       boost_path="/usr/local"
+       boost_path="$2"
     fi
 
     dnl We set the include directory to use.
@@ -126,28 +127,40 @@ AC_DEFUN([AM_CHECK_BOOST],
        boost_libdir_path="${boost_path}/lib"
     fi
 
-    dnl We check the headers.
+    dnl We check the header files.
     have_boost_headers="no"
     saved_CPPFLAGS="${CPPFLAGS}"
     CPPFLAGS="${CPPFLAGS} -I${boost_includedir_path}"
 
-    AC_CHECK_HEADERS(
-       [boost/shared_ptr.hpp boost/thread/mutex.hpp boost/circular_buffer.hpp boost/spirit/phoenix/functions.hpp],
+    AC_MSG_CHECKING([for Boost header files in ${boost_includedir_path}])
+    AC_COMPILE_IFELSE(
        [
+        AC_LANG_PROGRAM(
+           [[
+#include <boost/shared_ptr.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/circular_buffer.hpp>
+#include <boost/spirit/core.hpp>
+#include <boost/spirit/phoenix/functions.hpp>
+           ]])
+       ],
+       [
+        AC_MSG_RESULT([yes])
         BOOST_CFLAGS="-I${boost_includedir_path}"
         have_boost_headers="yes"
        ],
        [
-        AC_MSG_WARN(Boost headers not in ${boost_includedir_path})
+        AC_MSG_RESULT([no])
+        AC_MSG_WARN(Boost header files not in ${boost_includedir_path})
         m4_if([$4], [], [:], [$4])
        ]
     )
     CPPFLAGS="${saved_CPPFLAGS}"
     
-    dnl We check the library if headers are not missing.
+    dnl We check the library if header files are not missing.
     if test "x${have_boost_headers}" = "xyes" ; then
        saved_LDFLAGS="${LDFLAGS}"
-       case "$2" in
+       case "${target_os}" in
           *bsd* | linux* | irix* | solaris* )
              LDFLAGS="${LDFLAGS} -L${boost_libdir_path}"
              AC_CHECK_LIB(
@@ -158,9 +171,10 @@ AC_DEFUN([AM_CHECK_BOOST],
                  m4_if([$3], [], [:], [$3])
                 ],
                 [
-                 AC_MSG_WARN(Boost library not in ${boost_libdir_path})
+                 AC_MSG_WARN(Boost library ($1) not in ${boost_libdir_path})
                  m4_if([$4], [], [:], [$4])
-                ]
+                ],
+                [-pthread]
              )
           ;;
           [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
@@ -172,7 +186,7 @@ AC_DEFUN([AM_CHECK_BOOST],
                  m4_if([$3], [], [:], [$3])
                 ],
                 [
-                 AC_MSG_WARN(Boost library not in ${boost_libdir_path})
+                 AC_MSG_WARN(Boost library ($1) not in ${boost_libdir_path})
                  m4_if([$4], [], [:], [$4])
                 ]
              )
@@ -189,6 +203,7 @@ AC_DEFUN([AM_CHECK_BOOST],
        esac
        LDFLAGS="${saved_LDFLAGS}"
     fi
+
     dnl
     dnl Substitution
     dnl

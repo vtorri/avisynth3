@@ -121,7 +121,7 @@ AVS_C_API AVS_Clip *avs_clip_new_from_file (const char *filename, const AVS_Envi
  * @p p_env. If an error occurred, the returned value is @c NULL.
  * Otherwise, it is a valid clip.
  */
-AVS_C_API AVS_Clip *avs_clip_new_from_message (const char *msg, const AVS_Environment *p_env)
+AVS_C_API AVS_Clip *avs_clip_new_from_message (const char *msg, const AVS_Environment *p_env);
 
 
 /** @brief Convert a clip to a newly allocated RGB32 clip.

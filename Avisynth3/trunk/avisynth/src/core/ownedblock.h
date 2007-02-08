@@ -99,6 +99,10 @@ public:  //misc
 };
 
 
+//attempt to work around a gcc bug
+template <>
+owned_block<block::Align>::owned_block(PEnvironment const& env, int size, bool recycle)
+
 
 namespace block {
 

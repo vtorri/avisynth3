@@ -109,6 +109,10 @@ public:  //misc
 };
 
 
+//attempt to wokaround around a gcc bug
+template <>
+block_<block::Align>::block_(int size, bool recycle);
+
 
 namespace block {
 

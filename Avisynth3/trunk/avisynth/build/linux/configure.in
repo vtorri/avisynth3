@@ -164,12 +164,21 @@ dnl Check for the C compiler (could be passed on command line)
 dnl ==========================================================================
 
 dnl
-dnl First we test if CFLAGS/CXXFLAGS have been passed on command line
-dnl I do that because autoconf defaults (-g -O2) suck and they would kill
-dnl performance. To prevent that we define a good default CFLAGS/CXXFLAGS at
-dnl the end of the script if and only if CXXFLAGS has not been passed on the
-dnl command line
+dnl First we test if CPPFLAGS/CFLAGS/CXXFLAGS have been passed on command
+dnl line. I do that because autoconf defaults (-g -O2) suck and they would
+dnl kill performance. To prevent that we define a good default
+dnl CPPFLAGS/CFLAGS/CXXFLAGS at the end of the script if and only if these
+dnl variables have not been passed on the command line
 dnl
+AC_MSG_CHECKING(whether to use default CPPFLAGS)
+if test  x"${CPPFLAGS}" = x"" ; then
+   force_default_cpp_options="yes"
+   AC_MSG_RESULT([yes])
+else
+   force_default_cpp_options="no"
+   AC_MSG_RESULT([no])
+fi
+
 AC_MSG_CHECKING(whether to use default CFLAGS)
 if test  x"${CFLAGS}" = x"" ; then
    force_default_c_options="yes"
@@ -802,8 +811,11 @@ dnl Now we can set CFLAS/CXXFLAGS if needed
 dnl
 dnl ==========================================================================
 
-if test "${force_default_c_options}" = "yes" ; then
+if test "${force_default_cpp_options}" = "yes" ; then
    CPPFLAGS="${cppflags_debug} ${cppflags_have_attribute} ${cppflags_visibility}"
+fi
+
+if test "${force_default_c_options}" = "yes" ; then
    CFLAGS="${cflags_debug} ${cflags_warnings} ${cflags_optimization} ${cflags_visibility}"
 fi
 

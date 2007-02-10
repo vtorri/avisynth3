@@ -373,6 +373,7 @@ distdir:
 	  avisynth.css \
 	  doxygen.css \
 	  doxygen.png \
+	  main.c \
 	  installation.c \
 	  installation_mingw.c \
 	  installation_vc.c \

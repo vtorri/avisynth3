@@ -9,11 +9,42 @@ static gpointer
 _open_script (Avs3_Data *data)
 {
   AVS_VideoInfo *info;
+  AVS_Error     *error = NULL;
 /*   gpointer ret; */
 
   if (!data->env)
     data->env = avs_environment_new (10000000);
-  data->clip = avs_clip_new_from_file (data->filename, data->env);
+  data->clip = avs_clip_new_from_file (data->filename, data->env, &error);
+
+  if (!data->clip) {
+    GtkWidget *dialog;
+
+    if (error) {
+      dialog = gtk_message_dialog_new (GTK_WINDOW (data->window),
+                                       GTK_DIALOG_DESTROY_WITH_PARENT,
+                                       GTK_MESSAGE_ERROR,
+                                       GTK_BUTTONS_CLOSE,
+                                       "Avisynth error (%d): %s",
+                                       avs_error_code_get (error),
+                                       avs_error_message_get (error));
+      g_print ("error : %s\n", avs_error_description_get (error));
+      gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+                                                avs_error_description_get (error));
+    }
+    else {
+      dialog = gtk_message_dialog_new (GTK_WINDOW (data->window),
+                                       GTK_DIALOG_DESTROY_WITH_PARENT,
+                                       GTK_MESSAGE_ERROR,
+                                       GTK_BUTTONS_CLOSE,
+                                       "Internal error");
+      gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+                                                "memory allocation failure");
+    }
+    g_print ("ERROR\n");
+    gtk_dialog_run (GTK_DIALOG (dialog));
+    gtk_widget_destroy (dialog);
+    return;
+  }
 
   info = avs_clip_videoinfo_get (data->clip);
   if (avs_videoinfo_has_video (info)) {

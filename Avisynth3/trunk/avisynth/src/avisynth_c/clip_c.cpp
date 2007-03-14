@@ -51,6 +51,7 @@
 #include "../core/clip.h"
 #include "../parser/parser.h"
 #include "../core/exception.h"
+#include "../core/exception/gstreamer.h"
 #include "../core/exception/colorspace/unsupported.h"
 #include "../core/videoinfo.h"
 #include "../filters/convert/toyv12.h"
@@ -125,7 +126,7 @@ get_script (const char *filename)
 // Constructor
 
 EXTERN_C AVS_Clip *
-avs_clip_new_from_script (const char *script, const AVS_Environment *p_env)
+avs_clip_new_from_script (const char *script, const AVS_Environment *p_env, AVS_Error **error)
 {
   AVS_Clip *p_clip;
 
@@ -136,12 +137,21 @@ avs_clip_new_from_script (const char *script, const AVS_Environment *p_env)
   if (!p_clip)
     return NULL;
 
-  p_clip->p_clip_ = avs::parser::Parser()(script, p_env->p_env_);
+  try {
+    p_clip->p_clip_ = avs::parser::Parser()(script, p_env->p_env_);
+  }
+  catch (avs::exception::Gstreamer e) {
+    if (error) {
+      *error = avs_error_new (AVS_ERROR_GSTREAMER,
+                              e.msg ().c_str ());
+      return NULL;
+    }
+  }
 
   return p_clip;
 }
 
-EXTERN_C AVS_Clip *avs_clip_new_from_file (const char *filename, const AVS_Environment *p_env)
+EXTERN_C AVS_Clip *avs_clip_new_from_file (const char *filename, const AVS_Environment *p_env, AVS_Error **error)
 {
   AVS_Clip *p_clip;
 
@@ -154,7 +164,16 @@ EXTERN_C AVS_Clip *avs_clip_new_from_file (const char *filename, const AVS_Envir
   if (!p_clip)
     return NULL;
 
-  p_clip->p_clip_ = avs::parser::Parser()(script, p_env->p_env_);
+  try {
+    p_clip->p_clip_ = avs::parser::Parser()(script, p_env->p_env_);
+  }
+  catch (avs::exception::Gstreamer e) {
+    if (error) {
+      *error = avs_error_new (AVS_ERROR_GSTREAMER,
+                              e.msg ().c_str ());
+      return NULL;
+    }
+  }
 
   return p_clip;
 }

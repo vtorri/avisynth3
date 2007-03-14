@@ -95,6 +95,8 @@ avs_error_message_get (AVS_Error *error)
     return "fatal error";
   case AVS_ERROR_GENERIC:
     return "generic error";
+  case AVS_ERROR_GSTREAMER:
+    return "gstreamer error";
   case AVS_ERROR_NO_AUDIO:
     return "no audio";
   case AVS_ERROR_NO_SUCH_FILE:

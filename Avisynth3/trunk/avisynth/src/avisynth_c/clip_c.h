@@ -95,7 +95,7 @@ typedef struct AVS_Clip_ AVS_Clip;
  * occurred, the returned value is @c NULL. Otherwise, it is a valid
  * clip.
  */
-AVS_C_API AVS_Clip *avs_clip_new_from_script (const char *script, const AVS_Environment *p_env);
+AVS_C_API AVS_Clip *avs_clip_new_from_script (const char *script, const AVS_Environment *p_env, AVS_Error **error);
 
 
 /** @brief Create a clip from a file.
@@ -108,7 +108,7 @@ AVS_C_API AVS_Clip *avs_clip_new_from_script (const char *script, const AVS_Envi
  * an error occurred, the returned value is @c NULL. Otherwise, it is
  * a valid clip.
  */
-AVS_C_API AVS_Clip *avs_clip_new_from_file (const char *filename, const AVS_Environment *p_env);
+AVS_C_API AVS_Clip *avs_clip_new_from_file (const char *filename, const AVS_Environment *p_env, AVS_Error **error);
 
 
 /** @brief Create a clip from a message.

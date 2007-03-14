@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2007 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -35,10 +35,11 @@ namespace avs { namespace gstreamer {
 
 //declarations
 class Bin;
+class Bus;
 class Pad;
-class Buffer;
 class Object;
 class Element;
+class Message;
 class Pipeline;
 class Iterator;
 class Structure;
@@ -51,7 +52,8 @@ class Audio;
 } //namespace structure
 
 //typedefs
-typedef boost::intrusive_ptr<Buffer> PBuffer;
+typedef boost::shared_ptr<Bus> PBus;
+typedef boost::shared_ptr<Message> PMessage;
 typedef boost::shared_ptr<Iterator> PIterator;
 typedef boost::shared_ptr<Pipeline> PPipeline;
 typedef boost::shared_ptr<Structure> PStructure;

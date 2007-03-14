@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2007 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,12 @@
 #include "forward.h"             //for Pad, Object, Pipeline declarations
 #include "../core/integer.h"     //for int64
 
+//boost include
+#include <boost/optional.hpp>
+
+//stlport include
+#include <string>
+
 //gstreamer include
 #include <gst/gstelement.h>
 #include <gst/gstutils.h>        //for gst_element_link
@@ -49,6 +55,11 @@ private:  //declared but not implemented
 public:  //access to pads
 
   Pad * GetPad(char const * name);
+
+
+public: //access bus
+
+  PBus GetBus();
 
 
 public:  //link
@@ -77,7 +88,6 @@ public:  //state stuff
   void SetStatePlaying() { ChangeState( GST_STATE_PLAYING ); }
   void SetSimpleStatePaused() { gst_element_set_state( this, GST_STATE_PAUSED ); }
 
-
 public:
 
   int64 QueryTotal();
@@ -95,9 +105,11 @@ public:  //factory method
   static Element * Create(char const * type, char const * name);
 
 
-private:  //factory method
+private:  //private methods
 
   void ChangeState(GstState state);
+
+  boost::optional<std::string> GetErrorMessage();
 
 };
 

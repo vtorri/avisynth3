@@ -36,6 +36,11 @@ pkg_setup() {
 		die "boost with threads required"
 	fi
 
+	if built_with_use dev-libs/STLport boost ; then
+		eerror "dev-libs/STLport must be built with the boost use flag disabled"
+		die "STLport without boost required"
+	fi
+
 	if use debug && ! built_with_use dev-libs/boost debug ; then
 		eerror "If you wish to build avisynth with debug support, then you must"
 		eerror "also build dev-libs/boost with debug support"

@@ -23,6 +23,7 @@
 
 #ifdef _WIN32
 
+
 //avisynth includes
 #include "exporter.h"
 #include "avistreaminfo.h"
@@ -60,17 +61,17 @@ AviStreamInfo::Video::Video(VideoInfo const& vi, Exporter const& exporter)
 {
   fccType        = 'SDIV';
   fccHandler     = exporter.GetFourCCHandler();
-  scale          = vi.GetFPSDenominator();    
+  scale          = vi.GetFPSDenominator();
   rate           = vi.GetFPSNumerator();
   length         = vi.GetFrameCount();
   suggestedBufferSize = exporter.GetBitmapSize(vi.GetDimension());
-  quality        = 0xFFFFFFFF;     
+  quality        = 0xFFFFFFFF;
   sampleSize     = suggestedBufferSize;
 
   frame.right    = vi.GetWidth();
-  frame.bottom   = vi.GetHeight();      
+  frame.bottom   = vi.GetHeight();
 
-  wcscpy(name, L"Avisynth video #1");  
+  wcscpy(name, L"Avisynth video #1");
 }
 
 
@@ -82,14 +83,15 @@ AviStreamInfo::Audio::Audio(VideoInfo const& vi)
   scale          = vi.BytesPerAudioSample();
   rate           = vi.GetSampleRate() * scale;
   length         = static_cast<unsigned long>(vi.GetSampleCount());
-  quality        = 0xFFFFFFFF;     
+  quality        = 0xFFFFFFFF;
   sampleSize     = scale;
-      
-  wcscpy(name, L"Avisynth audio #1");  
+
+  wcscpy(name, L"Avisynth audio #1");
 }
 
 
 
 } } } //namespace avs::export_::vfw
+
 
 #endif //_WIN32

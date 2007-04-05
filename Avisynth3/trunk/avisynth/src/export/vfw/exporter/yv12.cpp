@@ -21,6 +21,9 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
+
 //avisynth includes
 #include "yv12.h"
 #include "../../../core/blitter.h"
@@ -41,9 +44,9 @@ long YV12::GetBitmapSize(Dimension const& dim) const
 
 void YV12::ExportFrame(VideoFrame const& frame, BYTE * ptr) const
 {
-  CWindowPtr Y = frame.ReadFrom('Y');   
-  CWindowPtr U = frame.ReadFrom('U'); 
-  CWindowPtr V = frame.ReadFrom('V'); 
+  CWindowPtr Y = frame.ReadFrom('Y');
+  CWindowPtr U = frame.ReadFrom('U');
+  CWindowPtr V = frame.ReadFrom('V');
 
   Blitter const& blitter = Blitter::Get();
 
@@ -58,3 +61,5 @@ void YV12::ExportFrame(VideoFrame const& frame, BYTE * ptr) const
 
 } } } } //namespace avs::export_::vfw::exporter
 
+
+#endif //_WIN32

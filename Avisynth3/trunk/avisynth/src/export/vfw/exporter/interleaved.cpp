@@ -21,6 +21,9 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
+
 //avisynth includes
 #include "interleaved.h"
 #include "../../../core/blitter.h"
@@ -41,8 +44,8 @@ long Interleaved::GetBitmapSize(Dimension const& dim) const
 
 void Interleaved::ExportFrame(VideoFrame const& frame, BYTE * ptr) const
 {
-  CWindowPtr src = frame.ReadFrom('~');  
-    
+  CWindowPtr src = frame.ReadFrom('~');
+
   Blitter::Get().Blit(src, ptr, utility::RoundUp<4>(src.width));  // BMP scanlines are always dword-aligned
 }
 
@@ -50,3 +53,5 @@ void Interleaved::ExportFrame(VideoFrame const& frame, BYTE * ptr) const
 
 } } } } //namespace avs::export_::vfw::exporter
 
+
+#endif //_WIN32

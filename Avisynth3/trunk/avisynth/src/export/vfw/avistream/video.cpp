@@ -41,7 +41,7 @@ STDMETHODIMP Video::ReadFormat(LONG /*lPos*/, LPVOID lpFormat, LONG *lpcbFormat)
 {
   long size = *lpcbFormat;                        //save old size
   *lpcbFormat = sizeof(BITMAPINFOHEADER);         //update to used (needed) size
-  
+
   if ( lpFormat == NULL )                         //case where it was just a size request
 	  return S_OK;
 
@@ -61,10 +61,10 @@ STDMETHODIMP Video::ReadFormat(LONG /*lPos*/, LPVOID lpFormat, LONG *lpcbFormat)
 STDMETHODIMP Video::Read(LONG lStart, LONG lSamples, LPVOID lpBuffer, LONG cbBuffer, LONG *plBytes, LONG *plSamples)
 {
   long frameSize = GetExporter().GetFrameSize(lStart);
-    
+
   if ( plSamples != NULL )
     *plSamples = 1;
-  if ( plBytes != NULL ) 
+  if ( plBytes != NULL )
     *plBytes = frameSize;
 
   if ( lpBuffer == NULL )
@@ -74,7 +74,7 @@ STDMETHODIMP Video::Read(LONG lStart, LONG lSamples, LPVOID lpBuffer, LONG cbBuf
     return AVIERR_BUFFERTOOSMALL;
 
 
-  try 
+  try
   {
     try { GetExporter().ExportFrame( lStart, static_cast<BYTE *>(lpBuffer) );  }
     catch (avs::Exception& ex) { MakeErrorStream(ex.msg()); }
@@ -104,5 +104,6 @@ long Video::FindKeySample(long n, bool previous)
 
 
 } } } } //namespace avs::export::vfw::avistream
+
 
 #endif //_WIN32

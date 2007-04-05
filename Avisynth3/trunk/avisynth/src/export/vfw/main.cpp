@@ -23,6 +23,7 @@
 
 #ifdef _WIN32
 
+
 //avisynth includes
 #include "base.h"                //for InstanceCounter
 #include "main.h"
@@ -33,9 +34,9 @@ using namespace avs::export_::vfw;
 
 //methods required of a COM dll
 
-BOOL APIENTRY DllMain(HANDLE /*hModule*/, ULONG ulReason, LPVOID /*lpReserved*/) 
+BOOL APIENTRY DllMain(HANDLE /*hModule*/, ULONG ulReason, LPVOID /*lpReserved*/)
 {
-  switch(ulReason) 
+  switch(ulReason)
   {
 	case DLL_PROCESS_ATTACH:
 		CoInitialize(NULL);
@@ -57,11 +58,10 @@ STDAPI DllGetClassObject(CLSID const& rclsid, IID const& riid, void ** ppv)
 }
 
 
-STDAPI DllCanUnloadNow() 
+STDAPI DllCanUnloadNow()
 {
   return InstanceCounter::Count() == 0 ? S_OK : S_FALSE;
 }
-
 
 
 #endif //_WIN32

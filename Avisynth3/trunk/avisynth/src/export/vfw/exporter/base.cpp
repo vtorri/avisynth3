@@ -21,6 +21,9 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
+
 //avisynth includes
 #include "base.h"
 #include "../../../core/clip.h"
@@ -35,7 +38,7 @@ long Base::GetFrameSize(long n) const
 {
   return GetBitmapSize(clip_->GetVideoInfo()->GetDimension());
 }
- 
+
 void Base::ExportFrame(long n, BYTE * ptr) const
 {
   ExportFrame(*clip_->GetFrame(n), ptr);
@@ -44,3 +47,6 @@ void Base::ExportFrame(long n, BYTE * ptr) const
 
 
 } } } } //namespace avs::export_::vfw::exporter
+
+
+#endif //_WIN32

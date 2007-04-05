@@ -36,17 +36,17 @@ namespace avs { namespace export_ { namespace vfw {
 
 STDMETHODIMP AviFileFactory::QueryInterface(IID const& iid, void **ppv)
 {
-  if ( iid == IID_IUnknown ) 
+  if ( iid == IID_IUnknown )
     *ppv = (IUnknown *)this;
-	else 
+	else
     if ( iid == IID_IClassFactory )
-	    *ppv = (IClassFactory *)this;	  
-    else 
+	    *ppv = (IClassFactory *)this;
+    else
     {
       *ppv = NULL;
       return E_NOINTERFACE;
     }
-    
+
   AddRef();
 
   return S_OK;
@@ -55,7 +55,7 @@ STDMETHODIMP AviFileFactory::QueryInterface(IID const& iid, void **ppv)
 
 STDMETHODIMP AviFileFactory::CreateInstance(LPUNKNOWN pUnkOuter, REFIID riid,  void ** ppvObj)
 {
-  if ( pUnkOuter ) 
+  if ( pUnkOuter )
     return CLASS_E_NOAGGREGATION;
 
   return vfw::AviFile::Create(riid, ppvObj);
@@ -74,5 +74,6 @@ HRESULT AviFileFactory::Create(IID const& riid, void ** ppv)
 
 
 } } } //namespace avs::export_::vfw
+
 
 #endif //_WIN32

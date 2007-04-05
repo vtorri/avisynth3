@@ -26,7 +26,7 @@
 
 //avisynth includes
 #include "main.h"
-#include "avifile.h" 
+#include "avifile.h"
 #include "avistream/audio.h"
 #include "avistream/video.h"
 #include "../../core/videoinfo.h"
@@ -74,18 +74,18 @@ STDMETHODIMP AviFile::QueryInterface(IID const& iid, void **ppv)
 {
 	if ( iid == IID_IUnknown )
 		*ppv = (IUnknown *)(IAVIFile *)this;
-	else 
+	else
     if ( iid == IID_IPersist )
       *ppv = (IPersist *)this;
-	  else 
+	  else
       if ( iid == IID_IPersistFile )
 		    *ppv = (IPersistFile *)this;
-	    else 
+	    else
         if ( iid == IID_IAVIFile )
 		      *ppv = (IAVIFile *)this;
-	      else 
+	      else
         {
-      		*ppv = NULL;
+		*ppv = NULL;
 		      return E_NOINTERFACE;
 	      }
 
@@ -112,7 +112,7 @@ STDMETHODIMP AviFile::Load(LPCOLESTR lpszFileName, DWORD grfMode)
     return E_FAIL;
 
 	char buffer[MAX_PATH];
-	WideCharToMultiByte(AreFileApisANSI() ? CP_ACP : CP_OEMCP, 0, lpszFileName, -1, buffer, sizeof buffer, NULL, NULL); 
+	WideCharToMultiByte(AreFileApisANSI() ? CP_ACP : CP_OEMCP, 0, lpszFileName, -1, buffer, sizeof buffer, NULL, NULL);
 
   try { scriptName_ = buffer; }
   catch(std::bad_alloc&) { return AVIERR_MEMORY; }
@@ -128,7 +128,7 @@ bool AviFile::DelayedInit()
 
     PEnvironment env = RuntimeEnvironment::Create(10000000);    //memMax = 10M
 
-    try 
+    try
     {
 /*      // create a script environment and load the script into it
       env = CreateScriptEnvironment();
@@ -136,8 +136,8 @@ bool AviFile::DelayedInit()
       AVSValue return_val = env->Invoke("Import", szScriptName);
       // store the script's return value (a video clip)
       if (return_val.IsClip())
-        filter_graph = ConvertAudio::Create(return_val.AsClip(), SAMPLE_INT8|SAMPLE_INT16|SAMPLE_INT24|SAMPLE_INT32, SAMPLE_INT16);  // Ensure samples are int     [filter_graph = return_val.AsClip();]      
-      else      
+        filter_graph = ConvertAudio::Create(return_val.AsClip(), SAMPLE_INT8|SAMPLE_INT16|SAMPLE_INT24|SAMPLE_INT32, SAMPLE_INT16);  // Ensure samples are int     [filter_graph = return_val.AsClip();]
+      else
         throw AvisynthError("The script's return value was not a video clip");
       if (!filter_graph)
         throw AvisynthError("The returned video clip was nil (this is a bug)");  */
@@ -157,22 +157,22 @@ bool AviFile::DelayedInit()
       if ( vi_->IsYV12() && ( vi_->GetWidth() & 3 ) )
         throw exception::Generic("Avisynth error: YV12 images for output must have a width divisible by 4 (use crop)!");
       if ( vi_->IsYUY2() && ( vi_->GetWidth() & 3 ) )
-        throw exception::Generic("Avisynth error: YUY2 images for output must have a width divisible by 4 (use crop)!");      
-    }    
+        throw exception::Generic("Avisynth error: YUY2 images for output must have a width divisible by 4 (use crop)!");
+    }
     catch (Exception& ex)
     {
       error_msg_ = ex.msg();
-      clip_ = filters::MessageClip::Create( error_msg_, env );        
+      clip_ = filters::MessageClip::Create( error_msg_, env );
       vi_ = clip_->GetVideoInfo();
-    }    
-    catch (...) 
-    { 
+    }
+    catch (...)
+    {
       assert( false );          //to help figure out where pb lies
-      return false; 
-    }    
-  } 
+      return false;
+    }
+  }
 
-  return true;                  
+  return true;
 }
 
 
@@ -184,12 +184,12 @@ void AviFile::MakeErrorStream(std::string const& msg)
 }
 
 
-STDMETHODIMP AviFile::Info(AVIFILEINFOW *pfi, LONG lSize) 
+STDMETHODIMP AviFile::Info(AVIFILEINFOW *pfi, LONG lSize)
 {
   if ( lSize < LONG(sizeof(AVIFILEINFOW)) )
     return AVIERR_BUFFERTOOSMALL;
 
-	if ( ! DelayedInit() ) 
+	if ( ! DelayedInit() )
     return E_FAIL;
 
   memset(pfi, 0, sizeof(AVIFILEINFOW));
@@ -199,7 +199,7 @@ STDMETHODIMP AviFile::Info(AVIFILEINFOW *pfi, LONG lSize)
 	if ( vi_->HasAudio() )	++streamCount;
 
 	pfi->dwFlags				  = AVIFILEINFO_HASINDEX | AVIFILEINFO_ISINTERLEAVED;
-	pfi->dwCaps					  = AVIFILECAPS_CANREAD | AVIFILECAPS_ALLKEYFRAMES | AVIFILECAPS_NOCOMPRESSION;	
+	pfi->dwCaps					  = AVIFILECAPS_CANREAD | AVIFILECAPS_ALLKEYFRAMES | AVIFILECAPS_NOCOMPRESSION;
 	pfi->dwStreams				= streamCount;
 
   if ( vi_->HasVideo() )
@@ -210,7 +210,7 @@ STDMETHODIMP AviFile::Info(AVIFILEINFOW *pfi, LONG lSize)
 	  pfi->dwScale				= vi_->GetFPSDenominator();
     pfi->dwLength				= vi_->GetFrameCount();
   }
-    
+
   wcscpy(pfi->szFileType, L"Avisynth");
 
 	return S_OK;
@@ -218,16 +218,16 @@ STDMETHODIMP AviFile::Info(AVIFILEINFOW *pfi, LONG lSize)
 
 STDMETHODIMP AviFile::GetStream(PAVISTREAM *ppStream, DWORD fccType, LONG lParam)
 {
-	if ( ! DelayedInit() ) 
+	if ( ! DelayedInit() )
     return E_FAIL;
 
   try { *ppStream = GetStream(fccType, lParam); }
-  catch(std::bad_alloc&) 
-  { 
+  catch(std::bad_alloc&)
+  {
     *ppStream = NULL;
-    return AVIERR_MEMORY; 
+    return AVIERR_MEMORY;
   }
-  
+
   return ( *ppStream == NULL ) ? AVIERR_NODATA : 0;  //good return value
 }
 
@@ -239,12 +239,12 @@ AviStream * AviFile::GetStream(DWORD fccType, long lParam)
   {
     switch( lParam )
     {
-    case 0: 
+    case 0:
       if ( fccType == 0 || fccType == streamtypeVIDEO )
         switch( vi_->GetColorSpace()->id() )
         {
         case ColorSpace::I_RGB24:
-        case ColorSpace::I_RGB32: 
+        case ColorSpace::I_RGB32:
         case ColorSpace::I_YUY2: return new avistream::Interleaved(*this);
         case ColorSpace::I_YV12: return new avistream::YV12(*this);
         default: return NULL;
@@ -259,12 +259,13 @@ AviStream * AviFile::GetStream(DWORD fccType, long lParam)
     if ( vi_->HasAudio() && lParam == 0 && ( fccType == 0 || fccType == streamtypeAUDIO ) )
       return new avistream::Audio(*this);
   }
-    
+
   return NULL;
 }
- 
+
 
 
 } } //namespace avs::vfw
+
 
 #endif //_WIN32

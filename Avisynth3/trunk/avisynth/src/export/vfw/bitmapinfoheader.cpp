@@ -21,6 +21,9 @@
 // General Public License cover the whole combination.
 
 
+#ifdef _WIN32
+
+
 //avisynth includes
 #include "exporter.h"
 #include "bitmapinfoheader.h"
@@ -70,7 +73,7 @@ PImporter BitmapInfoHeader::GetImporter() const
     switch( biBitCount )
     {
     case 24: return rgb24.Get();
-    case 32: return rgb32.Get();    
+    case 32: return rgb32.Get();
     default: break;
     }
   default:break;
@@ -101,6 +104,7 @@ void BitmapInfoHeader::Init(Dimension const& dim)
 
 
 
-
-
 } } } //namespace avs::export_::vfw
+
+
+#endif //_WIN32

@@ -53,8 +53,8 @@ struct BusDestructor
 
 
 Pad * Element::GetPad(char const * name)
-{ 
-  return static_cast<Pad *>( gst_element_get_pad(this, name) ); 
+{
+  return static_cast<Pad *>( gst_element_get_pad(this, name) );
 }
 
 
@@ -70,7 +70,7 @@ PBus Element::GetBus()
 int64 Element::QueryTotal()
 {
   GstQuery *query;
-      
+
   query = gst_query_new_duration( GST_FORMAT_TIME );
   if ( !gst_pad_query( GetPad( "sink" ), query ) )
     throw exception::Gstreamer( "Can not query the length of the video pipeline" );
@@ -131,7 +131,7 @@ boost::optional<std::string> Element::GetErrorMessage()
     case GST_MESSAGE_ERROR: {
        str = msg->GetError();
       if (str)
-        str = "Reason: " + str->substr( str->find_first_of( '\n' ) + 1 );
+	str = "Reason: " + str->substr( str->find_first_of( '\n' ) + 1 );
       done = true;
       break;
     }

@@ -1,4 +1,4 @@
-// Avisynth v3.0 alpha.  Copyright 2005 David Pierre - Ben Rudiak-Gould et al.
+// Avisynth v3.0 alpha.  Copyright 2003-2007 David Pierre - Ben Rudiak-Gould et al.
 // http://www.avisynth.org
 
 // This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ namespace avs { namespace filters { namespace convert {
 ToRGB32::ToRGB32(PClip const& child)
   : Convert( child, colorspace::Get::RGB32() ) { }
 
-  
+
 PClip ToRGB32::Create(PClip const& child)
 {
   PColorSpace space = child->GetVideoInfo()->GetColorSpace();

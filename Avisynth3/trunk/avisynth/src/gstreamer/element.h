@@ -29,6 +29,7 @@
 #include "../core/integer.h"     //for int64
 
 //boost include
+#include <boost/format.hpp>
 #include <boost/optional.hpp>
 
 //stlport include
@@ -57,7 +58,7 @@ public:  //access to pads
   Pad * GetPad(char const * name);
 
 
-public: //access bus
+public: //access to bus
 
   PBus GetBus();
 
@@ -69,7 +70,9 @@ public:  //link
 
 public:  //seek method
 
-  bool Seek(uint64 time) { g_message ("time (seek) : %lld", time);
+  bool Seek(uint64 time) {
+    boost::format fmt = boost::format( "time (seek) : %1" ) % time;
+    g_message ( fmt.str().c_str () );
     return gst_element_seek( this,
                                                     1.0,
                                                     GST_FORMAT_TIME,
@@ -87,6 +90,7 @@ public:  //state stuff
   void SetStatePaused() { ChangeState( GST_STATE_PAUSED ); }
   void SetStatePlaying() { ChangeState( GST_STATE_PLAYING ); }
   void SetSimpleStatePaused() { gst_element_set_state( this, GST_STATE_PAUSED ); }
+
 
 public:
 

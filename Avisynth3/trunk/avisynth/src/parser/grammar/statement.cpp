@@ -49,145 +49,145 @@ Statement::definition<Scanner>::definition(Statement const & self)
   using namespace functor;
   using namespace phoenix;
 
-  
+
   top
       =   statement( CodeCouple(), self.localCtxt )
-          [ 
-            self.value = arg1 
-          ]
+	  [
+	    self.value = arg1
+	  ]
       ;
 
   statement
       =   (   expression( value::Expression(), statement.localCtxt, self.globalCtxt )
-              [
-                bind(&action::Action::ExprStatement)(statement.value, statement.localCtxt, arg1)                        
-              ]
-          |   createVar( ref_(first(statement.localCtxt)) )  //pass local VarTable
-          |   ifStatement
-          // |   whileStatement
-          |   returnStatement
-          )
+	      [
+		bind(&action::Action::ExprStatement)(statement.value, statement.localCtxt, arg1)
+	      ]
+	  |   createVar( ref_(first(statement.localCtxt)) )  //pass local VarTable
+	  |   ifStatement
+	  // |   whileStatement
+	  |   returnStatement
+	  )
       >>  (   spirit::eol_p           //statement are normally ended by a newline
-          |   spirit::eps_p( '}' )    //but an end of block would do too
-          )
+	  |   spirit::eps_p( '}' )    //but an end of block would do too
+	  )
       ;
 
   createVar
       =   (   spirit::str_p("global")
-              [
-                createVar.table = ref_(first(self.globalCtxt))    //set global VarTable as the table to use
-              ]
-          |   !   spirit::str_p("local")     //optional local keyword
-          )
+	      [
+		createVar.table = ref_(first(self.globalCtxt))    //set global VarTable as the table to use
+	      ]
+	  |   !   spirit::str_p("local")     //optional local keyword
+	  )
       >>  name
-          [
-            createVar.name = construct_<std::string>(arg1, arg2)
-          ]
+	  [
+	    createVar.name = construct_<std::string>(arg1, arg2)
+	  ]
       >>  '='
       >>  expression( value::Expression(), statement.localCtxt, self.globalCtxt )
-          [
-            bind(&action::Action::CreateVarStatement)
-                (statement.value, statement.localCtxt, arg1, createVar.table, createVar.name)
-          ]
+	  [
+	    bind(&action::Action::CreateVarStatement)
+		(statement.value, statement.localCtxt, arg1, createVar.table, createVar.name)
+	  ]
       ;
 
   ifStatement
       =   spirit::str_p("if")
       >>  conditionBlock
-          [
-            statement.value += arg1
-          ]
+	  [
+	    statement.value += arg1
+	  ]
       >>  subContextBlock( CodeCouple(), get_(statement.localCtxt) )
-          [
-            ifStatement.value = arg1
-          ]          
+	  [
+	    ifStatement.value = arg1
+	  ]
       >>  (   *   spirit::eol_p
-          >>  spirit::str_p("else")
-          >>  subContextBlock( CodeCouple(), get_(statement.localCtxt) )
-              [
-                statement.value -= construct_<functor::IfThenElse>(ifStatement.value, arg1)
-              ]
-          |   spirit::eps_p
-              [
-                statement.value -= construct_<functor::IfThen>(ifStatement.value)
-              ]
-          )
+	  >>  spirit::str_p("else")
+	  >>  subContextBlock( CodeCouple(), get_(statement.localCtxt) )
+	      [
+		statement.value -= construct_<functor::IfThenElse>(ifStatement.value, arg1)
+	      ]
+	  |   spirit::eps_p
+	      [
+		statement.value -= construct_<functor::IfThen>(ifStatement.value)
+	      ]
+	  )
       ;
 
   whileStatement
       =   spirit::str_p("while")
       >>  conditionBlock
-          [
-            whileStatement.value = arg1
-          ]
+	  [
+	    whileStatement.value = arg1
+	  ]
       >>  subContextBlock( CodeCouple(), get_(statement.localCtxt) )
-          [
-            statement.value -= construct_<functor::WhileDo>(whileStatement.value, arg1)
-          ]
+	  [
+	    statement.value -= construct_<functor::WhileDo>(whileStatement.value, arg1)
+	  ]
       ;
 
   conditionBlock
       =   '('
       >>  expression( value::Expression(), statement.localCtxt, self.globalCtxt )
-          [
-            bind(&action::Check::TypeIsExpected)(second(arg1), val('b')),
-            conditionBlock.value += first(arg1),
-            --second(statement.localCtxt)         //reports that the bool value is consumed
-          ]
+	  [
+	    bind(&action::Check::TypeIsExpected)(second(arg1), val('b')),
+	    conditionBlock.value += first(arg1),
+	    --second(statement.localCtxt)         //reports that the bool value is consumed
+	  ]
       >>  ')'
       ;
 
   subContextBlock
       =   spirit::eps_p
-          [    //get rid of last inherited from upper context
-            third(subContextBlock.localCtxt) = val( boost::none_t() )
-          ]
+	  [    //get rid of last inherited from upper context
+	    third(subContextBlock.localCtxt) = val( boost::none_t() )
+	  ]
       >>  *   spirit::eol_p   //skip newlines
-      >>  (   '{'     
-          >> *(   statement( CodeCouple(), ref_(subContextBlock.localCtxt) )   //a block of statement delimited by { }
-                  [
-                    subContextBlock.value += arg1
-                  ]
-              |   spirit::eol_p
-              )
-          >>  '}'
-          |   statement( CodeCouple(), ref_(subContextBlock.localCtxt) )       //or a single one
-              [
-                subContextBlock.value += arg1
-              ]
-          )
+      >>  (   '{'
+	  >> *(   statement( CodeCouple(), ref_(subContextBlock.localCtxt) )   //a block of statement delimited by { }
+		  [
+		    subContextBlock.value += arg1
+		  ]
+	      |   spirit::eol_p
+	      )
+	  >>  '}'
+	  |   statement( CodeCouple(), ref_(subContextBlock.localCtxt) )       //or a single one
+	      [
+		subContextBlock.value += arg1
+	      ]
+	  )
       ;
 
   returnStatement
       =   spirit::str_p("return")
       >>  (   spirit::str_p("self")
-              [
-                bind(&action::Check::TRecurseAllowed)(! self.termRecInfo)
-              ]
-          >>  argList( 0 )
-              [
-                second(get_(self.termRecInfo)) = val(true),                //report that terminal recursivity is used
-                statement.value -= construct_<literal<OpType> >(RECURSE)
-              ]
-          |   expression( value::Expression(), statement.localCtxt, self.globalCtxt )
-              [
-                bind(&action::Check::ReturnTypeIsExpected)(second(arg1), self.returnTypeExpected),
-                statement.value += first(arg1),
-                statement.value -= construct_<literal<OpType> >(RETURN)
-              ]
-          )
+	      [
+		bind(&action::Check::TRecurseAllowed)(! self.termRecInfo)
+	      ]
+	  >>  argList( 0 )
+	      [
+		second(get_(self.termRecInfo)) = val(true),                //report that terminal recursivity is used
+		statement.value -= construct_<literal<OpType> >(RECURSE)
+	      ]
+	  |   expression( value::Expression(), statement.localCtxt, self.globalCtxt )
+	      [
+		bind(&action::Check::ReturnTypeIsExpected)(second(arg1), self.returnTypeExpected),
+		statement.value += first(arg1),
+		statement.value -= construct_<literal<OpType> >(RETURN)
+	      ]
+	  )
       ;
 
   argList
       =   '('
       >> !(   expression( value::Expression(), statement.localCtxt, self.globalCtxt )
-              [
-                //check the type is the one expected by prototype of outer function
-                bind(&action::Check::TypeIsExpected)(second(arg1), first(get_(self.termRecInfo))[argList.value]),
-                statement.value += first(arg1),
-                ++argList.value
-              ]
-          %   ','
+	      [
+		//check the type is the one expected by prototype of outer function
+		bind(&action::Check::TypeIsExpected)(second(arg1), first(get_(self.termRecInfo))[argList.value]),
+		statement.value += first(arg1),
+		++argList.value
+	      ]
+	  %   ','
       )
       >>  ')'
       ;

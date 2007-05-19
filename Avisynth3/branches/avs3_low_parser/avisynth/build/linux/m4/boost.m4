@@ -71,13 +71,13 @@ AC_DEFUN([AM_CHECK_BOOST],
              if test x"${with_boost_lib_debug_name_arg}" = x"yes" ; then
                 BOOST_LIB_NAME=${with_boost_lib_debug_name}
              else
-                BOOST_LIB_NAME="boost_thread-gcc-mt-d-$1"
+                BOOST_LIB_NAME="boost_thread-gcc${CXX_VERSION_MAJOR}${CXX_VERSION_MINOR}-mt-gdp"
              fi
           else
              if test x"${with_boost_lib_name_arg}" = x"yes" ; then
                 BOOST_LIB_NAME=${with_boost_lib_name}
              else
-                BOOST_LIB_NAME="boost_thread-gcc-mt-$1"
+                BOOST_LIB_NAME="boost_thread-gcc${CXX_VERSION_MAJOR}${CXX_VERSION_MINOR}-mt-p"
              fi
           fi
           

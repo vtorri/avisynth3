@@ -2,7 +2,7 @@ dnl ==========================================================================
 dnl
 dnl Autoconf script for Avisynth 3.0
 dnl
-dnl Copyright(C) 2006 Vincent Torri <vtorri at univ-evry dot fr>
+dnl Copyright(C) 2005-2007 Vincent Torri <vtorri at univ-evry dot fr>
 dnl
 dnl ==========================================================================
 
@@ -32,9 +32,14 @@ dnl NASM version requirement
 minimum_nasm_patch_version=34
 nasm_prog="nasm"
 
+dnl YASM version requirement
+minimum_yasm_version_major=0
+minimum_yasm_version_minor=5
+yasm_prog="yasm"
+
 dnl BOOST version requirement
 BOOST_VERSION_MAJOR="1"
-BOOST_VERSION_MINOR="33"
+BOOST_VERSION_MINOR="34"
 BOOST_VERSION="${BOOST_VERSION_MAJOR}_${BOOST_VERSION_MINOR}"
 
 dnl Gstreamer version requirement
@@ -70,7 +75,7 @@ AC_ARG_ENABLE(
    AC_HELP_STRING(
       [--enable-gcc-3-3-4],
       [Use g++ 3.3.4]),
-      [if test "${enable_gcc_3_3_4}" = "yes" ; then
+      [if test "x${enable_gcc_3_3_4}" = "xyes" ; then
           gpp="/usr/gcc/bin/g++-3.3.4"
        fi],
       [])
@@ -126,7 +131,7 @@ AC_ARG_ENABLE(
    AC_HELP_STRING(
       [--enable-macosx_module],
       [Build as a module on MacOS X]),
-   [if test "${enable_macosx_module}" = "yes" ; then
+   [if test "x${enable_macosx_module}" = "xyes" ; then
        macosx_module="yes"
     else
        macosx_module="no"
@@ -164,14 +169,23 @@ dnl Check for the C compiler (could be passed on command line)
 dnl ==========================================================================
 
 dnl
-dnl First we test if CFLAGS/CXXFLAGS have been passed on command line
-dnl I do that because autoconf defaults (-g -O2) suck and they would kill
-dnl performance. To prevent that we define a good default CFLAGS/CXXFLAGS at
-dnl the end of the script if and only if CXXFLAGS has not been passed on the
-dnl command line
+dnl First we test if CPPFLAGS/CFLAGS/CXXFLAGS have been passed on command
+dnl line. I do that because autoconf defaults (-g -O2) suck and they would
+dnl kill performance. To prevent that we define a good default
+dnl CPPFLAGS/CFLAGS/CXXFLAGS at the end of the script if and only if these
+dnl variables have not been passed on the command line
 dnl
+AC_MSG_CHECKING(whether to use default CPPFLAGS)
+if test  "x${CPPFLAGS}" = "x" ; then
+   force_default_cpp_options="yes"
+   AC_MSG_RESULT([yes])
+else
+   force_default_cpp_options="no"
+   AC_MSG_RESULT([no])
+fi
+
 AC_MSG_CHECKING(whether to use default CFLAGS)
-if test  x"${CFLAGS}" = x"" ; then
+if test  "x${CFLAGS}" = "x" ; then
    force_default_c_options="yes"
    AC_MSG_RESULT([yes])
 else
@@ -180,7 +194,7 @@ else
 fi
 
 AC_MSG_CHECKING(whether to use default CXXFLAGS)
-if test  x"${CXXFLAGS}" = x"" ; then
+if test  "x${CXXFLAGS}" = x"" ; then
    force_default_cxx_options="yes"
    AC_MSG_RESULT([yes])
 else
@@ -194,11 +208,18 @@ AC_PROG_CPP([gcc])
 
 dnl checking for attributes
 AC_C___ATTRIBUTE__
+if test "x$have___attribute__" = "xyes" ; then
+   cppflags_have_attribute=-DHAVE___ATTRIBUTE__
+fi
 
 dnl And the C++ compiler
 AC_LANG([C++])
 AC_PROG_CXX([g++])
 AC_PROG_CXXCPP([g++])
+
+CXX_VERSION_MAJOR=`g++ --version | sed -n '1s/^[[^0-9]]*//;1s/\..*//p'`
+CXX_VERSION_MINOR=`g++ --version | sed -n '1s/^[[^0-9]]*//;1s/[[^.]]*\.\([[^.]]*\)\..*/\1/p'`
+CXX_VERSION=${CXX_VERSION_MAJOR}${CXX_VERSION_MINOR}
 
 dnl ==========================================================================
 dnl Check for the visibility feature of GCC 4.0
@@ -232,7 +253,8 @@ dnl This part looks for:
 dnl
 dnl ARCHITECTURE : The platform architecture
 dnl                - IA32 for mmx, mmx-ext, mmx2, sse assembly
-dnl                - IA64
+dnl                - IA64 (itanium)
+dnl                - X86_64 (AMD64 and Core2)
 dnl                - PPC for PowerPC assembly routines
 dnl                - GENERIC for plain C sources only
 dnl
@@ -249,7 +271,7 @@ dnl
 ARCHITECTURE=""
 
 AC_MSG_CHECKING([for whether to use assembly code])
-if test x"${assembly}" = x"yes" ; then
+if test "x${assembly}" = "xyes" ; then
    AC_MSG_RESULT([yes])
    AC_MSG_CHECKING([for architecture type])
    case "${target_cpu}" in
@@ -257,15 +279,20 @@ if test x"${assembly}" = x"yes" ; then
          AC_MSG_RESULT(ia32)
          ARCHITECTURE="IA32"
       ;;
-      powerpc)
+      ia64)
+         AC_MSG_RESULT(ia64)
+         dnl ATM the ia64 arch is not supported
+         dnl ARCHITECTURE="IA64"
+      ;;
+      x86_64)
+         AC_MSG_RESULT(x86_64)
+         ARCHITECTURE="X86_64"
+      ;;
+      powerpc|powerpc64)
          AC_MSG_RESULT(PowerPC)
          dnl ATM the ppc port is out of date
          dnl ARCHITECTURE="PPC"
          assembly="no"
-      ;;
-      ia64)
-         AC_MSG_RESULT(ia64)
-         ARCHITECTURE="IA64"
       ;;
       *)
          AC_MSG_RESULT(${target_cpu})
@@ -302,7 +329,7 @@ case "${target_os}" in
 	OBJECT_EXTENSION="obj"
 	;;
      darwin*|raphsody*)
-	if test x"${macosx_module}" = x"yes"; then
+	if test "x${macosx_module}" = "xyes"; then
 	   AC_MSG_RESULT([.so .a .o])
 	   SHARED_EXTENSION="so"
         else
@@ -367,7 +394,7 @@ case "${target_os}" in
 	;;
      darwin*|raphsody*)
 	SPECIFIC_CFLAGS="-fPIC -fno-common -no-cpp-precomp"
-	if test x"${macosx_module}" = x"no"; then
+	if test "x${macosx_module}" = "xno"; then
 	   AC_MSG_RESULT([dylib options])
 	   SHARED_LIB="libavisynth.${API_MAJOR}.${SHARED_EXTENSION}"
 	   SPECIFIC_LDFLAGS="-dynamiclib -flat_namespace -compatibility_version ${API_MAJOR} -current_version ${API_MAJOR}.${API_MINOR} -install_name ${libdir}/${SHARED_LIB}"
@@ -393,7 +420,7 @@ case "${target_os}" in
 	;;
 esac
 
-if test x"${PRE_SHARED_LIB}" = x; then
+if test "x${PRE_SHARED_LIB}" = "x"; then
   PRE_SHARED_LIB=$SHARED_LIB
 fi
 
@@ -409,114 +436,86 @@ AFLAGS=""
 ASSEMBLY_EXTENSION=""
 ASSEMBLY_SOURCES=""
 
-dnl
-dnl IA32
-dnl
+case "${ARCHITECTURE}" in
 
-if test "${ARCHITECTURE}" = "IA32" ; then
+   IA32)
+      AC_CHECK_PROG([ac_nasm], [$nasm_prog], [yes], [no], , [yes])
+      if test "x${ac_nasm}" = "xyes" ; then
 
-   dnl
-   dnl Checking nasm existence
-   dnl
-   AC_CHECK_PROG([ac_nasm], [$nasm_prog], [yes], [no], , [yes])
-   if test "${ac_nasm}" = "yes" ; then
+         AC_MSG_CHECKING([for nasm patch version])
+         nasm_patch=`nasm -r | cut -d '.' -f 3 | cut -d ' ' -f 1`
+         if test -z $nasm_patch ; then
+	    nasm_patch=-1
+	 fi
+         AC_MSG_RESULT([$nasm_patch])
 
-      dnl
-      dnl Checking nasm patch version
-      dnl
-      AC_MSG_CHECKING([for nasm patch version])
-      nasm_patch=`nasm -r | cut -d '.' -f 3 | cut -d ' ' -f 1`
-      if test -z $nasm_patch ; then
-        nasm_patch=-1
-      fi
-      AC_MSG_RESULT([$nasm_patch])
+	 if test "${nasm_patch}" -lt "${minimum_nasm_patch_version}" ; then
+	    AC_MSG_ERROR([nasm patch version too old - Update nasm])
+         else
 
+            AC_MSG_CHECKING([for nasm object format])
+            case "${target_os}" in
+               *bsd*|linux*|beos|irix*|solaris*)
+                  ASM_FORMAT="elf"
+                  PREFIX=""
+               ;;
+               [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
+                  ASM_FORMAT="win32"
+                  PREFIX="-DPREFIX"
+               ;;
+            esac
+            AC_MSG_RESULT([${ASM_FORMAT}])
+            AS=nasm
+            AFLAGS="-I\$(<D)/ -f ${ASM_FORMAT} ${PREFIX} -D_FORCE_NASM"
+            ASSEMBLY_ARCH="x86"
+            ASSEMBLY_EXTENSION="asm"
+            ASSEMBLY_SOURCES="SRC_IA32"
 
-      if test "${nasm_patch}" -lt "${minimum_nasm_patch_version}" ; then
-        AC_MSG_ERROR([nasm patch version too old - Update nasm])
+         fi
+
       else
+         AC_MSG_ERROR([nasm not found - nasm is needed for Avisynth 3.0])
+      fi
+   ;;
 
-         dnl
-         dnl Checking nasm format - win32 or elf
-         dnl
-         AC_MSG_CHECKING([for nasm object format])
-         case "${target_os}" in
-              *bsd*|linux*|beos|irix*|solaris*)
-                  AC_MSG_RESULT([elf])
-                  NASM_FORMAT="elf"
-		  PREFIX=""
-                  ;;
-              [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
-                  AC_MSG_RESULT([win32])
-                  NASM_FORMAT="win32"
-		  PREFIX="-DPREFIX"
-                  ;;
-          esac
-          AS=nasm
-          AFLAGS="-I\$(<D)/ -f ${NASM_FORMAT} ${PREFIX} -D_FORCE_NASM"
-          ASSEMBLY_EXTENSION="asm"
-          ASSEMBLY_SOURCES="SRC_IA32"
-       fi
+   X86_64)
+      AC_CHECK_PROG([ac_yasm], [$yasm_prog], [yes], [no], , [yes])
+      if test "x${ac_yasm}" = "xyes" ; then
 
-   else
-	AC_MSG_ERROR([nasm not found - nasm is needed for Avisynth 3.0])
-   fi
+         AC_MSG_CHECKING([for yasm version])
+         YASM_VERSION_MAJOR=`yasm --version | sed -n '1s/^[[^0-9]]*//;1s/\..*//p'`
+         YASM_VERSION_MINOR=`yasm --version | sed -n '1s/^[[^0-9]]*//;1s/[[^.]]*\.\([[^.]]*\)\..*/\1/p'`
+         AC_MSG_RESULT([${YASM_VERSION_MAJOR}.${YASM_VERSION_MINOR}])
 
-fi
+         if test "${YASM_VERSION_MINOR}" -lt "${minimum_yasm_version_minor}" ; then
+            AC_MSG_ERROR([yasm version too old - Update yasm])
+         else
 
-dnl
-dnl PPC
-dnl
-
-if test "${ARCHITECTURE}" = "PPC" ; then
-   AS="${CC}"
-   AFLAGS="-c"
-   ASSEMBLY_EXTENSION="s"
-   ASSEMBLY_SOURCES="SRC_PPC"
-   AC_MSG_CHECKING([for Altivec support])
-   cat > conftest.S << EOF
-         .text
-         vxor 0,0,0
-EOF
-   if $CC -c conftest.S 2>/dev/null 1>/dev/null ; then
-      AC_MSG_RESULT(yes)
-      SPECIFIC_CFLAGS="${SPECIFIC_CFLAGS} -DARCH_IS_PPC_ALTIVEC"
-      ASSEMBLY_SOURCES="SRC_ALTIVEC"
-   else
-      AC_MSG_RESULT(no)
-   fi
-   rm -f conftest.*
-fi
-
-dnl
-dnl IA64
-dnl
-
-if test "${ARCHITECTURE}" = "IA64" ; then
-   AS="${CC}"
-   AFLAGS="-c"
-   ASSEMBLY_EXTENSION="s"
-   ASSEMBLY_SOURCES="SRC_IA64"
-   case `basename $CC` in
-      *ecc*)
-         DCT_IA64_SOURCES="SRC_IA64_IDCT_ECC"
-
-         dnl If the compiler is ecc, then i don't know its options
-         dnl fallback to "no options"
-         cflags_warnings=""
-         cxxflags_warnings=""
-         if test "${force_default_c_options}" = "yes" ; then
-            cflags_defaults=""
+            AC_MSG_CHECKING([for yasm object format])
+            case "${target_os}" in
+               *bsd*|linux*|beos|irix*|solaris*)
+                  ASM_FORMAT="elf"
+                  PREFIX=""
+               ;;
+               [[cC]][[yY]][[gG]][[wW]][[iI]][[nN]]*|mingw32*|mks*)
+                  ASM_FORMAT="win32"
+                  PREFIX="-DPREFIX"
+               ;;
+            esac
+            AC_MSG_RESULT([${ASM_FORMAT}])
+            AS=yasm
+            AFLAGS="-I\$(<D)/ -f ${ASM_FORMAT} -m amd64 ${PREFIX} -D_FORCE_YASM"
+            ASSEMBLY_ARCH="x86_64"
+            ASSEMBLY_EXTENSION="asm"
+            ASSEMBLY_SOURCES="SRC_X86_64"
          fi
-         if test "${force_default_cxx_options}" = "yes" ; then
-            cxxflags_optimization=""
-         fi
-      ;;
-      *)
-         DCT_IA64_SOURCES="SRC_IA64_IDCT_GCC"
-      ;;
-   esac
-fi
+
+      else
+         AC_MSG_ERROR([yasm not found - yasm is needed for Avisynth 3.0])
+      fi
+   ;;
+
+esac
 
 dnl ==========================================================================
 dnl
@@ -552,31 +551,6 @@ dnl
 dnl Check for dependancies
 dnl
 dnl ==========================================================================
-
-dnl ==========================================================================
-dnl FreeType header and library files
-dnl ==========================================================================
-
-PKG_CHECK_MODULES(
-   [FREETYPE],
-   [freetype2],
-   [ ],
-   [AC_MSG_ERROR(Freetype isn't installed)])
-
-dnl ==========================================================================
-dnl Fontconfig header and library files
-dnl ==========================================================================
-
-case "${target_os}" in
-   *bsd*|linux*|beos|irix*|solaris*)
-      PKG_CHECK_MODULES(
-         [FONTCONFIG],
-         [fontconfig],
-         [ ],
-         [AC_MSG_ERROR(Fontconfig isn't installed)])
-      FONTCONFIG_CFLAGS="${FONTCONFIG_CFLAGS} -DHAVE_FONTCONFIG"
-   ;;
-esac
 
 dnl ==========================================================================
 dnl Standard header files
@@ -658,7 +632,7 @@ if test "x${have_stlport_in_usr}" = "xno" ; then
    AM_CHECK_STLPORT(
       [/usr/local],
       [],
-      [AC_MSG_ERROR("STLport is needed !")])
+      [AC_MSG_ERROR("STLport is needed ! See 'config.log' for more details.")])
 fi
 
 dnl ==========================================================================
@@ -666,25 +640,41 @@ dnl BOOST header and library files
 dnl ==========================================================================
 
 AM_CHECK_BOOST(
-   [${BOOST_VERSION}_1],
+   [${BOOST_VERSION}],
    [/usr],
    [],
    [AM_CHECK_BOOST(
-      [${BOOST_VERSION}_1],
+      [${BOOST_VERSION}],
       [/usr/local],
       [],
-      [AM_CHECK_BOOST(
-         [${BOOST_VERSION}],
-         [/usr],
-         [],
-         [AM_CHECK_BOOST(
-            [${BOOST_VERSION}],
-            [/usr/local],
-            [],
-            [AC_MSG_ERROR("Boost is needed !")])
-         ])
+      [AC_MSG_ERROR("Boost is needed ! See 'config.log' for more details.")
       ])
    ])
+
+dnl ==========================================================================
+dnl FreeType header and library files
+dnl ==========================================================================
+
+PKG_CHECK_MODULES(
+   [FREETYPE],
+   [freetype2],
+   [ ],
+   [AC_MSG_ERROR(Freetype isn't installed)])
+
+dnl ==========================================================================
+dnl Fontconfig header and library files
+dnl ==========================================================================
+
+case "${target_os}" in
+   *bsd*|linux*|beos|irix*|solaris*)
+      PKG_CHECK_MODULES(
+         [FONTCONFIG],
+         [fontconfig],
+         [ ],
+         [AC_MSG_ERROR(Fontconfig isn't installed)])
+      FONTCONFIG_CFLAGS="${FONTCONFIG_CFLAGS} -DHAVE_FONTCONFIG"
+   ;;
+esac
 
 dnl ==========================================================================
 dnl Gstreamer header and library files
@@ -699,7 +689,7 @@ case "${target_os}" in
          [HAVE_GSTREAMER="yes"],
          [HAVE_GSTREAMER="no"])
 
-      if test "${HAVE_GSTREAMER}" = "no" ; then
+      if test "x${HAVE_GSTREAMER}" = "xno" ; then
          AC_MSG_ERROR([Gstreamer support is needed when building Avisynth 3.0 on linux])
       fi
 
@@ -709,7 +699,7 @@ case "${target_os}" in
          [],
          [HAVE_GSTREAMER="no"])
 
-      if test "${HAVE_GSTREAMER}" = "no" ; then
+      if test "x${HAVE_GSTREAMER}" = "xno" ; then
          AC_MSG_ERROR([Gstreamer support is needed when building Avisynth 3.0 on linux])
       fi
 
@@ -759,9 +749,9 @@ dnl x264 header and library files
       PKG_CHECK_MODULES(
          [X264],
          [x264gtk],
-         [HAVE_X264="yes"],
-         [HAVE_X264="no"])
-      if test "x${HAVE_X264}" = "xno" ; then
+         [have_x264="yes"],
+         [have_x264="no"])
+      if test "x${have_x264}" = "xno" ; then
          AC_MSG_WARN([
 Test application not built (x264 codec missing).
 Either you have not installed x264, or you
@@ -798,16 +788,19 @@ fi
 
 dnl ==========================================================================
 dnl
-dnl Now we can set CFLAS/CXXFLAGS if needed
+dnl Now we can set CFLAGS/CXXFLAGS if needed
 dnl
 dnl ==========================================================================
 
-if test "${force_default_c_options}" = "yes" ; then
+if test "x${force_default_cpp_options}" = "xyes" ; then
    CPPFLAGS="${cppflags_debug} ${cppflags_have_attribute} ${cppflags_visibility}"
+fi
+
+if test "x${force_default_c_options}" = "xyes" ; then
    CFLAGS="${cflags_debug} ${cflags_warnings} ${cflags_optimization} ${cflags_visibility}"
 fi
 
-if test "${force_default_cxx_options}" = "yes" ; then
+if test "x${force_default_cxx_options}" = "xyes" ; then
    CXXFLAGS="${cflags_debug} ${cxxflags_warnings} ${cxxflags_optimization} ${cxxflags_visibility}"
 fi
 
@@ -850,9 +843,11 @@ AC_SUBST(ARCHITECTURE)
 AC_SUBST(SHARED_EXTENSION)
 AC_SUBST(STATIC_EXTENSION)
 AC_SUBST(OBJECT_EXTENSION)
-AC_SUBST(NASM_FORMAT)
+AC_SUBST(ASM_FORMAT)
 AC_SUBST(AS)
 AC_SUBST(AFLAGS)
+AC_SUBST(assembly)
+AC_SUBST(ASSEMBLY_ARCH)
 AC_SUBST(ASSEMBLY_EXTENSION)
 AC_SUBST(GENERIC_SOURCES)
 AC_SUBST(ASSEMBLY_SOURCES)

@@ -12,8 +12,9 @@ echo SRC_BIN_GENERIC = \\ >> sources.inc
 find ../../src/bin -name '*.c' | sed 's/..\/..\/src\//  /;s/\.c/\.c \\/' >> sources.inc
 echo   >> sources.inc
 echo SRC_LIB_GENERIC = \\ >> sources.inc
-#sed '@GEN_SOURCES@/cpp/!d;s/^[ \t]*//;s/RelativePath="..\\..\\..\\src\\/  /;s/\\/\//g;s/">/ \\/' ../win32/vc71/avisynth.vcproj >>sources.inc
 find ../../src -name '*.cpp' | sed '/\/bin\//d;s/..\/..\/src\//  /;s/.cpp/.cpp \\/' >> sources.inc
 echo   >> sources.inc
-echo SRC_IA32 = \\ >> sources.inc
-find ../../src/ -name '*x86_nasm.asm' | sed 's/..\/..\/src\//  /;s/\\/\//g;s/m.asm/m.asm \\/' >>sources.inc
+if test "x@assembly@" = "xyes" ; then
+   echo @ASSEMBLY_SOURCES@ = \\ >> sources.inc
+   find ../../src/ -name '*@ASSEMBLY_ARCH@_@AS@.@ASSEMBLY_EXTENSION@' | sed 's/..\/..\/src\//  /;s/\\/\//g;s/@AS@.@ASSEMBLY_EXTENSION@/@AS@.@ASSEMBLY_EXTENSION@ \\/' >>sources.inc
+fi

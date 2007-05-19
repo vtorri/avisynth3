@@ -34,10 +34,7 @@
 #      the configure script as on a unix system.
 #    - write a platform.inc file by hand.
 #
-# PS: default build directory is "build", it fits naming conventions that
-#     make the arch/tla revision control program ignore files contained in
-#     this directory during commits operations. This choice is completly
-#     arbitrary, but try not to change it.
+# PS: default build directory is "build".
 #
 ##############################################################################
 

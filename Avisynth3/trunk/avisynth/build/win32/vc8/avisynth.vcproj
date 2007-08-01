@@ -3565,22 +3565,6 @@
 				Name="AVI"
 				>
 				<File
-					RelativePath="..\..\..\src\import\avi\chunkheader.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\import\avi\chunkheader.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\import\avi\listheader.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\import\avi\listheader.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\src\import\avi\streamheader.cpp"
 					>
 				</File>

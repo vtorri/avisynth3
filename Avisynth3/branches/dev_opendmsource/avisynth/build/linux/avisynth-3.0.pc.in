@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: @PACKAGE_NAME@
+Description: Frame Server for Linux and Windows
+Version: @VERSION@
+Libs: @THREADS_CFLAGS@ -L${libdir} -lavisynth
+Cflags: -I${includedir}/@PACKAGE_TARNAME@-@VERSION@ @STLPORT_CFLAGS@ @BOOST_CFLAGS@ @FREETYPE_CFLAGS@

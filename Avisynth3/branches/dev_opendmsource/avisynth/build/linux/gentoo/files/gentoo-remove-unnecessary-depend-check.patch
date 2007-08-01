@@ -1,0 +1,20 @@
+--- build/linux/Makefile	2006-10-10 17:58:54.000000000 +0100
++++ build/linux/Makefile	2006-11-25 22:17:03.000000000 +0000
+@@ -145,7 +145,7 @@
+ # Static Library
+ #-----------------------------------------------------------------------------
+ 
+-$(STATIC_LIB): .depend $(LIB_OBJECTS) $(ASM_OBJECTS) $(SRC_LIB_GENERIC)
++$(STATIC_LIB): $(LIB_OBJECTS) $(ASM_OBJECTS) $(SRC_LIB_GENERIC)
+ 	@echo "  L: $(@F)"
+ 	@cd $(BUILD_DIR) && ar rc $(@F) $(LIB_OBJECTS) $(ASM_OBJECTS) && $(RANLIB) $(@F)
+ 
+@@ -164,7 +164,7 @@
+ #      platforms
+ #-----------------------------------------------------------------------------
+ 
+-$(SHARED_LIB): .depend $(LIB_OBJECTS) $(ASM_OBJECTS)
++$(SHARED_LIB): $(LIB_OBJECTS) $(ASM_OBJECTS)
+ 	@echo "  L: $(@F)"
+ 	@$(INSTALL) -m 644 libavisynth.def $(BUILD_DIR)/libavisynth.def
+ 	@cd $(BUILD_DIR) && $(CXX) $(LDFLAGS) $(PROFILE_LDFLAGS) $(LIB_OBJECTS) $(ASM_OBJECTS) -o $(PRE_SHARED_LIB) $(SPECIFIC_LDFLAGS) $(AVS3_LIBS)

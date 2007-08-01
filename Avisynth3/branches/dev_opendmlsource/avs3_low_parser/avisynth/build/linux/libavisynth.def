@@ -1,5 +1,0 @@
-LIBRARY
-EXPORTS
-	DllGetClassObject@12 PRIVATE
-	DllCanUnloadNow@0 PRIVATE
-

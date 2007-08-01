@@ -1,7 +1,0 @@
-To generate the documentation (installation of Avisynth and API):
-
- * Install doxygen
- * run gendoc
-
-The html (resp. latex, man, xml) documentation will be located in the
-html (resp. latex, man, xml) directory.

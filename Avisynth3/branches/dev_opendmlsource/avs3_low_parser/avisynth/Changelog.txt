@@ -1,3 +1,0 @@
-Changed core functions registration scheme to prevent overzealous linker to elide them
-Fixed bug in AviSource which caused it to always seek (thanks Manao)
-Fixed bug in cache logic causing impossible memory request to the system -> crash

@@ -56,10 +56,10 @@ struct StreamHeader
   
   struct Rectange
   {
-    long left;
-    long top;
-    long right;
-    long bottom;
+    short left;
+    short top;
+    short right;
+    short bottom;
   } frame;
 
 

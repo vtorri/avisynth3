@@ -2117,14 +2117,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\filters\source\messageclip.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\filters\source\messageclip.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\src\filters\source\staticimage.cpp"
 					>
 				</File>

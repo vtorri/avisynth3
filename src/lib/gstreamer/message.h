@@ -69,7 +69,7 @@ typedef enum
   GST_MESSAGE_ANY               = ~0
 } MessageType;
 
- 
+
 class Message : public GstMessage
 {
 

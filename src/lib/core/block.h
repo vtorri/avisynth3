@@ -43,7 +43,7 @@ namespace block { class Creator; }
 //  Holds an aligned block of memory, with automatic deallocation.
 //
 //  Two behaviors are provided :
-//    - basic behavior : 
+//    - basic behavior :
 //         allocation done at construction and deallocation at destruction
 //    - recycling behavior :
 //         a list of block of memory (and their size) is maintained.
@@ -55,20 +55,20 @@ namespace block { class Creator; }
 //
 //  Problem: The recycling list only grows and never release memory,
 //             even when some sizes are never requested anymore....
-//           
-template <int align> 
+//
+template <int align>
 class block_ : public block::base<block::Holder, align>
 {
 
 public:  //typedefs
 
   typedef block_<align> BlockType;
-  typedef block::base<block::Holder, align> BaseBlockType; 
+  typedef block::base<block::Holder, align> BaseBlockType;
   typedef typename boost::enable_if<block::align_compatible<block::Align, align>, block::Creator>::type Creator;
 
 
 public:  //structors
-  
+
   block_(int size, bool recycle);
 
   template <class Holder>

@@ -41,7 +41,7 @@ CPVideoInfo AudioDub::GetVideoInfo() const
   vi->MergeAudio( *GetAudioChild()->GetVideoInfo() );
   return vi;
 }
-  
+
 
 PClip AudioDub::FinalSimplify() const
 {

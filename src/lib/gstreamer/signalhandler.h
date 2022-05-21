@@ -56,7 +56,7 @@ public:  //structors
   SignalHandler(Object * target, char const * signalName, CallBack callBack, void * data)
     : target_( target )
     , signalId_( Connect(target, signalName, reinterpret_cast<void (*)()>(callBack), data) ) { }
-  
+
   ~SignalHandler();
 
 

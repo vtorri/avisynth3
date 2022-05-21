@@ -38,7 +38,7 @@ void FromYUY2::ConvertFrame(VideoFrame const& source, VideoFrame& target) const
 void FromYUY2::ConvertFrame(CWindowPtr src, WindowPtr Y, WindowPtr U, WindowPtr V) const
 {
   //Y plane
-  for ( int y = src.height; y-- > 0; Y.pad(), src.pad() ) 
+  for ( int y = src.height; y-- > 0; Y.pad(), src.pad() )
     for ( int x = src.width / 4; x-- > 0; src.to(4, 0), Y.to(2, 0) )
     {
       Y[0] = src[0];

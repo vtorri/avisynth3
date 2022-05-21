@@ -41,9 +41,9 @@ YUY2::YUY2(Dimension const& dim, FrameType type, BufferWindow const& main)
 
 
 
-CPVideoFrame YUY2::clone() const 
-{ 
-  return CPVideoFrame( static_cast<VideoFrame *>(new YUY2(*this)) ); 
+CPVideoFrame YUY2::clone() const
+{
+  return CPVideoFrame( static_cast<VideoFrame *>(new YUY2(*this)) );
 }
 
 

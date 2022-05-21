@@ -52,7 +52,7 @@ class InvalidHeight : public Exception
 public:  //structors
 
   InvalidHeight(PColorSpace const& space, int height, int /*modulo*/, bool interlaced)
-    : space_( space ) 
+    : space_( space )
     , height_( height )
     , interlaced_( interlaced ) { }
 
@@ -63,7 +63,7 @@ public:  //diagnotic message
 
   virtual std::string msg() const
   {
-    return str( boost::format( interlaced_ ? "%s: illegal interlaced height value: %d" 
+    return str( boost::format( interlaced_ ? "%s: illegal interlaced height value: %d"
                                            : "%s: illegal height value: %d" ) % space_->GetName() % height_ );
   }
 

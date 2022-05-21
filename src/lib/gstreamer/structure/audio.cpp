@@ -53,7 +53,7 @@ SampleType Audio::GetSampleType() const
   {
     int width = GetIntField("width");
 
-    if ( width == GetIntField("depth") )    
+    if ( width == GetIntField("depth") )
       if ( ! GetBoolField("signed") )    //if unsigned
       {
         if ( width == 8 )                //and width 8

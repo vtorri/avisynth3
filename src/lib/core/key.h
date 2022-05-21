@@ -29,7 +29,7 @@
 #include "integer.h"             //for uint32 typedef
 
 //boost include
-#include <boost/shared_ptr.hpp>  //so its defined 
+#include <boost/shared_ptr.hpp>  //so its defined
 
 
 namespace avs {

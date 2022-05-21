@@ -38,7 +38,7 @@ class CodeCouple
 
   ElementalCode before_;
   StatementCode statCode_;
-  ElementalCode after_; 
+  ElementalCode after_;
 
 
 public:  //code accumulation methods

@@ -33,20 +33,20 @@ namespace avs { namespace filters { namespace splice {
 void Unaligned::AddChild(PClip const& child)
 {
   CheckCompatible(child);
-  
+
   if ( child->GetVideoInfo()->GetFrameCount() == 0 && child->GetVideoInfo()->GetSampleCount() == 0 )
     return;                                   //give up if has no length
 
   if ( boost::shared_ptr<Unaligned const> splice = boost::dynamic_pointer_cast<Unaligned const>(child) )
     Merge(*splice);
-  else 
+  else
     PushChild( child );
 }
 
 
 long long Unaligned::PushAudio(AudioSwitch& audio, PClip const& child, bool merging)
-{ 
-  return audio.Push(child, merging); 
+{
+  return audio.Push(child, merging);
 }
 
 

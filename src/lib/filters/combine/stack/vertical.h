@@ -61,7 +61,7 @@ public:  //factory method and functor
 
   static PClip Create(PClip const& upper, PClip const& lower)
   {
-    return PClip( static_cast<Clip *>(new Vertical(upper, lower)) ); 
+    return PClip( static_cast<Clip *>(new Vertical(upper, lower)) );
   }
 
   struct Creator

@@ -28,7 +28,7 @@
 #include "../core/videoinfo.h"
 
 //normally in Mmreg.h but mingw doesn't has it :p
-#define  WAVE_FORMAT_MPEGLAYER3   0x0055   //ISO/MPEG Layer3 Format Tag 
+#define  WAVE_FORMAT_MPEGLAYER3   0x0055   //ISO/MPEG Layer3 Format Tag
 
 
 namespace avs { namespace vfw {
@@ -43,18 +43,18 @@ WaveFormatEx::WaveFormatEx(VideoInfo const& vi)
   nBlockAlign     = vi.BytesPerAudioSample();
   nAvgBytesPerSec = nSamplesPerSec * nBlockAlign;
   wBitsPerSample  = vi.BytesPerChannelSample() * 8;
-  cbSize          = 0; 
+  cbSize          = 0;
 }
 
 
-bool WaveFormatEx::IsVBR() const 
-{ 
-  //mp3 vbr hackishly use non-1 block align 
+bool WaveFormatEx::IsVBR() const
+{
+  //mp3 vbr hackishly use non-1 block align
   if ( wFormatTag == WAVE_FORMAT_MPEGLAYER3 )
     return nBlockAlign != 1;
 
   //other cases rely on wBitsPerSample (hoping it's correclty set)
-  return wBitsPerSample == 0; 
+  return wBitsPerSample == 0;
 }
 
 

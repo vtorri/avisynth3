@@ -48,7 +48,7 @@ template <int align> class block
 
 
 public:  //structors
-  
+
   template <class HolderType>
   explicit block( HolderType * holder
                  , typename boost::enable_if<align_compatible<HolderType::Align, align>, void>::type * dummy = NULL
@@ -57,9 +57,9 @@ public:  //structors
 
   template <int alignOther>
   explicit block( block<alignOther> const& other
-                 , typename boost::enable_if<align_compatible<alignOther, align>, void>::type * dummy = NULL 
+                 , typename boost::enable_if<align_compatible<alignOther, align>, void>::type * dummy = NULL
                  )
-    : holder_( other ) { } 
+    : holder_( other ) { }
 
 
   //generated copy constructor and destructor are fine
@@ -76,7 +76,7 @@ public:  //assignemnt
   }
 
   //generated operator= is fine
-  
+
   void swap(block<align>& other)
   {
     holder_.swap(other.holder_);

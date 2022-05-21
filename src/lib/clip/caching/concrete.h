@@ -55,7 +55,7 @@ private:  //Caching interface
 protected:  //SetFrameMaker method
 
   void SetFrameMaker(FrameMaker const& maker, PEnvironment const& env)
-  { 
+  {
     cache_.reset( env->CreateCache(maker) );
   }
 

@@ -36,9 +36,9 @@ void YUV8::CountU(ByteCounter& u) const { u.Count<1>( ReadFrom('U') ); }
 void YUV8::CountV(ByteCounter& v) const { v.Count<1>( ReadFrom('V') ); }
 
 
-void YUV8::ApplyToY(ByteMap const& y) { y.ApplyTo<1>( WriteTo('Y') ); } 
-void YUV8::ApplyToU(ByteMap const& u) { u.ApplyTo<1>( WriteTo('U') ); } 
-void YUV8::ApplyToV(ByteMap const& v) { v.ApplyTo<1>( WriteTo('V') ); } 
+void YUV8::ApplyToY(ByteMap const& y) { y.ApplyTo<1>( WriteTo('Y') ); }
+void YUV8::ApplyToU(ByteMap const& u) { u.ApplyTo<1>( WriteTo('U') ); }
+void YUV8::ApplyToV(ByteMap const& v) { v.ApplyTo<1>( WriteTo('V') ); }
 
 
 

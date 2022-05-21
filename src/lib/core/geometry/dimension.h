@@ -59,25 +59,25 @@ public:  //constructors
   dimension() : x_( 0 ), y_( 0 ) { }
   dimension(T x, T y) : x_( CheckSign(x) ), y_( CheckSign(y) ) { }
   dimension(dimension<T> const& other) : x_( other.x_ ), y_( other.y_ ) { }
-  
+
   explicit dimension(vecteur<T> const& vect);
 
 
 public:  //assignment
 
-  dimension<T>& operator=(dimension<T> const& other) 
-  { 
-    x_ = other.x_; 
-    y_ = other.y_; 
-    return *this; 
+  dimension<T>& operator=(dimension<T> const& other)
+  {
+    x_ = other.x_;
+    y_ = other.y_;
+    return *this;
   }
 
-  void swap(dimension<T>& other) 
+  void swap(dimension<T>& other)
   {
     using std::swap;       //allows to find swap through arg dependent lookup
 
     swap(x_, other.x_);    //ie it may not be std::swap that will be used
-    swap(y_, other.y_); 
+    swap(y_, other.y_);
   }
 
 
@@ -121,10 +121,10 @@ public:  //others
 
   bool empty() const { return x_ == 0 || y_ == 0; }
 
-  template <long bps> dimension<T> Turn() const 
-  { 
-    assert(x_ % bps == 0); 
-    return dimension<T>(y_ * bps, x_ / bps); 
+  template <long bps> dimension<T> Turn() const
+  {
+    assert(x_ % bps == 0);
+    return dimension<T>(y_ * bps, x_ / bps);
   }
 
   template <long xFactor, long yFactor> dimension<T> Multiply() const { return dimension<T>(x_ * xFactor, y_ * yFactor); }

@@ -68,7 +68,7 @@ protected:  //write access
 protected:  //implementations helpers
 
   PEnvironment const& GetChildEnvironment() const { return left_->GetEnvironment(); }
-  
+
   CPVideoInfo GetLeftVideoInfo() const { return left_->GetVideoInfo(); }
   CPVideoInfo GetRightVideoInfo() const { return right_->GetVideoInfo(); }
 

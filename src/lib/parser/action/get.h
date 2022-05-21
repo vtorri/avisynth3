@@ -50,8 +50,8 @@ public:  //Get methods
   static ElementalOperation SubscriptOperation(char type);
   static ElementalOperation OneArgSubscriptOperation(char type);
   static ElementalOperation NegEndSubscriptOperation(char type);
-  
-  //get operation for operator== or operator!=, or throw if types don't allow comparison 
+
+  //get operation for operator== or operator!=, or throw if types don't allow comparison
   static ElementalOperation const& EqualityOperation(char& leftType, char rightType, bool isEqual);
 
   //get approprivate binary operation given operands types and op symbol

@@ -44,14 +44,14 @@ public:  //ColorSpace interface
 
   virtual char const * GetPlaneList() const { return "YUV"; }
 
-  virtual bool HasPlane(char plane) const 
-  { 
+  virtual bool HasPlane(char plane) const
+  {
     switch ( plane )
     {
     case 'Y':
     case 'U':
     case 'V': return true;
-    
+
     default: return false;
     }
   }

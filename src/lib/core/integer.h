@@ -24,7 +24,7 @@
 #ifndef __AVS_INTEGER_H__
 #define __AVS_INTEGER_H__
 
-//boost include 
+//boost include
 #include  <boost/cstdint.hpp>
 
 

@@ -38,11 +38,11 @@ namespace avs { namespace cache {
 //
 //  implementation of the cache interface
 //
-template <class CacheLogic, class Environment> 
+template <class CacheLogic, class Environment>
 class concrete : public Base
 {
 
-  typedef boost::shared_ptr<Environment> PEnv;  
+  typedef boost::shared_ptr<Environment> PEnv;
   typedef typename Environment::TimerStackMap TimerStackMap;
 
   typedef typename timing::switching_timer<TimerStackMap> Timer;
@@ -50,7 +50,7 @@ class concrete : public Base
 
   Timer timer_;                  //tracks time spent making the missed frames
   CacheLogic cacheLogic_;
-  
+
 
 public:  //structors
 
@@ -72,7 +72,7 @@ public:  //Cache interface
 
     CPVideoFrame result = MakeFrame(n);
     cacheLogic_.StoreFrame(n, result);
-    
+
     return result;
   }
 

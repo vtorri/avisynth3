@@ -45,7 +45,7 @@ Types::Types()
 char const * Types::GetString(char type) const
 {
   std::map<char, char const *>::const_iterator it = map_.find(type);
-  
+
   return it != map_.end() ? it->second
                           : NULL;
 }

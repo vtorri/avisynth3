@@ -37,7 +37,7 @@ Convert::Convert(PClip const& child, PColorSpace const& target)
   , clip::framemaker::Concrete( child->GetEnvironment() )
 {
   PVideoInfo vi = child->GetVideoInfo();   //start from child VideoInfo
-  
+
   vi->SetColorSpace( target );             //change colorspace (throw on incompatibilities)
 
   vi_ = vi;                                //save it
@@ -56,7 +56,7 @@ CPVideoFrame Convert::MakeFrame(PVideoFrame const& source) const
 
 PClip Convert::FromExternal(PClip const& clip, PColorSpace const& target)
 {
-  boost::shared_ptr<colorspace::External const> space 
+  boost::shared_ptr<colorspace::External const> space
       = boost::dynamic_pointer_cast<colorspace::External const>(clip->GetVideoInfo()->GetColorSpace());
 
   return space->ConvertFrom(clip, target);

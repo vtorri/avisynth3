@@ -30,7 +30,7 @@
 #include "../../core/exception/noaudio.h"
 
 
-namespace avs { namespace filters { 
+namespace avs { namespace filters {
 
 
 
@@ -52,7 +52,7 @@ Stack::Stack(PClip const& first, PClip const& second, Dimension const& expand)
   vi_ = vi;
 }
 
- 
+
 BYTE * Stack::GetAudio(BYTE * /*buf*/, long long /*start*/, long /*count*/) const
 {
   throw exception::NoAudio();

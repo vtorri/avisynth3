@@ -62,7 +62,7 @@ ACMAudioDecompressor::ACMAudioDecompressor(RawAudio const& src, vfw::WaveFormatE
   HACMSTREAM hACMStream = NULL;
   if ( acmStreamOpen(&hACMStream, NULL, const_cast<vfw::WaveFormatEx *>(&input), const_cast<vfw::WaveFormatEx *>(&output), NULL, 0, 0, ACM_STREAMOPENF_NONREALTIME) != 0 )
     throw exception::Generic("Error initializing audio stream decompression");
- 
+
   hACMStream_.reset( hACMStream, ACMSTreamCloser() );
 
   DWORD outputBufferSize = 0;
@@ -73,8 +73,8 @@ ACMAudioDecompressor::ACMAudioDecompressor(RawAudio const& src, vfw::WaveFormatE
 
   inputBuffer_.reset( new BYTE[inputBufferSize] );           //allocates memory for both buffers
   outputBuffer_.reset( new BYTE[outputBufferSize] );
-		
-  memset(&ash_, 0, sizeof(ACMSTREAMHEADER));                 //inits stream header 
+
+  memset(&ash_, 0, sizeof(ACMSTREAMHEADER));                 //inits stream header
 
 	ash_.cbStruct		  = sizeof(ACMSTREAMHEADER);
   ash_.pbSrc			  = inputBuffer_.get();
@@ -102,7 +102,7 @@ long ACMAudioDecompressor::operator()(BYTE *& buffer, long long start, long coun
 {
   int bps = src_.GetVideoInfo()->BytesPerAudioSample();   //bytes per audio sample
 
-  long long advance = start * bps - current_;  
+  long long advance = start * bps - current_;
   if ( 0 <= advance && advance <= ash_.cbDstLengthUsed )  //if the data start is in the output buffer
     SkipFromBuffer(advance);                              //skip to that point
   else
@@ -125,13 +125,13 @@ void ACMAudioDecompressor::DecompressNext() const
 
   if ( ash_.cbSrcLength != 0 )                      //if there is something to convert
   {
-    ash_.cbSrcLengthUsed = 0;                       
+    ash_.cbSrcLengthUsed = 0;
 
   	if ( acmStreamConvert(hACMStream_.get(), &ash_, ACM_STREAMCONVERTF_BLOCKALIGN) != 0 )
       throw exception::Generic("ACM failed to decompress audio");
 
     long left = ash_.cbSrcLength - ash_.cbSrcLengthUsed;             //unused data in the input buffer
-    if ( left > 0 )                                                  //if there is some                                
+    if ( left > 0 )                                                  //if there is some
       memmove(ash_.pbSrc, ash_.pbSrc + ash_.cbSrcLengthUsed, left);  //copy it down
     else
       Register(nextBlock_, current_ + ash_.cbDstLengthUsed);         //else register block/current correspondance
@@ -198,7 +198,7 @@ void ACMAudioDecompressor::Skip(long long size) const
 long ACMAudioDecompressor::SkipFromBuffer(long long size) const
 {
   //available to skip
-  long skip = static_cast<long>(std::min(size, static_cast<long long>(ash_.cbDstLengthUsed))); 
+  long skip = static_cast<long>(std::min(size, static_cast<long long>(ash_.cbDstLengthUsed)));
 
   current_ += skip;                                       //update position
 
@@ -241,7 +241,7 @@ AudioDecompressor * ACMAudioDecompressor::Create(RawAudio const& src, vfw::PWave
   //ask ACM for a PCM format suggestion
   if ( acmFormatSuggest(NULL, wfe.get(), output.get(), maxSizeFormat, ACM_FORMATSUGGESTF_WFORMATTAG) != 0 )
     throw exception::Generic("ACM failed to suggest a compatible PCM format");
-  
+
   vfw::PWaveFormatEx input = wfe;
   wfe = output;                               //reports output waveformat to caller
 

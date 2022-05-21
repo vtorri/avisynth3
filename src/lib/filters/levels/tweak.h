@@ -40,7 +40,7 @@ namespace avs { namespace filters {
 //
 //
 class Tweak : public clip::onechild::FrameMakerPipeline
-            , public clip::onechild::Concrete  
+            , public clip::onechild::Concrete
             , public clip::framemaker::Concrete
 {
 
@@ -48,7 +48,7 @@ protected:  //members
 
   int Sin, Cos;         // = (int) sin, cos  ( (hue * 3.1415926) / 180.0 ) * 4096
   int Sat;              // = (int) sat * 512
-  int Bright_p16;       // = (int) bright + 16        
+  int Bright_p16;       // = (int) bright + 16
   int Cont;             // = (int) cont * 512
 
 
@@ -73,13 +73,13 @@ public:  //child changing clone
   virtual PClip clone(PClip const& child) const;
 
 
-public:  //factory method 
+public:  //factory method
 
   static PClip Create(PClip const& child, double hue, double sat, double bright, double cont);
 
 };
 
-  
+
 
 
 

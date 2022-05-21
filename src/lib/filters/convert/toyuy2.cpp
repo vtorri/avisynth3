@@ -37,7 +37,7 @@ namespace avs { namespace filters { namespace convert {
 ToYUY2::ToYUY2(PClip const& child)
   : Convert( child, colorspace::Get::YUY2() ) { }
 
-  
+
 PClip ToYUY2::Create(PClip const& child)
 {
   PColorSpace space = child->GetVideoInfo()->GetColorSpace();

@@ -30,7 +30,7 @@
 #include "../../clip/framemaker/concrete.h"
 
 
-namespace avs { namespace filters { 
+namespace avs { namespace filters {
 
 
 
@@ -38,14 +38,14 @@ namespace avs { namespace filters {
 //  Stack
 //
 //  factorisation superclass for Stack::Horizontal and Stack::Vertical
-//  
+//
 class Stack : public clip::twochilds::Concrete
             , public clip::framemaker::Concrete
 {
-    
+
   CPVideoInfo vi_;
 
-  
+
 public:  //structors
 
   Stack(PClip const& first, PClip const& second, Dimension const& expand);
@@ -54,7 +54,7 @@ public:  //structors
 
 
 public:  //clip general interface
-    
+
   virtual CPVideoInfo GetVideoInfo() const { return vi_; }
 
   virtual BYTE * GetAudio(BYTE * buffer, long long start, long count) const;
@@ -68,7 +68,7 @@ private:  //FrameMaker interface
 private:  //Stack interface
 
   virtual Vecteur GetShiftVecteur() const = 0;
-    
+
 };
 
 

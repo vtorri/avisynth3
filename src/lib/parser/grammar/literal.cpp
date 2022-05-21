@@ -77,7 +77,7 @@ Literal::definition<Scanner>::definition(Literal const & self)
             second(self.value) = val('b')
           ]
       ;
-      
+
 
   stringLiteral
       =   spirit::lexeme_d

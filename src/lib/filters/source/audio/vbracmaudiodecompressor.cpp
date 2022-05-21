@@ -34,11 +34,11 @@ namespace avs { namespace filters { namespace source {
 
 VBRACMAudioDecompressor::VBRACMAudioDecompressor(RawAudio const& src, vfw::WaveFormatEx const& input, vfw::WaveFormatEx const& output)
   : ACMAudioDecompressor(src, input, output)
-  , step_( output.nSamplesPerSec * output.nBlockAlign ) 
-{ 
+  , step_( output.nSamplesPerSec * output.nBlockAlign )
+{
   index_[0LL] = 0LL;
 }
-  
+
 
 void VBRACMAudioDecompressor::Seek(long long current) const
 {

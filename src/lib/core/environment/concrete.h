@@ -79,7 +79,7 @@ private:  //stop/restart timing when attempting memory cleanup
 
 
 public:  //TimerStackMap struct
- 
+
   struct TimerStackMap
   {
 

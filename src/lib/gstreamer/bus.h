@@ -38,7 +38,7 @@
 namespace avs { namespace gstreamer {
 
 
- 
+
 class Bus : public GstBus
 {
 

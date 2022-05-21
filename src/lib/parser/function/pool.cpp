@@ -34,7 +34,7 @@ namespace avs { namespace parser { namespace function {
 
 char Pool::Resolve(std::string const& prototype, ElementalCode& target) const
 {
-  
+
   for(FunctionVector::const_iterator it = functionList_.begin(); it != functionList_.end(); ++it)
     if ( prototype == (*it)->GetPrototype() )
     {

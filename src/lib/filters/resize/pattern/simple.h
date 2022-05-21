@@ -38,7 +38,7 @@ namespace avs { namespace filters { namespace resize { namespace pattern {
 //
 //  simple resampling pattern, built as follow:
 //  For each pixel : one offset and count coeffs, all ints
-//     offs | coef | coef ... coef | coef | offs | coef | coef ...            
+//     offs | coef | coef ... coef | coef | offs | coef | coef ...
 //             <----  count times  ---->
 //
 class Simple : public Base

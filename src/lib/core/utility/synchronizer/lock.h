@@ -48,7 +48,7 @@ template <typename Tag> class lock
 public:  //structors
 
   lock() : lock_( mutex_ ) { }
-  
+
   //generated destructor is fine
 
 };

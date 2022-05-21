@@ -43,7 +43,7 @@
 namespace avs { namespace gstreamer {
 
 
-  
+
 namespace {
 
 
@@ -67,7 +67,7 @@ struct StructureDestructor
 PStructure Pad::GetStructure()
 {
   GstCaps * caps = gst_pad_get_caps(this);
-  
+
   return PStructure( static_cast<Structure *>(gst_caps_get_structure(caps, 0)), StructureDestructor(caps) );
 }
 
@@ -82,7 +82,7 @@ void Pad::Link(Pad& sink)
 int64 Pad::QueryTotal()
 {
   GstQuery *query;
-      
+
   query = gst_query_new_duration( GST_FORMAT_TIME );
   if ( !gst_pad_query( this, query ) )
     throw exception::Generic( "Gstreamer: can not query the length of the video pipeline" );

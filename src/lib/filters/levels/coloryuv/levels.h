@@ -30,7 +30,7 @@ namespace avs { namespace filters { namespace coloryuv {
 
 
 struct Levels
-{  
+{
   float gain;
   float contrast;
   float brightness;

@@ -33,14 +33,14 @@ namespace avs {
 //
 //  possible samples type for an audio channel
 //
-enum SampleType 
+enum SampleType
 {
   SAMPLE_INT8,
-  SAMPLE_INT16, 
+  SAMPLE_INT16,
   SAMPLE_INT24,    // Int24 is a very stupid thing to code, but it's supported by some hardware.
   SAMPLE_INT32,
   SAMPLE_FLOAT
-};  
+};
 
 
 } //namespace avs

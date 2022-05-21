@@ -40,7 +40,7 @@ namespace avs { namespace gstreamer {
 
 Element& Bin::AddNewElement(char const * type, char const * name)
 {
-  Element * element = Element::Create(type, name);  
+  Element * element = Element::Create(type, name);
   gst_bin_add(this, element);
   return *element;
 }

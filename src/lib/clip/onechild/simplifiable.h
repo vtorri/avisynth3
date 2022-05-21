@@ -39,7 +39,7 @@ namespace avs { namespace clip { namespace onechild {
 //  provides a Simplify implementation for OneChild subclasses
 //  when the child has the Refactorable<SubClip> signature
 //
-template <class SubClip> 
+template <class SubClip>
 class AVS_NOVTABLE Simplifiable : public virtual OneChild
 {
 

@@ -41,9 +41,9 @@ RGB32::RGB32(Dimension const& dim, FrameType type, BufferWindow const& main)
 
 
 
-CPVideoFrame RGB32::clone() const 
-{ 
-  return CPVideoFrame( static_cast<VideoFrame *>(new RGB32(*this)) ); 
+CPVideoFrame RGB32::clone() const
+{
+  return CPVideoFrame( static_cast<VideoFrame *>(new RGB32(*this)) );
 }
 
 

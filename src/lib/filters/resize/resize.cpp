@@ -38,7 +38,7 @@ Resize::Resize(PClip const& child, resize::PFilter const& filter, Dimension cons
   , subrange_( subrange )
 {
   PVideoInfo vi = child->GetVideoInfo();  //start from child VideoInfo
-  
+
   vi->SetDimension(dim);                  //update Dimension
 
   vi_ = vi;                               //save it

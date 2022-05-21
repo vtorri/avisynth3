@@ -58,10 +58,10 @@ void Plugin::FillFunctionList(FunctionList& addTo) const
 }
 
 
-Plugin::PCore Plugin::Get() 
-{ 
+Plugin::PCore Plugin::Get()
+{
   static Plugin instance;
-  return PCore( &instance, std::identity<void *>() ); 
+  return PCore( &instance, std::identity<void *>() );
 }
 
 

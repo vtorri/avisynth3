@@ -43,9 +43,9 @@ class KillAudio;
 //
 // clip to select a range of frames from a longer clip
 //
-class Trim : public clip::onechild::Simplifiable<Trim>        
-           , public clip::Refactorable<KillAudio>  
-           , public clip::onechild::Concrete                
+class Trim : public clip::onechild::Simplifiable<Trim>
+           , public clip::Refactorable<KillAudio>
+           , public clip::onechild::Concrete
 {
 
   long begin_;               //frame offset
@@ -53,11 +53,11 @@ class Trim : public clip::onechild::Simplifiable<Trim>
 
   CPVideoInfo vi_;          //video info
 
-    
+
 private:  //structors
 
   Trim(PClip const& child, long begin, long end);
-  
+
   //generated destructor is fine
 
 
@@ -72,7 +72,7 @@ public:  //clip general interface
 
 public:  //child changing clone
 
-  virtual PClip clone(PClip const& child) const; 
+  virtual PClip clone(PClip const& child) const;
 
 
 private:  //Refactorable<KillAudio>
@@ -88,9 +88,9 @@ public:  //read access
 
 public:  //factory method and functors
 
-  static PClip Create(PClip const& child, long begin, long end) 
-  { 
-    return PClip( static_cast<Clip *>(new Trim(child, begin, end)) )->Simplify(); 
+  static PClip Create(PClip const& child, long begin, long end)
+  {
+    return PClip( static_cast<Clip *>(new Trim(child, begin, end)) )->Simplify();
   }
 
   struct Creator
@@ -100,9 +100,9 @@ public:  //factory method and functors
 
   struct OneArgCreator
   {
-    PClip operator()(PClip const& child, long begin) const 
-    { 
-      return Create(child, begin, child->GetVideoInfo()->GetFrameCount()); 
+    PClip operator()(PClip const& child, long begin) const
+    {
+      return Create(child, begin, child->GetVideoInfo()->GetFrameCount());
     }
   };
 

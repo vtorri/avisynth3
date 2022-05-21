@@ -36,11 +36,11 @@ void SizeChanger::operator ()(BufferWindow& window, Vecteur const& topLeft, Vect
 {
 
   Dimension dim(window.GetDimension());
-  
+
   //updating parameters
   dim += bottomRight - topLeft;           //exception if illegal
   int offset = window.offset_ + topLeft % window.Pitch();
- 
+
   //conditions where needed to reallocate the Buffer
   if ( ! block::IsAligned(offset)         //alignment requirement no longer met
     || dim.GetWidth() > window.Pitch()    //width got bigger than pitch
@@ -50,11 +50,11 @@ void SizeChanger::operator ()(BufferWindow& window, Vecteur const& topLeft, Vect
     BufferWindow temp(dim, window.GetEnvironment());
 
     Copier()(window, temp, -topLeft);     //copy data at the right place in the new window
-    
+
     window = temp;                        //replace current by new one
   }
-  else 
-  {             
+  else
+  {
     window.dim_ = dim;                    //else commit updated parameters
     window.offset_ = offset;
   }

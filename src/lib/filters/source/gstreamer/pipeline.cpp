@@ -86,7 +86,7 @@ avs::gstreamer::PPipeline Pipeline::BuildPipeline(std::string const& filename)
   //links fileSrc to the decoder
   fileSrc.Link( decoder );
 
-  return pipeline;  
+  return pipeline;
 }
 
 

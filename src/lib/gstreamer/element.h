@@ -43,7 +43,7 @@
 namespace avs { namespace gstreamer {
 
 
- 
+
 class Element : public GstElement
 {
 

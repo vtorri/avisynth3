@@ -54,7 +54,7 @@ class AVS_NOVTABLE Concrete : public virtual clip::Caching
 public:  //structors
 
   Concrete(PEnvironment const& env)
-  { 
+  {
     cache_.reset( env->CreateCache(*this) );
   }
 

@@ -41,13 +41,13 @@ BYTE * NoAudio::GetAudio(BYTE * /*buf*/, long long /*start*/, long /*count*/) co
 void NoAudio::AddChild(PClip const& child)
 {
   CheckCompatible(child);
-  
+
   if ( child->GetVideoInfo()->GetFrameCount() == 0 )  //give up if has no length
     return;
 
   if ( boost::shared_ptr<NoAudio const> splice = boost::dynamic_pointer_cast<NoAudio const>(child) )
     Merge(*splice);
-  else 
+  else
     if ( boost::shared_ptr<KillAudio const> killAudio = boost::dynamic_pointer_cast<KillAudio const>(child) )
       PushChild( killAudio->GetChild() );
     else PushChild( child );

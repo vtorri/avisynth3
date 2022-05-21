@@ -117,9 +117,9 @@ public:  //structors
 public:  //definition nested class
 
   template <typename ScannerT>
-  struct definition 
+  struct definition
   {
-        
+
     definition(Expression const& self);
 
 

@@ -35,7 +35,7 @@ namespace avs { namespace parser { namespace grammar {
 
 
 //typedef
-typedef boost::tuples::tuple<int, char> TypedIndex;   //associate an index to a type 
+typedef boost::tuples::tuple<int, char> TypedIndex;   //associate an index to a type
 
 
 
@@ -47,7 +47,7 @@ typedef boost::tuples::tuple<int, char> TypedIndex;   //associate an index to a 
 class VarTable : public spirit::symbols<TypedIndex>
 {
 
-  int size_;       //NB: not equivalent to the number of symbols defined        
+  int size_;       //NB: not equivalent to the number of symbols defined
 
 
 public:  //structors

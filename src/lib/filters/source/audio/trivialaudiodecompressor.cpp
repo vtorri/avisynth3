@@ -33,9 +33,9 @@ namespace avs { namespace filters { namespace source {
 long TrivialAudioDecompressor::operator()(BYTE *& buffer, long long start, long count) const
 {
   long size = src_.GetVideoInfo()->BytesPerAudioSample() * count;  //size that should be available at buffer
-  
+
   long readCount = src_.ReadAudio(buffer, start, size);            //read samples
-  
+
   buffer += size;                                                  //update buffer position
   return readCount;                                                //return read samples count
 }

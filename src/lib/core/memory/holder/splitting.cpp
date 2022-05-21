@@ -60,7 +60,7 @@ PHolder Splitting::Split(int32 splitSize, PHolder& self) const
 
   return result;
 }
-  
+
 
 
 PHolder Splitting::InitialSplit(int32 splitSize, PHolder& self)
@@ -69,7 +69,7 @@ PHolder Splitting::InitialSplit(int32 splitSize, PHolder& self)
   SplitCounter counter;
 
   self.reset( static_cast<Holder *>(new Splitting(splitSize, 0, holder, counter)) );
-  
+
   return PHolder( static_cast<Holder *>(new Splitting(holder->Size() - splitSize, splitSize, holder, counter)) );
 }
 

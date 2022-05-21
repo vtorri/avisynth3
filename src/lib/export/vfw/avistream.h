@@ -40,7 +40,7 @@
 
 
 namespace avs { namespace export_ { namespace vfw {
-  
+
 
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -76,9 +76,9 @@ public:  //IAVIStream
 	STDMETHODIMP_(LONG) FindSample(LONG lPos, LONG lFlags);
   STDMETHODIMP ReadData(DWORD /*fcc*/, LPVOID /*lp*/, LONG * /*lpcb*/) { return AVIERR_NODATA; }
 	STDMETHODIMP SetFormat(LONG /*lPos*/, LPVOID /*lpFormat*/, LONG /*cbFormat*/) { return AVIERR_READONLY; }
-	STDMETHODIMP Write(LONG /*lStart*/, LONG /*lSamples*/, LPVOID /*lpBuffer*/, LONG /*cbBuffer*/, 
+	STDMETHODIMP Write(LONG /*lStart*/, LONG /*lSamples*/, LPVOID /*lpBuffer*/, LONG /*cbBuffer*/,
 		DWORD /*dwFlags*/, LONG * /*plSampWritten*/, LONG * /*plBytesWritten*/) { return AVIERR_READONLY; }
-    
+
   STDMETHODIMP WriteData(DWORD /*fcc*/, LPVOID /*lpBuffer*/, LONG /*cbBuffer*/) { return AVIERR_READONLY; }
 	STDMETHODIMP SetInfo(AVISTREAMINFOW * /*psi*/, LONG /*lSize*/) { return AVIERR_READONLY; }
 

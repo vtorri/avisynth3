@@ -100,7 +100,7 @@ struct caller_<Function, 2>
 
   enum { pos2 = 1
        , pos1 = pos2 + extract<Function, 2>::consume
-       , consume = pos1 + extract<Function, 1>::consume - 1 
+       , consume = pos1 + extract<Function, 1>::consume - 1
   };
 
   template <typename CallBack>
@@ -108,7 +108,7 @@ struct caller_<Function, 2>
   {
     return callBack
         ( extract<Function, 1>()(state, pos1)
-        , extract<Function, 2>()(state, pos2) 
+        , extract<Function, 2>()(state, pos2)
         );
   }
 
@@ -124,7 +124,7 @@ struct caller_<Function, 3>
   enum { pos3 = 1
        , pos2 = pos3 + extract<Function, 3>::consume
        , pos1 = pos2 + extract<Function, 2>::consume
-       , consume = pos1 + extract<Function, 1>::consume - 1 
+       , consume = pos1 + extract<Function, 1>::consume - 1
   };
 
   template <typename CallBack>
@@ -132,7 +132,7 @@ struct caller_<Function, 3>
   {
     return callBack
         ( extract<Function, 1>()(state, pos1)
-        , extract<Function, 2>()(state, pos2) 
+        , extract<Function, 2>()(state, pos2)
         , extract<Function, 3>()(state, pos3)
         );
   }
@@ -150,7 +150,7 @@ struct caller_<Function, 4>
        , pos3 = pos4 + extract<Function, 4>::consume
        , pos2 = pos3 + extract<Function, 3>::consume
        , pos1 = pos2 + extract<Function, 2>::consume
-       , consume = pos1 + extract<Function, 1>::consume - 1 
+       , consume = pos1 + extract<Function, 1>::consume - 1
   };
 
   template <typename CallBack>
@@ -158,7 +158,7 @@ struct caller_<Function, 4>
   {
     return callBack
         ( extract<Function, 1>()(state, pos1)
-        , extract<Function, 2>()(state, pos2) 
+        , extract<Function, 2>()(state, pos2)
         , extract<Function, 3>()(state, pos3)
         , extract<Function, 4>()(state, pos4)
         );
@@ -178,7 +178,7 @@ struct caller_<Function, 5>
        , pos3 = pos4 + extract<Function, 4>::consume
        , pos2 = pos3 + extract<Function, 3>::consume
        , pos1 = pos2 + extract<Function, 2>::consume
-       , consume = pos1 + extract<Function, 1>::consume - 1 
+       , consume = pos1 + extract<Function, 1>::consume - 1
   };
 
   template <typename CallBack>
@@ -186,7 +186,7 @@ struct caller_<Function, 5>
   {
     return callBack
         ( extract<Function, 1>()(state, pos1)
-        , extract<Function, 2>()(state, pos2) 
+        , extract<Function, 2>()(state, pos2)
         , extract<Function, 3>()(state, pos3)
         , extract<Function, 4>()(state, pos4)
         , extract<Function, 5>()(state, pos5)
@@ -208,7 +208,7 @@ struct caller_<Function, 6>
        , pos3 = pos4 + extract<Function, 4>::consume
        , pos2 = pos3 + extract<Function, 3>::consume
        , pos1 = pos2 + extract<Function, 2>::consume
-       , consume = pos1 + extract<Function, 1>::consume - 1 
+       , consume = pos1 + extract<Function, 1>::consume - 1
   };
 
   template <typename CallBack>
@@ -216,7 +216,7 @@ struct caller_<Function, 6>
   {
     return callBack
         ( extract<Function, 1>()(state, pos1)
-        , extract<Function, 2>()(state, pos2) 
+        , extract<Function, 2>()(state, pos2)
         , extract<Function, 3>()(state, pos3)
         , extract<Function, 4>()(state, pos4)
         , extract<Function, 5>()(state, pos5)
@@ -240,7 +240,7 @@ struct caller_<Function, 7>
        , pos3 = pos4 + extract<Function, 4>::consume
        , pos2 = pos3 + extract<Function, 3>::consume
        , pos1 = pos2 + extract<Function, 2>::consume
-       , consume = pos1 + extract<Function, 1>::consume - 1 
+       , consume = pos1 + extract<Function, 1>::consume - 1
   };
 
   template <typename CallBack>
@@ -248,7 +248,7 @@ struct caller_<Function, 7>
   {
     return callBack
         ( extract<Function, 1>()(state, pos1)
-        , extract<Function, 2>()(state, pos2) 
+        , extract<Function, 2>()(state, pos2)
         , extract<Function, 3>()(state, pos3)
         , extract<Function, 4>()(state, pos4)
         , extract<Function, 5>()(state, pos5)
@@ -274,7 +274,7 @@ struct caller_<Function, 8>
        , pos3 = pos4 + extract<Function, 4>::consume
        , pos2 = pos3 + extract<Function, 3>::consume
        , pos1 = pos2 + extract<Function, 2>::consume
-       , consume = pos1 + extract<Function, 1>::consume - 1 
+       , consume = pos1 + extract<Function, 1>::consume - 1
   };
 
   template <typename CallBack>
@@ -282,7 +282,7 @@ struct caller_<Function, 8>
   {
     return callBack
         ( extract<Function, 1>()(state, pos1)
-        , extract<Function, 2>()(state, pos2) 
+        , extract<Function, 2>()(state, pos2)
         , extract<Function, 3>()(state, pos3)
         , extract<Function, 4>()(state, pos4)
         , extract<Function, 5>()(state, pos5)
@@ -310,7 +310,7 @@ struct caller_<Function, 9>
        , pos3 = pos4 + extract<Function, 4>::consume
        , pos2 = pos3 + extract<Function, 3>::consume
        , pos1 = pos2 + extract<Function, 2>::consume
-       , consume = pos1 + extract<Function, 1>::consume - 1 
+       , consume = pos1 + extract<Function, 1>::consume - 1
   };
 
   template <typename CallBack>
@@ -318,7 +318,7 @@ struct caller_<Function, 9>
   {
     return callBack
         ( extract<Function, 1>()(state, pos1)
-        , extract<Function, 2>()(state, pos2) 
+        , extract<Function, 2>()(state, pos2)
         , extract<Function, 3>()(state, pos3)
         , extract<Function, 4>()(state, pos4)
         , extract<Function, 5>()(state, pos5)
@@ -356,7 +356,7 @@ struct caller : detail::caller_<Function>
   }
 
 };
-  
+
 
 
 } } } //namespace avs::parser::adaptor

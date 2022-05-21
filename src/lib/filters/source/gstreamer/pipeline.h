@@ -47,7 +47,7 @@ namespace avs { namespace filters { namespace source { namespace gstreamer {
 ////////////////////////////////////////////////////////////////////////////////////////
 //  Pipeline
 //
-//  
+//
 //
 class Pipeline
 {
@@ -87,7 +87,7 @@ public:  //factory method
 public:  //used by callback
 
   void PadDetected(avs::gstreamer::Pad& pad);
-  
+
 };
 
 

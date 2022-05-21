@@ -45,7 +45,7 @@ PPlugin Function::GetMotherPlugin() const
 
 
 void Function::AppendOperation(parser::ElementalCode& appendTo) const
-{ 
+{
   appendTo += op_;
 }
 

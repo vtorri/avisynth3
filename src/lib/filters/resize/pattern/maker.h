@@ -63,7 +63,7 @@ public:  //constructor
 
 
 public:  //Maker interface
-  
+
   //return number of significative coefficients it intends to produce
   int count() { return count_; }
 

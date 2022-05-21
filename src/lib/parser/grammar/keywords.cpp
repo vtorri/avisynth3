@@ -34,7 +34,7 @@ KeyWords::KeyWords()
   //NB: the add member overloads operator,
   add, "if", "else", "function", "global", "last", "local", "return", "self";
 }
-      
+
 
 KeyWords const KeyWords::instance;
 

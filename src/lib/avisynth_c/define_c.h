@@ -1,4 +1,4 @@
-/* Avisynth 3.0 C Interface 
+/* Avisynth 3.0 C Interface
  * Copyright 2005-2007 Vincent Torri <vtorri at univ-evry dot fr>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -51,7 +51,7 @@
 
 #else /* other plaforms */
 
-#  define AVS_C_API 
+#  define AVS_C_API
 
 #endif /* Windows (tm) platform */
 

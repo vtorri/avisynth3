@@ -52,7 +52,7 @@ class parser
 public:  //constructor
 
   parser(TermT const & term, OpT const & op_table, ActT const & act)
-    : term_( term ) 
+    : term_( term )
     , op_table_( op_table )
     , act_( act ) { }
 
@@ -84,7 +84,7 @@ public:  //parser interface
                     var(rightType) = arg1
                   ]
               >>  act_( bind(&action::Get::BinaryOperation)(var(result), var(rightType), var(opSymbol)) )
-              )                              
+              )
           ).parse(scan);
 
     return match.length();
@@ -105,7 +105,7 @@ struct parser_gen
   >
   operator()(TermT const & term, OpT const & op_table, ActT const & act) const
   {
-  
+
     typedef typename spirit::as_parser<TermT>::type term_t;
     typedef typename spirit::as_parser<OpT>::type op_t;
     typedef typename spirit::as_parser<ActT>::type act_t;

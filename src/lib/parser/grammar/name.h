@@ -71,7 +71,7 @@ public:  //definition nested class
 
 
   private:
-  
+
     spirit::rule<ScannerT> name;
 
   };

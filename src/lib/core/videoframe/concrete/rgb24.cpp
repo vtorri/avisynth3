@@ -41,9 +41,9 @@ RGB24::RGB24(Dimension const& dim, FrameType type, BufferWindow const& main)
 
 
 
-CPVideoFrame RGB24::clone() const 
-{ 
-  return CPVideoFrame( static_cast<VideoFrame *>(new RGB24(*this)) ); 
+CPVideoFrame RGB24::clone() const
+{
+  return CPVideoFrame( static_cast<VideoFrame *>(new RGB24(*this)) );
 }
 
 

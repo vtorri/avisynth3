@@ -161,7 +161,7 @@ public:  //Flip interface
 
   virtual PClip OtherFlip(PClip const& child) const;
 
-  virtual PClip FlipVertical() const; 
+  virtual PClip FlipVertical() const;
   virtual PClip FlipHorizontal() const { return GetChild(); }
 
 

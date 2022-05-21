@@ -50,7 +50,7 @@ public:  //constructors
 
   Threshold(Threshold const& other)
     : threshold_( threshold_ ) { }
- 
+
 
 public:  //threshold methods
 

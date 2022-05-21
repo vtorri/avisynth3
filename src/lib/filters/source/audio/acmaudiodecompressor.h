@@ -52,7 +52,7 @@ namespace avs { namespace filters { namespace source {
 
 class AVS_NOVTABLE ACMAudioDecompressor : public AudioDecompressor
 {
- 
+
   RawAudio const& src_;
 
   boost::shared_ptr<HACMSTREAM__> hACMStream_;  //underlying handle to acm conversion stream

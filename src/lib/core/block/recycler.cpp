@@ -34,16 +34,16 @@ namespace avs { namespace block {
 
 
 void Recycler::Return(BYTE * ptr, int size, bool recycle)
-{ 
+{
   Lock lock(mutex_);
 
   if ( recycle )
-    map_.insert( std::make_pair(size, ptr) ); 
+    map_.insert( std::make_pair(size, ptr) );
   else mem_free( ptr );
 }
 
 
-Recycler::BYTE * Recycler::Acquire(int size) 
+Recycler::BYTE * Recycler::Acquire(int size)
 {
   Lock lock(mutex_);
 
@@ -55,7 +55,7 @@ Recycler::BYTE * Recycler::Acquire(int size)
   {
     result = it->second;
     map_.erase(it);
-  }     
+  }
   else result = mem_alloc(size);
 
   return static_cast<BYTE *>(result);

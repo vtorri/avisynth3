@@ -56,7 +56,7 @@ class Base : public RuntimeEnvironment
   //Cache stuff
   typedef cache::Base Cache;
   typedef std::vector<Cache *> CacheVector;
-  
+
   CacheVector caches_;
 
 

@@ -32,9 +32,9 @@
 #include <boost/shared_ptr.hpp>   //so PEnvironment, CPVideoFrame are defined
 
 
-namespace avs { 
+namespace avs {
 
- 
+
 
 ////////////////////////////////////////////////////////////////////////
 //  Cache
@@ -53,7 +53,7 @@ public:  //structors
   virtual ~Cache() { }
 
 
-public:  //Cache interface 
+public:  //Cache interface
 
   PEnvironment const& GetEnvironment() const { return env_; }
 

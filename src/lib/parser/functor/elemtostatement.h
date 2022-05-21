@@ -33,7 +33,7 @@
 namespace avs { namespace parser { namespace functor {
 
 
-  
+
 /////////////////////////////////////////////////////////////////////////////////////
 //  ElementalToStatement
 //
@@ -47,10 +47,10 @@ struct ElementalToStatement
   ElementalToStatement(ElementalCode const& code)
     : code_( code ) { }
 
-  OpType operator()(VMState& state) const 
-  { 
-    code_(state); 
-    return NORMAL; 
+  OpType operator()(VMState& state) const
+  {
+    code_(state);
+    return NORMAL;
   }
 };
 

@@ -45,7 +45,7 @@ class Base : public Cache
   FrameMaker const& make_;
 
 protected:
-  
+
   double dropPriority_;
 
 

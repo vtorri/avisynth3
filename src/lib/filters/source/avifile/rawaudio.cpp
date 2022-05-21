@@ -38,7 +38,7 @@
 #endif //NOMINMAX
 #include <windows.h>
 #include <vfw.h>
-#ifndef AVISTREAMREAD_CONVENIENT        
+#ifndef AVISTREAMREAD_CONVENIENT
 #define AVISTREAMREAD_CONVENIENT -1L
 #endif //AVISTREAMREAD_CONVENIENT
 
@@ -67,7 +67,7 @@ long RawAudio::ReadAudio(BYTE * buffer, long long start, long& size) const
     HRESULT hResult = audio_->Read(lStart, AVISTREAMREAD_CONVENIENT, buffer, bufferSize, &bytesRead, &samplesRead);
 
     if ( hResult == AVIERR_FILEREAD )
-      throw exception::Generic("Cannot read from source file");    
+      throw exception::Generic("Cannot read from source file");
     if (  bytesRead == 0 )                  //exits while when nothing more was rea
       break;
     assert( hResult == AVIERR_OK );
@@ -91,7 +91,7 @@ void RawAudio::InitAudio(PAVIStream const& audio, VideoInfo& vi)
   {
     //get wav format header from stream
     vfw::PWaveFormatEx wfe = boost::static_pointer_cast<vfw::WaveFormatEx>(AviFileSource::ReadFormat(audio));
-    
+
     if ( ! wfe->IsVBR() )        //checks it's CBR  (vfw IAVIStream seems unable to output vbr data)
     {
       audio_ = audio;
@@ -101,7 +101,7 @@ void RawAudio::InitAudio(PAVIStream const& audio, VideoInfo& vi)
       vfw::AviStreamInfo asi(*audio);
 
       assert( wfe->wBitsPerSample == 8 || wfe->wBitsPerSample == 16 );
-      vi.AddAudio( wfe->wBitsPerSample == 8 ? SAMPLE_INT8 : SAMPLE_INT16, wfe->nSamplesPerSec, 0, wfe->nChannels );                 
+      vi.AddAudio( wfe->wBitsPerSample == 8 ? SAMPLE_INT8 : SAMPLE_INT16, wfe->nSamplesPerSec, 0, wfe->nChannels );
       asi.SetLengthsTo(vi);
     }
   }

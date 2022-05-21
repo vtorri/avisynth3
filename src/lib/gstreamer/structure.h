@@ -50,7 +50,7 @@ private:  //declared but not implemented
 
 
 public:  //access
-  
+
   char const * GetName() const
   {
     return gst_structure_get_name(const_cast<Structure *>(this));

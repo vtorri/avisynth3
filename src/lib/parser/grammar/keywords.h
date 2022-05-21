@@ -43,7 +43,7 @@ class KeyWords : public boost::spirit::symbols<char>
 private:  //structors
 
   KeyWords();
-  
+
   //generated destructor is fine
 
 

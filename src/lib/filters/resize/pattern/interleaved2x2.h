@@ -46,7 +46,7 @@ template <int pixelCount, int coeffCount> class interleaved;
 //
 //  For that:
 //     size (number of pixels) is rounded even up (may introduce dummy pixel data)
-//     count is padded to the next even value (so we have room for the compensation)    
+//     count is padded to the next even value (so we have room for the compensation)
 //
 //  It produces the following layout:
 //    off0 | off1 | coeff block | coeff block ... coeff block | off0 | off1 | coeff block ...

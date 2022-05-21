@@ -37,7 +37,7 @@ namespace avs { namespace bw {
 //  LeftTurner<bpp>
 //
 //  templated functor to turn windows
-//  
+//
 template <int bpp> class LeftTurner
 {
 

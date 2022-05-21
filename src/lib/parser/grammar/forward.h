@@ -48,7 +48,7 @@ namespace value {
 //  wrapper around ElementalOperation
 //  necessary to prevent conflicts between Phoenix and ElementOperation::operator()
 //
-typedef boost::tuples::tuple<ElementalOperation> ElementalOpProxy;   
+typedef boost::tuples::tuple<ElementalOperation> ElementalOpProxy;
 
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -59,8 +59,8 @@ typedef boost::tuples::tuple<ElementalOperation> ElementalOpProxy;
 //  1st arg : expr generation code
 //  2nd arg : expr type
 //  3rd arg : flag reporting if the expr was a top level assignment
-//  
-typedef boost::tuples::tuple<ElementalCode, char, bool> Expression;  
+//
+typedef boost::tuples::tuple<ElementalCode, char, bool> Expression;
 
 
 //////////////////////////////////////////////////////////////////////////////////////

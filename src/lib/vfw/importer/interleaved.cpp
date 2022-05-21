@@ -40,7 +40,7 @@ PVideoFrame Interleaved::CreateFrame(Dimension const& dim, OwnedBlock const& blo
   buffer_window<4, Guard> main( space_->ToPlaneDim(dim, '~'), block, Guard );
 
   //use space_ to transform the frame buffer into a frame
-  //if the size was favorable the conversion 
+  //if the size was favorable the conversion
   //from buffer_window<4, Guard> to BufferWindow may not blit
   return space_->CreateFrame(dim, UNKNOWN, main);
 }

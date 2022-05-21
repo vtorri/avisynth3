@@ -55,16 +55,16 @@ YUV::YUV(PColorSpace const& space, Dimension const& dim, FrameType type, BufferW
 
 
 
-BufferWindow& YUV::operator[](char plane)  
+BufferWindow& YUV::operator[](char plane)
 {
   switch( plane )
   {
   case 'Y': return GetY();
   case 'U': return GetU();
   case 'V': return GetV();
-    
-  default: throw exception::NoSuchPlane(GetColorSpace(), plane);  
-  }   
+
+  default: throw exception::NoSuchPlane(GetColorSpace(), plane);
+  }
 }
 
 
@@ -76,8 +76,8 @@ BufferWindow const& YUV::operator[](char plane) const
   case 'U': return GetConstU();
   case 'V': return GetConstV();
 
-  default: throw exception::NoSuchPlane(GetColorSpace(), plane);  
-  }  
+  default: throw exception::NoSuchPlane(GetColorSpace(), plane);
+  }
 }
 
 

@@ -55,7 +55,7 @@ interleaved<2, 4>::interleaved(PEnvironment const& env, Filter const& filter, Su
     int pads = realCount - count;     //number of zeros of padding
 
     int offset = make.offset();       //fetch offset for this pixel
-    
+
     switch( offset & 3 )
     {
 
@@ -78,8 +78,8 @@ interleaved<2, 4>::interleaved(PEnvironment const& env, Filter const& filter, Su
       {
         pack.offset( offset - 3 );    //we make pack an offset 0 mod 4
         pack.coeff( 0 );              //padding to compensate
-        pack.coeff( 0 ); 
-        pack.coeff( 0 ); 
+        pack.coeff( 0 );
+        pack.coeff( 0 );
         pads -= 3;                    //update pads
         break;                        //break the switch
       }

@@ -90,7 +90,7 @@ PPlugin Plugin::Create(std::string const& fileName)
 {
   std::string name = CompleteName(fileName);
 
-  PExtPlugin result = pluginFolder[name];      //search for a folded version 
+  PExtPlugin result = pluginFolder[name];      //search for a folded version
   if ( result )
     return result;                             //return it if found
 

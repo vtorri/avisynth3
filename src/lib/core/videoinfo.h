@@ -41,18 +41,18 @@ namespace avs {
 ///////////////////////////////////////////////////////////////////////////////
 //  VideoInfo
 //
-//  The VideoInfo class holds global information about a clip 
-//  (i.e. information that does not depend on the frame number).  
+//  The VideoInfo class holds global information about a clip
+//  (i.e. information that does not depend on the frame number).
 //  The GetVideoInfo method in Clip returns this class (a ptr to)
 //
-//  As of 3.0 VideoInfo becomes a polymorphic class 
+//  As of 3.0 VideoInfo becomes a polymorphic class
 //  which is responsible of checking all clip constraints.
 //  ie all tests are the responsability of VideoInfo,
 //  you try it and if illegal it will throw the appropriate error.
 //
 class AVS_NOVTABLE VideoInfo
 {
-  
+
 public:  //structors
 
   VideoInfo() { }
@@ -102,14 +102,14 @@ public:  //video methods
   void AddToFrameCount(int shift) { SetFrameCount(GetFrameCount() + shift); }
 
   //various queries
- 
+
   virtual bool IsRGB() const;
   virtual bool IsYUV() const;
   virtual bool IsPlanar() const;
   virtual bool IsInterLeaved() const;
 
   virtual bool IsColorSpace(PColorSpace const& space);
-  
+
   virtual bool IsRGB24() const;
   virtual bool IsRGB32() const;
   virtual bool IsYUY2() const;

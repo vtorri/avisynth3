@@ -32,11 +32,11 @@
 namespace avs { namespace clip {
 
 
-namespace onechild { 
-  
+namespace onechild {
+
 //declarations
 template <class T> class Simplifiable;
-template <class T> class FinalSimplifiable; 
+template <class T> class FinalSimplifiable;
 
 }
 
@@ -47,7 +47,7 @@ template <class T> class FinalSimplifiable;
 //
 //  Signature class of clips able of refactoring a parent of type Parent
 //
-template <class Parent> 
+template <class Parent>
 class AVS_NOVTABLE Refactorable : public virtual Clip
 {
 
@@ -67,7 +67,7 @@ private:  //Refactor method
 //
 //  Signature class of clips able of final refactoring a parent of type Parent
 //
-template <class Parent> 
+template <class Parent>
 class AVS_NOVTABLE FinalRefactorable : public virtual Clip
 {
 

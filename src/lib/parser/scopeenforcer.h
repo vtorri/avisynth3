@@ -28,7 +28,7 @@
 #include "vmstate.h"
 
 //boost include
-#include <boost/noncopyable.hpp>   
+#include <boost/noncopyable.hpp>
 
 
 namespace avs { namespace parser {

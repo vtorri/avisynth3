@@ -55,13 +55,13 @@ public:  //structors
   virtual ~VideoFrame() { }
 
 
-public:  //clone method 
+public:  //clone method
 
-  virtual CPVideoFrame clone() const = 0; 
+  virtual CPVideoFrame clone() const = 0;
 
 
 public:  //general frame info
-  
+
   //queries
   virtual FrameType GetType() const = 0;
   virtual PColorSpace GetColorSpace() const = 0;

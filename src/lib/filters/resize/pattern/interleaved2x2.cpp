@@ -37,16 +37,16 @@ interleaved<2, 2>::interleaved(PEnvironment const& env, Filter const& filter, Su
 {
   Maker make(filter, subrange, size);
 
-  size = utility::RoundUp<2>(size);       //rounds up size to a multiple of 2           
-  
+  size = utility::RoundUp<2>(size);       //rounds up size to a multiple of 2
+
   int realCount = make.count();           //true number of coeffs
   int count = utility::RoundUp<2>(realCount + 1);  //must be even with at least one zero for compensation (so we can ensure even offset)
-                              
+
   Init( count, size * (1 + count / 2) );
 
   packer<1, 2> zero( 0, Get() );          //packer for even pixels
   packer<1, 2> one( 1, Get() + 1 );       //packer for odd pixels
-  
+
 
   for ( int i = 0; i < size; ++i )
   {

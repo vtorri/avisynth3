@@ -43,8 +43,8 @@ CPVideoFrame ISSE::MakeFrame(CPVideoFrame const& source) const
 
   PVideoFrame frame = source;
   WindowPtr wp = frame->WriteTo('~');
-  
-  long long hue64 = static_cast<long long>(Cos) << 48 
+
+  long long hue64 = static_cast<long long>(Cos) << 48
                   | static_cast<long long>(-Sin) << 32
                   | static_cast<long long>(Sin) << 16
                   | static_cast<long long>(Cos);
@@ -59,7 +59,7 @@ CPVideoFrame ISSE::MakeFrame(CPVideoFrame const& source) const
 
   int y = wp.height;
   int x = wp.width >> 2;          //2 pixels (4 bytes) per x loop
-  
+
   int modulo = wp.padValue();
 
   __asm
@@ -73,17 +73,17 @@ CPVideoFrame ISSE::MakeFrame(CPVideoFrame const& source) const
     paddd		   mm4, bright    		// 128   0  128 Bright_p16
     punpckldq  mm4, mm4           // 128 Bright_p16 128 Bright_p16
 
-    mov			   esi, wp.ptr    		
+    mov			   esi, wp.ptr
     mov			   edx, y         		// height
     align 16
-  
+
   y_loop:
-	
+
     mov			   ecx, x	          	// width
     align 16
 
   x_loop:
-	
+
     movd		   mm7, [esi]   		  // 0000VYUY
     punpcklbw	 mm7, mm0
     psubw		   mm7, mm1	          //  V Y U Y
@@ -121,6 +121,6 @@ CPVideoFrame ISSE::MakeFrame(CPVideoFrame const& source) const
   return frame;
 }
 
-  
+
 } } } } //namespace avs::filters::tweak::yuy2
 

@@ -53,11 +53,11 @@ class BinaryOpMapper : public boost::noncopyable
 private:  //structors
 
   BinaryOpMapper();
-  
-  //generated destructor is fine
-  
 
-public: 
+  //generated destructor is fine
+
+
+public:
 
   ElementalOperation const& Get(char& leftType, char rightType, char opSymbol) const;
 

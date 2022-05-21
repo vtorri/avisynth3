@@ -41,7 +41,7 @@ BYTE * RawAudio::GetAudio(BYTE * buffer, long long start, long count) const
   if ( start < 0 )                              //if requests samples before clip
     if ( count < -start )                       //if all samples are before
       return vi->GetBlankNoise(buffer, count);  //get video info to fill the whole with blank
-    else 
+    else
     {                                           //fill -start blank samples
       buffer = vi->GetBlankNoise(buffer, static_cast<long>(-start));
       count += static_cast<long>(start);        //-start less samples to provide

@@ -43,7 +43,7 @@ BYTE * AudioSwitch::GetAudio(BYTE * buffer, long long start, long count, Splice 
     PClip const& clip = splice.GetChild(it - switchs_.begin());     //fetch corresponding clip
     long consume = std::min(count, static_cast<long>(*it - start)); //calculate how much samples it should provide
 
-    buffer = clip->GetAudio(buffer, start, consume);                //have clip make his thing (and update buffer)   
+    buffer = clip->GetAudio(buffer, start, consume);                //have clip make his thing (and update buffer)
 
     count -= consume;                                               //update parameters
     start += consume;

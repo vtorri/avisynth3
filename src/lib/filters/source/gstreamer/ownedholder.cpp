@@ -52,14 +52,14 @@ OwnedHolder::~OwnedHolder()
 }
 
 
-BYTE * OwnedHolder::Get() const 
-{ 
-  return GST_BUFFER_DATA(&buffer_); 
+BYTE * OwnedHolder::Get() const
+{
+  return GST_BUFFER_DATA(&buffer_);
 }
 
-bool OwnedHolder::Unique() const 
-{ 
-  return gst_buffer_is_writable(&buffer_) != 0; 
+bool OwnedHolder::Unique() const
+{
+  return gst_buffer_is_writable(&buffer_) != 0;
 }
 
 

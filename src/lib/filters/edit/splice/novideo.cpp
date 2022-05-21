@@ -41,13 +41,13 @@ CPVideoFrame NoVideo::GetFrame(long /*n*/) const
 void NoVideo::AddChild(PClip const& child)
 {
   CheckCompatible(child);
-  
+
   if ( child->GetVideoInfo()->GetSampleCount() == 0 )  //give up if has no length
     return;
 
   if ( boost::shared_ptr<NoVideo const> splice = boost::dynamic_pointer_cast<NoVideo const>(child) )
     Merge(*splice);
-  else 
+  else
     if ( boost::shared_ptr<KillVideo const> killVideo = boost::dynamic_pointer_cast<KillVideo const>(child) )
       PushChild( killVideo->GetChild() );
     else PushChild( child );

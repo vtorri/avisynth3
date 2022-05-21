@@ -33,7 +33,7 @@
 #include <boost/shared_ptr.hpp>     //so PColorSpace, CPVideoFrame are defined
 
 
-namespace avs { namespace colorspace { 
+namespace avs { namespace colorspace {
 
 
 

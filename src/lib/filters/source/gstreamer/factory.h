@@ -56,9 +56,9 @@ class Factory
 
 
 public:  //structors
-  
+
   Factory(std::string const& name, int videoIndex, int audioIndex);
-  
+
   //generated destructor is fine
 
 
@@ -68,16 +68,16 @@ public:  //access
   PImporter const& importer() const { return importer_; }
   PPipeline const& pipelineVideo() const { return pipelineVideo_; }
   PPipeline const& pipelineAudio() const { return pipelineAudio_; }
-  
+
 
 public:  //used by callbacks
-  
+
   void Set(avs::gstreamer::structure::Video const& video);
   void Set(avs::gstreamer::structure::Audio const& audio);
 
 };
-  
-  
+
+
 
 } } } } // namespace avs::filters::source::gstreamer
 

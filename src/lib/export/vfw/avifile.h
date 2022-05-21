@@ -50,15 +50,15 @@ namespace avistream { class Video; }
 
 
 class AviFile : public IAVIFile
-              , public IPersistFile 
+              , public IPersistFile
               //, public IAvisynthClipInfo
               , public Base
 {
-    
+
   PClip clip_;
   CPVideoInfo vi_;
   std::string scriptName_;
-    
+
   std::string error_msg_;
 
 
@@ -93,7 +93,7 @@ public:  //IPersistFile
   STDMETHODIMP SaveCompleted(LPCOLESTR /*lpszFileName*/) { return S_OK; }
   STDMETHODIMP GetCurFile(LPOLESTR * lplpszFileName) { *lplpszFileName = NULL; return E_FAIL; }
 
-	
+
 public:  //IAVIFile
 
   STDMETHODIMP CreateStream(PAVISTREAM *ppStream, AVISTREAMINFOW * /*psi*/) { *ppStream = NULL; return AVIERR_READONLY; }
@@ -106,19 +106,19 @@ public:  //IAVIFile
   STDMETHODIMP DeleteStream(DWORD /*fccType*/, LONG /*lParam*/) { return AVIERR_READONLY; }
 
   //STDMETHODIMP Save(LPCSTR szFile, AVICOMPRESSOPTIONS FAR *lpOptions, AVISAVECALLBACK lpfnCallback) { return AVIERR_READONLY; }
-				
+
 
 
 
 private:  //implementation
-    
-  bool DelayedInit();    
+
+  bool DelayedInit();
   void MakeErrorStream(std::string const& msg);
 
   Exporter const& GetExporter();
   VideoInfo const& GetVideoInfo();
 
-  friend class avistream::Video;  
+  friend class avistream::Video;
 
   AviStream * GetStream(DWORD fccType, long lParam);
 

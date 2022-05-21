@@ -59,16 +59,16 @@ CPVideoFrame YUY2::MakeFrame(CPVideoFrame const& source) const
     int Amax_u=0, Amax_v=0, Amax_y=0;
 
     int At_y2=int(floorf(pixels/256.0f+0.5f)); // When 1/256th of all pixels have been reached, trigger "Loose min/max"
-    int At_uv2=int(floorf(pixels/1024.0f+0.5f)); 
-    
+    int At_uv2=int(floorf(pixels/1024.0f+0.5f));
+
     for (i=0;i<256;i++)
     {
       avg_y+=float(yPParam_.accum[i]*i);
       avg_u+=float(uPParam_.accum[i]*i);
       avg_v+=float(vPParam_.accum[i]*i);
-      
+
     }
-    
+
     //Second part specific to YUY2
     float Favg_y=avg_y/(float)pixels;
     //uvdiv = 2.0f

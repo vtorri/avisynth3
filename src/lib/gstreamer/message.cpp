@@ -35,7 +35,7 @@ namespace avs { namespace gstreamer {
 
 
 MessageType Message::GetType()
-{ 
+{
   return static_cast<MessageType>( GST_MESSAGE_TYPE( this ) );
 }
 

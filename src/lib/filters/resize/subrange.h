@@ -33,7 +33,7 @@ namespace avs { namespace filters { namespace resize {
 //  SubRange
 //
 //  helper class for Resize
-//   
+//
 //  The SubRange class carries info about the range of the source which should be resized
 //
 class SubRange
@@ -54,7 +54,7 @@ public:  //structors
 
   //rescaling constructor
   SubRange(SubRange const& other, int whole);
- 
+
   //generated copy constructor and destructor are fine
 
 

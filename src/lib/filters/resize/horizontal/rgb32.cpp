@@ -41,8 +41,8 @@ void RGB32::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
 {
 
   CWindowPtr src = source.ReadFrom('~');
-  WindowPtr dst = target.WriteTo('~');  
-  
+  WindowPtr dst = target.WriteTo('~');
+
   int count = GetPattern().Count();       //coeff count
   int const * pptr = GetPattern().Get();  //pattern ptr
 
@@ -62,11 +62,11 @@ void RGB32::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
     psrld       mm6, 19                   //mm6 = 00001FFF00001FFF    13 bits rounder
 
     align 16
-  
+
   yloop:
 
     mov         ecx, dst.width            //ecx = dst.width  (x loop counter)
-    mov         edx, pptr                 //edx points into the pattern                 
+    mov         edx, pptr                 //edx points into the pattern
 
     align 16
 
@@ -74,7 +74,7 @@ void RGB32::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
 
     mov         eax, count                //eax = count  (a loop counter)
     mov         ebx, [edx]                //read from pattern: ebx = ref pixel offset
-    add         edx, 4                    //edx += 4  now points to the coeffs 
+    add         edx, 4                    //edx += 4  now points to the coeffs
 
     movq        mm0, mm6                  //mm0 = mm6  ( G total | B total )  init rounded
     movq        mm1, mm6                  //mm1 = mm6  ( X total | R total )  init rounded
@@ -85,13 +85,13 @@ void RGB32::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
 
     sub         edx, 4                    //next coeff (descending)
     dec         eax                       //next src pixel (descending)
-    
+
     movd        mm2, [esi + 4*ebx]        //mm2 =  0000|argb  read src pixel
     punpcklbw   mm2, mm7                  //mm2 = 0a|0r|0g|0b
     movq        mm3, mm2                  //mm3 = 0a|0r|0g|0b
     punpcklwd   mm2, mm7                  //mm7 = 00|0g|00|0b
     punpckhwd   mm3, mm7                  //mm6 = 00|0a|00|0r
-    movd        mm5, [edx]                //mm5 = 00|00|coeff 
+    movd        mm5, [edx]                //mm5 = 00|00|coeff
     packssdw    mm5, mm5                  //mm5 = 00|co|00|co  coeff saturated (useless if always positive: to check)
     pmaddwd     mm2, mm5                  //mm7 =  g*co|b*co
     add         edx, 4                    //edx += 4  next coeff

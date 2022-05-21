@@ -25,7 +25,7 @@
 #include "cachelogic.h"
 
 //boost include
-#include <boost/lambda/bind.hpp>  
+#include <boost/lambda/bind.hpp>
 #include <boost/lambda/lambda.hpp>  //for lambda
 
 //stl include
@@ -58,20 +58,20 @@ CPVideoFrame CacheLogic::GetCachedFrame(long n)
     return fit->second;           //return it
 
   RequestList::iterator rit = std::find( requests_.begin(), requests_.end(), n );
- 
+
   if ( rit == requests_.end() )   //if not found
     requests_.push_front(n);      //store n as the last request (newest are at buffer front)
   else
   {
     //that's the size the cache should have had for n to be cached
-    long depth = requests_.end() - rit;    
+    long depth = requests_.end() - rit;
 
-    if ( depth < minimum_ ) 
+    if ( depth < minimum_ )
       minimum_ = depth;
 
     score_ += 1 / ( inertia_ * depth );
 
-    UpdateCacheSize(); 
+    UpdateCacheSize();
   }
 
   return CPVideoFrame();

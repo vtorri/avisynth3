@@ -47,14 +47,14 @@ namespace avs { namespace colorspace { namespace concrete {
 //
 class Map
 {
-  
+
   typedef boost::mutex Mutex;
   typedef Mutex::scoped_lock Lock;
   typedef utility::value_cache<ColorSpace const> ColorSpaceCache;
   typedef std::map<std::string, ColorSpaceCache *> NameToColorSpaceMap;
 
   mutable Mutex mutex_;
-  
+
   ColorSpaceCache rgb24_, rgb32_, yuy2_, yv12_, yv24_;
 
   NameToColorSpaceMap nameMap_;
@@ -68,7 +68,7 @@ public:  //structors
 
 
 public:  //Map interface
-  
+
   //map like read access
   PColorSpace operator[](std::string const& name) const;
 

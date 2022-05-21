@@ -42,7 +42,7 @@ namespace avs { namespace videoframe { namespace concrete {
 class YUY2 : public Interleaved
            , public yuv::Depth8
 {
-           
+
 public:  //structors
 
   //normal constructor

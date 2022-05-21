@@ -51,7 +51,7 @@ class RuntimeEnvironment : public boost::enable_shared_from_this<RuntimeEnvironm
 public:  //structors
 
   RuntimeEnvironment() { }
-  
+
   virtual ~RuntimeEnvironment() { }
 
 
@@ -72,7 +72,7 @@ public:  //memory stuff
   virtual void MemoryFreed(int size) = 0;      //no throw
 
   //same as MemoryAllocated but don't trigger mem cleanup
-  //instead it considers the increase an unwanted side effect, 
+  //instead it considers the increase an unwanted side effect,
   //the memory not really allocated and expects the reverse decrease soon
   virtual void MemoryVirtuallyAllocated(int size) = 0;  //no throw
 

@@ -35,7 +35,7 @@ namespace avs { namespace functions {
 using parser::adapt;
 using linker::core::Function;
 
-  
+
 Function Audio::killAudio( 'c', "KillAudio", "c", adapt( filters::KillAudio::Creator() ) );
 Function Audio::killVideo( 'c', "KillVideo", "c", adapt( filters::KillVideo::Creator() ) );
 

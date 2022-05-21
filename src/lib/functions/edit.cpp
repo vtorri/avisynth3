@@ -34,7 +34,7 @@ namespace avs { namespace functions {
 using parser::adapt;
 using linker::core::Function;
 
-  
+
 Function Edit::trim( 'c', "Trim", "cii", adapt( filters::Trim::Creator() ) );
 
 

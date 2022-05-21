@@ -30,7 +30,7 @@
 #include "block/ownedholder.h"
 
 
-namespace avs { 
+namespace avs {
 
 
 //forward declaration
@@ -52,7 +52,7 @@ class owned_block : public block::base<block::OwnedHolder, align>
 public:  //typedefs
 
   typedef owned_block<align> BlockType;
-  typedef block::base<block::OwnedHolder, align> BaseBlockType; 
+  typedef block::base<block::OwnedHolder, align> BaseBlockType;
   typedef typename boost::enable_if<block::align_compatible<block::Align, align>, block::OwnedCreator>::type Creator;
 
 
@@ -90,7 +90,7 @@ public:  //assignment
 public:  //misc
 
   void Reset(int size, Creator const& create)
-  { 
+  {
     create(size).swap(*this);
   }
 
@@ -143,9 +143,9 @@ public:  //structors
 
 public:  //operator(), the block creation method
 
-  owned_block<block::Align> operator()(int size) const 
-  { 
-    return owned_block<block::Align>(env_, size, recycle_); 
+  owned_block<block::Align> operator()(int size) const
+  {
+    return owned_block<block::Align>(env_, size, recycle_);
   }
 
 };

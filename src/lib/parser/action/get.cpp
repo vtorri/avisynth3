@@ -32,21 +32,21 @@ namespace avs { namespace parser { namespace action {
 
 
 
-ElementalOperation const Get::equal_op[5] = 
+ElementalOperation const Get::equal_op[5] =
     { adapt( std::equal_to<bool>() )
     , adapt( std::equal_to<PClip>() )
     , adapt( std::equal_to<double>() )
     , adapt( std::equal_to<int>() )
-    , adapt( std::equal_to<std::string>() ) 
-    }; 
+    , adapt( std::equal_to<std::string>() )
+    };
 
-ElementalOperation const Get::not_equal_op[5] = 
+ElementalOperation const Get::not_equal_op[5] =
     { adapt( std::not_equal_to<bool>() )
     , adapt( std::not_equal_to<PClip>() )
     , adapt( std::not_equal_to<double>() )
     , adapt( std::not_equal_to<int>() )
-    , adapt( std::not_equal_to<std::string>() ) 
-    }; 
+    , adapt( std::not_equal_to<std::string>() )
+    };
 
 
 struct StringSubscript
@@ -113,7 +113,7 @@ ElementalOperation const& Get::EqualityOperation(char& leftType, char rightType,
   char type = leftType;
   leftType = 'b';                                                //set result type to bool
 
-  return isEqual ? equal_op[ TypeToIndex(type) ] 
+  return isEqual ? equal_op[ TypeToIndex(type) ]
                  : not_equal_op[ TypeToIndex(type) ];            //returns comparison op
 }
 

@@ -38,7 +38,7 @@ namespace avs { namespace exception { namespace resize {
 //  exception thro by the SubRange constructor when the submitted values are illegal
 //
 //  TODO: improve error msg
-//  
+//
 class BadRange : public Exception
 {
 

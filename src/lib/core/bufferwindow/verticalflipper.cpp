@@ -39,7 +39,7 @@ BufferWindow VerticalFlipper::operator ()(BufferWindow const& source) const
   CWindowPtr src = source.Read();
 
   src.to(0, src.height - 1 );   //move to last line
-  src.pitch = - src.pitch;      //negate pitch (so it will blit bottom to top)           
+  src.pitch = - src.pitch;      //negate pitch (so it will blit bottom to top)
 
   Blitter::Get().Blit( src, dst.ptr, dst.pitch );
 

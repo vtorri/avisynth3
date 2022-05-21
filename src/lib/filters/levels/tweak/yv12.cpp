@@ -42,7 +42,7 @@ CPVideoFrame YV12::MakeFrame(PVideoFrame const& source) const
   for( int y = Y.height; y-- > 0; Y.pad() )
     for( int x = Y.width; x-- > 0; ++Y.ptr )
     {
-      // brightness and contrast 
+      // brightness and contrast
       int yy = *Y.ptr - 16;
       yy = (Cont * yy) >> 9;
       yy += Bright_p16;
@@ -53,18 +53,18 @@ CPVideoFrame YV12::MakeFrame(PVideoFrame const& source) const
   for( int y = U.height; y-- > 0; U.pad(), V.pad() )
     for ( int x = U.width; x-- > 0; ++U.ptr, ++V.ptr )
     {
-      // hue and saturation 
+      // hue and saturation
 			int u = *U.ptr - 128;
 			int	v = *V.ptr - 128;
 
 			int	ux = (+ u * Cos + v * Sin) >> 12;
       int vx = (- u * Sin + v * Cos) >> 12;
-				
+
 			u = ((ux * Sat) >> 9) + 128;
 			v = ((vx * Sat) >> 9) + 128;
-			
+
       *U.ptr = utility::saturate<BYTE, 16, 240>(u);
-      *V.ptr = utility::saturate<BYTE, 16, 240>(v);				      
+      *V.ptr = utility::saturate<BYTE, 16, 240>(v);
     }
 
   return source;

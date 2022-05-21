@@ -53,37 +53,37 @@ class vecteur
 
 public:  //members
 
-  T x, y;   
+  T x, y;
 
 public:  //structors
 
   vecteur() : x( 0 ), y( 0 ) { }
   vecteur(T x_, T y_) : x( x_ ), y( y_ ) { }
-  
+
   template <typename U>
   explicit vecteur(vecteur<U> const& other) : x( other.x ), y( other.y ) { }
 
   //construction from a dimension
   vecteur(dimension<T> const& dim)  : x( dim.GetWidth() ), y( dim.GetHeight() ) { }
 
-  
+
 public:  //assignment
 
   // vecteur& operator=(vecteur<T> const& other)
-  // { 
-  //   x = other.x; 
-  //   y = other.y; 
-  //   return *this; 
+  // {
+  //   x = other.x;
+  //   y = other.y;
+  //   return *this;
   // }
-  
-  void swap(vecteur<T>& other) 
-  { 
+
+  void swap(vecteur<T>& other)
+  {
     using std::swap;
-    swap(x, other.x); 
-    swap(y, other.y); 
+    swap(x, other.x);
+    swap(y, other.y);
   }
 
-  
+
 public:  //comparison operators
 
   bool operator==(vecteur<T> const& other) const { return x == other.x && y == other.y; }
@@ -95,7 +95,7 @@ public:  //classic vector operators
   vecteur operator-() const { return vecteur<T>(-x, -y); }
   vecteur& operator+=(vecteur<T> const& other) { x += other.x; y += other.y; return *this; }
   vecteur& operator-=(vecteur<T> const& other) { x -= other.x; y -= other.y; return *this; }
-  
+
   template <typename U> vecteur& operator*=(U scalar) { x *= scalar; y *= scalar; return *this; }
   template <typename U> vecteur& operator/=(U scalar) { x /= scalar; y /= scalar; return *this; }
 
@@ -111,7 +111,7 @@ public:  //operators with special effect
   }
 
   //given a pitch, returns the offset corresponding to self
-  int operator%(int pitch) const { return x + pitch * y; }  
+  int operator%(int pitch) const { return x + pitch * y; }
 
 };
 
@@ -145,9 +145,9 @@ vecteur<T> operator/(vecteur<T> const& vect, U scalar)
 
 //global scope swap
 template <typename T>
-inline void swap(vecteur<T>& left, vecteur<T>& right) 
-{ 
-  left.swap(right); 
+inline void swap(vecteur<T>& left, vecteur<T>& right)
+{
+  left.swap(right);
 }
 
 //parallel min and max

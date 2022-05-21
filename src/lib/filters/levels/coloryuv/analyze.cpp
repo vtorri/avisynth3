@@ -67,7 +67,7 @@ CPVideoFrame Analyze::MakeFrame(PVideoFrame const& source) const
   , y.GetMax(), u.GetMax(), v.GetMax()
   , y.GetLooseMin(yLooseLimit), u.GetLooseMin(uLooseLimit),  v.GetLooseMin(vLooseLimit)
   , y.GetLooseMax(yLooseLimit), u.GetLooseMax(uLooseLimit),  v.GetLooseMax(vLooseLimit)
-  
+
   ApplyMessage(&src, vi, text, vi.width/4, 0xa0a0a0,0,0 , env );
 
 */

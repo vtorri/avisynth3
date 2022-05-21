@@ -57,7 +57,7 @@ template <bool returnVoid> struct RecursiveCall
     while( true )
     {
       OpType type = body_(state);
-      
+
       if ( type == RETURN )
       {
         state.restore(size, returnVoid ? 0 : 1);   //clean stack of temporaries, keeping result if there is one

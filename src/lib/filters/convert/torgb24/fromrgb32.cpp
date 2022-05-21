@@ -42,7 +42,7 @@ void FromRGB32::ConvertFrame(VideoFrame const& source, VideoFrame& target) const
 
 #if ! defined(AVS_ALWAYS_USE_NASM)
 
-  for ( int y = dst.height; y-- > 0; src.pad(), dst.pad() ) 
+  for ( int y = dst.height; y-- > 0; src.pad(), dst.pad() )
     for ( int x = dst.width / 3; x-- > 0; dst.to(3, 0), src.to(4, 0) )
     {
       dst[0] = src[0];     //copy 1st 3 bytes

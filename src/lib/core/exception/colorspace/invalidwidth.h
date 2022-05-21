@@ -51,7 +51,7 @@ class InvalidWidth : public Exception
 public:  //structors
 
   InvalidWidth(PColorSpace const& space, int width, int /*modulo*/)
-    : space_( space ) 
+    : space_( space )
     , width_( width ) { }
 
   virtual ~InvalidWidth() throw() { }

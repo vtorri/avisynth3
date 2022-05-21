@@ -49,7 +49,7 @@ class AVS_NOVTABLE Plugin : public linker::Plugin
   //
   struct Expired
   {
-    
+
     bool operator()(std::string const& str) const { return false; }
 
     bool operator()(boost::shared_ptr<external::Plugin const> const& plugin) const
@@ -93,13 +93,13 @@ protected:  //implementation helper
 
 
 private:  //...
-  
+
   //returns true if plugin is ready for unload, ie the exterior is not using it
   bool CanUnloadNow() const;
 
   //helper for Create
   static std::string CompleteName(std::string const& fileName);
-  
+
 };
 
 

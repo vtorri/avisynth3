@@ -37,8 +37,8 @@ namespace avs {
 //
 //  for fixed point arithmetic
 //
-template <int fractionPart> 
-class fixed_point 
+template <int fractionPart>
+class fixed_point
     : boost::addable<fixed_point<fractionPart>                 //defines +
     , boost::subtractable<fixed_point<fractionPart>            //defines -
     , boost::right_shiftable<fixed_point<fractionPart>, int    //defines >>

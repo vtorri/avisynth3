@@ -40,7 +40,7 @@ namespace avs { namespace clip {
 class AVS_NOVTABLE OneChild : public virtual Clip
 {
 
-public:  //FinalSimplify 
+public:  //FinalSimplify
 
   //a new default implementation
   virtual PClip FinalSimplify() const { FinalSimplifyChild(); return shared_from_this(); }

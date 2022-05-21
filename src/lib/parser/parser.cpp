@@ -58,11 +58,11 @@ StatementCode Parser::operator()(std::string const& src)
   //Statement statement;
   //Expression expression;
 
-  parse(src.c_str(), 
+  parse(src.c_str(),
       script( CodeCouple(), boost::ref(localCtxt), boost::ref(globalCtxt) )
       //statement( CodeCouple(), boost::ref(localCtxt), boost::ref(globalCtxt), 'c' )
       //expression( value::Expression(), boost::ref(localCtxt), boost::ref(globalCtxt) )
-      [            
+      [
         var(code) += arg1
         //var(code) += first(arg1)
       ]
@@ -74,13 +74,13 @@ StatementCode Parser::operator()(std::string const& src)
 
 PClip Parser::operator ()(std::string const& src, PEnvironment const& env)
 {
-  
+
   StatementCode code = operator()(src);
 
-  VMState state(env);  
+  VMState state(env);
   //state.push(1);
 
-  code(state); 
+  code(state);
 
   //if top stack value is a clip, we return it
   if ( state.size() != 0 && boost::get<PClip>(&state.top()) != NULL )
@@ -92,7 +92,7 @@ PClip Parser::operator ()(std::string const& src, PEnvironment const& env)
   stream << "parsed:";
 
   for(int i = 0; i < state.size(); ++i)
-    stream << ' '  << state[i];  
+    stream << ' '  << state[i];
 
   return filters::MessageClip::Create(stream.str(), env );
 }

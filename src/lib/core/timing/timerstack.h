@@ -67,7 +67,7 @@ public:  //interrupt/restart methods
     if ( ! stack_.empty() )
       stack_.top()->restart();
   }
-  
+
 };
 
 

@@ -39,7 +39,7 @@ void FromYV12::ConvertFrame(VideoFrame const& source, VideoFrame& target) const
   WindowPtr dst = target.WriteTo('~');
 
   //Y plane
-  for ( int y = dst.height; y-- > 0; Y.pad(), dst.pad() ) 
+  for ( int y = dst.height; y-- > 0; Y.pad(), dst.pad() )
     for ( int x = dst.width / 4; x-- > 0; dst.to(4, 0), Y.to(2, 0) )
     {
       // copy in a macropixel

@@ -70,7 +70,7 @@ void Table::DeclareScriptFunction(FunctionId const& id)
     AddFunction( funct );     //and add to the symbols table
   }
 }
-  
+
 
 void Table::DefineScriptFunction(FunctionId const& id, StatementCode const& code, bool termRecursive)
 {

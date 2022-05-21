@@ -42,7 +42,7 @@ namespace avs { namespace videoframe { namespace concrete {
 //
 class AVS_NOVTABLE Interleaved : public Base
 {
-  
+
   BufferWindow main_;
 
 

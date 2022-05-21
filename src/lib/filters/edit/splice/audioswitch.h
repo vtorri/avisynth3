@@ -37,7 +37,7 @@ namespace avs { namespace filters { namespace splice {
 
 class AudioSwitch
 {
-  
+
   typedef std::vector<long long> SwitchVector;
 
   SwitchVector switchs_;

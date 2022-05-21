@@ -57,7 +57,7 @@ void Action::ExprStatement(CodeCouple& code, LocalContext& localCtxt, Expression
 
   if ( expr.get<1>() == 'c' && ! expr.get<2>() )      //if a non-assignment clip expr
     localCtxt.get<2>() = localCtxt.get<1>(); //define a new last
-  else 
+  else
     if ( expr.get<1>() != 'v' )                       //if expr actually stacked something
     {
       code += functor::popper<1>();                            //get rid of it

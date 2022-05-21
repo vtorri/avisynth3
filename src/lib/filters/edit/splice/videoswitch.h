@@ -37,7 +37,7 @@ namespace avs { namespace filters { namespace splice {
 
 class VideoSwitch
 {
-  
+
   typedef std::vector<long> SwitchVector;
 
   SwitchVector switchs_;

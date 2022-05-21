@@ -47,7 +47,7 @@ int Structure::GetIntField(char const * name) const
 {
   int result;
 
-  bool success = gst_structure_get_int(const_cast<Structure *>(this), name, &result) != 0; 
+  bool success = gst_structure_get_int(const_cast<Structure *>(this), name, &result) != 0;
   assert( success );
 
   return result;

@@ -37,7 +37,7 @@ namespace avs { namespace filters {
 
 
 
-Tweak::Tweak(PClip const& child, double hue, double sat, double bright, double cont) 
+Tweak::Tweak(PClip const& child, double hue, double sat, double bright, double cont)
   : clip::onechild::Concrete( child )
   , clip::framemaker::Concrete( child->GetEnvironment() )
   , Sat( int(sat * 512) )
@@ -71,7 +71,7 @@ PClip Tweak::clone(PClip const& child) const
   case ColorSpace::I_YV12: return tweak::YV12::Create(child, *this);
 
   default: throw exception::colorspace::Unsupported(space);
-  } 
+  }
 }
 
 
@@ -85,7 +85,7 @@ PClip Tweak::Create(PClip const& child, double hue, double sat, double bright, d
   case ColorSpace::I_YV12: return tweak::YV12::Create(child, hue, sat, bright, cont);
 
   default: throw exception::colorspace::Unsupported(space);
-  } 
+  }
 }
 
 

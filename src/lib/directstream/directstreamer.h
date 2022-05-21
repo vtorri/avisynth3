@@ -40,7 +40,7 @@ namespace avs { namespace directstream {
 ////////////////////////////////////////////////////////////////////////////////////
 //  DirectStreamer
 //
-//  Property attached to frames valid for direct streaming, 
+//  Property attached to frames valid for direct streaming,
 //  which provides the methods to get direct stream data
 //
 //  It is meant to be subclassed for each kind of directstreamable source.
@@ -79,7 +79,7 @@ public:  //DirectStreamer public interface
   bool CanFollow(DirectStreamer const& other) const
   {
     //try the most common case first : ie two frames from same clip
-    if ( ! (source_ < other.source_) && ! (other.source_ < source_)    //ugly for source == other.source_ 
+    if ( ! (source_ < other.source_) && ! (other.source_ < source_)    //ugly for source == other.source_
        && (  n_ == other.n_ + 1                          //and frames are consecutives
           || ( CanStartHere() && other.CanStopHere() )   //or possible to cut on them
           )

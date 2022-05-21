@@ -37,7 +37,7 @@ namespace avs { namespace utility {
 //
 //  small template helper function to Round up values (to powers of 2)
 //
-template <int Rounder, typename T> 
+template <int Rounder, typename T>
 inline typename boost::enable_if_c<(Rounder & -Rounder) == Rounder, T>::type
 RoundUp(T value)
 {
@@ -77,7 +77,7 @@ RoundDown(T value)
 ////////////////////////////////////////////////////////////////////////////////////////////
 //  RoundingUpShift<int Shift, T>
 //
-//  
+//
 //
 template <int Shift, typename T>
 inline T
@@ -90,7 +90,7 @@ RoundingUpShift(T value)
 ////////////////////////////////////////////////////////////////////////////////////////////
 //  RoundingShift<int Shift, T>
 //
-//  
+//
 //
 template <int Shift, typename T>
 inline T
@@ -103,7 +103,7 @@ RoundingShift(T value)
 ////////////////////////////////////////////////////////////////////////////////////////////
 //  RoundingDownShift<int Shift, T>
 //
-//  
+//
 //
 template <int Shift, typename T>
 inline T

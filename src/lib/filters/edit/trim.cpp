@@ -51,7 +51,7 @@ Trim::Trim(PClip const& child, long begin, long end)
 
     long long sampleCount = vi->GetSampleCount() - audio_begin_;   //samples are removed from start
     long long maxCount = vi->AudioSamplesFromFrames(end - begin);  //samples count is limited by length
-    
+
     vi->SetSampleCount( std::max(0LL, std::min(sampleCount, maxCount)) );  //samplecount updated
   }
 
@@ -63,7 +63,7 @@ Trim::Trim(PClip const& child, long begin, long end)
     begin_ += trim->begin_;
     audio_begin_ += trim->audio_begin_;
     SetChild( trim->GetChild() );
-  } 
+  }
 }
 
 

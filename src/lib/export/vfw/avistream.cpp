@@ -49,14 +49,14 @@ AviStream::~AviStream()
 
 //IUnknown
 
-STDMETHODIMP AviStream::QueryInterface(IID const& iid, void **ppv) 
+STDMETHODIMP AviStream::QueryInterface(IID const& iid, void **ppv)
 {
-	if ( iid == IID_IUnknown ) 
+	if ( iid == IID_IUnknown )
 		*ppv = (IUnknown *)this;
-	else 
+	else
     if ( iid == IID_IAVIStream )
 		  *ppv = (IAVIStream *)this;
-	  else 
+	  else
     {
     	*ppv = NULL;
 		  return E_NOINTERFACE;
@@ -73,8 +73,8 @@ STDMETHODIMP AviStream::QueryInterface(IID const& iid, void **ppv)
 STDMETHODIMP_(LONG) AviStream::Info(AVISTREAMINFOW * psi, LONG lSize)
 {
   if ( lSize < static_cast<long>(sizeof(AVISTREAMINFOW)) )
-    return AVIERR_BUFFERTOOSMALL; 
- 
+    return AVIERR_BUFFERTOOSMALL;
+
   if ( psi != NULL )
     FillAviStreamInfo(psi);
 

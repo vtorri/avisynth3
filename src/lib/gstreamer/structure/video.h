@@ -43,7 +43,7 @@ namespace avs { namespace gstreamer { namespace structure {
 //
 class Video : public Structure
 {
-  
+
 public:  //structure::Video interface
 
   PImporter SetVideoInfo(VideoInfo& vi) const;

@@ -36,7 +36,7 @@ namespace avs { namespace memory {
 //
 //  Alignment guaranteed by avs on EACH video scanline
 //
-enum { Align = 16 };       
+enum { Align = 16 };
 
 
 //alignment helper methods

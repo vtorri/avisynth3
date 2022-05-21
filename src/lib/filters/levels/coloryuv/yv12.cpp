@@ -46,20 +46,20 @@ CPVideoFrame YV12::MakeFrame(CPVideoFrame const& source) const
     // - could work for planar colorspaces
     // - use an iterator instead of processing each plane
     // - MMX optimize it
-    
+
     WindowPtr wp = frame->WriteTo('Y')
     for ( int y = wp.height; y-- > 0; wp.pad() )
-      for ( int x = wp.width; x-- > 0; wp.to(1, 0) ) 
+      for ( int x = wp.width; x-- > 0; wp.to(1, 0) )
         ++yPParam_.accum[ *wp.ptr ];
 
     wp = frame->WriteTo('U');
     for ( int y = wp.height; y-- > 0; wp.pad() )
-      for ( int x = wp.width; x-- > 0; wp.to(1, 0) ) 
+      for ( int x = wp.width; x-- > 0; wp.to(1, 0) )
         ++uPParam_.accum[ *wp.ptr ];
 
     wp = frame->WriteTo('V');
     for ( int y = wp.height; y-- > 0; wp.pad() )
-      for ( int x = wp.width; x-- > 0; wp.to(1, 0) ) 
+      for ( int x = wp.width; x-- > 0; wp.to(1, 0) )
         ++vPParam_.accum[ *wp.ptr ];
 
     float avg_u=0, avg_v=0, avg_y=0;
@@ -71,8 +71,8 @@ CPVideoFrame YV12::MakeFrame(CPVideoFrame const& source) const
     bool Ahit_miny=false,Ahit_minu=false,Ahit_minv=false;
     bool Ahit_maxy=false,Ahit_maxu=false,Ahit_maxv=false;
     int At_y2=int(floorf(pixels/256.0f+0.5f)); // When 1/256th of all pixels have been reached, trigger "Loose min/max"
-    int At_uv2=int(floorf(pixels/1024.0f+0.5f)); 
-    
+    int At_uv2=int(floorf(pixels/1024.0f+0.5f));
+
     for ( int i = 0; i < 256; ++i )
     {
       avg_y += float( yPParam_.accum[i] * i );
@@ -81,26 +81,26 @@ CPVideoFrame YV12::MakeFrame(CPVideoFrame const& source) const
 
       //??1
       if ( yPParam_.accum[i] != 0 )
-      { 
-        max_y = i; 
-        hit_y = true; 
+      {
+        max_y = i;
+        hit_y = true;
       }
-      else 
-        if ( ! hit_y ) 
+      else
+        if ( ! hit_y )
           min_y = i + 1;
       if (uPParam_.accum[i]!=0) { max_u=i; hit_u=true; }
-      else if (!hit_u) min_u=i+1; 
+      else if (!hit_u) min_u=i+1;
       if (vPParam_.accum[i]!=0) { max_v=i; hit_v=true; }
       else if (!hit_v) min_v=i+1;
-      
+
       //??2
       if ( ! Ahit_miny )
       {
         Amin_y += yPParam_.accum[i];
         if ( Amin_y > At_y2 )
-        { 
-          Ahit_miny = true; 
-          Amin_y = i; 
+        {
+          Ahit_miny = true;
+          Amin_y = i;
         }
       }
       if (!Ahit_minu)
@@ -112,7 +112,7 @@ CPVideoFrame YV12::MakeFrame(CPVideoFrame const& source) const
         Amin_v+=vPParam_.accum[i];
         if (Amin_v>At_uv2) { Ahit_minv=true; Amin_v=i; }
       }
-      
+
       //??3
       if (!Ahit_maxy)
       {
@@ -129,7 +129,7 @@ CPVideoFrame YV12::MakeFrame(CPVideoFrame const& source) const
         Amax_v+=vPParam_.accum[255-i];
         if (Amax_v>At_uv2) { Ahit_maxv=true; Amax_v=255-i; }
       }
-    }  
+    }
 
     float Favg_y=avg_y/(float)pixels;
     float Favg_u=(avg_u*4.0f)/(float)pixels;
@@ -154,7 +154,7 @@ CPVideoFrame YV12::MakeFrame(CPVideoFrame const& source) const
               Amin_y,Amin_u,Amin_v,
               Amax_y,Amax_u,Amax_v
               );
-      
+
       ApplyMessage(&src, vi, text, vi.width/4, 0xa0a0a0,0,0 , env );
       if (!(autowhite||autogain)) {
         return frame;
@@ -185,17 +185,17 @@ CPVideoFrame YV12::MakeFrame(CPVideoFrame const& source) const
   //Third and last part specific to YV12
   wp = frame->WriteTo('Y');
   for ( int y = wp.height; y-- > 0; wp.pad() )
-    for ( int x = wp.width; x-- > 0; wp.to(1, 0) ) 
+    for ( int x = wp.width; x-- > 0; wp.to(1, 0) )
       *wp.ptr = yPParam_.LUT[ *wp.ptr ]
 
   wp = frame->WriteTo('U');
   for ( int y = wp.height; y-- > 0; wp.pad() )
-    for ( int x = wp.width; x-- > 0; wp.to(1, 0) ) 
+    for ( int x = wp.width; x-- > 0; wp.to(1, 0) )
       *wp.ptr = uPParam_.LUT[ *wp.ptr ]
 
   wp = frame->WriteTo('V');
   for ( int y = wp.height; y-- > 0; wp.pad() )
-    for ( int x = wp.width; x-- > 0; wp.to(1, 0) ) 
+    for ( int x = wp.width; x-- > 0; wp.to(1, 0) )
       *wp.ptr = vPParam_.LUT[ *wp.ptr ]
 
   return frame;

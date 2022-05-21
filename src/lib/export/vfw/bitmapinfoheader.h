@@ -71,7 +71,7 @@ public:  //structors
 public:  //read access
 
   Dimension GetDimension() const { return Dimension(biWidth, biHeight); }
-  
+
   //returns empty if cannot be done
   PImporter GetImporter() const;
 

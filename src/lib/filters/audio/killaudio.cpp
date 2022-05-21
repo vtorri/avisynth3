@@ -51,7 +51,7 @@ BYTE * KillAudio::GetAudio(BYTE * /*buf*/, long long /*start*/, long /*count*/) 
 
 
 PClip KillAudio::Create(PClip const& child)
-{ 
+{
   CPVideoInfo vi = child->GetVideoInfo();
 
   if ( ! vi->HasVideo() )                              //if child has no video
@@ -59,7 +59,7 @@ PClip KillAudio::Create(PClip const& child)
   if ( ! vi->HasAudio() )                              //if child has no audio
     return child;                                      //child is equivalent
 
-  return PClip( static_cast<Clip *>(new KillAudio(child)) ); 
+  return PClip( static_cast<Clip *>(new KillAudio(child)) );
 }
 
 

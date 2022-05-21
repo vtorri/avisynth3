@@ -47,8 +47,8 @@ struct pusher
     : holder_( holder ) { }
 
   void operator()(VMState& state) const
-  { 
-    state.push(holder_(state)); 
+  {
+    state.push(holder_(state));
   }
 
 };

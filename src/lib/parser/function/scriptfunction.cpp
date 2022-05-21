@@ -31,14 +31,14 @@
 namespace avs { namespace parser { namespace function {
 
 
-char ScriptFunction::GetReturnType() const { return id_.get<0>(); }  
+char ScriptFunction::GetReturnType() const { return id_.get<0>(); }
 char const * ScriptFunction::GetName() const { return id_.get<1>().c_str(); }
 char const * ScriptFunction::GetPrototype() const { return id_.get<2>().c_str(); }
 linker::PPlugin ScriptFunction::GetMotherPlugin() const { return linker::PPlugin(); }
 
 
 void ScriptFunction::AppendOperation(ElementalCode& appendTo) const
-{ 
+{
   if ( op_.empty() )   //if op_ is not defined, we code a forward call to self
     appendTo += functor::function::ForwardCall(shared_from_this());
   else appendTo += op_;       //else op_ itself
@@ -55,10 +55,10 @@ void ScriptFunction::Define(StatementCode const& code, bool termRecursive)
     else
       op_ = functor::function::RecursiveCall<false>(arity, code);
 
-  else 
+  else
     if ( GetReturnType() == 'v' )
       op_ = functor::function::Call<true>(arity, code);
-    else 
+    else
       op_ = functor::function::Call<false>(arity, code);
 
 }

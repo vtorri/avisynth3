@@ -55,7 +55,7 @@ CPVideoFrame Auto::MakeFrame(PVideoFrame const& source) const
   ByteCounter y, u, v;
 
   Count(*source, y, u, v);
-  
+
   long yPixelCount = y.GetTotal();
   long yLooseLimit = yPixelCount >> 8;
 
@@ -68,7 +68,7 @@ CPVideoFrame Auto::MakeFrame(PVideoFrame const& source) const
   if ( autoGain_ )
   {
     int min = std::max(16, y.GetLooseMin(yLooseLimit));
-    int max = std::min(y.GetLooseMax(yLooseLimit), 236);    //don't scale above luma range 
+    int max = std::min(y.GetLooseMax(yLooseLimit), 236);    //don't scale above luma range
 
     if ( min != max )
     {

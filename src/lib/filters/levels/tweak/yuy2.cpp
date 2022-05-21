@@ -34,34 +34,34 @@ namespace avs { namespace filters { namespace tweak {
 CPVideoFrame YUY2::MakeFrame(PVideoFrame const& source) const
 {
   WindowPtr wp = source->WriteTo('~');
-    
-  for ( int y = wp.height; y-- > 0; wp.pad() )		
-    for ( int x = wp.width >> 2; x-- > 0; wp.to(4, 0) )			
-    {				
-      // brightness and contrast 
+
+  for ( int y = wp.height; y-- > 0; wp.pad() )
+    for ( int x = wp.width >> 2; x-- > 0; wp.to(4, 0) )
+    {
+      // brightness and contrast
 	  	int	y1 = wp[0] - 16;
 		  int y2 = wp[2] - 16;
-				
+
       y1 = (Cont * y1) >> 9;
   		y2 = (Cont * y2) >> 9;
-			
+
       wp[0] = utility::saturate<BYTE, 0, 255>(y1 + Bright_p16);
       wp[2] = utility::saturate<BYTE, 0, 255>(y2 + Bright_p16);
 
 
- 			// hue and saturation 
+ 			// hue and saturation
   		int	u = wp[1] - 128;
 	  	int	v = wp[3] - 128;
 
 		  int	ux = (+ u * Cos + v * Sin) >> 12;
- 			int vx = (- u * Sin + v * Cos) >> 12;			
+ 			int vx = (- u * Sin + v * Cos) >> 12;
 
       u = ((ux * Sat) >> 9) + 128;
  			v = ((vx * Sat) >> 9) + 128;
-	  	
+
       wp[1] = utility::saturate<BYTE, 0, 255>(u);
       wp[3] = utility::saturate<BYTE, 0, 255>(v);
-    }		
+    }
 
   return source;
 }

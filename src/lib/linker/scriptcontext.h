@@ -59,7 +59,7 @@ public:
 
   void AddPlugin(PPlugin const& plugin) { pluginSet_.insert(plugin); }
 
-  //load 
+  //load
   void LoadPlugin(std::string const& fileName);
 
 };

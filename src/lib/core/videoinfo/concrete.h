@@ -151,11 +151,11 @@ public:  //audio methods
 
 private:
 
-  static int CheckFrameCount(int frameCount) 
-  { 
+  static int CheckFrameCount(int frameCount)
+  {
     if ( frameCount < 0 )
       throw exception::Generic("FrameCount must be positive");
-    return frameCount; 
+    return frameCount;
   }
   static SampleType CheckSampleType(SampleType sampleType) { return sampleType; }
   static int CheckSampleRate(int sampleRate) { return sampleRate; }

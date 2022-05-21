@@ -28,12 +28,12 @@
 #include "../../videoframe.h"
 
 
-namespace avs { 
-  
+namespace avs {
+
 //declarations
 class ByteMap;
 class ByteCounter;
-  
+
 namespace videoframe { namespace rgb {
 
 

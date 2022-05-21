@@ -56,9 +56,9 @@ protected:  //Pipeline interface
 
 public:  //factory methods
 
-  static PClip Create(PClip const& child, double hue, double sat, double bright, double cont) 
-  { 
-    return PClip( static_cast<Clip *>(new YV12(child, hue, sat, bright, cont)) ); 
+  static PClip Create(PClip const& child, double hue, double sat, double bright, double cont)
+  {
+    return PClip( static_cast<Clip *>(new YV12(child, hue, sat, bright, cont)) );
   }
 
   static PClip Create(PClip const& child, Tweak const& other)

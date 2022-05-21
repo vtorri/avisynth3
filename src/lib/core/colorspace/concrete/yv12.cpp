@@ -37,29 +37,29 @@ namespace avs { namespace colorspace { namespace concrete {
 
 void YV12::Check(long x, long y, bool interlaced) const
 {
-  if ( interlaced )                             //if interlaced           
+  if ( interlaced )                             //if interlaced
   {
     if ( y & 3 )                                //y must be mod 4
-      throw exception::colorspace::InvalidHeight(shared_from_this(), y, 4, true);    
+      throw exception::colorspace::InvalidHeight(shared_from_this(), y, 4, true);
   } else
     if ( y & 1 )                                //y must be mod 2 when not interlaced
       throw exception::colorspace::InvalidHeight(shared_from_this(), y, 2, false);
 
   if ( x & 1 )                                  //x must be mod 2
-    throw exception::colorspace::InvalidWidth(shared_from_this(), x, 2);                                  
+    throw exception::colorspace::InvalidWidth(shared_from_this(), x, 2);
 }
 
 
 void YV12::ToPlane(long& x, long& y, char plane) const
 {
   switch ( plane )
-  {  
-  case 'Y': break;   
+  {
+  case 'Y': break;
   case 'U':
   case 'V': x >>= 1; y >>= 1; break;
 
-  default: throw exception::NoSuchPlane(shared_from_this(), plane);    
-  }  
+  default: throw exception::NoSuchPlane(shared_from_this(), plane);
+  }
 }
 
 

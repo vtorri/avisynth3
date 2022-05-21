@@ -42,10 +42,10 @@ void RGB24::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
 
   CWindowPtr src = source.ReadFrom('~');
   WindowPtr dst = target.WriteTo('~');
-   
+
   int count = GetPattern().Count();       //coeff count
   int const * pptr = GetPattern().Get();  //pattern ptr
-  
+
 
 #if defined(AVS_HAS_INTEL_INLINE_ASM) && ! defined(AVS_ALWAYS_USE_NASM)
 
@@ -62,11 +62,11 @@ void RGB24::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
     psrld       mm6, 19                   //mm6 = 00001FFF00001FFF    13 bits rounder
 
     align 16
-  
+
   yloop:
 
     mov         ecx, dst.width            //ecx = dst.width  (x loop counter)
-    mov         edx, pptr                 //edx points into the pattern                 
+    mov         edx, pptr                 //edx points into the pattern
 
     align 16
 
@@ -75,7 +75,7 @@ void RGB24::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
     mov         ebx, [edx]                //read from pattern: ebx = ref pixel offset
     mov         eax, count                //eax = count  (a loop counter)
     lea         ebx, [ebx + 2*ebx]        //ebx *= 3  byte offset to the ref pixel
-    add         edx, 4                    //edx += 4  now points to the coeffs 
+    add         edx, 4                    //edx += 4  now points to the coeffs
 
     movq        mm0, mm6                  //mm0 = mm6  ( G total | B total )  init rounded
     movq        mm1, mm6                  //mm1 = mm6  ( X total | R total )  init rounded
@@ -89,7 +89,7 @@ void RGB24::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
     movq        mm3, mm2                  //mm3 = 0x|0r|0g|0b
     punpcklwd   mm2, mm7                  //mm2 = 00|0g|00|0b
     punpckhwd   mm3, mm7                  //mm3 = 00|0x|00|0r
-    movd        mm5, [edx]                //mm5 = 00|00|coeff 
+    movd        mm5, [edx]                //mm5 = 00|00|coeff
     packssdw    mm5, mm5                  //mm5 = 00|co|00|co  coeff saturated (useless if always positive: to check)
     pmaddwd     mm2, mm5                  //mm2 =  g*co|b*co
     add         edx, 4                    //edx += 4  next coeff

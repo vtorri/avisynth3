@@ -53,8 +53,8 @@ public:  //structors
 
 public:  //Function interface
 
-  virtual char GetReturnType() const = 0;  
-  
+  virtual char GetReturnType() const = 0;
+
   //fetch function name
   virtual char const * GetName() const = 0;
 

@@ -27,7 +27,7 @@
 #ifdef _MSC_VER
 #pragma warning ( push )           //push warning state
 #pragma warning (disable : 4275)   //non dll-interface class 'boost::noncopyable' used as base for dll-interface class 'boost::mutex'
-#endif 
+#endif
 
 //boost include
 #include <boost/thread/mutex.hpp>
@@ -82,7 +82,7 @@ public:  //assignment
   FolderType& operator=(FolderType const& other)
   {
     FolderType tmp(other);
-    
+
     swap(tmp);
 
     return *this;
@@ -111,7 +111,7 @@ public:  //Proxy inner class
   //
   class Proxy
   {
-    
+
     FolderType& parent_;
     Key const& key_;
 
@@ -121,7 +121,7 @@ public:  //Proxy inner class
     Proxy(Key const& key, FolderType& parent)
       : parent_( parent )
       , key_( key )
-    { 
+    {
       parent.TickToCleanUp();
     }
 
@@ -153,7 +153,7 @@ public:  //Proxy inner class
       typename InstanceMap::iterator it = parent_.map_.find( key_ );
       return it != parent_.map_.end() ? it->second : Value();
     }
-  
+
   };
 
 
@@ -190,7 +190,7 @@ private:  //implementation detail
       else ++it;
   }
 
-}; 
+};
 
 
 
@@ -199,6 +199,6 @@ private:  //implementation detail
 
 #ifdef _MSC_VER
 #pragma warning ( pop )
-#endif 
+#endif
 
 #endif //__AVS_FOLDER_H__

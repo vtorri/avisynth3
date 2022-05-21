@@ -49,12 +49,12 @@ public:  //structors
 
   chrono(Timer& timer)
     : timer_( timer )
-  { 
+  {
     timer_.start();
   }
 
   ~chrono()
-  { 
+  {
     timer_.stop();
   }
 

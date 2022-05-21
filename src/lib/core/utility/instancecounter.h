@@ -74,8 +74,8 @@ public:
   {
     Lock lock(mutex_);
     return count_;
-  }  
-  
+  }
+
 
 private:  //implementation
 

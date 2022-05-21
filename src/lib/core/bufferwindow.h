@@ -33,11 +33,11 @@
 #include <cassert>
 
 
-namespace avs { namespace bw { 
+namespace avs { namespace bw {
 
 
-//declaration  
-struct SizeChanger; 
+//declaration
+struct SizeChanger;
 
 
 
@@ -80,7 +80,7 @@ template <int guard> struct misGuarded
   template <typename BW> bool operator()(BW const& bw) const
   {
     return bw.MinOffset() < guard                            //not enough head space
-        || bw.buffer_.Size() < bw.MaxOffset() + guard;       //not enough toe space        
+        || bw.buffer_.Size() < bw.MaxOffset() + guard;       //not enough toe space
   }
 };
 
@@ -108,7 +108,7 @@ template <> struct misGuarded<0>
 //
 //
 //
-template <int align, int guard, class Buffer> 
+template <int align, int guard, class Buffer>
 class buffer_window
 {
 
@@ -141,7 +141,7 @@ public:  //structors
     , pitch_( utility::RoundUp<Align>(Width()) )
     , offset_( Guard )
     , buffer_( create(Pitch() * Height() + Guard * 2) ) { }
- 
+
   //constructor using a given buffer
   template <class BufferOther>
   buffer_window(Dimension const& dim, BufferOther const& buffer, int offset)
@@ -181,7 +181,7 @@ public:  //structors
   }
 
   //generated copy constructor and destructor are fine
-  
+
 
 public:  //assignment
 
@@ -223,16 +223,16 @@ public:  //access
 
 public:  //comparison operators
 
-  bool operator==(BufferWindowType const& other) const 
-  { 
-    return buffer_ == other.buffer_ && offset_ == other.offset_ && dim_ == other.dim_; 
+  bool operator==(BufferWindowType const& other) const
+  {
+    return buffer_ == other.buffer_ && offset_ == other.offset_ && dim_ == other.dim_;
   }
-  
-  bool operator!=(BufferWindowType const& other) const 
-  { 
-    return buffer_ != other.buffer_ || offset_ != other.offset_ || dim_ != other.dim_; 
+
+  bool operator!=(BufferWindowType const& other) const
+  {
+    return buffer_ != other.buffer_ || offset_ != other.offset_ || dim_ != other.dim_;
   }
- 
+
 
 private:  //implementation details
 

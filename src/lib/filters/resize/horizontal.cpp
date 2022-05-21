@@ -41,7 +41,7 @@ namespace avs { namespace filters { namespace resize {
 
 Horizontal::Horizontal(PClip const& child, PFilter const& filter, int width, SubRange const& subrange)
   : Resize( child, filter, Dimension(width, child->GetVideoInfo()->GetHeight()), subrange )
-{ 
+{
   assert( subrange.whole() == child->GetVideoInfo()->GetWidth() );
 }
 

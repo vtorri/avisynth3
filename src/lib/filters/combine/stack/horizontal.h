@@ -38,14 +38,14 @@ namespace avs { namespace filters { namespace stack {
 //
 class Horizontal : public Stack
 {
- 
+
 protected:  //structors
 
   Horizontal(PClip const& left, PClip const& right);
 
   //generated destructor is fine
 
- 
+
 public:  //childs changing clone
 
   virtual PClip clone(PClip const& left, PClip const& right) const { return Create(left, right); }
@@ -58,9 +58,9 @@ private:  //Stack interface
 
 public:  //factory method and functor
 
-  static PClip Create(PClip const& left, PClip const& right) 
-  { 
-    return PClip( static_cast<Clip *>(new Horizontal(left, right)) ); 
+  static PClip Create(PClip const& left, PClip const& right)
+  {
+    return PClip( static_cast<Clip *>(new Horizontal(left, right)) );
   }
 
   struct Creator

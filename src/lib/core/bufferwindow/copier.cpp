@@ -37,7 +37,7 @@ void Copier::operator ()(BufferWindow const& src, BufferWindow& dst, Vecteur con
 
   Dimension toCopy = Dimension(bottomRight - topLeft);
 
-  Blitter::Get().Blit( src.Read() += topLeft - shift, dst.Write() += topLeft, toCopy ); 
+  Blitter::Get().Blit( src.Read() += topLeft - shift, dst.Write() += topLeft, toCopy );
 }
 
 

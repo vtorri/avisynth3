@@ -37,7 +37,7 @@ namespace avs { namespace filters { namespace convert {
 ToRGB24::ToRGB24(PClip const& child)
   : Convert( child, colorspace::Get::RGB24() ) { }
 
-  
+
 PClip ToRGB24::Create(PClip const& child)
 {
   PColorSpace space = child->GetVideoInfo()->GetColorSpace();

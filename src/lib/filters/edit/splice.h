@@ -42,7 +42,7 @@ namespace avs { namespace filters {
 //  Joins clips together keeping audio-video in synch
 //
 class AVS_NOVTABLE Splice : public clip::ManyChilds
-{  
+{
 
   PVideoInfo vi_;
   PEnvironment env_;

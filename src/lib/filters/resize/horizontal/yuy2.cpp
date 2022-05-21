@@ -58,9 +58,9 @@ void YUY2::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
   int const * pptrUV = chroma_.Get();
 
   int countY  = luma_.Count() >> 2;       //we use 4 coeffs per  Y loop
-  int countUV = chroma_.Count() >> 1;     //we use 2 coeffs per UV loop 
+  int countUV = chroma_.Count() >> 1;     //we use 2 coeffs per UV loop
 
-  
+
   for( int y = dst.height; y-- > 0; src.to(0, 1), dst.to(0, 1) )
   {
 
@@ -74,7 +74,7 @@ void YUY2::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
 
       xor         eax, eax                //eax = 0
       mov         ebx, src.ptr
-      mov         ecx, src.width         
+      mov         ecx, src.width
       mov         esi, tempY
       mov         edi, tempUV
 
@@ -90,12 +90,12 @@ void YUY2::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
       movq        mm3, mm2                //mm3 = VYUY|VYUY
       pand        mm2, mm7                //mm2 = 0Y0Y0Y0Y
       psrlw       mm3, 8                  //mm5 = Vb|Ub|Va|Ua
-      movq        [esi + 8*eax], mm2      //writes to tempY      
+      movq        [esi + 8*eax], mm2      //writes to tempY
       punpckhwd   mm4, mm3                //mm4 = Vb| 0|Ub| 0
       punpcklwd   mm3, mm0                //mm3 =  0|Va| 0|Ua
       por         mm3, mm4                //mm3 = Vb|Va|Ub|Ua
       movq        [edi + 8*eax], mm3      //writes to tempUV
-  
+
       inc         eax                     //++eax
       dec         ecx                     //--ecx
       jnz         deintloop
@@ -146,7 +146,7 @@ void YUY2::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
       dec         [esp + 4]               //--aloop counter
       jnz         aloopY
 
-      pop         edx                     //restore edx (chroma pattern) from stack 
+      pop         edx                     //restore edx (chroma pattern) from stack
       pop         eax                     //get rid of obsolete aloopY counter
 
       mov         eax, [edx]              //eax = offset0
@@ -196,7 +196,7 @@ void YUY2::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
       pslld       mm0, 2                  //mm0 =  Y1--|Y0--   compensate 14 bits fractional
       pslld       mm2, 2                  //mm2 =  Y3--|Y2--   compensate 14 bits fractional
       packuswb    mm0, mm2                //mm0 =  y-y-|y-y-
-      psrlw       mm0, 8                  //mm0 =  0y0y|0y0y  
+      psrlw       mm0, 8                  //mm0 =  0y0y|0y0y
       por         mm0, mm4                //mm0 =  vyuy|vyuy
 
       mov         ebx, dstp               //ebx points to dst
@@ -207,7 +207,7 @@ void YUY2::ResizeFrame(VideoFrame const& source, VideoFrame& target) const
       jnz         xloop
     }
 
-#else 
+#else
 
   //use nasm code
   resize_horizontal_yuy2_mmx_nasm(src.ptr, dst.ptr, src.width, tempY, tempUV,

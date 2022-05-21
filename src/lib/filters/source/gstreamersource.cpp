@@ -83,16 +83,16 @@ BYTE * GstreamerSource::GetAudio(BYTE * buffer, long long start, long count) con
 }
 
 
-PClip GstreamerSource::Create(std::string const& fileName, int videoIndex, int audioIndex, PEnvironment const& env) 
-{ 
+PClip GstreamerSource::Create(std::string const& fileName, int videoIndex, int audioIndex, PEnvironment const& env)
+{
   source::gstreamer::Factory factory(fileName, videoIndex, audioIndex);
-  
+
   if (!factory.vi()->HasVideo() && !factory.vi()->HasAudio()) {
     std::cout << "** no audio, nor video" << std::endl;
     return filters::MessageClip::Create("No audio, nor video", env );
   }
   else
-    return PClip( static_cast<Clip *>(new GstreamerSource(factory, env)) ); 
+    return PClip( static_cast<Clip *>(new GstreamerSource(factory, env)) );
 }
 
 

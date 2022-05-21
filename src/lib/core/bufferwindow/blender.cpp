@@ -55,14 +55,14 @@ void Blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom
 
   if ( blendIn == blendFrom || noBlend_ )
     return;
-  
+
   if ( fullBlend_ )
   {
     blendIn = blendFrom;
     return;
   }
 
-  //we have to work     
+  //we have to work
   WindowPtr dst = blendIn.Write();
   CWindowPtr src = blendFrom.Read();
 
@@ -75,13 +75,13 @@ void Blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom
   /////////////////////
   // Blends two planes.
   // A weight between the two planes are given.
-  // Has rather ok pairing, 
+  // Has rather ok pairing,
   // and has very little memory usage.
   // Processes four pixels per loop, so rowsize must be mod 4.
   // Thanks to ARDA for squeezing out a bit more performance.
   // (c) 2002 by sh0dan.
   /////////
- 
+
   __asm
   {
     movq mm5, [rounder]
@@ -106,11 +106,11 @@ void Blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom
      pxor mm3, mm3
     punpcklbw mm1, [edi + eax]  // y300 y200 y100 y000
      psrlw mm0, 8               // 00y3 00y2 00y1 00y0
-    psrlw mm1, 8                // 00y3 00y2 00y1 00y0  
+    psrlw mm1, 8                // 00y3 00y2 00y1 00y0
      pxor mm2, mm2
     movq mm4, mm1
      punpcklwd mm2, mm0
-    punpckhwd mm3, mm0  
+    punpckhwd mm3, mm0
      punpcklwd mm4, mm6
     punpckhwd mm1, mm6
      por mm2, mm4
@@ -120,9 +120,9 @@ void Blender<1>::operator()(BufferWindow& blendIn, BufferWindow const& blendFrom
      paddd mm2, mm5       // Add rounder
     paddd mm3, mm5
      psrld mm2, 15        // Shift down, so there is no fraction.
-    psrld mm3, 15        
+    psrld mm3, 15
     packssdw mm2, mm3
-    packuswb mm2, mm6 
+    packuswb mm2, mm6
     movd [esi + eax], mm2
 
     add eax, 4

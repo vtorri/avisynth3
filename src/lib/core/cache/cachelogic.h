@@ -69,8 +69,8 @@ public:  //CacheLogic interface
 
   bool Drop();
 
-  long GetCount() { return count_; } 
-  
+  long GetCount() { return count_; }
+
 
 private:  //implementation
 

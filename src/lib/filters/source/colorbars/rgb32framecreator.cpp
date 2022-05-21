@@ -57,20 +57,20 @@ CPVideoFrame RGB32FrameCreator::operator()() const
 
 
   int y = 0;
-  
+
   for ( ; y < dim_.GetHeight() / 4; ++y, dst.to(0, 1) )
   {
     int x = 0;
     int i = 0;
-  
-    for ( ; i < 4; ++i ) 
+
+    for ( ; i < 4; ++i )
       for ( ; x < ( dim_.GetWidth() * (i + 1) * 5 + 14) / 28; ++x )
         dst.ptr[x] = bottom_quarter[i];
-            
-    for ( ; i < 7; ++i )        
+
+    for ( ; i < 7; ++i )
       for ( ; x < ( dim_.GetWidth() * (i + 12) + 10) / 21; ++x )
         dst.ptr[x] = bottom_quarter[i];
-      
+
     for ( ; x < dim_.GetWidth(); ++x )
       dst.ptr[x] = bottom_quarter[7];
   }
@@ -81,14 +81,14 @@ CPVideoFrame RGB32FrameCreator::operator()() const
 
     for ( int i = 0; i < 7; ++i )
       for ( ; x < ( dim_.GetWidth() * (i + 1) + 3 ) / 7; ++x )
-        dst.ptr[x] = two_thirds_to_three_quarters[i];            
+        dst.ptr[x] = two_thirds_to_three_quarters[i];
   }
 
   for ( ; y < dim_.GetHeight(); ++y, dst.to(0, 1) )
-  {  
+  {
     int x = 0;
-   
-    for (int i = 0; i < 7; ++i )         
+
+    for (int i = 0; i < 7; ++i )
       for ( ; x < ( dim_.GetWidth() * (i + 1) + 3) / 7; ++x )
         dst.ptr[x] = top_two_thirds[i];
   }

@@ -42,11 +42,11 @@ class CPU
 public:  //structors
 
   CPU() { }
-  
+
   //generated destructor is fine
 
 
-public:  
+public:
 
   bool SupportsMMX() const;
   bool SupportsSSE() const;

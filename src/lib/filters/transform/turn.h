@@ -167,7 +167,7 @@ public:  //Turn interface
   virtual PClip MirrorTurn(PClip const& child) const;
 
   virtual PClip TurnLeft() const { return GetChild(); }
-  virtual PClip TurnRight() const; 
+  virtual PClip TurnRight() const;
 
 
 public:  //factory method

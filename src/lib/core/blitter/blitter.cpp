@@ -40,7 +40,7 @@ BYTE * Blitter::Blit(CWindowPtr const& src, BYTE * ptr, int pitch) const
   return ptr;
 }
 
-  
+
 BYTE const * Blitter::Blit(BYTE const * src, int pitch, WindowPtr const& dst) const
 {
   BYTE * dstp = dst.ptr;
@@ -50,7 +50,7 @@ BYTE const * Blitter::Blit(BYTE const * src, int pitch, WindowPtr const& dst) co
   return src;
 }
 
-  
+
 void Blitter::Blit(CWindowPtr const& src, WindowPtr const& dst, Dimension const& dim) const
 {
   BYTE const * srcp = src.ptr;

@@ -42,7 +42,7 @@ namespace avs { namespace filters {
 //
 //
 class RGBAdjust : public clip::onechild::FrameMakerPipeline
-                , public clip::onechild::Concrete  
+                , public clip::onechild::Concrete
                 , public clip::framemaker::Concrete
 {
 

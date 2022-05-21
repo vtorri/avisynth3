@@ -45,7 +45,7 @@ class KillVideo;
 class AudioDub : public clip::twochilds::Concrete
                , public clip::Refactorable<KillAudio>
                , public clip::Refactorable<KillVideo>
-{  
+{
 
 public:  //structors
 

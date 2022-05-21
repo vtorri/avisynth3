@@ -38,8 +38,8 @@ namespace avs { namespace parser { namespace functor {
 //  pops the stack n times
 //
 template <int n>
-struct popper 
-{ 
+struct popper
+{
   void operator()(VMState& state) const
   {
     state.pop();

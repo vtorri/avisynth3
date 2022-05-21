@@ -51,7 +51,7 @@ template <typename R, typename A1>
 struct traits<R (A1)>
 {
   typedef R ResultType;
-  
+
   typedef A1 Arg1Type;
 
   enum { arity = 1 };
@@ -74,7 +74,7 @@ template <typename R, typename A1, typename A2, typename A3>
 struct traits<R (A1, A2, A3)>
 {
   typedef R ResultType;
-  
+
   typedef A1 Arg1Type;
   typedef A2 Arg2Type;
   typedef A3 Arg3Type;

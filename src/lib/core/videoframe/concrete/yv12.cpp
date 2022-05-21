@@ -39,9 +39,9 @@ YV12::YV12(Dimension const& dim, FrameType type, BufferWindow const& y, BufferWi
 
 
 
-CPVideoFrame YV12::clone() const 
-{ 
-  return CPVideoFrame( static_cast<VideoFrame *>(new YV12(*this)) ); 
+CPVideoFrame YV12::clone() const
+{
+  return CPVideoFrame( static_cast<VideoFrame *>(new YV12(*this)) );
 }
 
 

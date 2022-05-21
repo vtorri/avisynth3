@@ -32,7 +32,7 @@ namespace avs { namespace filters { namespace resize { namespace filter {
 
 
 
-/////////////////////////////////////////////////////////////////////////////  
+/////////////////////////////////////////////////////////////////////////////
 //  filter::MitchellNetravali
 //
 //  Mitchell-Netraveli filter, used in BicubicResize
@@ -49,9 +49,9 @@ public:  //structors
 
   //generated destructor is fine
 
-  
+
 public:  //Filter interface
-  
+
   virtual double operator()(double x) const;
 
   virtual double support() const { return 2.0; }

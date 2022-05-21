@@ -63,9 +63,9 @@ PColorSpace Map::operator[](std::string const& name) const
   Lock lock(mutex_);
 
   //search name to colorspace map
-  NameToColorSpaceMap::const_iterator it = nameMap_.find(name);  
+  NameToColorSpaceMap::const_iterator it = nameMap_.find(name);
   if ( it != nameMap_.end() )            //if found inside
-    return it->second->Get(); 
+    return it->second->Get();
 
   throw exception::cspace::Unknown();
 }

@@ -94,7 +94,7 @@ public:
 
 
 public:  //structors
-  
+
   VMOperation() { }
 
   VMOperation(VMOperation const& other)

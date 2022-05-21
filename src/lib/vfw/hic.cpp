@@ -52,9 +52,9 @@ bool Hic::DecompressQuery(BitmapInfoHeader const& input, BitmapInfoHeader const&
 
 void Hic::DecompressBegin(BitmapInfoHeader const& input, BitmapInfoHeader const& output)
 {
-  LRESULT result 
+  LRESULT result
       = ICDecompressBegin(hic_.get(), const_cast<BitmapInfoHeader *>(&input), const_cast<BitmapInfoHeader *>(&output));
-    
+
   if ( result == ICERR_UNSUPPORTED )
   {
     ex_ = true;

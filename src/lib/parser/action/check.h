@@ -35,7 +35,7 @@ struct Check
 {
 
   //check if type allows infix notation, return it if yes, else throw
-  static char IsInfixable(char type);  
+  static char IsInfixable(char type);
 
   //check if type is typeExpected, if not throw
   static void TypeIsExpected(char type, char typeExpected);

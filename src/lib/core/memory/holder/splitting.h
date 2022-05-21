@@ -40,14 +40,14 @@ namespace avs { namespace memory { namespace holder {
 class Splitting : public Holder
 {
 
-  //inner type  
+  //inner type
   struct SplitCounter
   {
     boost::shared_ptr<void> counter_;
 
     int Count() const { return counter_.use_count(); }
-  }; 
-  
+  };
+
   //members
   int32 size_;
   int32 offset_;

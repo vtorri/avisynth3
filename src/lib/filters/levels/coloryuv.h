@@ -33,7 +33,7 @@
 
 
 namespace avs { namespace filters {
-  
+
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -42,7 +42,7 @@ namespace avs { namespace filters {
 //
 //
 class AVS_NOVTABLE ColorYUV : public clip::onechild::FrameMakerPipeline
-                            , public clip::onechild::Concrete  
+                            , public clip::onechild::Concrete
                             , public clip::caching::Concrete
 {
 
@@ -55,7 +55,7 @@ public:  //structors
 
 public:  //Clip general interface
 
-  virtual CPVideoInfo GetVideoInfo() const { return GetChildVideoInfo(); }  
+  virtual CPVideoInfo GetVideoInfo() const { return GetChildVideoInfo(); }
 
 
 protected:  //implementation helpers
@@ -70,7 +70,7 @@ protected:  //implementation helpers
   static int (*AdjustV(coloryuv::Mode mode))(int);
 
 
-public:  //factory method 
+public:  //factory method
 
 /*  static PClip Create(PClip const& child, Levels const& Y, float gamma, Levels const& U, Levels const& V
                       InputParameters Y,

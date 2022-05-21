@@ -44,7 +44,7 @@ Script::definition<Scanner>::definition(Script const & self)
   using namespace lazy;
   using namespace phoenix;
 
-      
+
   top
       =  *(   statement( CodeCouple(), self.localCtxt, self.globalCtxt, 'c' )
               [
@@ -77,7 +77,7 @@ Script::definition<Scanner>::definition(Script const & self)
       >>  spirit::eol_p
           [
             bind(&function::Table::DefineScriptFunction)
-                ( second(self.globalCtxt), function.ident, function.code, function.termRecursive )                    
+                ( second(self.globalCtxt), function.ident, function.code, function.termRecursive )
           ]
       ;
 
@@ -102,8 +102,8 @@ Script::definition<Scanner>::definition(Script const & self)
                   , ref_(function.localCtxt)
                   , self.globalCtxt
                   , first(function.ident)
-                  , construct_<value::TRecurseInfo>( ref_(third(function.ident)), ref_(function.termRecursive) ) 
-                  ) 
+                  , construct_<value::TRecurseInfo>( ref_(third(function.ident)), ref_(function.termRecursive) )
+                  )
               [
                 function.code += arg1
               ]
@@ -111,7 +111,7 @@ Script::definition<Scanner>::definition(Script const & self)
           )
       >>  '}'
       ;
-  
+
 }
 
 

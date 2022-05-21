@@ -50,7 +50,7 @@ CPVideoFrame KillVideo::GetFrame(long /*n*/) const
 
 
 PClip KillVideo::Create(PClip const& child)
-{ 
+{
   CPVideoInfo vi = child->GetVideoInfo();
 
   if ( ! vi->HasAudio() )                              //if child has no audio
@@ -58,7 +58,7 @@ PClip KillVideo::Create(PClip const& child)
   if ( ! vi->HasVideo() )                              //if child has no video
     return child;                                      //child is equivalent
 
-  return PClip( static_cast<Clip *>(new KillVideo(child)) ); 
+  return PClip( static_cast<Clip *>(new KillVideo(child)) );
 }
 
 

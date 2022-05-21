@@ -39,7 +39,7 @@ CodeCouple& CodeCouple::operator+=(ElementalOperation const& op)
   return *this;
 }
 
-  
+
 CodeCouple& CodeCouple::operator-=(StatementOperation const& op)
 {
   if ( ! after_.empty() )

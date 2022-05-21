@@ -65,36 +65,36 @@ void FromYV12::ConvertFrame(CWindowPtr Y, CWindowPtr U, CWindowPtr V, WindowPtr 
       long scaledChromaToB = 32768 + UtoBCoeff * (U[0] - 128);
 
       BYTE * ptr = dst.at(0, 0);
-      
+
       //top-left pixel
       long scaledY = (Y[0] - 16) * YCoeff;
       ptr[0] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToR ) >> 16);
       ptr[1] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToG ) >> 16);
       ptr[2] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToB ) >> 16);
-      ptr[3] = 255;             
+      ptr[3] = 255;
 
       //top-right pixel
       scaledY = (Y[1] - 16) * YCoeff;
       ptr[4] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToR ) >> 16);
       ptr[5] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToG ) >> 16);
       ptr[6] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToB ) >> 16);
-      ptr[7] = 255;             
+      ptr[7] = 255;
 
       ptr = dst.at(0, 1);
 
       //bottom-left pixel
-      scaledY = (Y(0, 1) - 16) * YCoeff;      
+      scaledY = (Y(0, 1) - 16) * YCoeff;
       ptr[0] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToR ) >> 16);
       ptr[1] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToG ) >> 16);
       ptr[2] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToB ) >> 16);
-      ptr[3] = 255;             
+      ptr[3] = 255;
 
       //bottom-right pixel
       scaledY = (Y(1, 1) - 16) * YCoeff;
       ptr[4] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToR ) >> 16);
       ptr[5] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToG ) >> 16);
       ptr[6] = saturate<BYTE, 0, 255>(( scaledY + scaledChromaToB ) >> 16);
-      ptr[7] = 255;             
+      ptr[7] = 255;
     }
 }
 

@@ -67,11 +67,11 @@ public:  //structors
 
 protected:  //IUnknown like
 
-  unsigned long AddRef_() 
-  { 
-    return ++refCount_; 
+  unsigned long AddRef_()
+  {
+    return ++refCount_;
   }
-	
+
   unsigned long Release_()
   {
     unsigned long ref = --refCount_;

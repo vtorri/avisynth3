@@ -36,12 +36,12 @@ namespace avs {
 //  window_ptr<Data>
 //
 //  Allows manipulation of all plane datas in a friendly manner
-//  
+//
 //  You fetch all info in one call (you rarely need a only a part anyway)
 //  and then access it through the appropriate attribute
 //
 template <class Data>
-struct window_ptr 
+struct window_ptr
 {
 
   Data * ptr;
@@ -65,11 +65,11 @@ struct window_ptr
     : ptr( (Data *)other.ptr )
     , pitch( other.pitch * sizeof(T) / sizeof(Data) )
     , width( other.width * sizeof(T) / sizeof(Data) )
-    , height( other.height ) 
-  { 
+    , height( other.height )
+  {
     assert( pitch * sizeof(Data) == other.pitch * sizeof(T) );
     assert( width * sizeof(Data) == other.width * sizeof(T) );
-  }  
+  }
 
 
   //data manip methods

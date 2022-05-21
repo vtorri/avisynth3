@@ -68,7 +68,7 @@ void Splice::CheckCompatible(PClip const& clip)
 
   if ( self->HasVideo() )              //if video
     self->CheckVideoMatch(*other);     //check other matchs
-  else 
+  else
     if ( other->HasVideo() )           //other has video, but not self
       self->CheckHasVideo();           //trigger exception
 
@@ -104,7 +104,7 @@ bool Splice::MergingPush(PClip const& child)
   {
     boost::shared_ptr<Trim const> left = boost::dynamic_pointer_cast<Trim const>(childs_.back());
     boost::shared_ptr<Trim const> right = boost::dynamic_pointer_cast<Trim const>(child);
-  
+
     if (  left                                    //if left is a Trim
        && right                                   //if right is a Trim
        && left->GetChild() == right->GetChild()   //if they have same child

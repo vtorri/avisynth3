@@ -41,8 +41,8 @@ namespace avs {
 //  ByteMap
 //
 //  Maps byte values into processed (byte) values
-//  This class is meant to be used as a base class, subclass constructor doing map init 
-//  
+//  This class is meant to be used as a base class, subclass constructor doing map init
+//
 class ByteMap
 {
 
@@ -106,6 +106,6 @@ public:  //use method
 
 
 
-} //namespace avs 
+} //namespace avs
 
 #endif //__AVS_BYTEMAP_H__

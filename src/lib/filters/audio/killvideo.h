@@ -71,7 +71,7 @@ protected:  //GetKey method
 
 public:  //factory method and functor
 
-  static PClip Create(PClip const& child); 
+  static PClip Create(PClip const& child);
 
   struct Creator
   {

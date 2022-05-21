@@ -40,7 +40,7 @@ namespace avs { namespace clip { namespace onechild {
 //  only works on audio without caring at all about video
 //  so provides appropriate Refactor behavior for KillAudio and KillVideo
 //
-class NOVTABLE AudioProcess : public virtual OneChild               
+class NOVTABLE AudioProcess : public virtual OneChild
                             , public Refactorable<filters::KillAudio>
                             , public FinalRefactorable<filters::KillVideo>
 {

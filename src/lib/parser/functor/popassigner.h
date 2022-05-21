@@ -46,10 +46,10 @@ struct popassigner
   popassigner(Holder const& holder)
     : holder_( holder ) { }
 
-  void operator()(VMState& state) const 
-  { 
-    holder_(state) = state.top(); 
-    state.pop(); 
+  void operator()(VMState& state) const
+  {
+    holder_(state) = state.top();
+    state.pop();
   }
 
 };

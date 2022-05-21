@@ -35,7 +35,7 @@
 namespace avs {
 
 
-  
+
 PVideoInfo VideoInfo::Create() { return CPVideoInfo( static_cast<VideoInfo *>(new videoinfo::Concrete()) ); }
 
 
@@ -53,7 +53,7 @@ bool VideoInfo::IsPlanar() const { return GetColorSpace()->IsPlanar(); }
 bool VideoInfo::IsInterLeaved() const { return GetColorSpace()->IsInterleaved(); }
 
 bool VideoInfo::IsColorSpace(PColorSpace const& space) { return *GetColorSpace() == *space; }
-  
+
 bool VideoInfo::IsRGB24() const { return GetColorSpace()->IsRGB24(); }
 bool VideoInfo::IsRGB32() const { return GetColorSpace()->IsRGB32(); }
 bool VideoInfo::IsYUY2() const { return GetColorSpace()->IsYUY2(); }
@@ -76,7 +76,7 @@ long long VideoInfo::AudioSamplesFromFrames(int frames) const
 BYTE * VideoInfo::GetBlankNoise(BYTE * buffer, int count) const
 {
   if ( count <= 0 )      //handles special case, count < 0 (allowed)
-    return buffer;       //do nothing      
+    return buffer;       //do nothing
 
   //NB: dummy implementation     TODO: implement me !!!!!!
   return buffer + BytesPerAudioSample() * count;

@@ -46,9 +46,9 @@ struct assigner
   assigner(Holder const& holder)
     : holder_( holder ) { }
 
-  void operator()(VMState& state) const 
-  { 
-    holder_(state) = state.top(); 
+  void operator()(VMState& state) const
+  {
+    holder_(state) = state.top();
   }
 
 };

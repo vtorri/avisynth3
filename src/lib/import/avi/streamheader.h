@@ -46,14 +46,14 @@ struct StreamHeader
   unsigned short priority;
   unsigned short language;
   unsigned long	initialFrames;
-  unsigned long scale;	
-  unsigned long rate;	
+  unsigned long scale;
+  unsigned long rate;
   unsigned long	start;
   unsigned long	length;
   unsigned long	suggestedBufferSize;
   unsigned long	quality;
-  unsigned long sampleSize;  
-  
+  unsigned long sampleSize;
+
   struct Rectange
   {
     short left;

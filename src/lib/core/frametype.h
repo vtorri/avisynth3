@@ -41,7 +41,7 @@ enum FrameType
   PROGRESSIVE,
   INTERLACED_TFF,
   INTERLACED_BFF,
-  UNKNOWN  
+  UNKNOWN
 };
 
 

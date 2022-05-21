@@ -65,9 +65,9 @@ protected:  //assignment
   }
 
   void swap(Base& other)
-  { 
-    std::swap(count_, other.count_); 
-    pattern_.swap(other.pattern_); 
+  {
+    std::swap(count_, other.count_);
+    pattern_.swap(other.pattern_);
   }
 
 
@@ -76,16 +76,16 @@ public:  //access
   //gets pattern data
   int const * Get() const { return reinterpret_cast<int *>(pattern_.Get()); }
 
-  //always return the coeffs count per pixel, not the number of loops expected    
+  //always return the coeffs count per pixel, not the number of loops expected
   int Count() const { return count_; }
 
 
 protected:  //at the disposition of subclasses constructor
 
-  void Init(int count, int size) 
-  { 
-    count_ = count; 
-    pattern_.Reset( size << 2, block::OwnedCreator(pattern_, false) ); 
+  void Init(int count, int size)
+  {
+    count_ = count;
+    pattern_.Reset( size << 2, block::OwnedCreator(pattern_, false) );
   }
 
   int * Get() { return reinterpret_cast<int *>(pattern_.Get()); }

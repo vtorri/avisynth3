@@ -65,8 +65,8 @@ ICMFrameDecompressor::~ICMFrameDecompressor()
 
 OwnedBlock ICMFrameDecompressor::operator()(bool keyframe, bool preroll, OwnedBlock const& src, long bytesRead) const
 {
- 
-  input_->biSizeImage = bytesRead;  
+
+  input_->biSizeImage = bytesRead;
   OwnedBlock dst( src.GetEnvironment(), output_.biSizeImage + Guard* 2, true );
 
   BYTE * srcPtr = src.get() + Guard;   //position where the data starts

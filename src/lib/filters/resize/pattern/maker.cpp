@@ -34,8 +34,8 @@ namespace avs { namespace filters { namespace resize { namespace pattern {
 
 
 Maker::Maker(Filter const& filter, SubRange const& subrange, int size)
-  : filter_( filter )    
-  , scale( subrange.length() / size )  
+  : filter_( filter )
+  , scale( subrange.length() / size )
   , step( std::min(size / subrange.length(), 1.0) )
   , support( filter.support() / step )
   , count_( (int)ceil(support * 2) )

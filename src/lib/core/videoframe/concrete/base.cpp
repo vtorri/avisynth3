@@ -78,7 +78,7 @@ void Base::GetFlowProperties(PKey const& key, PropertyVector& propVector) const
   typedef PropertyMultiMap::const_iterator c_iter;
   std::pair<c_iter, c_iter> range = flows_.equal_range(key);
 
-  std::transform(range.first, range.second, std::back_inserter(propVector), 
+  std::transform(range.first, range.second, std::back_inserter(propVector),
     boost::bind( &PropertyMultiMap::value_type::second, _1) );
 }
 

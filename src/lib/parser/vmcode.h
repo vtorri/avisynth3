@@ -59,11 +59,11 @@ public:  //structors
 
 public:  //code accumulation methods
 
-  ThisType& operator+=(Operation const& op) 
-  { 
+  ThisType& operator+=(Operation const& op)
+  {
     assert( ! op.empty() );
-    code_.push_back(op); 
-    return *this; 
+    code_.push_back(op);
+    return *this;
   }
 
   ThisType& operator+=(ThisType const& other)

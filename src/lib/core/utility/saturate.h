@@ -19,7 +19,7 @@
 // Linking Avisynth statically or dynamically with other modules is making a
 // combined work based on Avisynth.  Thus, the terms and conditions of the GNU
 // General Public License cover the whole combination.
-  
+
 
 #ifndef __AVS_UTILITY_SATURATE_H__
 #define __AVS_UTILITY_SATURATE_H__

@@ -54,8 +54,8 @@ AviFileSource::AviFileSource(std::string const& fileName, PEnvironment const& en
   InitAudio( GetStream(aviFile_, streamtypeAUDIO), *vi);
   InitVideo( GetStream(aviFile_, streamtypeVIDEO), *vi);
 
-  vi_ = vi;                                                      //save it as this' 
-  
+  vi_ = vi;                                                      //save it as this'
+
 }
 
 
@@ -64,7 +64,7 @@ AviFileSource::PAVIStream AviFileSource::GetStream(PAVIFile const& aviFile, unsi
   IAVIStream * stream = NULL;
   //handles AVIERR_MEMORY error case, AVIERR_NODATA is naturally handled by returning NULL in that case
   if ( aviFile->GetStream(&stream, fccType, 0) == AVIERR_MEMORY )
-    throw std::bad_alloc(); 
+    throw std::bad_alloc();
 
   return PAVIStream( stream, com::Deleter<IAVIStream>() );
 }
@@ -78,15 +78,15 @@ boost::shared_ptr<void> AviFileSource::ReadFormat(PAVIStream const& aviStream)
   boost::shared_ptr<void> result( new BYTE[size] );   //allocates it into a shared_ptr
 
   HRESULT hResult = aviStream->ReadFormat(0, result.get(), &size);
-  assert( hResult == S_OK ); 
+  assert( hResult == S_OK );
 
   return result;
 }
 
 
-PClip AviFileSource::Create(std::string const& fileName, PEnvironment const& env) 
-{ 
-  return PClip( static_cast<Clip *>(new AviFileSource(fileName, env)) ); 
+PClip AviFileSource::Create(std::string const& fileName, PEnvironment const& env)
+{
+  return PClip( static_cast<Clip *>(new AviFileSource(fileName, env)) );
 }
 
 

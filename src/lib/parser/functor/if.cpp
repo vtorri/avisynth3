@@ -36,7 +36,7 @@ namespace avs { namespace parser { namespace functor {
 
 OpType IfThen::operator ()(VMState& state) const
 {
-  OpType result = NORMAL;    
+  OpType result = NORMAL;
   bool cond = boost::get<bool>(state.top());
   state.pop();
 

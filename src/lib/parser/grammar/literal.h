@@ -40,7 +40,7 @@ namespace spirit = boost::spirit;
 
 
 namespace avs { namespace parser { namespace grammar {
-  
+
 
 
 namespace closures {
@@ -53,7 +53,7 @@ template <class Type> struct Value : spirit::closure<Value<Type>, Type>
 
 
 } //namespace closures
- 
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,9 +65,9 @@ struct Literal : public spirit::grammar<Literal, closures::Value<value::Literal>
 {
 
   template <typename ScannerT>
-  struct definition 
+  struct definition
   {
-        
+
     definition(Literal const& self);
 
     spirit::rule<ScannerT> const & start() const { return top; }
@@ -90,8 +90,8 @@ typedef spirit::scanner< char const *
                                >
                            , spirit::match_policy
                            , spirit::action_policy
-                           > 
-                       > 
+                           >
+                       >
         Scanner;
 
 

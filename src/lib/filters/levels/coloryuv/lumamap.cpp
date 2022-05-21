@@ -42,12 +42,12 @@ LumaMap::LumaMap(Levels const& levels, float gamma, int (* adjust)(int), bool co
   for ( int i = 0; i < 256; ++i, ++ptr )
   {
     float value = static_cast<float>(adjust(i));
-      
+
     value += value * levels.gain / 256 + (value - 128) * levels.contrast / 256 + levels.brightness;
-      
+
     if ( gamma != 0 && value > 0 )
       value = 256 * std::pow( value / 256, 1 / std::max(0.01f, (gamma + 256) / 256) );
-    
+
     int val = static_cast<int>( value + 0.5f );
 
     *ptr = coring ? utility::saturate<BYTE, 16, 235>(val)

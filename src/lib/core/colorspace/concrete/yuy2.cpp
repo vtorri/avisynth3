@@ -33,7 +33,7 @@ namespace avs { namespace colorspace { namespace concrete {
 
 
 
-void YUY2::Check(int x, int y, bool interlaced) const 
+void YUY2::Check(int x, int y, bool interlaced) const
 {
   Interleaved::Check(x, y, interlaced);
   if ( x & 1 )                                                            //if x is not even

@@ -37,14 +37,14 @@ namespace avs { namespace clip { namespace folded {
 //
 //  helper template to create a folding clip subclass from a clip class
 //
-template <class SuperClass, class Key, class Expired = WeakExpired> 
+template <class SuperClass, class Key, class Expired = WeakExpired>
 class Make : public Folded<Key, Expired>
-           , public SuperClass        
+           , public SuperClass
 {
 
 public:  //structors
 
-  template <typename T> 
+  template <typename T>
   Make(T const& t)
     : SuperClass( t ) { }
 
@@ -60,7 +60,7 @@ public:  //Simplify method
   virtual PClip Simplify() const
   {
     PClip sp = SuperClass::Simplify();
-    
+
     return sp != shared_from_this() ? sp : FoldedType::Simplify();
   }
 

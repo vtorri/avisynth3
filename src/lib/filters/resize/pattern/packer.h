@@ -38,7 +38,7 @@ namespace avs { namespace filters { namespace resize { namespace pattern {
 //  helper class to pack offset and coeffs into a pattern
 //
 //
-template <int groupCoeffPairBy, int packerCount> 
+template <int groupCoeffPairBy, int packerCount>
 class packer : private boost::noncopyable
 {
 

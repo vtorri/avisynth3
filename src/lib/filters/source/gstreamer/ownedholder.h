@@ -38,7 +38,7 @@ namespace avs { namespace filters { namespace source { namespace gstreamer {
 //////////////////////////////////////////////////////////////////////////////////////////
 //  OwnedHolder
 //
-//  
+//
 //
 class OwnedHolder : public block::holder::OwnedBase
 {

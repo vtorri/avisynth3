@@ -71,28 +71,28 @@ Expression::definition<Scanner>::definition(Expression const & self)
   typedef functor::assigner<functor::GlobalVar> GlobalVarAssigner;
 
 
-  top 
+  top
       =   expression( char(), third(self.localCtxt) )   //init expression.implicit to true if last defined
-          [ 
+          [
             second(self.value) = arg1                   //set expr type in the grammar closure
           ]
       ;
-    
-  expression 
+
+  expression
       =   (   local_assign_expr   |   global_assign_expr    )
-              [ 
+              [
                 third(self.value) = val(true)      //report the expression parsed is an affectation
               ]
           |   equality_expr
-              [ 
+              [
                 third(self.value) = val(false)     //report it is not
               ]
           ;
 
   local_assign_expr
       =   spirit::lazy_p( first(self.localCtxt) )   //use local VarTable (1st member of localCtxt)
-          [ 
-            local_assign_expr.value = arg1 
+          [
+            local_assign_expr.value = arg1
           ]
       >>  '='
       >>  expression( char(), expression.implicit )
@@ -148,7 +148,7 @@ Expression::definition<Scanner>::definition(Expression const & self)
       ;
 
   binaryop_helper
-      =   spirit::eps_p 
+      =   spirit::eps_p
           [
             first(self.value) += first(binaryop_helper.value),
             --second(self.localCtxt)
@@ -159,7 +159,7 @@ Expression::definition<Scanner>::definition(Expression const & self)
       =   (   nested_expr          //a nested expr (ie ( expr ) )
           |   call_expr            //a function call
           |   (   literal          //a literal
-                  [ 
+                  [
                     first(self.value) += first(arg1),   //accumulate code
                     atom_expr.value = second(arg1)      //update type
                   ]
@@ -167,7 +167,7 @@ Expression::definition<Scanner>::definition(Expression const & self)
                   [
                     first(self.value) += construct_<LocalVarPusher>( second(self.localCtxt) - arg1 )
                   ]
-              |   global_var_expr  //a global variable  
+              |   global_var_expr  //a global variable
               )
               [
                 ++second(self.localCtxt)       //these 3 don't update stack size themselves
@@ -239,7 +239,7 @@ Expression::definition<Scanner>::definition(Expression const & self)
       =   spirit::ch_p('[')
         //  [
         //    bind(&action::Check::SupportsSubscript)(atom_expr.value)
-        //  ]          
+        //  ]
       >>  fixed_type_expr( 'i' )
       >>  ','
       >>  (   spirit::str_p("end")
@@ -266,19 +266,19 @@ Expression::definition<Scanner>::definition(Expression const & self)
 
   infix_helper
       =   spirit::ch_p('.')
-          [   //check if infix allowed (throw if not)                
+          [   //check if infix allowed (throw if not)
             infix_helper.value = bind(&action::Check::IsInfixable)(atom_expr.value)
           ]
           >>  call_expr( infix_helper.value )
       ;
- 
+
   fixed_type_expr
       =   expression( char(), false )
           [
             bind(&action::Check::TypeIsExpected)(arg1, fixed_type_expr.value)
           ]
       ;
-  
+
 }
 
 

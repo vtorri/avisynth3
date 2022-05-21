@@ -27,7 +27,7 @@
 #ifdef _MSC_VER
 #pragma warning ( push )           //push warning state
 #pragma warning (disable : 4275)   //non dll-interface class 'boost::noncopyable' used as base for dll-interface class 'boost::mutex'
-#endif 
+#endif
 
 //boost include
 #include <boost/thread/mutex.hpp>    //for mutex
@@ -55,8 +55,8 @@ class Recycler : public boost::noncopyable
   typedef Mutex::scoped_lock Lock;
   typedef std::multimap<int, BYTE *> RecycleMap; //maps size to memory blocks of that size
 
-  Mutex mutex_;  
-  RecycleMap map_;  
+  Mutex mutex_;
+  RecycleMap map_;
 
 
 private:  //structors
@@ -71,7 +71,7 @@ public:  //Recycler interface
   void Return(BYTE * ptr, int size, bool recycle);
 
   //acquires memory from the recycling pool (eventually newly allocated)
-  BYTE * Acquire(int size); 
+  BYTE * Acquire(int size);
 
   //releases all blocks to the heap
   void Clear();

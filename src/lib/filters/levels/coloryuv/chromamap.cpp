@@ -33,7 +33,7 @@ namespace avs { namespace filters { namespace coloryuv {
 ChromaMap::ChromaMap(Levels const& levels, int (* adjust)(int), bool coring)
 {
   BYTE * ptr = data();
- 
+
   for ( int i = 0; i < 256; ++i, ++ptr )
   {
     float value = static_cast<float>(adjust(i));
@@ -43,7 +43,7 @@ ChromaMap::ChromaMap(Levels const& levels, int (* adjust)(int), bool coring)
     int val = static_cast<int>( value + 0.5f );
 
     *ptr = coring ? utility::saturate<BYTE, 16, 240>(val)
-                  : utility::saturate<BYTE, 0, 255>(val);    
+                  : utility::saturate<BYTE, 0, 255>(val);
   }
 
 }

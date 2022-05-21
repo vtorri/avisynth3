@@ -59,7 +59,7 @@ template <int source, int destination> struct align_compatible
 //
 template <class BaseHolder, int align> class base
 {
-  
+
 public:  //typedefs
 
   enum { Align = align };
@@ -70,7 +70,7 @@ private:  //member
 
   boost::shared_ptr<BaseHolder> block_;
 
-  template <class BH, int alignOther> friend class base;    
+  template <class BH, int alignOther> friend class base;
   //NB: need only friendship with those with same BaseHolder, but it doesn't hurt
 
 
@@ -102,7 +102,7 @@ protected:  //structors
 public:  //assignment
 
   template <int alignOther>
-  typename boost::enable_if<align_compatible<alignOther, Align>, BaseBlockType>::type& 
+  typename boost::enable_if<align_compatible<alignOther, Align>, BaseBlockType>::type&
   operator=(base<BaseHolder, alignOther> const& other)
   {
     block_ = other.block_;

@@ -63,7 +63,7 @@ public:  //memory usage
   virtual void Return(uint8 * ptr, int32 size) = 0;  //no throw
 
   //memory update
-  virtual void MemoryAllocated(int32 size) = 0;  
+  virtual void MemoryAllocated(int32 size) = 0;
   virtual void MemoryFreed(int32 size) = 0;          //no throw
 
 

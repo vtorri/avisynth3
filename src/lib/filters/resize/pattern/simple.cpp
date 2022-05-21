@@ -35,7 +35,7 @@ Simple::Simple(PEnvironment const& env, Filter const& filter, SubRange const& su
 {
   Maker make(filter, subrange, size);
 
-  int count = make.count();  
+  int count = make.count();
   Init( count, size * (1 + count) );
 
   int * ptr = Get();
@@ -43,7 +43,7 @@ Simple::Simple(PEnvironment const& env, Filter const& filter, SubRange const& su
   for ( int i = size; i-- > 0; )
   {
     *ptr++ = make.offset();
-            
+
     for ( int k = count; k-- > 0; )
       *ptr++ = make.coeff();
   }

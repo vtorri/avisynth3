@@ -35,7 +35,7 @@
 namespace avs { namespace gstreamer {
 
 
- 
+
 class Iterator
 {
 

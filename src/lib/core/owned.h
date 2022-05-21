@@ -53,7 +53,7 @@ public:  //Owned interface
   //fetch owning environment
   virtual PEnvironment const& GetEnvironment() const = 0;
 
-}; 
+};
 
 
 

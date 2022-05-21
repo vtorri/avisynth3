@@ -50,7 +50,7 @@ public:  //structors
   OwnedBase(PEnvironment const& env, int size)
     : size_( size )
     , env_( env )
-  { 
+  {
     env_->MemoryAllocated( size_ );
   }
 

@@ -63,7 +63,7 @@ int ByteCounter::GetLooseMin(long limit) const
 
   return 255;
 }
- 
+
 
 int ByteCounter::GetLooseMax(long limit) const
 {

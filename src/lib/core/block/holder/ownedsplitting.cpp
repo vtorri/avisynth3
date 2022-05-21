@@ -53,7 +53,7 @@ OwnedSplitting::OwnedSplitting(OwnedSplitting const& other, int splitSize, split
 
 boost::shared_ptr<OwnedHolder> OwnedSplitting::Split(int splitSize, boost::shared_ptr<OwnedHolder>& self) const
 {
-  boost::shared_ptr<OwnedHolder> 
+  boost::shared_ptr<OwnedHolder>
       result( static_cast<OwnedHolder *>(new OwnedSplitting(*this, splitSize, split::Right())) );
 
   //NB: this line normally happens to destroy this, therefore order matters

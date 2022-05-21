@@ -69,10 +69,10 @@ public:  //stack behavior
   void pop() { stack_.pop_back(); }
 
   AVSValue& top() { return stack_.back(); }
-  AVSValue& peek(int index)  //beware it's 1-based 
-  { 
-    assert( 0 < index && index <= size() ); 
-    return *(stack_.end() - index); 
+  AVSValue& peek(int index)  //beware it's 1-based
+  {
+    assert( 0 < index && index <= size() );
+    return *(stack_.end() - index);
   }
 
   AVSValue& operator[](int index) { return stack_[index]; }

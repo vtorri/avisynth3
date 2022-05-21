@@ -36,7 +36,7 @@ namespace filters { namespace coloryuv {
 
 
 //more forward declarations
-struct Levels; 
+struct Levels;
 class LumaMap;
 class ChromaMap;
 class FrameMaker;

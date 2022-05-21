@@ -33,7 +33,7 @@
 
 namespace avs { namespace filters {
 
-  
+
 
 ColorYUV::ColorYUV(PClip const& child)
   : clip::onechild::Concrete( child )
@@ -60,7 +60,7 @@ void ColorYUV::Apply(VideoFrame& frame, coloryuv::LumaMap const& y, coloryuv::Ch
 
 namespace { int identity(int value) { return value; }  }
 
-  
+
 using namespace coloryuv;
 
 
@@ -113,13 +113,13 @@ int (* ColorYUV::AdjustV(coloryuv::Mode mode))(int)
       LevelsTbl[] = { "", "TV->PC", "PC->TV", "PC->TV.Y" },
       MatrixTbl[] = { "", "rec.709" },
         OptTbl[] = { "", "coring" };
-        
+
     levels = -1;
     if (!_levels.empty())
     {
       for (i=0; i<4 ; i++)
       {
-        if (NoCaseEqual(_levels, LevelsTbl[i])) 
+        if (NoCaseEqual(_levels, LevelsTbl[i]))
         {
           levels = i;
           break;
@@ -127,13 +127,13 @@ int (* ColorYUV::AdjustV(coloryuv::Mode mode))(int)
       }
     }
     else levels = 0;
-    
+
     matrix = -1;
     if (!_matrix.empty())
     {
       for (i=0; i<2 ; i++)
       {
-        if (NoCaseEqual(_matrix, MatrixTbl[i])) 
+        if (NoCaseEqual(_matrix, MatrixTbl[i]))
         {
           matrix = i;
           break;
@@ -147,7 +147,7 @@ int (* ColorYUV::AdjustV(coloryuv::Mode mode))(int)
     {
       for (i=0; i<2 ; i++)
       {
-        if (NoCaseEqual(_opt, OptTbl[i])) 
+        if (NoCaseEqual(_opt, OptTbl[i]))
         {
           opt = i;
           break;
@@ -155,7 +155,7 @@ int (* ColorYUV::AdjustV(coloryuv::Mode mode))(int)
       }
     }
     else opt = 0;
-    
+
     if ( levels < 0 || matrix < 0 || opt < 0 ) return false;
     return true;
   }

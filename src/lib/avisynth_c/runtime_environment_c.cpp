@@ -55,7 +55,7 @@ avs_environment_new (int size)
     return NULL;
 
   p_env->p_env_ = avs::RuntimeEnvironment::Create(size);
-  
+
   return p_env;
 }
 

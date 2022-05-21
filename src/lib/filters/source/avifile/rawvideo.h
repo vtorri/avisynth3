@@ -36,7 +36,7 @@ namespace avs { namespace filters { namespace source { namespace avifile {
 class RawVideo : public virtual Base
                , public virtual source::RawVideo
 {
-  
+
   PAVIStream video_;
 
 

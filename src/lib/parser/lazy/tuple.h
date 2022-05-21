@@ -42,7 +42,7 @@ namespace avs { namespace parser { namespace lazy {
 //  Attribute<int n>
 //
 //  accesses atribute n from a boost tuple which may be in a reference_wrapper
-//  
+//
 template <int n> struct Attribute
 {
 
@@ -74,7 +74,7 @@ template <int n> struct Attribute
 
   template <typename T>
   typename result<T>::type operator()(T& val) const
-  { 
+  {
     return val.template get<n>();
   }
 

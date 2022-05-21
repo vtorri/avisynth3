@@ -46,9 +46,9 @@ public:  //factory methods
 
   static CPVideoFrame CreateFrame(Dimension const& dim, PEnvironment const& env);
 
-  static PClip Create(Dimension const& dim, PEnvironment const& env) 
-  { 
-    return PClip( static_cast<Clip *>(new ColorBars(dim, env)) ); 
+  static PClip Create(Dimension const& dim, PEnvironment const& env)
+  {
+    return PClip( static_cast<Clip *>(new ColorBars(dim, env)) );
   }
 
   struct Creator

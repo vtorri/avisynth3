@@ -80,10 +80,10 @@ public:  //ColorSpace interface
 
   virtual bool HasPlane(char plane) const = 0;
   virtual bool HasProperty(std::string const& prop) const = 0;
-  
+
   virtual void Check(long x, long y, bool interlaced = false) const = 0;
   //method to convert frame coords into to plane coords
-  //unlike the above, it does not check validity, but just perform the operation   
+  //unlike the above, it does not check validity, but just perform the operation
   virtual void ToPlane(long& x, long& y, char plane) const = 0;
 
 
@@ -108,7 +108,7 @@ public:  //convenience versions of Check and ToPlane
 
   void CheckDim(Dimension const& dim, bool interlaced = false) const { Check(dim.GetWidth(), dim.GetHeight(), interlaced); }
   void CheckVect(Vecteur const& vect, bool interlaced = false) const { Check(vect.x, vect.y, interlaced); }
- 
+
   Dimension ToPlaneDim(Dimension const& dim, char plane) const
   {
     long x = dim.GetWidth(), y = dim.GetHeight();

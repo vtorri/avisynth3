@@ -74,7 +74,7 @@ public:  //Importer interface
     buffer_window<alignY>  y( dimY, blockY, offset );
     buffer_window<alignUV> u( dimUV, blockU, 0 );
     buffer_window<alignUV> v( dimUV, blockV, 0 );
-    
+
     return space_->CreateFrame(dim, type, y, u, v);
   }
 

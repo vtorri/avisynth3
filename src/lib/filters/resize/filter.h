@@ -42,7 +42,7 @@ public:  //Filter interface
   virtual double operator()(double x) const = 0;
 
   virtual double support() const = 0;
-  
+
 };
 
 

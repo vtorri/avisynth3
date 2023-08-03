@@ -30,7 +30,7 @@
 #include "../../geometry/dimension.h"
 
 //stl include
-#include <hash_map>  //for hash_map
+#include <unordered_map>  //for unordered_map
 
 
 namespace avs { namespace videoframe { namespace concrete {
@@ -47,8 +47,8 @@ class AVS_NOVTABLE Base : public virtual VideoFrame
 
 private:  //typedefs
 
-  typedef std::hash_map<PKey, CPProperty, Key::Hasher, Key::Comparator> PropertyMap;
-  typedef std::hash_multimap<PKey, CPProperty, Key::Hasher, Key::Comparator> PropertyMultiMap;
+  typedef std::unordered_map<PKey, CPProperty, Key::Hasher, Key::Comparator> PropertyMap;
+  typedef std::unordered_multimap<PKey, CPProperty, Key::Hasher, Key::Comparator> PropertyMultiMap;
 
 
 private:  //members

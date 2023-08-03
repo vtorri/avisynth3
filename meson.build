@@ -63,7 +63,11 @@ dev_cppflags_try = [
   '-Wno-missing-field-initializers',
   '-Wno-non-virtual-dtor',
   '-Wunused-parameter',
-  '-fno-omit-frame-pointer'
+  '-fno-omit-frame-pointer',
+  '-fexceptions',
+  '-fstrength-reduce',
+  '-finline-functions',
+  '-ffast-math'
 ]
 
 if sys_windows
@@ -93,6 +97,7 @@ config_dir = [include_directories('.')]
 boost_dep = dependency('boost')
 
 subdir('src/lib')
+subdir('src/lib/avisynth_c')
 
 
 # output

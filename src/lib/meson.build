@@ -1,11 +1,5 @@
 
 avs3_src = files([
-  'avisynth_c/clip_c.cpp',
-  'avisynth_c/colorspace_c.cpp',
-  'avisynth_c/error_c.cpp',
-  'avisynth_c/runtime_environment_c.cpp',
-  'avisynth_c/videoframe_c.cpp',
-  'avisynth_c/videoinfo_c.cpp',
   'core/blitter/blitter.cpp',
   'core/blitter/memcopy.cpp',
   'core/block/block.cpp',
@@ -195,4 +189,10 @@ avs3_lib = library('avs', avs3_src,
   install : true,
   pic : true,
   version : meson.project_version()
+)
+
+avs3_dep = declare_dependency(
+  include_directories : config_dir,
+  link_with : avs3_lib,
+  dependencies : [ boost_dep ]
 )

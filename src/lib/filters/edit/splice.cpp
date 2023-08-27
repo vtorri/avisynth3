@@ -102,8 +102,8 @@ bool Splice::MergingPush(PClip const& child)
 {
   if ( ! childs_.empty() )
   {
-    boost::shared_ptr<Trim const> left = boost::dynamic_pointer_cast<Trim const>(childs_.back());
-    boost::shared_ptr<Trim const> right = boost::dynamic_pointer_cast<Trim const>(child);
+    std::shared_ptr<Trim const> left = boost::dynamic_pointer_cast<Trim const>(childs_.back());
+    std::shared_ptr<Trim const> right = boost::dynamic_pointer_cast<Trim const>(child);
 
     if (  left                                    //if left is a Trim
        && right                                   //if right is a Trim
@@ -128,7 +128,7 @@ PClip Splice::CreateAligned(PClip const& left, PClip const& right)
   CPVideoInfo vi = left->GetVideoInfo();
   PEnvironment const& env = left->GetEnvironment();
 
-  boost::shared_ptr<Splice> splice;
+  std::shared_ptr<Splice> splice;
 
   if ( vi->HasVideo() )
     splice.reset
@@ -153,7 +153,7 @@ PClip Splice::CreateUnaligned(PClip const& left, PClip const& right)
   CPVideoInfo vi = left->GetVideoInfo();
   PEnvironment const& env = left->GetEnvironment();
 
-  boost::shared_ptr<Splice> splice;
+  std::shared_ptr<Splice> splice;
 
   if ( vi->HasVideo() )
     splice.reset

@@ -24,8 +24,8 @@
 #ifndef __AVS_FILTERS_RESIZE_FORWARD_H__
 #define __AVS_FILTERS_RESIZE_FORWARD_H__
 
-//boost include
-#include <boost/shared_ptr.hpp>
+//stl include
+#include <memory>
 
 
 namespace avs { namespace filters { namespace resize {
@@ -37,7 +37,7 @@ class Filter;
 class SubRange;
 
 //typedef
-typedef boost::shared_ptr<Filter const> PFilter;
+typedef std::shared_ptr<Filter const> PFilter;
 
 
 

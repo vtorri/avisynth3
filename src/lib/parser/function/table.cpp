@@ -63,7 +63,7 @@ void Table::DeclareScriptFunction(FunctionId const& id)
   if ( undefsMap_.find(id) == undefsMap_.end() )
   {
     //create the script function
-    boost::shared_ptr<ScriptFunction> funct( new ScriptFunction(id) );
+    std::shared_ptr<ScriptFunction> funct( new ScriptFunction(id) );
 
     undefsMap_[id] = funct;   //add it to undef map
 

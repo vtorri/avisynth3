@@ -51,7 +51,7 @@ namespace avs { namespace parser { namespace function {
 class Table : public spirit::symbols<Pool>
 {
 
-  typedef std::map<FunctionId, boost::shared_ptr<ScriptFunction> > UndefScriptFunctionMap;
+  typedef std::map<FunctionId, std::shared_ptr<ScriptFunction> > UndefScriptFunctionMap;
 
   UndefScriptFunctionMap undefsMap_;
 

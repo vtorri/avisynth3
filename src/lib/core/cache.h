@@ -28,8 +28,8 @@
 #include "forward.h"              //for PEnvironment, CPVideoFrame
 #include "../define.h"            //for AVS_NOVTABLE
 
-//boost include
-#include <boost/shared_ptr.hpp>   //so PEnvironment, CPVideoFrame are defined
+//stl include
+#include <memory>                 //so PEnvironment, CPVideoFrame are defined
 
 
 namespace avs {

@@ -70,12 +70,12 @@ AviFileSource::PAVIStream AviFileSource::GetStream(PAVIFile const& aviFile, unsi
 }
 
 
-boost::shared_ptr<void> AviFileSource::ReadFormat(PAVIStream const& aviStream)
+std::shared_ptr<void> AviFileSource::ReadFormat(PAVIStream const& aviStream)
 {
   long size = 0;
   aviStream->ReadFormat(0, NULL, &size);              //fetch size of the format struct
 
-  boost::shared_ptr<void> result( new BYTE[size] );   //allocates it into a shared_ptr
+  std::shared_ptr<void> result( new BYTE[size] );   //allocates it into a shared_ptr
 
   HRESULT hResult = aviStream->ReadFormat(0, result.get(), &size);
   assert( hResult == S_OK );

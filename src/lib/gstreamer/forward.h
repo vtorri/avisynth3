@@ -52,11 +52,11 @@ class Audio;
 } //namespace structure
 
 //typedefs
-typedef boost::shared_ptr<Bus> PBus;
-typedef boost::shared_ptr<Message> PMessage;
-typedef boost::shared_ptr<Iterator> PIterator;
-typedef boost::shared_ptr<Pipeline> PPipeline;
-typedef boost::shared_ptr<Structure> PStructure;
+typedef std::shared_ptr<Bus> PBus;
+typedef std::shared_ptr<Message> PMessage;
+typedef std::shared_ptr<Iterator> PIterator;
+typedef std::shared_ptr<Pipeline> PPipeline;
+typedef std::shared_ptr<Structure> PStructure;
 
 
 

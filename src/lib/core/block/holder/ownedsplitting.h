@@ -28,8 +28,8 @@
 #include "splittag.h"
 #include "ownedbase.h"
 
-//boost include
-#include <boost/shared_ptr.hpp>
+//stl include
+#include <memory>        //for shared_ptr
 
 
 namespace avs { namespace block { namespace holder {
@@ -45,14 +45,14 @@ class OwnedSplitting : public OwnedHolder
 {
 
   int size_;
-  int offset_;                             //offset of mem piece
-  boost::shared_ptr<OwnedHolder> holder_;  //underlying owned mem holder
+  int offset_;                           //offset of mem piece
+  std::shared_ptr<OwnedHolder> holder_;  //underlying owned mem holder
 
 
 public:  //structors
 
-  OwnedSplitting(boost::shared_ptr<OwnedHolder> const& holder, int splitSize, split::Left);
-  OwnedSplitting(boost::shared_ptr<OwnedHolder> const& holder, int splitSize, split::Right);
+  OwnedSplitting(std::shared_ptr<OwnedHolder> const& holder, int splitSize, split::Left);
+  OwnedSplitting(std::shared_ptr<OwnedHolder> const& holder, int splitSize, split::Right);
 
   OwnedSplitting(OwnedSplitting const& other, int splitSize, split::Left);
   OwnedSplitting(OwnedSplitting const& other, int splitSize, split::Right);
@@ -67,7 +67,7 @@ public:  //Holder interface
   virtual PEnvironment const& GetEnvironment() const { return holder_->GetEnvironment(); }
   virtual bool Unique() const { return holder_->Unique(); }
 
-  virtual boost::shared_ptr<OwnedHolder> Split(int splitSize, boost::shared_ptr<OwnedHolder>& self) const;
+  virtual std::shared_ptr<OwnedHolder> Split(int splitSize, std::shared_ptr<OwnedHolder>& self) const;
 
 };
 

@@ -52,14 +52,14 @@ class AVS_NOVTABLE Plugin : public linker::Plugin
 
     bool operator()(std::string const& str) const { return false; }
 
-    bool operator()(boost::shared_ptr<external::Plugin const> const& plugin) const
+    bool operator()(std::shared_ptr<external::Plugin const> const& plugin) const
     {
       return plugin.unique() && plugin->CanUnloadNow();
     }
 
   };
 
-  typedef boost::shared_ptr<external::Plugin const> PExtPlugin;
+  typedef std::shared_ptr<external::Plugin const> PExtPlugin;
   typedef folder<std::string, PExtPlugin, Expired> PluginFolder;
 
   std::string fileName_;                   //name of source file

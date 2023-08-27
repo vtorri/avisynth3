@@ -48,11 +48,11 @@ PClip AudioDub::FinalSimplify() const
   FinalSimplifyChilds();
 
   //absorbing KillAudio video child
-  if ( boost::shared_ptr<KillAudio const> ka = boost::dynamic_pointer_cast<KillAudio const>(GetVideoChild()) )
+  if ( std::shared_ptr<KillAudio const> ka = boost::dynamic_pointer_cast<KillAudio const>(GetVideoChild()) )
     SetLeftChild( ka->GetChild() );
 
   //absorbing KillVideo audio child
-  if ( boost::shared_ptr<KillVideo const> kv = boost::dynamic_pointer_cast<KillVideo const>(GetAudioChild()) )
+  if ( std::shared_ptr<KillVideo const> kv = boost::dynamic_pointer_cast<KillVideo const>(GetAudioChild()) )
     SetRightChild( kv->GetChild() );
 
   return shared_from_this();

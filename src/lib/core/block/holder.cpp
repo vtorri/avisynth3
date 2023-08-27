@@ -31,13 +31,13 @@ namespace avs { namespace block {
 
 
 
-boost::shared_ptr<Holder> Holder::Split(int splitSize, boost::shared_ptr<Holder>& self) const
+std::shared_ptr<Holder> Holder::Split(int splitSize, std::shared_ptr<Holder>& self) const
 {
   using holder::Splitting;
   using holder::split::Left;
   using holder::split::Right;
 
-  boost::shared_ptr<Holder> result( static_cast<Holder *>(new Splitting(self, splitSize, Right())) );
+  std::shared_ptr<Holder> result( static_cast<Holder *>(new Splitting(self, splitSize, Right())) );
 
   //NB: this line normally happens to destroy this, therefore order matters
   self.reset( static_cast<Holder *>(new Splitting(self, splitSize, Left())) );

@@ -31,9 +31,11 @@
 #include "audiodecompressor.h"
 #include "../../../vfw/forward.h"   //for PWaveFormatEx
 
-//boost includes
-#include <boost/shared_ptr.hpp>
+//boost include
 #include <boost/scoped_ptr.hpp>
+
+//stl include
+#include <memory>
 
 //windows includes
 #ifndef NOMINMAX
@@ -55,19 +57,19 @@ class AVS_NOVTABLE ACMAudioDecompressor : public AudioDecompressor
 
   RawAudio const& src_;
 
-  boost::shared_ptr<HACMSTREAM__> hACMStream_;  //underlying handle to acm conversion stream
+  std::shared_ptr<HACMSTREAM__> hACMStream_;    //underlying handle to acm conversion stream
   boost::scoped_ptr<BYTE> inputBuffer_;         //input buffer
   boost::scoped_ptr<BYTE> outputBuffer_;        //output buffer
-	mutable ACMSTREAMHEADER ash_;                 //struct used to pass data to acm
+  mutable ACMSTREAMHEADER ash_;                 //struct used to pass data to acm
 
-	mutable long long current_;                   //current reading position in bytes
+  mutable long long current_;                   //current reading position in bytes
   mutable long long nextBlock_;                 //next stream block to decompress from
 
   long blockAlign_;
   long samplesPerSec_;
   long avgBytesPerSec_;
 
-	enum { inputBufferSize = 16384 };
+  enum { inputBufferSize = 16384 };
 
 
 public:  //structors

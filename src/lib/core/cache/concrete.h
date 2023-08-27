@@ -42,7 +42,7 @@ template <class CacheLogic, class Environment>
 class concrete : public Base
 {
 
-  typedef boost::shared_ptr<Environment> PEnv;
+  typedef std::shared_ptr<Environment> PEnv;
   typedef typename Environment::TimerStackMap TimerStackMap;
 
   typedef typename timing::switching_timer<TimerStackMap> Timer;

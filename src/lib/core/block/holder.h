@@ -57,7 +57,7 @@ public:  //Holder interface
 
   virtual bool Unique() const = 0;
 
-  virtual boost::shared_ptr<Holder> Split(int splitSize, boost::shared_ptr<Holder>& self) const;
+  virtual std::shared_ptr<Holder> Split(int splitSize, std::shared_ptr<Holder>& self) const;
 
 };
 

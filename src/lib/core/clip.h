@@ -26,11 +26,10 @@
 
 //avisynth includes
 #include "owned.h"
-#include "forward.h"                           //for CPVideoInfo, CPVideoFrame, PClip
+#include "forward.h"    //for CPVideoInfo, CPVideoFrame, PClip
 
-//boost includes
-#include <boost/shared_ptr.hpp>                //so ptr types above are defined
-#include <boost/enable_shared_from_this.hpp>
+//stl include
+#include <memory>       //so ptr types above and enable_shared_from_this are defined
 
 
 namespace avs {
@@ -43,7 +42,7 @@ namespace avs {
 //  base class for all filters
 //
 class AVS_NOVTABLE Clip : public virtual Owned
-                        , public boost::enable_shared_from_this<Clip>
+                        , public std::enable_shared_from_this<Clip>
 {
 
 public:  //clip general interface

@@ -27,13 +27,13 @@
 
 //avisynth includes
 #include "block.h"
-#include "forward.h"                          //for ColorSpace, Dimension, Blitter, PVideoFrame
+#include "forward.h"          //for ColorSpace, Dimension, Blitter, PVideoFrame
 #include "frametype.h"
 #include "ownedblock.h"
-#include "cow_shared_ptr.h"                   //so PVideoFrame, PVideoInfo are defined
+#include "cow_shared_ptr.h"   //so PVideoFrame, PVideoInfo are defined
 
-//boost include
-#include <boost/enable_shared_from_this.hpp>  //for enable_shared_from_this
+//stl include
+#include <memory>             //for enable_shared_from_this
 
 
 namespace avs {
@@ -45,7 +45,7 @@ namespace avs {
 //
 //
 //
-class RuntimeEnvironment : public boost::enable_shared_from_this<RuntimeEnvironment>
+class RuntimeEnvironment : public std::enable_shared_from_this<RuntimeEnvironment>
 {
 
 public:  //structors

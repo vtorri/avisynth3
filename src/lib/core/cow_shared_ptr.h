@@ -24,8 +24,8 @@
 #ifndef __AVS_COW_SHARED_PTR_H__
 #define __AVS_COW_SHARED_PTR_H__
 
-//boost include
-#include <boost/shared_ptr.hpp>  //for shared_ptr
+//stl include
+#include <memory>  //for shared_ptr
 
 
 namespace avs {
@@ -39,10 +39,10 @@ namespace avs {
 //  ie it guarantees you are the sole owner of the pointed object, at time of use,
 //  by implicitly cloning it if it is shared
 //
-template <class T> class cow_shared_ptr : public boost::shared_ptr<T const>
+template <class T> class cow_shared_ptr : public std::shared_ptr<T const>
 {
 
-  typedef boost::shared_ptr<T const> parent_type;
+  typedef std::shared_ptr<T const> parent_type;
 
 
   void MakeOwner() const
@@ -58,16 +58,16 @@ public:  //structors
 
   cow_shared_ptr() { }
 
-  cow_shared_ptr(boost::shared_ptr<T const> const& ptr)
-    : boost::shared_ptr<T const>( ptr ) { }
+  cow_shared_ptr(std::shared_ptr<T const> const& ptr)
+    : std::shared_ptr<T const>( ptr ) { }
 
   cow_shared_ptr(cow_shared_ptr<T> const& other)
-    : boost::shared_ptr<T const>( other ) { }
+    : std::shared_ptr<T const>( other ) { }
 
 
 public:  //assignment
 
-  //cow_shared_ptr<T>& operator=(boost::shared_ptr<T const> const& ptr) { ptr_ = ptr; return *this; }
+  //cow_shared_ptr<T>& operator=(std::shared_ptr<T const> const& ptr) { ptr_ = ptr; return *this; }
 
 
 public:  //pointer operators

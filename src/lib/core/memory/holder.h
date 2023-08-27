@@ -29,8 +29,8 @@
 #include "../integer.h"             //for uint8, int32 typedefs
 #include "../../define.h"           //for AVS_NOVTABLE macro
 
-//boost include
-#include <boost/shared_ptr.hpp>     //so PHolder, PMemManager are defined
+//stl include
+#include <memory>                   //so PHolder, PMemManager are defined
 
 
 namespace avs { namespace memory {

@@ -28,8 +28,8 @@
 #include "base.h"
 #include "splittag.h"
 
-//boost include
-#include <boost/shared_ptr.hpp>
+//stl include
+#include <memory>       //for shared_ptr
 
 
 namespace avs { namespace block { namespace holder {
@@ -44,14 +44,14 @@ namespace avs { namespace block { namespace holder {
 class Splitting : public Base
 {
 
-  int offset_;                        //offset of mem piece
-  boost::shared_ptr<Holder> holder_;  //underlying mem holder
+  int offset_;                      //offset of mem piece
+  std::shared_ptr<Holder> holder_;  //underlying mem holder
 
 
 public:  //structors
 
-  Splitting(boost::shared_ptr<Holder> const& holder, int splitSize, split::Left);
-  Splitting(boost::shared_ptr<Holder> const& holder, int splitSize, split::Right);
+  Splitting(std::shared_ptr<Holder> const& holder, int splitSize, split::Left);
+  Splitting(std::shared_ptr<Holder> const& holder, int splitSize, split::Right);
 
   Splitting(Splitting const& other, int splitSize, split::Left);
   Splitting(Splitting const& other, int splitSize, split::Right);
@@ -64,7 +64,7 @@ public:  //Holder interface
   virtual BYTE * Get() const { return holder_->Get() + offset_; }
   virtual bool Unique() const { return holder_->Unique(); }
 
-  virtual boost::shared_ptr<Holder> Split(int splitSize, boost::shared_ptr<Holder>& self) const;
+  virtual std::shared_ptr<Holder> Split(int splitSize, std::shared_ptr<Holder>& self) const;
 
 };
 

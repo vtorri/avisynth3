@@ -33,10 +33,10 @@
 #include "../../../gstreamer/signalhandler.h"
 
 //boost include
-#include <boost/shared_ptr.hpp>                //so PPipeline is defined
 /* #include <boost/thread.hpp> */
 
-//stl include
+//stl includes
+#include <memory>                              //so PPipeline is defined
 #include <string>
 
 
@@ -73,7 +73,7 @@ public:  //access to elements
 
 public:  //factory method
 
-  boost::shared_ptr<avs::gstreamer::Pipeline> BuildPipeline(std::string const& filename);
+  std::shared_ptr<avs::gstreamer::Pipeline> BuildPipeline(std::string const& filename);
 
   void SetSink (int index, char *stream_type);
 

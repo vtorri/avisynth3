@@ -27,8 +27,8 @@
 //avisynth include
 #include "../exporter.h"
 
-//boost include
-#include <boost/shared_ptr.hpp>    //so PClip is defined
+//stl include
+#include <memory>         //so PClip is defined
 
 
 namespace avs { namespace export_ { namespace vfw { namespace exporter {

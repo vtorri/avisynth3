@@ -29,12 +29,12 @@ namespace avs { namespace block { namespace holder {
 
 
 
-OwnedSplitting::OwnedSplitting(boost::shared_ptr<OwnedHolder> const& holder, int splitSize, split::Left)
+OwnedSplitting::OwnedSplitting(std::shared_ptr<OwnedHolder> const& holder, int splitSize, split::Left)
   : size_( splitSize )
   , offset_( 0 )
   , holder_( holder ) { }
 
-OwnedSplitting::OwnedSplitting(boost::shared_ptr<OwnedHolder> const& holder, int splitSize, split::Right)
+OwnedSplitting::OwnedSplitting(std::shared_ptr<OwnedHolder> const& holder, int splitSize, split::Right)
   : size_( holder->Size() - splitSize )
   , offset_( splitSize )
   , holder_( holder ) { }
@@ -51,9 +51,9 @@ OwnedSplitting::OwnedSplitting(OwnedSplitting const& other, int splitSize, split
   , holder_( other.holder_ ) { }
 
 
-boost::shared_ptr<OwnedHolder> OwnedSplitting::Split(int splitSize, boost::shared_ptr<OwnedHolder>& self) const
+std::shared_ptr<OwnedHolder> OwnedSplitting::Split(int splitSize, std::shared_ptr<OwnedHolder>& self) const
 {
-  boost::shared_ptr<OwnedHolder>
+  std::shared_ptr<OwnedHolder>
       result( static_cast<OwnedHolder *>(new OwnedSplitting(*this, splitSize, split::Right())) );
 
   //NB: this line normally happens to destroy this, therefore order matters

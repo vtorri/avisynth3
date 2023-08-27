@@ -63,7 +63,7 @@ PBus Element::GetBus()
   Bus * bus = static_cast<Bus *>( gst_element_get_bus( this ) );
   assert( bus != NULL );
 
-  return boost::shared_ptr<Bus>( bus, BusDestructor() );
+  return std::shared_ptr<Bus>( bus, BusDestructor() );
 }
 
 

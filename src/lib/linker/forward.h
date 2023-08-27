@@ -24,8 +24,8 @@
 #ifndef __AVS_LINKER_FORWARD_H__
 #define __AVS_LINKER_FORWARD_H__
 
-//boost include
-#include <boost/shared_ptr.hpp>
+//stl include
+#include <memory>
 
 
 namespace avs { namespace linker {
@@ -37,12 +37,12 @@ class Function;
 namespace external { class Plugin; }
 
 //ptr typedefs
-typedef boost::shared_ptr<Plugin const> PPlugin;
-typedef boost::shared_ptr<Function const> PFunction;
-typedef boost::shared_ptr<external::Plugin const> PExternalPlugin;
+typedef std::shared_ptr<Plugin const> PPlugin;
+typedef std::shared_ptr<Function const> PFunction;
+typedef std::shared_ptr<external::Plugin const> PExternalPlugin;
 
 //weak ptr typedef
-typedef boost::weak_ptr<external::Plugin const> WeakPExternalPlugin;
+typedef std::weak_ptr<external::Plugin const> WeakPExternalPlugin;
 
 
 } } //namespace avs::linker

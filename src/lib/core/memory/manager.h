@@ -30,8 +30,8 @@
 #include "../integer.h"                      //for uint8 and int32 typedefs
 #include "../../define.h"                    //for AVS_NOVTABLE
 
-//boost include
-#include <boost/shared_ptr.hpp>              //so PHolder is defined
+//stl include
+#include <memory>                            //so PHolder is defined
 
 
 namespace avs { namespace memory {

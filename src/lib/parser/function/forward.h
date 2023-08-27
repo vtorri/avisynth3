@@ -25,10 +25,10 @@
 #define __AVS_PARSER_FUNCTION_FORWARD_H__
 
 //boost include
-#include <boost/shared_ptr.hpp>
 #include <boost/tuple/tuple.hpp>
 
-//stl include
+//stl includes
+#include <memory>
 #include <string>
 
 
@@ -40,7 +40,7 @@ class Table;
 class ScriptFunction;
 
 //typedefs
-typedef boost::shared_ptr<ScriptFunction const> PScriptFunction;
+typedef std::shared_ptr<ScriptFunction const> PScriptFunction;
 typedef boost::tuples::tuple<char, std::string, std::string> FunctionId;
 
 

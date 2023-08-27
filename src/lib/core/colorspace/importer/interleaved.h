@@ -45,7 +45,7 @@ namespace avs { namespace colorspace { namespace importer {
 template <long align> class interleaved : public Importer
 {
 
-  boost::shared_ptr<colorspace::Interleaved const> space_;
+  std::shared_ptr<colorspace::Interleaved const> space_;
 
 
 public:  //structors

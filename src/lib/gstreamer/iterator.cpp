@@ -31,8 +31,9 @@
 #include "iterator.h"
 #include "element.h"
 
-//boost include
-#include <boost/shared_ptr.hpp>
+// FIXME: necessary ?
+//stl include
+#include <memory>
 
 
 namespace avs { namespace gstreamer {

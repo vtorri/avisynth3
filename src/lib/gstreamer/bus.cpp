@@ -52,7 +52,7 @@ PMessage Bus::GetMessage()
   Message * msg = static_cast<Message *>( gst_bus_pop(this) );
   assert( msg != NULL );
 
-  return boost::shared_ptr<Message>( msg, MessageDestructor() );
+  return std::shared_ptr<Message>( msg, MessageDestructor() );
 }
 
 

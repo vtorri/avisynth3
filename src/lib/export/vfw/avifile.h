@@ -29,10 +29,8 @@
 #include "forward.h"               //for Exporter, PExporter
 #include "../../core/forward.h"    //for PClip, CPVideoInfo typedefs
 
-//boost include
-#include <boost/shared_ptr.hpp>    //so those are defined
-
-//stl include
+//stl includes
+#include <memory>                  //so those are defined
 #include <string>
 
 //windows include

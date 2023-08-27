@@ -26,10 +26,10 @@
 
 //avisynth includes
 #include "../structure.h"
-#include "../../core/forward.h"                   //for VideoInfo, PColorSpace, Pimporter
+#include "../../core/forward.h"    //for VideoInfo, PColorSpace, Pimporter
 
-//boost include
-#include <boost/shared_ptr.hpp>                   //so PImporter, PColorSpace are defined
+//stl include
+#include <memory>                  //so PImporter, PColorSpace are defined
 
 
 namespace avs { namespace gstreamer { namespace structure {

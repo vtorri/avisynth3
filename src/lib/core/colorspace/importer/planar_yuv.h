@@ -45,7 +45,7 @@ namespace avs { namespace colorspace { namespace importer {
 template <long alignY, long alignUV> class planar_yuv : public Importer
 {
 
-  boost::shared_ptr<colorspace::yuv::Planar const> space_;
+  std::shared_ptr<colorspace::yuv::Planar const> space_;
 
 
 public:  //structors

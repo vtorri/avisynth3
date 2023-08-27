@@ -27,16 +27,13 @@
 //avisynth includes
 #include "forward.h"
 #include "frametype.h"
-#include "../define.h"                        //for AVS_NOVTABLE
-#include "cow_shared_ptr.h"                   //so PVideoFrame is defined
-#include "geometry/vecteur.h"                 //Vecteur is defined
-#include "geometry/dimension.h"               //Dimension is defined
+#include "../define.h"             //for AVS_NOVTABLE
+#include "cow_shared_ptr.h"        //so PVideoFrame is defined
+#include "geometry/vecteur.h"      //Vecteur is defined
+#include "geometry/dimension.h"    //Dimension is defined
 
-//boost includes
-#include <boost/shared_ptr.hpp>               //so PExporter is defined
-#include <boost/enable_shared_from_this.hpp>
-
-//stl include
+//stl includes
+#include <memory>                  //so PExporter and enable_shared_from_this are defined
 #include <string>
 
 
@@ -49,7 +46,7 @@ namespace avs {
 //
 //  polymorphic class representing a video color space
 //
-class AVS_NOVTABLE ColorSpace : public boost::enable_shared_from_this<ColorSpace const>
+class AVS_NOVTABLE ColorSpace : public std::enable_shared_from_this<ColorSpace const>
 {
 
 public:

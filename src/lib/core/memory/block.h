@@ -28,8 +28,8 @@
 #include "holder.h"
 #include "forward.h"                     //for PHolder typedef
 
-//boost includes
-#include <boost/shared_ptr.hpp>          //so PHolder is defined
+//stl include
+#include <memory>                        //so PHolder is defined
 
 
 namespace avs { namespace memory {

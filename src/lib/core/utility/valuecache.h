@@ -45,7 +45,7 @@ class value_cache
 {
 
   Creator create_;
-  mutable boost::weak_ptr<T> cached_;
+  mutable std::weak_ptr<T> cached_;
 
 
 public:  //structors
@@ -58,13 +58,13 @@ public:  //structors
 
 public:  //interface
 
-  boost::shared_ptr<T> Get() const
+  std::shared_ptr<T> Get() const
   {
     Synchronizer synchronizer;
 
-    boost::shared_ptr<T> result = cached_.lock();
+    std::shared_ptr<T> result = cached_.lock();
     if ( ! result )
-      cached_ = result = boost::shared_ptr<T>( create_() );
+      cached_ = result = std::shared_ptr<T>( create_() );
 
     return result;
   }

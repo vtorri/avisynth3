@@ -25,13 +25,11 @@
 #define __AVS_GSTREAMER_PIPELINE_H__
 
 //avisynth include
-#include "forward.h"                //for Bin, Element, PPipeline
+#include "forward.h"               //for Bin, Element, PPipeline
 #include "../core/integer.h"       //for uint64
 
-//boost include
-#include <boost/shared_ptr.hpp>
-
-//stl include
+//stl includes
+#include <memory>
 #include <string>
 
 //gstreamer include
@@ -64,7 +62,7 @@ public:  //casts
 
 public:  //factory method
 
-  static boost::shared_ptr<Pipeline> Create();
+  static std::shared_ptr<Pipeline> Create();
 
 };
 

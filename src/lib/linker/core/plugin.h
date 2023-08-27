@@ -41,7 +41,7 @@ namespace avs { namespace linker { namespace core {
 class Plugin : public linker::Plugin
 {
 
-  typedef boost::shared_ptr<core::Plugin> PCore;
+  typedef std::shared_ptr<core::Plugin> PCore;
   typedef std::vector<core::Function *> CoreFunctionList;
 
   CoreFunctionList list_;

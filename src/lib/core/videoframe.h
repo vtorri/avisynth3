@@ -27,13 +27,11 @@
 //avisynth includes
 #include "forward.h"
 #include "frametype.h"
-#include "../define.h"             //for AVS_NOVTABLE
+#include "../define.h"     //for AVS_NOVTABLE
 #include "window_ptr.h"
 
-//boost include
-#include <boost/shared_ptr.hpp>    //so ptr typedefs from forward.h are defined
-
-//stl include
+//stl includes
+#include <memory>          //so ptr typedefs from forward.h are defined
 #include <vector>
 
 

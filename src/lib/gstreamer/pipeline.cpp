@@ -62,12 +62,12 @@ struct PipelineDestructor
 } //namespace anonymous
 
 
-boost::shared_ptr<Pipeline> Pipeline::Create()
+std::shared_ptr<Pipeline> Pipeline::Create()
 {
   Element * pipeline = static_cast<Element *>( gst_pipeline_new(NULL) );
   assert( pipeline != NULL );
 
-  return boost::shared_ptr<Pipeline>( &pipeline->AsPipeline(), PipelineDestructor() );
+  return std::shared_ptr<Pipeline>( &pipeline->AsPipeline(), PipelineDestructor() );
 }
 
 

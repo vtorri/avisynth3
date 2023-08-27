@@ -84,7 +84,7 @@ public:  //TimerStackMap struct
   {
 
     typedef timing::timer<Clock> Timer;
-    typedef boost::shared_ptr<EnvType> Key;
+    typedef std::shared_ptr<EnvType> Key;
 
     TimerStack& operator[](Key const& key) const { return key->timerStack_; }
 

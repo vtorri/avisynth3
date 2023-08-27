@@ -43,7 +43,7 @@ class Splitting : public Holder
   //inner type
   struct SplitCounter
   {
-    boost::shared_ptr<void> counter_;
+    std::shared_ptr<void> counter_;
 
     int Count() const { return counter_.use_count(); }
   };

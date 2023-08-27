@@ -42,7 +42,7 @@ struct WeakExpired
 
   template <class T> bool operator()(T const& val) const { return false; }
 
-  template <class T> bool operator()(boost::weak_ptr<T> const& val) const { return val.expired(); }
+  template <class T> bool operator()(std::weak_ptr<T> const& val) const { return val.expired(); }
 
 };
 

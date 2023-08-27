@@ -28,8 +28,8 @@
 #include "forward.h"             //for PKey typedef
 #include "integer.h"             //for uint32 typedef
 
-//boost include
-#include <boost/shared_ptr.hpp>  //so its defined
+//stl include
+#include <memory>                //so PKey is defined
 
 
 namespace avs {

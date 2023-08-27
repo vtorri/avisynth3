@@ -38,7 +38,7 @@ class Exporter;
 class AviStream;
 
 //typedefs
-typedef boost::shared_ptr<Exporter const> PExporter;
+typedef std::shared_ptr<Exporter const> PExporter;
 
 
 

@@ -27,8 +27,8 @@
 //avisynth include
 #include "bitmapinfoheader.h"
 
-//boost include
-#include <boost/shared_ptr.hpp>
+//stl include
+#include <memory>
 
 //windows includes
 #ifndef NOMINMAX
@@ -50,8 +50,8 @@ namespace avs { namespace vfw {
 class Hic
 {
 
-  boost::shared_ptr<HIC__> hic_;    //underlying VFW handle
-  bool ex_;                         //flag marking whether we use -Ex methods or not
+  std::shared_ptr<HIC__> hic_;    //underlying VFW handle
+  bool ex_;                       //flag marking whether we use -Ex methods or not
 
 
 public:  //structors

@@ -67,7 +67,7 @@ public:  //implementation helpers
   static PAVIStream GetStream(PAVIFile const& aviFile, unsigned long fccType);
 
   //wraps result from IAVIStream::ReadFormat into a shared_ptr
-  static boost::shared_ptr<void> ReadFormat(PAVIStream const& aviStream);
+  static std::shared_ptr<void> ReadFormat(PAVIStream const& aviStream);
 
 
 public:  //factory method and functor

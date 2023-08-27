@@ -60,7 +60,7 @@ public:  //OwnedHolder interface
 
   virtual bool Unique() const = 0;
 
-  virtual boost::shared_ptr<OwnedHolder> Split(int splitSize, boost::shared_ptr<OwnedHolder>& self) const;
+  virtual std::shared_ptr<OwnedHolder> Split(int splitSize, std::shared_ptr<OwnedHolder>& self) const;
 
 };
 

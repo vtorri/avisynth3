@@ -51,7 +51,7 @@ protected:
 
 public:  //structors
 
-  Base(boost::shared_ptr<environment::Base> const& env, FrameMaker const& make)
+  Base(std::shared_ptr<environment::Base> const& env, FrameMaker const& make)
     : Cache( env )
     , make_( make )
     , dropPriority_( 0.0 )

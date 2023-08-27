@@ -39,9 +39,9 @@ class WaveFormatEx;
 class BitmapInfoHeader;
 
 //typedefs
-typedef boost::shared_ptr<Exporter const> PExporter;
-typedef boost::shared_ptr<WaveFormatEx> PWaveFormatEx;
-typedef boost::shared_ptr<BitmapInfoHeader> PBitmapInfoHeader;
+typedef std::shared_ptr<Exporter const> PExporter;
+typedef std::shared_ptr<WaveFormatEx> PWaveFormatEx;
+typedef std::shared_ptr<BitmapInfoHeader> PBitmapInfoHeader;
 
 
 

@@ -32,6 +32,12 @@ namespace boost {
 
 //boost forward declarations
 template <typename T> class rational;
+
+}
+
+namespace std {
+
+//stl forward declarations
 template <typename T> class weak_ptr;
 template <typename T> class shared_ptr;
 
@@ -81,15 +87,15 @@ typedef buffer_window<block::Align> BufferWindow;
 #endif
 
 //ptr typedefs
-typedef boost::shared_ptr<Key const> PKey;
-typedef boost::shared_ptr<Clip const> PClip;
-typedef boost::shared_ptr<Property const> CPProperty;
-typedef boost::shared_ptr<VideoInfo const> CPVideoInfo;
-typedef boost::shared_ptr<ColorSpace const> PColorSpace;
-typedef boost::shared_ptr<VideoFrame const> CPVideoFrame;
-typedef boost::shared_ptr<RuntimeEnvironment> PEnvironment;
-typedef boost::shared_ptr<colorspace::Exporter const> PExporter;
-typedef boost::shared_ptr<colorspace::Importer const> PImporter;
+typedef std::shared_ptr<Key const> PKey;
+typedef std::shared_ptr<Clip const> PClip;
+typedef std::shared_ptr<Property const> CPProperty;
+typedef std::shared_ptr<VideoInfo const> CPVideoInfo;
+typedef std::shared_ptr<ColorSpace const> PColorSpace;
+typedef std::shared_ptr<VideoFrame const> CPVideoFrame;
+typedef std::shared_ptr<RuntimeEnvironment> PEnvironment;
+typedef std::shared_ptr<colorspace::Exporter const> PExporter;
+typedef std::shared_ptr<colorspace::Importer const> PImporter;
 
 //cow ptr typedefs
 typedef cow_shared_ptr<Property> PProperty;
@@ -97,8 +103,8 @@ typedef cow_shared_ptr<VideoInfo> PVideoInfo;
 typedef cow_shared_ptr<VideoFrame> PVideoFrame;
 
 //weak_ptr typedefs
-typedef boost::weak_ptr<Clip const> WeakPClip;
-typedef boost::weak_ptr<RuntimeEnvironment> WeakPEnvironment;
+typedef std::weak_ptr<Clip const> WeakPClip;
+typedef std::weak_ptr<RuntimeEnvironment> WeakPEnvironment;
 
 
 

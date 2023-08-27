@@ -30,8 +30,8 @@
 #include "../vmoperation.h"
 #include "../../linker/function.h"
 
-//boost include
-#include <boost/enable_shared_from_this.hpp>  //for enable_shared_from_this
+//stl include
+#include <memory>                   //for enable_shared_from_this
 
 
 namespace avs { namespace parser { namespace function {
@@ -44,7 +44,7 @@ namespace avs { namespace parser { namespace function {
 //
 //
 class ScriptFunction : public linker::Function
-                     , public boost::enable_shared_from_this<ScriptFunction>
+                     , public std::enable_shared_from_this<ScriptFunction>
 {
 
   FunctionId const id_;

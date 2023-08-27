@@ -27,8 +27,8 @@
 //avisynth include
 #include "forward.h"             //for PMessage declaration
 
-//boost include
-#include <boost/shared_ptr.hpp>
+//stl include
+#include <memory>
 
 //gstreamer include
 #include <gst/gstelement.h>

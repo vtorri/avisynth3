@@ -93,7 +93,7 @@ avs::gstreamer::PPipeline Pipeline::BuildPipeline(std::string const& filename)
 PPipeline Pipeline::Create(std::string const& filename)
 {
   g_message ("Pipeline Create");
-  PPipeline pipeline = boost::shared_ptr<Pipeline>( new Pipeline( filename ), PipelineDestructor() );
+  PPipeline pipeline = std::shared_ptr<Pipeline>( new Pipeline( filename ), PipelineDestructor() );
 
   return pipeline;
 }

@@ -24,8 +24,8 @@
 #ifndef __AVS_DIRECTSTREAM_FORWARD_H__
 #define __AVS_DIRECTSTREAM_FORWARD_H__
 
-//boost include
-#include <boost/shared_ptr.hpp>
+//stl include
+#include <memory>
 
 
 namespace avs { namespace directstream {
@@ -37,8 +37,8 @@ class DirectStreamer;
 class DirectStreamable;
 
 //typedefs
-typedef boost::shared_ptr<DirectStreamer const> PDStreamer;
-typedef boost::shared_ptr<DirectStreamable const> PDStreamable;
+typedef std::shared_ptr<DirectStreamer const> PDStreamer;
+typedef std::shared_ptr<DirectStreamable const> PDStreamable;
 
 
 } } //namespace avs::directstream

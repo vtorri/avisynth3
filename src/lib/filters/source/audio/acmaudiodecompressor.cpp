@@ -42,7 +42,7 @@ namespace avs { namespace filters { namespace source {
 namespace {
 
 
-//stream deleter to use with boost::shared_ptr
+//stream deleter to use with std::shared_ptr
 struct ACMSTreamCloser
 {
   void operator()(HACMSTREAM stream) const { acmStreamClose(stream, 0); }
@@ -233,7 +233,7 @@ AudioDecompressor * ACMAudioDecompressor::Create(RawAudio const& src, vfw::PWave
   assert( mmResult == 0 );                    //the above can't fail (or can it ?)
 
   //creates a WaveFormatEx of that size
-  boost::shared_ptr<void> temp( new BYTE[maxSizeFormat] );
+  std::shared_ptr<void> temp( new BYTE[maxSizeFormat] );
   vfw::PWaveFormatEx output = boost::static_pointer_cast<vfw::WaveFormatEx>(temp);
 
   output->wFormatTag = WAVE_FORMAT_PCM;       //and inits it with PCM format

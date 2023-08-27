@@ -24,8 +24,8 @@
 #ifndef __AVS_PARSER_VMOPERATION_H__
 #define __AVS_PARSER_VMOPERATION_H__
 
-//boost include
-#include <boost/shared_ptr.hpp>
+//stl include
+#include <memory>
 
 
 namespace avs { namespace parser {
@@ -85,7 +85,7 @@ struct functor_callback<void, Functor> : CallBack<void>
 template <typename Result> class VMOperation
 {
 
-  boost::shared_ptr<detail::CallBack<Result> const> cb_;
+  std::shared_ptr<detail::CallBack<Result> const> cb_;
 
 
 public:

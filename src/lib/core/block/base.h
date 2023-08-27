@@ -27,12 +27,12 @@
 //avisynth include
 #include "../forward.h"                  //for PEnvironment
 
-//boost includes
-#include <boost/shared_ptr.hpp>          //for shared_ptr
+//boost include
 #include <boost/utility/enable_if.hpp>   //for enable_if_c
 
-//stlport include
+//stl includes
 #include <cassert>
+#include <memory>                        //for shared_ptr
 
 
 namespace avs { namespace block {
@@ -68,7 +68,7 @@ public:  //typedefs
 
 private:  //member
 
-  boost::shared_ptr<BaseHolder> block_;
+  std::shared_ptr<BaseHolder> block_;
 
   template <class BH, int alignOther> friend class base;
   //NB: need only friendship with those with same BaseHolder, but it doesn't hurt
@@ -93,7 +93,7 @@ protected:  //structors
     : block_( other.block_ ) { }
 
   //constructor used by Split method for the 2nd block
-  explicit base(boost::shared_ptr<BaseHolder> const& block)
+  explicit base(std::shared_ptr<BaseHolder> const& block)
     : block_( block ) { }
 
   //generated copy constructor and destructor are fine

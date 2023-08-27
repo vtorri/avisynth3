@@ -27,8 +27,12 @@
 //avisynth include
 #include "align.h"             //for Align
 
-//boost forward declaration
-namespace boost { template <typename T> class shared_ptr; }
+namespace std {
+
+//stl forward declaration
+template <typename T> class shared_ptr;
+
+}
 
 
 namespace avs { namespace memory {
@@ -44,9 +48,9 @@ template <int align> class block;
 typedef block<Align> Block;
 
 //ptr typedefs
-typedef boost::shared_ptr<Manager> PMemManager;
-typedef boost::shared_ptr<Holder const> PHolder;
-typedef boost::shared_ptr<Blitter const> PBlitter;
+typedef std::shared_ptr<Manager> PMemManager;
+typedef std::shared_ptr<Holder const> PHolder;
+typedef std::shared_ptr<Blitter const> PBlitter;
 
 
 } } //namespace avs::memory

@@ -29,8 +29,8 @@
 #include "forward.h"                 //for PStructure typedef
 #include "../core/integer.h"         //for int64
 
-//boost include
-#include <boost/shared_ptr.hpp>      //so PStructure is defined
+//stl include
+#include <memory>                    //so PStructure is defined
 
 //gstreamer include
 #include <gst/gstpad.h>

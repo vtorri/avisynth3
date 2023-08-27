@@ -42,12 +42,12 @@ namespace avs { namespace vfw { namespace importer {
 class Interleaved : public Importer
 {
 
-  boost::shared_ptr<cspace::Interleaved const> space_;
+  std::shared_ptr<cspace::Interleaved const> space_;
 
 
 public:  //structors
 
-  Interleaved(boost::shared_ptr<cspace::Interleaved const> const& space)
+  Interleaved(std::shared_ptr<cspace::Interleaved const> const& space)
     : space_( space ) { }
 
   //generated destructor is fine

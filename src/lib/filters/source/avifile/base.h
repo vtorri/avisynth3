@@ -47,8 +47,8 @@ class AVS_NOVTABLE Base : public virtual clip::NoChild
 
 public:  //typedefs
 
-  typedef boost::shared_ptr<IAVIFile> PAVIFile;
-  typedef boost::shared_ptr<IAVIStream> PAVIStream;
+  typedef std::shared_ptr<IAVIFile> PAVIFile;
+  typedef std::shared_ptr<IAVIStream> PAVIStream;
 
 
 public:  //structors

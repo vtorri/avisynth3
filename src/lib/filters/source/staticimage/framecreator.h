@@ -29,8 +29,8 @@
 #include "../../../define.h"          //for AVS_NOVTABLE
 #include "../../../core/forward.h"    //for CPVideoFrame, PEnvironment typedefs
 
-//boost include
-#include <boost/shared_ptr.hpp>       //so PEnvironment is defined
+//stl include
+#include <memory>                     //so PEnvironment is defined
 
 
 namespace avs { namespace filters { namespace staticimage {

@@ -31,8 +31,8 @@
 #include "../../../core/ownedblock.h"
 #include "../../../core/geometry/dimension.h"  //so Dimension is defined
 
-//boost include
-#include <boost/shared_ptr.hpp>                //so PImporter is defined
+//stl include
+#include <memory>                              //so PImporter is defined
 
 
 namespace avs { namespace filters { namespace source { namespace video {

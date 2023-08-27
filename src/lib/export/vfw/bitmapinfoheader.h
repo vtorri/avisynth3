@@ -29,8 +29,8 @@
 #include "../../core/forward.h"                //for VideoInfo, Dimension, PImporter
 #include "../../core/geometry/dimension.h"     //so Dimension is defined
 
-//boost include
-#include <boost/shared_ptr.hpp>                //so Pimporter is defined
+//stl include
+#include <memory>                              //so Pimporter is defined
 
 
 namespace avs { namespace export_ { namespace vfw {

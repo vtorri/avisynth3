@@ -29,8 +29,8 @@
 #include "../frametype.h"
 #include "../../define.h"           //for AVS_NOVTABLE
 
-//boost include
-#include <boost/shared_ptr.hpp>     //so PColorSpace, CPVideoFrame are defined
+//stl include
+#include <memory>                   //so PColorSpace, CPVideoFrame are defined
 
 
 namespace avs { namespace colorspace {

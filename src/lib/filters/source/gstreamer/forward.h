@@ -37,7 +37,7 @@ class Factory;
 class Pipeline;
 
 //typedef
-typedef boost::shared_ptr<Pipeline> PPipeline;
+typedef std::shared_ptr<Pipeline> PPipeline;
 
 
 } } } } // namespace avs::filters::source::gstreamer

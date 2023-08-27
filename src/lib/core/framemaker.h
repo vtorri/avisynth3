@@ -28,8 +28,8 @@
 #include "owned.h"
 #include "forward.h"             //for CPVideoFrame
 
-//boost include
-#include <boost/shared_ptr.hpp>  //so CPVideoFrame is defined
+//stl include
+#include <memory>                //so CPVideoFrame is defined
 
 
 namespace avs {

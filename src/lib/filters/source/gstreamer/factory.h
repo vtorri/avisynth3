@@ -30,10 +30,8 @@
 #include "../../../gstreamer/forward.h"        //for Pad declaration typedef
 #include "../../../core/cow_shared_ptr.h"      //so PVideoInfo is defined
 
-//boost include
-#include <boost/shared_ptr.hpp>                //so PImporter, PPipeline are defined
-
-//stl include
+//stl includes
+#include <memory>                              //so PImporter, PPipeline are defined
 #include <string>
 
 

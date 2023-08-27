@@ -38,7 +38,7 @@ Splitting::Splitting(int32_t size, int32_t offset, PHolder const& holder, SplitC
 
 Splitting::Splitting(int32_t size, int32_t offset, Splitting const& other)
   : size_( size )
-  , offset_( offset_ )
+  , offset_( offset )
   , holder_( other.holder_ )
   , counter_( other.counter_ ) { }
 

@@ -24,11 +24,11 @@
 #ifndef __AVS_KEY_H__
 #define __AVS_KEY_H__
 
-//avisynth includes
+//avisynth include
 #include "forward.h"             //for PKey typedef
-#include "integer.h"             //for uint32 typedef
 
-//stl include
+//stl includes
+#include <cstdint>               //for uint32_t
 #include <memory>                //so PKey is defined
 
 
@@ -53,7 +53,7 @@ public:  //structors
 public:  //Key interface
 
   virtual bool operator==(Key const& other) const { return &other == this; }
-  virtual uint32 hash() const { return static_cast<uint32>(reinterpret_cast<std::ptrdiff_t>(this)); }
+  virtual uint32_t hash() const { return static_cast<uint32_t>(reinterpret_cast<std::ptrdiff_t>(this)); }
 
 
 public:  //useful functors

@@ -79,14 +79,14 @@ void Pad::Link(Pad& sink)
 }
 
 
-int64 Pad::QueryTotal()
+int64_t Pad::QueryTotal()
 {
   GstQuery *query;
 
   query = gst_query_new_duration( GST_FORMAT_TIME );
   if ( !gst_pad_query( this, query ) )
     throw exception::Generic( "Gstreamer: can not query the length of the video pipeline" );
-  int64 duration;
+  int64_t duration;
   gst_query_parse_duration( query, NULL, &duration );
   gst_query_unref( query );
 

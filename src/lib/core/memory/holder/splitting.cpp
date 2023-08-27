@@ -29,14 +29,14 @@ namespace avs { namespace memory { namespace holder {
 
 
 
-Splitting::Splitting(int32 size, int32 offset, PHolder const& holder, SplitCounter const& counter)
+Splitting::Splitting(int32_t size, int32_t offset, PHolder const& holder, SplitCounter const& counter)
   : size_( size )
   , offset_( offset )
   , holder_( holder )
   , counter_( counter ) { }
 
 
-Splitting::Splitting(int32 size, int32 offset, Splitting const& other)
+Splitting::Splitting(int32_t size, int32_t offset, Splitting const& other)
   : size_( size )
   , offset_( offset_ )
   , holder_( other.holder_ )
@@ -51,7 +51,7 @@ bool Splitting::Unique() const
 
 
 
-PHolder Splitting::Split(int32 splitSize, PHolder& self) const
+PHolder Splitting::Split(int32_t splitSize, PHolder& self) const
 {
   PHolder result( static_cast<Holder *>(new Splitting(Size() - splitSize, offset_ + splitSize, *this)) );
 
@@ -63,7 +63,7 @@ PHolder Splitting::Split(int32 splitSize, PHolder& self) const
 
 
 
-PHolder Splitting::InitialSplit(int32 splitSize, PHolder& self)
+PHolder Splitting::InitialSplit(int32_t splitSize, PHolder& self)
 {
   PHolder holder = self;
   SplitCounter counter;

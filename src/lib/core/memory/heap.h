@@ -24,9 +24,12 @@
 #ifndef __AVS_MEMORY_HEAP_H__
 #define __AVS_MEMORY_HEAP_H__
 
-//avisynth includes
-#include "../integer.h"                      //for uint8 and int32 typedefs
+//avisynth include
 #include "../../define.h"                    //for AVS_NOVTABLE
+
+//stl include
+#include <cstdint>                           //for uint8_t
+
 
 namespace avs { namespace memory {
 
@@ -48,8 +51,8 @@ public:  //structors
 
 public:  //Heap interface
 
-  virtual uint8 * Acquire(int size) = 0;
-  virtual void Return(uint8 * ptr, int size) = 0;  //no throw
+  virtual uint8_t * Acquire(int size) = 0;
+  virtual void Return(uint8_t * ptr, int size) = 0;  //no throw
 
 };
 

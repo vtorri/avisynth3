@@ -26,9 +26,9 @@
 
 //avisynth include
 #include "forward.h"               //for Bin, Element, PPipeline
-#include "../core/integer.h"       //for uint64
 
 //stl includes
+#include <cstdint>                 //for uint64_t
 #include <memory>
 #include <string>
 

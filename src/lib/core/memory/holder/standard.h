@@ -41,28 +41,28 @@ namespace avs { namespace memory { namespace holder {
 class Standard : public Holder
 {
 
-  int32 size_;
-  uint8 * ptr_;
+  int32_t size_;
+  uint8_t * ptr_;
   PMemManager manager_;
 
 
 public:  //structors
 
-  Standard(int32 size, PMemManager const& manager);
+  Standard(int32_t size, PMemManager const& manager);
   virtual ~Standard();
 
 
 public:  //Holder observers
 
-  virtual int32 Size() const { return size_; }
-  virtual uint8 * Get() const { return ptr_; }
+  virtual int32_t Size() const { return size_; }
+  virtual uint8_t * Get() const { return ptr_; }
 
   virtual bool Unique() const { return true; }
 
 
 public:  //special stuff
 
-  virtual PHolder Split(int32 splitSize, PHolder& self) const;
+  virtual PHolder Split(int32_t splitSize, PHolder& self) const;
 
   virtual PMemManager const& GetMemoryManager() const { return manager_; }
 

@@ -27,10 +27,10 @@
 //avisynth includes
 #include "block.h"                           //so Block is defined
 #include "forward.h"                         //for Block and PHolder typedefs
-#include "../integer.h"                      //for uint8 and int32 typedefs
 #include "../../define.h"                    //for AVS_NOVTABLE
 
-//stl include
+//stl includes
+#include <cstdint>                           //for uint8_t and int32_t
 #include <memory>                            //so PHolder is defined
 
 
@@ -54,22 +54,22 @@ public:  //structors
 
 public:  //Blocks
 
-  virtual Block MakeBlock(int32 size) = 0;
+  virtual Block MakeBlock(int32_t size) = 0;
 
 public:  //memory usage
 
   //Heap like methods
-  virtual uint8 * Acquire(int32 size) = 0;
-  virtual void Return(uint8 * ptr, int32 size) = 0;  //no throw
+  virtual uint8 * Acquire(int32_t size) = 0;
+  virtual void Return(uint8_t * ptr, int32_t size) = 0;  //no throw
 
   //memory update
-  virtual void MemoryAllocated(int32 size) = 0;
-  virtual void MemoryFreed(int32 size) = 0;          //no throw
+  virtual void MemoryAllocated(int32_t size) = 0;
+  virtual void MemoryFreed(int32_t size) = 0;          //no throw
 
 
 public:  //helper for Holder::Split
 
-  virtual PHolder Split(int32 splitSize, PHolder& self) const = 0;
+  virtual PHolder Split(int32_t splitSize, PHolder& self) const = 0;
 
 };
 

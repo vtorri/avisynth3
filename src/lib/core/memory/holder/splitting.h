@@ -49,39 +49,39 @@ class Splitting : public Holder
   };
 
   //members
-  int32 size_;
-  int32 offset_;
+  int32_t size_;
+  int32_t offset_;
   PHolder holder_;            //underlying split memory holder
   SplitCounter counter_;      //split counter, needed for accurate implementation of Unique()
 
 
 private:  //structors
 
-  Splitting(int32 size, int32 offset, PHolder const& holder, SplitCounter const& counter);
+  Splitting(int32_t size, int32_t offset, PHolder const& holder, SplitCounter const& counter);
 
-  Splitting(int32 size, int32 offset, Splitting const& other);
+  Splitting(int32_t size, int32_t offset, Splitting const& other);
 
   //generated destructor is fine
 
 
 public:  //Holder observers
 
-  virtual int32 Size() const { return size_; }
-  virtual uint8 * Get() const { return holder_->Get() + offset_; }
+  virtual int32_t Size() const { return size_; }
+  virtual uint8_t * Get() const { return holder_->Get() + offset_; }
 
   virtual bool Unique() const;
 
 
 public:  //special stuff
 
-  virtual PHolder Split(int32 splitSize, PHolder& self) const;
+  virtual PHolder Split(int32_t splitSize, PHolder& self) const;
 
   virtual PMemManager const& GetMemoryManager() const { return holder_->GetMemoryManager(); }
 
 
 public:  //called by memory::Holder to implement its Split for other Holder subclasses
 
-  static PHolder InitialSplit(int32 splitSize, PHolder& self);
+  static PHolder InitialSplit(int32_t splitSize, PHolder& self);
 
 };
 

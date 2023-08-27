@@ -26,10 +26,10 @@
 
 //avisynth includes
 #include "forward.h"                //for PHolder and PMemManager typedefs
-#include "../integer.h"             //for uint8, int32 typedefs
 #include "../../define.h"           //for AVS_NOVTABLE macro
 
-//stl include
+//stl includes
+#include <cstdint>                  //for uint8_t and int32_t
 #include <memory>                   //so PHolder, PMemManager are defined
 
 
@@ -56,8 +56,8 @@ public:  //structors
 
 public:  //Holder observers
 
-  virtual int32 Size() const = 0;
-  virtual uint8 * Get() const = 0;
+  virtual int32_t Size() const = 0;
+  virtual uint8_t * Get() const = 0;
 
   virtual bool Unique() const = 0;
 

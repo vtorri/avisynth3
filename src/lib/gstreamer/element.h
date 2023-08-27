@@ -26,13 +26,13 @@
 
 //avisynth include
 #include "forward.h"             //for Pad, Object, Pipeline declarations
-#include "../core/integer.h"     //for int64
 
 //boost include
 #include <boost/format.hpp>
 #include <boost/optional.hpp>
 
-//stlport include
+//stl includes
+#include <cstdint>               //for int64_t and uint64_t
 #include <string>
 
 //gstreamer include
@@ -70,7 +70,7 @@ public:  //link
 
 public:  //seek method
 
-  bool Seek(uint64 time) {
+  bool Seek(uint64_t time) {
     boost::format fmt = boost::format( "time (seek) : %1" ) % time;
     g_message ( fmt.str().c_str () );
     return gst_element_seek( this,
@@ -94,7 +94,7 @@ public:  //state stuff
 
 public:
 
-  int64 QueryTotal();
+  int64_t QueryTotal();
 
 
 public:  //casts

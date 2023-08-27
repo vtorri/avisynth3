@@ -30,7 +30,7 @@ namespace avs { namespace memory  { namespace holder {
 
 
 
-Standard::Standard(int32 size, PMemManager const& manager)
+Standard::Standard(int32_t size, PMemManager const& manager)
   : size_( size )
   , ptr_( manager->Acquire(size_) )
   , manager_( manager ) { }
@@ -43,7 +43,7 @@ Standard::~Standard()
 
 
 
-PHolder Standard::Split(int32 splitSize, PHolder& self) const
+PHolder Standard::Split(int32_t splitSize, PHolder& self) const
 {
   return manager_->Split(splitSize, self);
 }

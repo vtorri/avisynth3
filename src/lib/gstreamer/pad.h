@@ -27,9 +27,9 @@
 //avisynth includes
 #include "object.h"
 #include "forward.h"                 //for PStructure typedef
-#include "../core/integer.h"         //for int64
 
-//stl include
+//stl includes
+#include <cstdint>                   //for int64_t
 #include <memory>                    //so PStructure is defined
 
 //gstreamer include
@@ -64,7 +64,7 @@ public:
 
   PStructure GetStructure();
 
-  int64 QueryTotal();
+  int64_t QueryTotal();
 
   bool CheckStream(char *stream_type);
 

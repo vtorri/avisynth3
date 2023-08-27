@@ -67,14 +67,14 @@ PBus Element::GetBus()
 }
 
 
-int64 Element::QueryTotal()
+int64_t Element::QueryTotal()
 {
   GstQuery *query;
 
   query = gst_query_new_duration( GST_FORMAT_TIME );
   if ( !gst_pad_query( GetPad( "sink" ), query ) )
     throw exception::Gstreamer( "Can not query the length of the video pipeline" );
-  int64 duration;
+  int64_t duration;
   gst_query_parse_duration( query, NULL, &duration );
   gst_query_unref( query );
 

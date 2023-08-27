@@ -85,15 +85,15 @@ public:  //assignemnt
 
 public:  //queries
 
-  int32 Size() const { return holder_->Size(); }
-  uint8 * Get() const { return holder_->Get(); }
+  int32_t Size() const { return holder_->Size(); }
+  uint8_t * Get() const { return holder_->Get(); }
 
   bool Unique() const { return holder_.unique() && holder_->Unique(); }
 
 
 public:  //misc
 
-  block<align> Split(int32 splitSize)
+  block<align> Split(int32_t splitSize)
   {
     return block<align>(holder_->Split(splitSize, holder_));
   }

@@ -59,7 +59,7 @@ public:  //Blocks
 public:  //memory usage
 
   //Heap like methods
-  virtual uint8 * Acquire(int32_t size) = 0;
+  virtual uint8_t * Acquire(int32_t size) = 0;
   virtual void Return(uint8_t * ptr, int32_t size) = 0;  //no throw
 
   //memory update

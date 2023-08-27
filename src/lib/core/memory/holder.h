@@ -64,7 +64,7 @@ public:  //Holder observers
 
 public:  //special stuff (used by block_)
 
-  virtual PHolder Split(int32 splitSize, PHolder& self) const = 0;
+  virtual PHolder Split(int32_t splitSize, PHolder& self) const = 0;
 
   virtual PMemManager const& GetMemoryManager() const = 0;
 

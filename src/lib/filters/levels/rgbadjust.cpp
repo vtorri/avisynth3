@@ -43,7 +43,7 @@ RGBAdjust::RGBAdjust(PClip const& child, double r, double g, double b, double a)
 {
   PColorSpace space = child->GetVideoInfo()->GetColorSpace();
 
-  if ( ! boost::dynamic_pointer_cast<colorspace::rgb::Depth8 const>(space) )
+  if ( ! std::dynamic_pointer_cast<colorspace::rgb::Depth8 const>(space) )
     throw exception::colorspace::Unsupported(space);
 }
 
@@ -58,7 +58,7 @@ RGBAdjust::RGBAdjust(PClip const& child, RGBAdjust const& other)
 {
   PColorSpace space = child->GetVideoInfo()->GetColorSpace();
 
-  if ( ! boost::dynamic_pointer_cast<colorspace::rgb::Depth8 const>(space) )
+  if ( ! std::dynamic_pointer_cast<colorspace::rgb::Depth8 const>(space) )
     throw exception::colorspace::Unsupported(space);
 }
 

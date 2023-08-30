@@ -45,10 +45,10 @@ void NoAudio::AddChild(PClip const& child)
   if ( child->GetVideoInfo()->GetFrameCount() == 0 )  //give up if has no length
     return;
 
-  if ( std::shared_ptr<NoAudio const> splice = boost::dynamic_pointer_cast<NoAudio const>(child) )
+  if ( std::shared_ptr<NoAudio const> splice = std::dynamic_pointer_cast<NoAudio const>(child) )
     Merge(*splice);
   else
-    if ( std::shared_ptr<KillAudio const> killAudio = boost::dynamic_pointer_cast<KillAudio const>(child) )
+    if ( std::shared_ptr<KillAudio const> killAudio = std::dynamic_pointer_cast<KillAudio const>(child) )
       PushChild( killAudio->GetChild() );
     else PushChild( child );
 }

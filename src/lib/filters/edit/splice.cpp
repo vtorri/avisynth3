@@ -102,8 +102,8 @@ bool Splice::MergingPush(PClip const& child)
 {
   if ( ! childs_.empty() )
   {
-    std::shared_ptr<Trim const> left = boost::dynamic_pointer_cast<Trim const>(childs_.back());
-    std::shared_ptr<Trim const> right = boost::dynamic_pointer_cast<Trim const>(child);
+    std::shared_ptr<Trim const> left = std::dynamic_pointer_cast<Trim const>(childs_.back());
+    std::shared_ptr<Trim const> right = std::dynamic_pointer_cast<Trim const>(child);
 
     if (  left                                    //if left is a Trim
        && right                                   //if right is a Trim

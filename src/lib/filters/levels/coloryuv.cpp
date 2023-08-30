@@ -40,7 +40,7 @@ ColorYUV::ColorYUV(PClip const& child)
 {
   PColorSpace space = child->GetVideoInfo()->GetColorSpace();
 
-  if ( ! boost::dynamic_pointer_cast<colorspace::yuv::Depth8 const>(space) )
+  if ( ! std::dynamic_pointer_cast<colorspace::yuv::Depth8 const>(space) )
     throw exception::colorspace::Unsupported(space);
 }
 

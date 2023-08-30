@@ -51,7 +51,7 @@ template <long alignY, long alignUV> class planar_yuv : public Importer
 public:  //structors
 
   planar_yuv(PColorSpace const& space)
-    : space_( boost::dynamic_pointer_cast<colorspace::yuv::Planar const>(space) ) { }
+    : space_( std::dynamic_pointer_cast<colorspace::yuv::Planar const>(space) ) { }
 
   //generated destructor is fine
 

@@ -37,7 +37,7 @@ void Aligned::AddChild(PClip const& child)
   if ( child->GetVideoInfo()->GetFrameCount() == 0 )  //give up if has no length
     return;
 
-  if ( std::shared_ptr<Aligned const> splice = boost::dynamic_pointer_cast<Aligned const>(child) )
+  if ( std::shared_ptr<Aligned const> splice = std::dynamic_pointer_cast<Aligned const>(child) )
     Merge(*splice);
   else
     PushChild( child );

@@ -37,7 +37,7 @@ void Unaligned::AddChild(PClip const& child)
   if ( child->GetVideoInfo()->GetFrameCount() == 0 && child->GetVideoInfo()->GetSampleCount() == 0 )
     return;                                   //give up if has no length
 
-  if ( std::shared_ptr<Unaligned const> splice = boost::dynamic_pointer_cast<Unaligned const>(child) )
+  if ( std::shared_ptr<Unaligned const> splice = std::dynamic_pointer_cast<Unaligned const>(child) )
     Merge(*splice);
   else
     PushChild( child );

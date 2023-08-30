@@ -51,7 +51,7 @@ template <long align> class interleaved : public Importer
 public:  //structors
 
   interleaved(PColorSpace const& space)
-    : space_( boost::dynamic_pointer_cast<colorspace::Interleaved const>(space) ) { }
+    : space_( std::dynamic_pointer_cast<colorspace::Interleaved const>(space) ) { }
 
   //generated destructor is fine
 

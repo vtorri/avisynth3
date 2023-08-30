@@ -58,7 +58,7 @@ Trim::Trim(PClip const& child, long begin, long end)
   vi_ = vi;                           //save vi to self
 
   //try absorbing child into self
-  if ( std::shared_ptr<Trim const> trim = boost::dynamic_pointer_cast<Trim const>(GetChild()) )
+  if ( std::shared_ptr<Trim const> trim = std::dynamic_pointer_cast<Trim const>(GetChild()) )
   {
     begin_ += trim->begin_;
     audio_begin_ += trim->audio_begin_;

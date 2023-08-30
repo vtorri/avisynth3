@@ -53,7 +53,7 @@ public:  //Simplify method
   virtual PClip Simplify() const
   {
     std::shared_ptr<Refactorable<SubClip> const> isRef
-      = boost::dynamic_pointer_cast<Refactorable<SubClip> const>( GetChild() );
+      = std::dynamic_pointer_cast<Refactorable<SubClip> const>( GetChild() );
 
     return (! isRef ) ? this->shared_from_this()
                       : isRef->Refactor( dynamic_cast<SubClip const&>(*this) );
@@ -83,7 +83,7 @@ public:  //FinalSimplify method
     this->FinalSimplifyChild();
 
     std::shared_ptr<FinalRefactorable<SubClip> const> isRef
-      = boost::dynamic_pointer_cast<FinalRefactorable<SubClip> const>( this->GetChild() );
+      = std::dynamic_pointer_cast<FinalRefactorable<SubClip> const>( this->GetChild() );
 
     return (! isRef ) ? this->shared_from_this()
                       : isRef->FinalRefactor( dynamic_cast<SubClip const&>(*this) );

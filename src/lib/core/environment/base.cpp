@@ -29,6 +29,9 @@
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/lambda.hpp>
 
+//stl include
+#include <algorithm>                 //for std::sort and std::for_each
+
 
 namespace avs { namespace environment {
 

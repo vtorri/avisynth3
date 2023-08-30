@@ -69,7 +69,7 @@ public:  //NewCache method
   virtual avs::Cache * CreateCache(FrameMaker const& maker)
   {
     typedef cache::concrete<cache::CacheLogic, EnvType> Cache;
-    return new Cache( boost::static_pointer_cast<EnvType>(shared_from_this()), maker );
+    return new Cache( std::static_pointer_cast<EnvType>(shared_from_this()), maker );
   }
 
 private:  //stop/restart timing when attempting memory cleanup

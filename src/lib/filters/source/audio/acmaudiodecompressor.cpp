@@ -234,7 +234,7 @@ AudioDecompressor * ACMAudioDecompressor::Create(RawAudio const& src, vfw::PWave
 
   //creates a WaveFormatEx of that size
   std::shared_ptr<void> temp( new BYTE[maxSizeFormat] );
-  vfw::PWaveFormatEx output = boost::static_pointer_cast<vfw::WaveFormatEx>(temp);
+  vfw::PWaveFormatEx output = std::static_pointer_cast<vfw::WaveFormatEx>(temp);
 
   output->wFormatTag = WAVE_FORMAT_PCM;       //and inits it with PCM format
 

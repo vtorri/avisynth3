@@ -42,7 +42,7 @@
 #define AVISTREAMREAD_CONVENIENT -1L
 #endif //AVISTREAMREAD_CONVENIENT
 
-//stlport include
+//stl include
 #include <cassert>
 
 
@@ -90,7 +90,7 @@ void RawAudio::InitAudio(PAVIStream const& audio, VideoInfo& vi)
   if ( audio )
   {
     //get wav format header from stream
-    vfw::PWaveFormatEx wfe = boost::static_pointer_cast<vfw::WaveFormatEx>(AviFileSource::ReadFormat(audio));
+    vfw::PWaveFormatEx wfe = std::static_pointer_cast<vfw::WaveFormatEx>(AviFileSource::ReadFormat(audio));
 
     if ( ! wfe->IsVBR() )        //checks it's CBR  (vfw IAVIStream seems unable to output vbr data)
     {

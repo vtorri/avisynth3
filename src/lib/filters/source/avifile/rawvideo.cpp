@@ -69,7 +69,7 @@ void RawVideo::InitVideo(PAVIStream const& video, VideoInfo& vi)
     video_ = video;
 
     //fetch format header from stream
-    vfw::PBitmapInfoHeader bih = boost::static_pointer_cast<vfw::BitmapInfoHeader>(AviFileSource::ReadFormat(video));
+    vfw::PBitmapInfoHeader bih = std::static_pointer_cast<vfw::BitmapInfoHeader>(AviFileSource::ReadFormat(video));
 
     PColorSpace space;
     //sets frame decompressor (and gets output colorspace)
